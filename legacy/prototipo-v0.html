@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lunar South Pole Explorer</title>
+
+<style>
+:root {
+  --bg: #101720;
+  --panel: #192431;
+  --panel2: #202e3c;
+  --line: #344454;
+  --text: #edf3f8;
+  --muted: #aab8c5;
+  --accent: #57a8e8;
+  --green: #30b879;
+  --yellow: #e6b54b;
+  --red: #d65d61;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 Arial, sans-serif;
+}
+
+main {
+  max-width: 1120px;
+  margin: auto;
+  padding: 28px 18px 45px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+h1 { font-size: 34px; margin: 4px 0; }
+h2 { font-size: 17px; margin: 0 0 14px; }
+
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 17px;
+  margin: 15px 0;
+}
+
+.tag {
+  border: 1px solid var(--line);
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px;
+}
+
+.field label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+input[type="date"], select {
+  width: 100%;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.sites {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 10px 0 18px;
+}
+
+.site-check {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.site-check:has(input:checked) {
+  background: #203c52;
+  border-color: var(--accent);
+}
+
+input { accent-color: var(--accent); }
+
+.weights {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.weight label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+.weight input { width: 100%; }
+
+button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.primary {
+  background: var(--accent);
+  border: 0;
+  color: #071522;
+  font-weight: bold;
+  padding: 11px 17px;
+  border-radius: 9px;
+  margin-top: 16px;
+}
+
+.legend {
+  display: flex;
+  gap: 17px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.green { background: var(--green); }
+.yellow { background: var(--yellow); }
+.red { background: var(--red); }
+
+#map {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+  background: #252e38;
+}
+
+.map-point { cursor: pointer; }
+.map-point text {
+  font-size: 11px;
+  fill: white;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.metric {
+  background: var(--panel2);
+  padding: 13px;
+  border-radius: 10px;
+}
+
+.metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric strong {
+  font-size: 26px;
+}
+
+.scorebox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #203c52;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.scorebox strong { font-size: 30px; }
+
+canvas {
+  width: 100%;
+  height: 260px;
+  display: block;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  margin: 6px 0;
+}
+
+.table-wrap { overflow-x: auto; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+th, td {
+  padding: 10px 9px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+
+th { color: var(--muted); }
+
+td.best {
+  background: #244b40;
+  font-weight: bold;
+}
+
+.day {
+  border: 0;
+  border-radius: 4px;
+  min-width: 23px;
+  height: 24px;
+  padding: 0;
+}
+
+.ranking {
+  display: grid;
+  gap: 8px;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px;
+  text-align: left;
+  color: var(--text);
+}
+
+.rank-num {
+  font-size: 20px;
+  font-weight: bold;
+  width: 28px;
+}
+
+.rank-score {
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.note {
+  background: var(--panel2);
+  border-radius: 9px;
+  padding: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 25px;
+}
+
+@media(max-width:700px) {
+  main { padding: 18px 12px; }
+  .sites { grid-template-columns: repeat(2, 1fr); }
+  .weights { grid-template-columns: 1fr; }
+  .controls { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<header>
+  <div>
+    <div class="small muted">LUNAR EXPLORATION / MISSION 01</div>
+    <h1>South Pole Explorer</h1>
+    <p class="muted">Compará lugares y fechas de alunizaje en el polo sur de la Luna.</p>
+  </div>
+  <div class="tag">MODELO DEMOSTRATIVO</div>
+</header>
+
+<section class="panel">
+  <h2>01 / Configuración de misión</h2>
+
+  <div class="controls">
+    <div class="field">
+      <label>Fecha inicial</label>
+      <input id="start" type="date" value="2026-03-14">
+    </div>
+
+    <div class="field">
+      <label>Duración del análisis</label>
+      <select id="duration">
+        <option value="7">7 días</option>
+        <option value="14" selected>14 días</option>
+        <option value="28">28 días</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="small muted">Lugares a comparar</p>
+
+  <div class="sites" id="sites">
+    <label class="site-check">
+      <input type="checkbox" value="0" checked> Shackleton
+    </label>
+    <label class="site-check">
+      <input type="checkbox" value="1" checked> Malapert
+    </label>
+    <label class="site-check">
+      <input type="checkbox" value="2" checked> Haworth
+    </label>
+    <label class="site-check">
+      <input type="checkbox" value="3" checked> Leibnitz Beta
+    </label>
+  </div>
+
+  <h2>Prioridades del análisis</h2>
+
+  <div class="weights">
+    <div class="weight">
+      <label>Luz solar <b id="v1">45%</b></label>
+      <input id="w1" type="range" min="0" max="100" value="45">
+    </div>
+
+    <div class="weight">
+      <label>Comunicación terrestre <b id="v2">35%</b></label>
+      <input id="w2" type="range" min="0" max="100" value="35">
+    </div>
+
+    <div class="weight">
+      <label>Terreno <b id="v3">20%</b></label>
+      <input id="w3" type="range" min="0" max="100" value="20">
+    </div>
+  </div>
+
+  <p class="small muted">
+    Los pesos se normalizan automáticamente para sumar 100%.
+  </p>
+
+  <button class="primary" id="update">
+    Actualizar análisis ↗
+  </button>
+</section>
+
+<section class="panel">
+  <h2>02 / Mapa del polo sur lunar</h2>
+
+  <p class="small muted">
+    Seleccioná un punto para abrir su ficha.
+  </p>
+
+  <svg id="map" viewBox="0 0 600 270">
+    <defs>
+      <radialGradient id="moonbg">
+        <stop stop-color="#a6a8a6"/>
+        <stop offset="1" stop-color="#555d66"/>
+      </radialGradient>
+    </defs>
+
+    <rect width="600" height="270" rx="10" fill="#242c35"/>
+    <circle cx="300" cy="150" r="210" fill="url(#moonbg)"/>
+
+    <g fill="none" stroke="#555c62" stroke-width="5" opacity=".6">
+      <circle cx="160" cy="80" r="33"/>
+      <circle cx="420" cy="75" r="45"/>
+      <circle cx="290" cy="220" r="50"/>
+      <circle cx="490" cy="220" r="26"/>
+      <circle cx="220" cy="155" r="20"/>
+      <circle cx="370" cy="150" r="27"/>
+    </g>
+
+    <path d="M0 125 Q160 90 290 125 T600 110
+             M0 210 Q150 180 300 205 T600 195"
+          stroke="#d1d6d7" fill="none"
+          opacity=".3" stroke-dasharray="5 5"/>
+
+    <g id="map-points"></g>
+
+    <text x="12" y="22" fill="#fff" font-size="10">
+      89° S / REGIÓN POLAR
+    </text>
+    <text x="12" y="255" fill="#fff" font-size="10">
+      MAPA ILUSTRATIVO · NO A ESCALA
+    </text>
+  </svg>
+
+  <div class="legend">
+    <span><i class="dot green"></i>Favorable</span>
+    <span><i class="dot yellow"></i>Intermedio</span>
+    <span><i class="dot red"></i>Complicado</span>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>03 / Ficha del lugar</h2>
+
+  <div class="field">
+    <label>Ubicación seleccionada</label>
+    <select id="site-select">
+      <option value="0">Shackleton</option>
+      <option value="1">Malapert</option>
+      <option value="2">Haworth</option>
+      <option value="3">Leibnitz Beta</option>
+    </select>
+  </div>
+
+  <br>
+
+  <div class="metrics">
+    <div class="metric">
+      <span>Tiempo con luz</span>
+      <strong id="sunmetric">--%</strong>
+    </div>
+
+    <div class="metric">
+      <span>Comunicación / día</span>
+      <strong id="earthmetric">-- h</strong>
+    </div>
+
+    <div class="metric">
+      <span>Mayor oscuridad seguida</span>
+      <strong id="darkmetric">-- días</strong>
+    </div>
+
+    <div class="metric">
+      <span>Inclinación del terreno</span>
+      <strong id="slopemetric">--°</strong>
+    </div>
+  </div>
+
+  <div class="scorebox">
+    <div>
+      <span class="small muted">Puntaje final</span>
+      <br>
+      <strong id="scoremetric">--/100</strong>
+    </div>
+    <span id="status">--</span>
+  </div>
+
+  <p id="summary" class="muted"></p>
+</section>
+
+<section class="panel">
+  <h2>04 / Gráfico orbital diario</h2>
+
+  <p class="small muted">
+    Altura aparente del Sol y de la Tierra sobre el horizonte.
+  </p>
+
+  <div class="chart-legend">
+    <span style="color:#e6a83f">━ Sol</span>
+    <span style="color:#55a9ec">━ Tierra</span>
+    <span style="color:#30b879">■ Luz + comunicación</span>
+  </div>
+
+  <canvas id="graph" width="900" height="300"></canvas>
+
+  <div class="legend">
+    <span>0° Horizonte</span>
+    <span>Sobre 0° = visible</span>
+    <span>Debajo 0° = no visible</span>
+  </div>
+
+  <p id="overlap" class="small muted"></p>
+</section>
+
+<section class="panel">
+  <h2>05 / Comparador de ubicaciones</h2>
+
+  <div class="table-wrap">
+    <table id="compare">
+      <thead>
+        <tr>
+          <th>Indicador</th>
+          <th>Shackleton</th>
+          <th>Malapert</th>
+          <th>Haworth</th>
+          <th>Leibnitz</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>06 / Calendario de oportunidades</h2>
+
+  <p class="small muted">
+    Cada celda representa el puntaje estimado de ese día.
+  </p>
+
+  <div class="table-wrap">
+    <table id="calendar"></table>
+  </div>
+
+  <div style="height:9px;border-radius:8px;
+       background:linear-gradient(90deg,#d65d61,#e6b54b,#30b879)">
+  </div>
+</section>
+
+<section class="panel">
+  <h2>07 / Ranking de misiones</h2>
+  <p class="small muted">
+    Mejores combinaciones de ubicación y fecha.
+  </p>
+  <div id="ranking" class="ranking"></div>
+</section>
+
+<section class="panel">
+  <h2>08 / ¿Cómo funciona?</h2>
+
+  <p class="muted">
+    El modelo combina la iluminación solar, la visibilidad
+    de la Tierra y la inclinación del terreno. Los pesos
+    permiten modificar la importancia de cada variable
+    y generar un ranking dinámico.
+  </p>
+
+  <div class="note">
+    ⚠️ <b>Limitación:</b> esta versión utiliza datos ficticios
+    y funciones matemáticas ilustrativas. No debe utilizarse
+    para seleccionar un sitio real de alunizaje. Para ello
+    se necesitan efemérides lunares, modelos de horizonte
+    topográfico y datos reales de elevación.
+  </div>
+</section>
+
+<footer class="footer">
+  LUNAR SOUTH POLE EXPLORER · PROTOTIPO 0.1
+</footer>
+
+</main>
+
+<script>
+const names = [
+  'Shackleton',
+  'Malapert',
+  'Haworth',
+  'Leibnitz Beta'
+];
+
+const sites = [
+  {sun:88,earth:12.5,slope:5.2,dark:1.4,x:250,y:110,phase:.2},
+  {sun:76,earth:18.2,slope:3.1,dark:2.8,x:370,y:95,phase:1.5},
+  {sun:63,earth:9.5,slope:8.4,dark:5.1,x:190,y:177,phase:2.7},
+  {sun:81,earth:15.1,slope:6.0,dark:2.2,x:430,y:170,phase:4.2}
+];
+
+let selected = 0;
+let weights = [45,35,20];
+let duration = 14;
+
+const $ = id => document.getElementById(id);
+
+const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
+
+const date0 = () => {
+  let d = new Date($('start').value + 'T12:00:00');
+  return isNaN(+d) ? new Date('2026-03-14T12:00:00') : d;
+};
+
+function dayData(i,d) {
+  const s = sites[i];
+  const p = 2 * Math.PI * d / 29.53 + s.phase;
+
+  const sun = s.sun + 8*Math.sin(p) + 4*Math.cos(p*.53);
+  const earth = s.earth + 3.8*Math.cos(p*.83) + 2*Math.sin(p*.4);
+  const slope = s.slope + 0.5*Math.sin(p*.6);
+
+  const scoreSun = clamp(sun,0,100);
+  const scoreEarth = clamp(earth/24*100,0,100);
+  const scoreSlope = clamp(100-slope*5,0,100);
+
+  const total = weights.reduce((a,b)=>a+b,0) || 1;
+
+  const score = (
+    scoreSun*weights[0] +
+    scoreEarth*weights[1] +
+    scoreSlope*weights[2]
+  ) / total;
+
+  return {
+    sun,
+    earth,
+    slope,
+    score,
+    overlap: clamp(Math.min(sun/100,earth/24)*24,0,24),
+    dark: Math.max(.1,s.dark+1.1*Math.sin(p))
+  };
+}
+
+function color(score) {
+  if(score >= 75) return '#30b879';
+  if(score >= 50) return '#e6b54b';
+  return '#d65d61';
+}
+
+function aggregate(i) {
+  let arr = Array.from(
+    {length:duration},
+    (_,d)=>dayData(i,d)
+  );
+
+  return {
+    sun: arr.reduce((a,b)=>a+b.sun,0)/duration,
+    earth: arr.reduce((a,b)=>a+b.earth,0)/duration,
+    slope: arr.reduce((a,b)=>a+b.slope,0)/duration,
+    dark: Math.max(...arr.map(x=>x.dark)),
+    score: arr.reduce((a,b)=>a+b.score,0)/duration,
+    overlap: arr.reduce((a,b)=>a+b.overlap,0)/duration
+  };
+}
+
+function dateLabel(start,d) {
+  let x = new Date(start);
+  x.setDate(x.getDate()+d);
+
+  return x.toLocaleDateString('es-UY',{
+    day:'numeric',
+    month:'short'
+  });
+}
+
+function drawGraph() {
+  const c = $('graph');
+  const ctx = c.getContext('2d');
+
+  const W = c.width;
+  const H = c.height;
+
+  const pad = {l:48,r:14,t:15,b:34};
+  const min = -15;
+  const max = 45;
+
+  ctx.clearRect(0,0,W,H);
+
+  const X = d => pad.l + d/(duration-1||1)*(W-pad.l-pad.r);
+  const Y = v => pad.t + (max-v)/(max-min)*(H-pad.t-pad.b);
+
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#aab8c5';
+
+  for(let v=-10;v<=40;v+=10) {
+    ctx.fillText(v+'°',pad.l-8,Y(v));
+
+    ctx.strokeStyle = 'rgba(150,165,180,.2)';
+    ctx.beginPath();
+    ctx.moveTo(pad.l,Y(v));
+    ctx.lineTo(W-pad.r,Y(v));
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#d1d6d7';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(pad.l,Y(0));
+  ctx.lineTo(W-pad.r,Y(0));
+  ctx.stroke();
+
+  const vals = Array.from(
+    {length:duration},
+    (_,d)=>dayData(selected,d)
+  );
+
+  for(let d=0;d<duration-1;d++) {
+    if(
+      vals[d].sun>0 &&
+      vals[d].earth>0 &&
+      vals[d+1].sun>0 &&
+      vals[d+1].earth>0
+    ) {
+      ctx.fillStyle = 'rgba(48,184,121,.16)';
+      ctx.fillRect(
+        X(d),pad.t,
+        X(d+1)-X(d),
+        H-pad.t-pad.b
+      );
+    }
+  }
+
+  [
+    [v=>v.sun,'#e6a83f'],
+    [v=>v.earth,'#55a9ec']
+  ].forEach(([fn,col])=>{
+    ctx.beginPath();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 2.7;
+
+    vals.forEach((v,d)=>{
+      let y = Y(fn(v));
+
+      if(d===0) ctx.moveTo(X(d),y);
+      else ctx.lineTo(X(d),y);
+    });
+
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = '#aab8c5';
+  ctx.textAlign = 'center';
+
+  for(
+    let d=0;
+    d<duration;
+    d+=Math.max(1,Math.ceil(duration/7))
+  ) {
+    ctx.fillText('D'+(d+1),X(d),H-10);
+  }
+
+  $('overlap').textContent =
+    'Coincidencia media diaria estimada de luz y comunicación: ' +
+    (vals.reduce((a,b)=>a+b.overlap,0)/duration).toFixed(1) +
+    ' horas.';
+}
+
+function render() {
+  const active = [...document.querySelectorAll('#sites input')]
+    .map((c,i)=>c.checked?i:-1)
+    .filter(i=>i>=0);
+
+  const av = sites.map((s,i)=>aggregate(i));
+
+  $('map-points').innerHTML = sites.map((s,i)=>`
+    <g class="map-point"
+       data-index="${i}"
+       tabindex="0"
+       role="button"
+       opacity="${active.includes(i)?1:.22}">
+
+      <circle cx="${s.x}" cy="${s.y}" r="13"
+              fill="${color(av[i].score)}"/>
+
+      <text x="${s.x}" y="${s.y+4}"
+            text-anchor="middle"
+            fill="#18202b"
+            font-weight="bold">${i+1}</text>
+
+      <text x="${s.x+17}" y="${s.y-13}">
+        ${names[i]}
+      </text>
+    </g>
+  `).join('');
+
+  document.querySelectorAll('.map-point').forEach(g=>{
+    const choose = ()=>{
+      selected = +g.dataset.index;
+      $('site-select').value = selected;
+      render();
+    };
+
+    g.addEventListener('click',choose);
+
+    g.addEventListener('keydown',e=>{
+      if(e.key==='Enter' || e.key===' ') {
+        e.preventDefault();
+        choose();
+      }
+    });
+  });
+
+  $('site-select').value = selected;
+
+  const a = av[selected];
+
+  $('sunmetric').textContent = a.sun.toFixed(1)+'%';
+  $('earthmetric').textContent = a.earth.toFixed(1)+' h';
+  $('darkmetric').textContent = a.dark.toFixed(1)+' d';
+  $('slopemetric').textContent = a.slope.toFixed(1)+'°';
+  $('scoremetric').textContent = a.score.toFixed(0)+'/100';
+
+  $('status').textContent =
+    a.score>=75 ? '🟢 Favorable' :
+    a.score>=50 ? '🟡 Intermedio' :
+    '🔴 Complicado';
+
+  $('summary').textContent =
+    `${names[selected]}: ${a.sun.toFixed(0)}% de iluminación media y ` +
+    `${a.earth.toFixed(1)} horas diarias de comunicación. ` +
+    `La inclinación media estimada es ${a.slope.toFixed(1)}°.`;
+
+  drawGraph();
+
+  $('compare').querySelector('tbody').innerHTML = [
+    ['Luz solar','sun','%'],
+    ['Comunicación','earth',' h'],
+    ['Inclinación','slope','°'],
+    ['Oscuridad máxima','dark',' días'],
+    ['Puntaje','score','/100']
+  ].map(([label,key,unit])=>{
+    let best = (
+      key==='slope' || key==='dark'
+    )
+      ? Math.min(...active.map(i=>av[i][key]))
+      : Math.max(...active.map(i=>av[i][key]));
+
+    return `
+      <tr>
+        <th>${label}</th>
+        ${names.map((n,i)=>`
+          <td class="${
+            active.includes(i) &&
+            Math.abs(av[i][key]-best)<.001
+              ? 'best' : ''
+          }">
+            ${active.includes(i)
+              ? av[i][key].toFixed(1)+unit
+              : '—'}
+          </td>
+        `).join('')}
+      </tr>
+    `;
+  }).join('');
+
+  const start = date0();
+  const days = duration;
+
+  $('calendar').innerHTML = `
+    <thead>
+      <tr>
+        <th>Lugar</th>
+        ${Array.from({length:days},(_,d)=>`<th>${d+1}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>
+      ${active.map(i=>`
+        <tr>
+          <th>${names[i]}</th>
+          ${Array.from({length:days},(_,d)=>{
+            let z = dayData(i,d);
+
+            return `
+              <td>
+                <button class="day"
+                  title="${dateLabel(start,d)} · ${z.score.toFixed(0)}/100"
+                  data-i="${i}"
+                  data-d="${d}"
+                  style="background:${color(z.score)}">
+                </button>
+              </td>
+            `;
+          }).join('')}
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+
+  $('calendar').querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      selected = +b.dataset.i;
+      $('site-select').value = selected;
+      render();
+
+      $('overlap').textContent =
+        'Día seleccionado: ' +
+        dateLabel(start,+b.dataset.d) +
+        ' · Coincidencia luz y comunicación: ' +
+        dayData(selected,+b.dataset.d).overlap.toFixed(1) +
+        ' horas';
+    });
+  });
+
+  let rank = [];
+
+  active.forEach(i=>{
+    Array.from({length:days},(_,d)=>{
+      rank.push({i,d,...dayData(i,d)});
+    });
+  });
+
+  rank.sort((a,b)=>b.score-a.score);
+
+  $('ranking').innerHTML = rank.slice(0,5).map((r,j)=>`
+    <button class="rank" data-i="${r.i}" data-d="${r.d}">
+      <span class="rank-num">${j+1}.</span>
+
+      <span>
+        <b>${names[r.i]}</b><br>
+        <span class="small muted">${dateLabel(start,r.d)}</span>
+      </span>
+
+      <span class="rank-score">
+        ${r.score.toFixed(0)}
+        <small class="muted">/100</small>
+      </span>
+    </button>
+  `).join('');
+
+  $('ranking').querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      selected = +b.dataset.i;
+      $('site-select').value = selected;
+      render();
+    });
+  });
+}
+
+function refresh() {
+  weights = ['w1','w2','w3'].map(id=>Number($(id).value));
+  duration = Number($('duration').value);
+
+  const sum = weights.reduce((a,b)=>a+b,0) || 1;
+
+  weights.forEach((w,i)=>{
+    $('v'+(i+1)).textContent =
+      Math.round(w/sum*100)+'%';
+  });
+
+  const checks = [...document.querySelectorAll('#sites input')];
+
+  if(!checks.some(c=>c.checked)) {
+    checks[0].checked = true;
+  }
+
+  if(!checks[selected].checked) {
+    selected = checks.findIndex(c=>c.checked);
+  }
+
+  render();
+}
+
+$('site-select').addEventListener('change',e=>{
+  selected = +e.target.value;
+  render();
+});
+
+document.querySelectorAll('#sites input').forEach(c=>{
+  c.addEventListener('change',refresh);
+});
+
+['w1','w2','w3','duration','start'].forEach(id=>{
+  $(id).addEventListener('input',refresh);
+});
+
+$('update').addEventListener('click',refresh);
+
+refresh();
+</script>
+</body>
+</html>

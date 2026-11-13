@@ -1,0 +1,14 @@
+# Dependencias y builds
+node_modules/
+dist/
+.vite/
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# Notas internas del equipo (no publicar: el repo es público por reglas de Space Apps)
+mensajes.md
