@@ -81,7 +81,7 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Diseño: usar los tokens de `web/src/styles/tokens.css`. Escala de espaciado 4 · 8 · 12 · 16 · 24 · 32 · 48 px; radios 8 · 12 · 16 px. No usar medidas "raras" (ej. 17px, 23px).
 - Los cálculos astronómicos viven solo en `web/src/lib/`. La interfaz (`web/src/ui/`) no calcula, solo muestra.
 - Accesibilidad: controles operables con teclado, `aria-label` en controles sin texto y respeto de `prefers-reduced-motion`.
-- Antes de abrir un PR: `npm run build` sin errores y revisar la web en escritorio y en celular.
+- Antes de abrir un PR: `npm run build` sin errores y revisar la web en escritorio (≥ 1200 px). La v1 no es responsive (DEC-010).
 
 ## Qué NO hacer
 
