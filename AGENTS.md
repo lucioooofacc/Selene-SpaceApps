@@ -78,7 +78,7 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Stack: **Vite + JavaScript puro (ES modules)**, sin framework. Ver `docs/DECISIONES.md` (DEC-001).
 - Comandos: `cd web && npm install && npm run dev` (desarrollo) · `npm run build` (producción en `web/dist`).
 - Todo texto visible va en `web/src/i18n/es.js` y `web/src/i18n/en.js`; no escribir texto directamente en el HTML/JS. Si se agrega una clave en un idioma, también se agrega en el otro.
-- Diseño: usar los tokens de `web/src/styles/tokens.css`. Escala de espaciado 4 · 8 · 12 · 16 · 24 · 32 · 48 px; radios 8 · 12 · 16 px. No usar medidas "raras" (ej. 17px, 23px).
+- Diseño: la interfaz replica el Figma `planificacion-web/SELENE.fig` **tal cual** (DEC-011): misma paleta, tipografías, distribución y elementos. No agregar secciones ni cambiar colores sin consultar al equipo. Usar los tokens de `web/src/styles/tokens.css` y los assets de `web/public/figma/`. Las medidas del Figma se redondean a enteros comunes.
 - Los cálculos astronómicos viven solo en `web/src/lib/`. La interfaz (`web/src/ui/`) no calcula, solo muestra.
 - Accesibilidad: controles operables con teclado, `aria-label` en controles sin texto y respeto de `prefers-reduced-motion`.
 - Antes de abrir un PR: `npm run build` sin errores y revisar la web en escritorio (≥ 1200 px). La v1 no es responsive (DEC-010).
