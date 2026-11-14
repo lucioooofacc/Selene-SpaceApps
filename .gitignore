@@ -3,6 +3,9 @@ node_modules/
 dist/
 .vite/
 
+# Producto LOLA descargado y recortes derivados (se regeneran con web/scripts/)
+web/data/
+
 # Sistema / editores
 .DS_Store
 Thumbs.db

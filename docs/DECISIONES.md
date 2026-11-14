@@ -204,3 +204,45 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - `relief` y `elevationKm` siguen siendo parámetros sintéticos (DEC-005). Con el modelo actual, la luz anual de Shackleton pasa de ~96,2 % (−89,9°, 0°) a ~96,3 % (R04). DEC-005 sigue valiendo.
 - **Alternativas descartadas:** convertir los valores entre marcos sin conocer el de origen (se agregaría un error en lugar de quitarlo); deducir la exactitud de la cantidad de decimales (confunde representación con exactitud); usar el valor de CNSA para Chang'e 4 (otra referencia cartográfica); usar el centro USGS del cráter como punto del sitio; citar referencias escritas de memoria sin verificarlas; recortar latitudes fuera de rango en lugar de rechazarlas (ocultaría errores de datos).
 - **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3.
+
+---
+
+## DEC-021 — Producto LOLA `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (TERRAIN-01)
+
+- **Contexto / problema:** TERRAIN-01 (P0) pide un producto topográfico oficial citado con versión, descarga reproducible o artefacto verificable, coordenadas/ausencias/unidades validadas y tamaño apto para la demo. Los sitios australes del catálogo (DEC-019) llegan hasta −69,37° (Chandrayaan-3).
+- **Decisión (requisito cerrado por el equipo):**
+  - NASA PDS, data set `LRO-L-LOLA-4-GDR-V1.0`, DOI [10.17189/1520642](https://doi.org/10.17189/1520642).
+  - DEM `LDEM_60S_240M_FLOAT` **V2.1** y mapa de conteos `LDEC_60S_240M` (misma grilla).
+  - Cobertura nominal −90°..−60°, 240 m/píxel, 7760 × 7760, estereográfica polar esférica centrada en −90°, latitud planetocéntrica, longitud este positiva, marco "Mean Earth/Polar Axis of DE421", esfera de 1737,4 km.
+  - DEM: float32 little-endian (`PC_REAL`, 32 bits), altura en **km** sobre la esfera de 1737,4 km (`SCALING_FACTOR = 1`, `OFFSET = 1737.4` es el radio). Conteos: int16 little-endian (`LSB_INTEGER`, 16 bits), número de mediciones LOLA usadas en cada píxel.
+  - **`count = 0` ⇒ sin medición directa:** el DEM tiene un valor (interpolado) pero se marca `direct: false`, `confidence: "baja"`. No se inventan umbrales para `count > 0` (se marca `"medida"`).
+  - Cubiertos: Shackleton, Malapert, Cabeus, IM-1 y Chandrayaan-3. Fuera de cobertura: Chang'e 4 (−45,46°) y Apollo 11 (hemisferio norte); se listan como excluidos, sin datos inventados.
+- **Archivos e integridad** (URLs oficiales de PDS Geosciences, base `https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/polar/`):
+
+  | Archivo | Bytes | MD5 |
+  | --- | --- | --- |
+  | `float_img/ldem_60s_240m_float.img` | 240 870 400 | `45d376f634f0c4ad2bf628fd5f66b3c0` |
+  | `float_img/ldem_60s_240m_float.lbl` | 4 877 | `113c40f0f2a9af1f5311365e3836d754` |
+  | `float_img/ldem_60s_240m_float.xml` | 11 633 | `eff8f4de7ee6de290ee1e992a30f164b` |
+  | `img/ldec_60s_240m.img` | 120 435 200 | `4b7340bc337009aa02b80a1bf9eeadd4` |
+  | `img/ldec_60s_240m.lbl` | 3 822 | `d7952c6d113fb0aa66e2e29d6c5c0b35` |
+  | `img/ldec_60s_240m.xml` | 10 639 | `31f38d6a20db7b2a35eccb016d092411` |
+
+  Verificado el 2026-11-14: los seis archivos se descargaron con `download-lola.mjs` y sus MD5 coinciden (también con `md5sum`). Los tamaños de imagen son exactamente 7760² × 4 y 7760² × 2 bytes. Los parámetros de arriba se leyeron de las etiquetas `.lbl`.
+- **Solución aplicada:**
+  - `web/src/data/terrain/lola-ldem-60s-240m.js`: manifiesto del producto (DOI, versión, URLs, bytes, MD5, grilla, proyección). No contiene muestras.
+  - `web/scripts/download-lola.mjs`: descarga los seis archivos del manifiesto (no acepta URLs arbitrarias), calcula MD5 en streaming sobre `<archivo>.part`, controla el tamaño y solo renombra si verifica; omite lo ya verificado; `--verify`, `--dry-run`, `--only labels`. Destino `web/data/raw/` (ignorado por git).
+  - `web/scripts/prepare-lola.mjs`: verifica tamaño y MD5, lee por ventanas (sin cargar el raster entero) float32 LE + int16 LE, convierte km → m (redondeo a 1 mm) y escribe un JSON por sitio cubierto más `index.json` en `web/data/derived/lola-60s-240m/` (ignorado). Rechaza alturas no finitas y conteos negativos. Ventana por defecto ±64 px (≈ ±15 km), **provisoria**: el radio real lo define TERRAIN-02.
+  - `web/src/lib/terrain-data.js`: proyección directa/inversa, cobertura, interpretación de conteos, validación de recortes y lectura del píxel más cercano. Puro, sin DOM ni red. No calcula horizonte.
+  - Pruebas: `web/tests/terrain-data.test.js` (manifiesto, orientación, bordes publicados, ida y vuelta, cobertura de sitios, conteos) y `web/tests/lola-pipeline.test.js` (descarga simulada con MD5/tamaño/HTTP, lectura float32/int16, `count = 0`, exclusiones, bordes; y una prueba opcional con el producto real).
+  - Fixture **sintético solo para pruebas** en `web/tests/fixtures/lola/synthetic-grid.mjs` (32 × 32 px de 60 km, generado en un directorio temporal). No está en `src/` ni se presenta como dato NASA.
+- **Convenciones fijadas:**
+  - Índices base 0: `line` (0 arriba) y `sample` (0 a la izquierda); centro del píxel en coordenadas enteras; offset de proyección 3879,5 (etiqueta).
+  - Inversa (catálogo): `X = (s − 3879,5)·240`, `Y = −(l − 3879,5)·240`, `lon = atan2(X, Y)`, `lat = −90° + 2·atan(ρ / 2R)`. Directa: `ρ = 2R·tan((90° + lat)/2)`, `s = 3879,5 + ρ·sin(lon)/240`, `l = 3879,5 − ρ·cos(lon)/240`.
+  - Cobertura: latitud ≤ −60° **y** píxel dentro de la grilla. Las esquinas del raster llegan a −48,49°, pero no se usan.
+- **Supuestos / hallazgos a verificar por astronomía (Teo, Facu, Lucio):**
+  - En `catalog/dsmap_polar.cat`, la ecuación **directa** publicada para el hemisferio sur (`R` con signo negativo, `X = R·sin(lon)`) invierte el signo de X respecto de su propia ecuación inversa y del texto ("90° E a la derecha"). Se implementó la versión consistente con la inversa y el texto. Comprobación empírica con el producto real: en el centro USGS de Shackleton (−89,67°, 129,78° E) el DEM da −2786 m (fondo del cráter); las posiciones espejadas en X o en Y dan +685 m y +750 m (fuera del cráter). Malapert da +4790 m y Cabeus −3832 m.
+  - Las alturas son relativas a la esfera de 1737,4 km, no a un geoide; no se aplicó transformación de marco (sitios y producto están en MOON_ME/DE421, DEC-019).
+  - Redondeo a 1 mm en los recortes: menor que la resolución float32 a esas alturas y muy por debajo de la exactitud vertical de LOLA.
+- **Alternativas descartadas:** versionar el raster (~345 MiB); remuestrear a lat/lon (agrega error y no hace falta: la lib trabaja en la grilla nativa); aceptar una URL arbitraria en la descarga; tratar `count = 0` como dato medido; usar el producto int16 `LDEM_60S_240M.IMG` (el equipo eligió la versión float).
+- **Estado:** **vigente.** Pendiente de validar por astronomía la orientación (hallazgo del catálogo) y de definir en TERRAIN-02 el radio de recorte y si los recortes reales se versionan para la demo.

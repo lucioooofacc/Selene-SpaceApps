@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). No usa aún efemérides JPL Horizons ni topografía LOLA.
+SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). No usa aún efemérides JPL Horizons. Existe un pipeline de elevación LOLA (DEC-021), pero el análisis todavía no lo consume: el horizonte sigue siendo sintético.
 
 ## Convenciones y unidades
 
@@ -42,6 +42,26 @@ La altura local opcional de un sitio reduce el horizonte mediante:
 donde `R = 1737,4 km` y `h` está en km. La función de horizonte devuelve elevación en grados para cualquier azimut y, por defecto, interpola una tabla precalculada cada grado con continuidad circular entre 359° y 0°.
 
 El término de curvatura representa la depresión geométrica de un observador elevado sobre una esfera. No modela el perfil real, pendientes locales, datum del DEM ni oclusiones a distancia derivadas de LOLA.
+
+## Datos de elevación LOLA (TERRAIN-01)
+
+Producto: `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M`, data set `LRO-L-LOLA-4-GDR-V1.0`, DOI 10.17189/1520642 (DEC-021). `lib/terrain-data.js` es puro y todavía no lo usa `analysis.js`.
+
+- **Proyección:** estereográfica polar esférica centrada en −90°, `R = 1737,4 km`, 240 m/píxel exactos en el polo, grilla 7760 × 7760, offset 3879,5. Con índices base 0 (`l` fila, `s` columna):
+
+  ```text
+  X = (s − 3879,5)·240 m        Y = −(l − 3879,5)·240 m
+  ρ = √(X² + Y²)                lon = atan2(X, Y)
+  lat = −90° + 2·atan(ρ / 2R)
+  ```
+
+  y la inversa `ρ = 2R·tan((90° + lat)/2)`, `s = 3879,5 + ρ·sin(lon)/240`, `l = 3879,5 − ρ·cos(lon)/240`. Longitud 0° hacia arriba y 90° E a la derecha. La ecuación directa publicada en `dsmap_polar.cat` tiene el signo de X invertido respecto de su inversa; ver el hallazgo y la comprobación empírica en DEC-021.
+- **Unidades:** el DEM está en km sobre la esfera de 1737,4 km; los recortes lo expresan en metros (redondeo a 1 mm). No es altura sobre un geoide.
+- **Conteos:** `LDEC` da el número de mediciones LOLA por píxel. `count = 0` significa que el valor del DEM es interpolado: se marca sin medición directa y con confianza baja. Para `count > 0` no se definieron umbrales de calidad.
+- **Cobertura:** latitud ≤ −60° y píxel dentro de la grilla. Cubre Shackleton, Malapert, Cabeus, IM-1 y Chandrayaan-3; Chang'e 4 y Apollo 11 quedan fuera y no reciben datos.
+- **Sin remuestreo:** los recortes conservan la grilla nativa; el valor en un punto es el del píxel más cercano.
+
+Este módulo **no** calcula un horizonte topográfico ni incorpora curvatura por distancia: eso corresponde a TERRAIN-02.
 
 ## Visibilidad, radios angulares y fracción parcial
 
@@ -86,7 +106,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 ## Limitaciones conocidas
 
 - Efemérides periódicas aproximadas y radios angulares constantes.
-- Horizonte sintético calibrado conceptualmente, no topografía medida.
+- Horizonte sintético calibrado conceptualmente, no topografía medida. El pipeline de elevación LOLA existe (DEC-021) pero el horizonte todavía no lo usa.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
 - Marco lunar del modelo astronómico y datum aún no formalizados.
 - Resolución temporal fija de 10 minutos y cruces sin refinamiento.

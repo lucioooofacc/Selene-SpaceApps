@@ -42,6 +42,10 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Confirmar origen y licencia de las imágenes de la Luna que vienen del Figma. — DEC-016
 - [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
+- [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-021
+- [ ] TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-021, TERRAIN-02 #8
+- [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-021
+- [ ] Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-021
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
 ## Textos y traducción

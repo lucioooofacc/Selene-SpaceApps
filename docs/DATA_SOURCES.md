@@ -36,16 +36,18 @@ Las fuentes de esta tabla todavía no están integradas. Antes de implementar un
 
 ## LOLA / Lunar Reconnaissance Orbiter
 
-- **URL oficial:** https://pds-geosciences.wustl.edu/missions/lro/lola.htm
+- **URL oficial:** https://pds-geosciences.wustl.edu/missions/lro/lola.htm · directorio del producto: https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/polar/
 - **Finalidad:** obtener elevaciones lunares y construir un horizonte topográfico real.
-- **Datos requeridos:** producto de elevación apropiado (por ejemplo GDR/SLDEM según el área), etiquetas PDS, datum, proyección, escala y valor de ausencia.
-- **Formato:** PDS3/PDS4 según producto y fecha; existen EDR, RDR, GDR, SHADR y SLDEM. La selección y el decodificador exactos quedan pendientes.
-- **Cobertura:** LOLA ofrece topografía global; cobertura y densidad efectivas varían espacialmente y por producto. Verificar en la etiqueta del producto elegido.
-- **Referencia:** definido por la etiqueta y el SIS del producto; no asumir que coincide con coordenadas o radios internos actuales.
-- **Limitaciones:** volumen, resolución desigual, proyecciones/datum, huecos y necesidad de preprocesado; no descargar dentro de bucles interactivos.
-- **Estado:** no integrado; reemplazo previsto de `terrain.js`.
-- **Módulos responsables:** futuro pipeline topográfico y adaptador de horizonte; consumidor `analysis.js`.
-- **Atribución/licencia:** citar el conjunto PDS y su DOI/citación cuando exista, además de LRO/LOLA. Revisar etiqueta y política PDS del producto.
+- **Producto seleccionado (TERRAIN-01, DEC-021):** data set `LRO-L-LOLA-4-GDR-V1.0`, DOI [10.17189/1520642](https://doi.org/10.17189/1520642). DEM `LDEM_60S_240M_FLOAT` V2.1 (`float_img/`) y conteos `LDEC_60S_240M` (`img/`), con sus etiquetas `.lbl` (PDS3) y `.xml` (PDS4). URLs, bytes y MD5 de los seis archivos en DEC-021 y en `web/src/data/terrain/lola-ldem-60s-240m.js`.
+- **Formato:** imágenes crudas sin cabecera, 7760 × 7760, orden por filas. DEM float32 little-endian, altura en km sobre la esfera de 1737,4 km. Conteos int16 little-endian, número de mediciones LOLA por píxel.
+- **Cobertura:** nominal −90°..−60° (las esquinas llegan a −48,49°, no se usan). Cubre Shackleton, Malapert, Cabeus, IM-1 y Chandrayaan-3; **no** cubre Chang'e 4 ni Apollo 11.
+- **Referencia:** estereográfica polar esférica centrada en −90°, 240 m/píxel exactos, latitud planetocéntrica, longitud este positiva, "Mean Earth/Polar Axis of DE421", esfera de 1737,4 km (etiquetas y `catalog/dsmap_polar.cat`). Coincide con la referencia de los sitios (DEC-019); no se aplica transformación.
+- **Ausencias y confianza:** el DEM float no declara valor de ausencia (los huecos ya vienen interpolados). Por eso se usa `LDEC`: `count = 0` ⇒ valor interpolado, sin medición directa, confianza baja.
+- **Pipeline:** `web/scripts/download-lola.mjs` (descarga y MD5 en streaming) → `web/data/raw/` · `web/scripts/prepare-lola.mjs` (recortes por sitio) → `web/data/derived/lola-60s-240m/` · lectura en `web/src/lib/terrain-data.js`. `web/data/` está en `.gitignore`.
+- **Limitaciones:** ~345 MiB de descarga; 240 m/píxel no resuelve relieve menor a ese tamaño; los recortes se hacen sobre la grilla nativa, sin remuestreo. Hallazgo sobre el signo de la ecuación directa del catálogo, a validar por astronomía (DEC-021).
+- **Estado:** producto seleccionado, descargado y verificado (2026-11-14). Recortes reales no versionados todavía; el horizonte (TERRAIN-02) aún no los consume.
+- **Módulos responsables:** `web/scripts/*-lola.mjs`, `web/src/lib/terrain-data.js`, `web/src/data/terrain/`; consumidor futuro: horizonte de TERRAIN-02.
+- **Atribución/licencia:** citar LRO/LOLA y el DOI 10.17189/1520642 con la cita que publica PDS para el data set (autores y año pendientes de copiar textualmente). Los datos del PDS son de NASA y de uso público; revisar la política de citación antes de publicar derivados.
 
 ## NASA PDS Geosciences Node
 
@@ -56,7 +58,7 @@ Las fuentes de esta tabla todavía no están integradas. Antes de implementar un
 - **Cobertura:** la de cada misión, instrumento y release; no existe una cobertura única del nodo.
 - **Referencia:** declarada en etiquetas y documentación de cada producto.
 - **Limitaciones:** catálogo amplio, versiones/releases y archivos de gran tamaño; exige seleccionar el producto correcto.
-- **Estado:** no integrado; fuente primaria prevista para LOLA.
+- **Estado:** fuente del producto LOLA seleccionado (`LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M`, DEC-021); se descarga con `web/scripts/download-lola.mjs`.
 - **Módulos responsables:** pipeline de adquisición y catálogo de metadatos.
 - **Atribución/licencia:** usar la cita/DOI del producto y acreditar a productores y archivo según la guía PDS. Verificar restricciones excepcionales en cada producto.
 

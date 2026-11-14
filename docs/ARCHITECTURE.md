@@ -1,6 +1,6 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; las integraciones con JPL Horizons y LOLA indicadas aquí son propuestas y todavía no están implementadas.
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad. La integración con JPL Horizons sigue siendo una propuesta. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-021), pero el horizonte todavía no lo consume.
 
 ## Vista general
 
@@ -33,7 +33,11 @@ flowchart LR
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
+| `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-021). |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
+| `src/data/terrain/lola-ldem-60s-240m.js` | Manifiesto del producto LOLA seleccionado: DOI, versión, URLs oficiales, bytes, MD5, grilla y proyección. Sin muestras. |
+| `scripts/download-lola.mjs` | Descarga los archivos del manifiesto a `web/data/raw/` con MD5 en streaming y control de tamaño; `--verify` comprueba lo descargado. |
+| `scripts/prepare-lola.mjs` | Lee DEM float32 + conteos int16 por ventanas y escribe un recorte JSON por sitio cubierto en `web/data/derived/` (no versionado). |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
 | `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
 | `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR (imágenes del Figma), selección de coordenadas y alta de sitios. |
@@ -82,6 +86,20 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 | `horizonDip(elevationKm = 0)` | km sobre terreno vecino | depresión angular positiva en grados |
 | `createHorizon(site, options?)` | sitio; `precompute` opcional | función `horizon(azimuthDeg) -> elevationDeg` |
 
+### `lib/terrain-data.js`
+
+| Firma | Entrada | Salida |
+| --- | --- | --- |
+| `latLonToPixel(lat, lon, grid?)` | grados (lat ≤ 0) | `{line, sample}` fraccionarios, base 0 |
+| `pixelToLatLon(line, sample, grid?)` | píxel | `{lat, lon}` con lon en `[-180, 180)` |
+| `nearestPixel(lat, lon, grid?)` | grados | `{line, sample}` enteros o `null` fuera de la grilla |
+| `isCovered(lat, lon, grid?)` | grados | `true` si lat ≤ −60° y el píxel está en la grilla |
+| `measurementFromCount(count)` | conteo LDEC | `{count, direct, confidence}`; `count = 0` ⇒ `direct: false`, `"baja"` |
+| `validateTile(tile)` | recorte de `prepare-lola.mjs` | lista de errores (vacía si es válido) |
+| `tileValueAt(tile, lat, lon, grid?)` | recorte y punto | `{heightM, count, direct, confidence, line, sample}` o `null` |
+
+`grid` por defecto es `LOLA_GRID` (7760 × 7760, 240 m, offset 3879,5); las pruebas pasan una grilla sintética con la misma forma. Alturas en metros sobre la esfera de 1737,4 km.
+
 ### `lib/analysis.js`
 
 | Firma | Entrada | Salida |
@@ -120,7 +138,9 @@ La integración prevista debe producir el mismo contrato conceptual de `sunPosit
 
 ### Topografía con LOLA
 
-Un proceso de preparación debe obtener el producto PDS/LOLA elegido, documentar su referencia y resolución, extraer un DEM alrededor del sitio y calcular el ángulo máximo de obstrucción por azimut incluyendo curvatura lunar. El resultado puede implementar el contrato `horizon(azimuthDeg) -> elevationDeg`, acompañado de metadatos y cobertura. No debe descargarse topografía dentro de `computeScenario()`.
+El pipeline de datos está implementado (DEC-021) para `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (DOI 10.17189/1520642): `web/scripts/download-lola.mjs` descarga los archivos oficiales con MD5 en streaming, `web/scripts/prepare-lola.mjs` escribe recortes por sitio en la grilla nativa (sin remuestreo) y `web/src/lib/terrain-data.js` los consulta sin DOM ni red. Los rasters y los recortes no se versionan.
+
+TERRAIN-02 debe extraer un DEM alrededor del sitio y calcular el ángulo máximo de obstrucción por azimut incluyendo curvatura lunar. El resultado puede implementar el contrato `horizon(azimuthDeg) -> elevationDeg`, acompañado de metadatos y cobertura. No debe descargarse topografía dentro de `computeScenario()` ni dentro de bucles de renderizado.
 
 ### Arquitectura futura propuesta
 
