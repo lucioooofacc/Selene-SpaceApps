@@ -69,6 +69,13 @@
               <button type="button" data-map-mode="3d" aria-pressed="true" data-i18n="map.mode3d"></button>
               <button type="button" data-map-mode="2d" aria-pressed="false" data-i18n="map.mode2d"></button>
             </div>
+            <div class="heat-layers" id="heat-layers" role="group" data-i18n-attr="aria-label:map.layerLabel" hidden>
+              <button type="button" data-heat-layer="elevation" aria-pressed="true" data-i18n="map.layer.elevation"></button>
+              <button type="button" data-heat-layer="sun" aria-pressed="false" data-i18n="map.layer.sun"></button>
+              <button type="button" data-heat-layer="earth" aria-pressed="false" data-i18n="map.layer.earth"></button>
+              <button type="button" data-heat-layer="both" aria-pressed="false" data-i18n="map.layer.both"></button>
+              <button type="button" data-heat-layer="viability" aria-pressed="false" data-i18n="map.layer.viability"></button>
+            </div>
             <div class="map-area" id="map-area">
               <img class="map-image" id="map-image" alt="" />
               <div class="map-pins" id="map-pins"></div>
