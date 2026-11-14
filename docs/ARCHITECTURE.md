@@ -4,7 +4,7 @@ Este documento describe la implementación actual de `web/`. El código es la fu
 
 ## Vista general
 
-SELENE es una aplicación de una sola página construida con Vite y JavaScript ES modules, sin framework. `src/main.js` coordina un estado global mínimo, el motor científico síncrono de `src/lib/` y los renderizadores imperativos de `src/ui/`.
+SELENE es una aplicación de dos páginas construida con Vite (multipágina) y JavaScript ES modules, sin framework: `index.html` (misión) y `compare.html` (comparación detallada entre dos sitios, UI-05). `src/main.js` coordina un estado global mínimo, el motor científico síncrono de `src/lib/` y los renderizadores imperativos de `src/ui/`.
 
 ```mermaid
 flowchart LR
@@ -31,6 +31,7 @@ flowchart LR
 | `src/lib/astro.js` | Modelo periódico aproximado del punto subsolar y subterrestre; transforma posiciones selenográficas en azimut/elevación local y calcula la fase terrestre. |
 | `src/lib/terrain.js` | Genera un horizonte sintético determinista, estima relieve para sitios no curados y calcula la depresión geométrica por altura. |
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
+| `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
 | `src/data/sites.js` | Catálogo de sitios curados con coordenadas y parámetros sintéticos pendientes de validación. |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
@@ -41,6 +42,9 @@ flowchart LR
 | `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. |
 | `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
 | `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
+| `src/ui/links.js` | Codifica y lee la selección de la comparación en la URL (`compare.html?a=&b=&start=&days=`) y actualiza los enlaces "Comparar" y "Ver comparación detallada". |
+| `src/compare.js` | Entrada de `compare.html`: lee la URL, calcula y cachea los dos escenarios y reutiliza el calendario sobre `state.js`. |
+| `src/ui/compare.js` | Dibuja la comparación: encabezados con viabilidad, tabla de métricas, ventanas de luz/enlace, perfil del horizonte y criterios. |
 
 ## Estado, cálculo y renderizado
 
