@@ -48,6 +48,7 @@ Todo integrado y publicado:
 | UI-01 parcial (#13) | "Datos y fuentes": procedencia y calidad de cada dato | 028 |
 | UI-13 (#49) | Categorías del ranking (Global, Ciencia, Comunicación, Luz) | 029 |
 | UI-14 (#52) | Horizonte LOLA en la interfaz (vista previa → en uso) | 031 |
+| UI-15 (#57) | Tarjetas con período (MISIÓN / AHORA, VISIBLE / OCULTO) e "Ir a fecha y hora" | 033 |
 
 La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 

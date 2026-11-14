@@ -262,6 +262,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** vista previa marcada como tal; resumen LOLA; marcas por azimut; sitios sin cobertura indicados; ES/EN.
 - **Fuera de alcance:** conectar el horizonte en `analysis.js` (CORE-01).
 
+### UI-15 — Tarjetas con período claro y elegir una hora
+
+- **Prioridad:** P1 · **Issue:** [#57](https://github.com/lucioooofacc/Selene-SpaceApps/issues/57).
+- **Objetivo:** distinguir las tarjetas de misión (VIABLE/INVIABLE) de las instantáneas (VISIBLE/OCULTO) y permitir elegir una fecha y hora para ver si el Sol y la Tierra son visibles.
+- **Rama sugerida:** `feat/tarjetas-hora`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `web/src/ui/params.js`, `web/src/ui/timeline.js`, `web/index.html`, estilos, i18n.
+- **Criterios de aceptación:** período visible en cada tarjeta; selector UTC acotado a la misión con respuesta de visibilidad; ES/EN.
+- **Fuera de alcance:** cambiar los criterios de viabilidad.
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente

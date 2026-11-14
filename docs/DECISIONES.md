@@ -448,3 +448,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **Shackleton:** la caída se debe a que R04 cae en la pared interior del cráter según el DEM (hallazgo de DEC-030, pendiente de astronomía). Si se corrige la coordenada, hay que regenerar la tabla (`npm run data:lola:horizons`).
 - **Alternativas descartadas:** elegir el horizonte por id sin comprobar coordenadas (un punto propio con id repetido recibiría el horizonte de otro lugar); calcular LOLA para sitios propios en el navegador (requiere el raster; pendiente PERF-01); esperar a la parte B para integrar ambos juntos (demoraba el dato real ya disponible).
 - **Estado:** vigente. Pendiente: parte B (efemérides Horizons) y revisión de Shackleton R04. Se adelanta a TEST-01 (#10), todavía sin hacer.
+
+## DEC-033 — Período de cada tarjeta y elección de fecha y hora (UI-15)
+
+- **Contexto / problema:** en "Ventana de análisis", con el Sol a −40° la tarjeta Sol decía INVIABLE y Luz acumulada decía VIABLE, y lo mismo pasaba con Tierra y Comunicación. No era un error: Luz y Comunicación evalúan **toda la misión** (DEC-007), mientras Sol y Tierra muestran el **instante** de la línea de tiempo (DEC-017). Pero la misma etiqueta para las dos cosas confundía.
+- **Decisión:** Sol y Tierra dicen **VISIBLE / OCULTO**; VIABLE/INVIABLE queda solo para las tarjetas de misión. Cada tarjeta muestra su período ("MISIÓN" o "AHORA"), con la explicación en un tooltip y para lectores de pantalla. En la línea de tiempo se agrega **"Ir a fecha y hora"** (UTC, dentro de la misión), con una respuesta directa: Sol y Tierra visibles u ocultos, su altura y la del relieve en ese azimut.
+- **Solución aplicada:** `web/src/ui/params.js` (prop `period` en `criterionCard`), `web/src/ui/timeline.js` (`datetime-local` con mínimo y máximo de la misión; elegir una hora pausa la reproducción y una fuera de rango se ajusta al límite), `web/index.html`, `main.css` (la línea de tiempo pasa a alto automático) e i18n. Los segmentos y umbrales no cambian.
+- **Estado:** vigente. Ajusta la interpretación de DEC-017 para las tarjetas Sol y Tierra.
+

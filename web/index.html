@@ -170,6 +170,13 @@
                   <span class="mono-label" data-i18n="sim.drag"></span>
                   <span class="scrub-date" id="scrub-date"></span>
                 </div>
+                <!-- Elegir una fecha y hora exactas para ver si el Sol y la Tierra son visibles (UI-15) -->
+                <div class="tl-goto">
+                  <label for="time-input" data-i18n="sim.goto"></label>
+                  <input type="datetime-local" id="time-input" step="600" />
+                  <span class="tl-goto-utc">UTC</span>
+                  <p class="tl-goto-result" id="time-visibility" aria-live="polite"></p>
+                </div>
                 <input type="range" id="time-range" class="time-range" min="0" max="1000" step="1" data-i18n-attr="aria-label:sim.missionTime" />
                 <div class="scrub-ticks" id="scrub-ticks"></div>
               </div>
