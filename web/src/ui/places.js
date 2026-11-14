@@ -103,6 +103,8 @@ export function renderPlaces(state) {
     button.tabIndex = on ? 0 : -1;
   });
   $("places-categories").title = state.placesCategory === "science" ? t("places.scienceNote") : "";
+  // Criterio de orden a la vista (DEC-042): antes solo estaba en el código.
+  $("places-hint").textContent = t(`places.categoryHint.${state.placesCategory}`);
   $("places-list").innerHTML = rank(state)
     .map(({ site, scenario }) => {
       const now = sampleAt(scenario, state.timeMs);
