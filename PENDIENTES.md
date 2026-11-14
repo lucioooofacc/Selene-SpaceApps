@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (bloc de notas de UI de Lucio, rama `design/paneles-promedios`).
+Última actualización: 2026-11-14 (tareas TERRAIN-03 y DATA-03 y bloc de notas de UI de Lucio).
 
 ---
 
@@ -95,6 +95,8 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Datos reales para los puntos elegidos en el mapa.~~ Sol y Tierra trasladados desde Horizons y horizonte LOLA reducido (480/960 m) al sur de −75°. Resuelto 2026-11-14 (rama `feat/datos-reales-puntos-propios`, #59, DEC-034).
 - [ ] Validar si el horizonte LOLA reducido de los puntos propios se muestra como "aproximado" (criterio actual: error medio 0,02–0,77° frente al de 240 m) o como "real". — Teo, Facu, Lucio · DEC-034
 - [x] ~~TEST-01: separar validaciones contra fuentes reales, formalizar controles físicos, justificar tolerancias y agregar CI.~~ Resuelto 2026-11-14 (rama `test/modelos-cientificos`, #10, DEC-037, `docs/VALIDACION.md`).
+- [ ] Horizonte LOLA real para Chang'e 4 y Apollo 11 (hoy sintético: quedan fuera de `LDEM_60S_240M`). Detectado en la auditoría de datos del 14/11/2026. — Sin asignar · TERRAIN-03 #71, DEC-005
+- [ ] Quitar `relief` y `elevationKm` de los sitios curados cuando TERRAIN-03 esté integrada. — Sin asignar · DATA-03 #72, DEC-005
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01
 - [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).
 - [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025
