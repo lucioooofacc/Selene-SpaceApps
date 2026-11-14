@@ -14,7 +14,7 @@ import {
   validateTile,
 } from "../src/lib/terrain-data.js";
 
-test("el manifiesto fija el producto seleccionado (DEC-024)", () => {
+test("el manifiesto fija el producto seleccionado (DEC-025)", () => {
   assert.equal(LOLA_PRODUCT.dataSetId, "LRO-L-LOLA-4-GDR-V1.0");
   assert.equal(LOLA_PRODUCT.doi, "10.17189/1520642");
   assert.equal(LOLA_PRODUCT.productVersion, "V2.1");

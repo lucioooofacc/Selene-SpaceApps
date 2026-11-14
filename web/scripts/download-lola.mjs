@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Descarga reproducible del producto LOLA seleccionado (TERRAIN-01, DEC-024):
+ * Descarga reproducible del producto LOLA seleccionado (TERRAIN-01, DEC-025):
  * LDEM_60S_240M_FLOAT V2.1 + LDEC_60S_240M (imágenes, etiquetas .lbl y .xml)
  * desde PDS Geosciences. Las URLs, tamaños y MD5 salen del manifiesto
  * `src/data/terrain/lola-ldem-60s-240m.js`; no se aceptan URLs arbitrarias.

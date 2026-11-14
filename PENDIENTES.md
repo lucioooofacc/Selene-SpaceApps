@@ -25,7 +25,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~Panorama: acercar la iluminación de las dunas y el resplandor a la ilustración del Figma, y que el relieve represente fielmente el horizonte del punto (montañoso, plano, con cráteres).~~ La cresta es el horizonte del motor sin decoración, con escala y fuente indicadas. Resuelto 2026-11-14 (rama `design/panorama-relieve`, #26).
 - [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
-- [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.
+- [x] ~~Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.~~ Modal con idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa. Resuelto 2026-11-14 (rama `feat/configuracion`, #37, DEC-023).
+- [ ] El mapa de calor (imagen del Figma) no cambia con la paleta para daltonismo; revisarlo cuando se haga MAP-01. — Desarrollo web, DEC-023
 - [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
@@ -50,10 +51,10 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS). — DEC-016
 - [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
-- [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-024
-- [ ] TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-024, TERRAIN-02 #8
-- [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-024
-- [ ] Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-024
+- [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
+- [ ] TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-025, TERRAIN-02 #8
+- [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025
+- [ ] Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
 ## Textos y traducción

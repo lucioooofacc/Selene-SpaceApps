@@ -1,5 +1,5 @@
 /**
- * Geometría y lectura de recortes del DEM LOLA polar sur (TERRAIN-01, DEC-024).
+ * Geometría y lectura de recortes del DEM LOLA polar sur (TERRAIN-01, DEC-025).
  *
  * Módulo puro: sin DOM, red ni archivos. Implementa la proyección
  * estereográfica polar esférica de `catalog/dsmap_polar.cat` (LOLA GDR) para
