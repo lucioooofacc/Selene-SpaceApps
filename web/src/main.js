@@ -81,7 +81,7 @@ const SCENARIO_KEYS = ["siteId", "lat", "lon", "startMs", "windowDays", "customS
 
 subscribe((state, changed) => {
   const has = (...keys) => keys.some((k) => changed.has(k));
-  if (has(...SCENARIO_KEYS, "dateChosen")) {
+  if (has(...SCENARIO_KEYS, "dateChosen", "siteChosen")) {
     syncUrl(state);
     ensureScenario(state);
     renderParamsFields(state);
@@ -110,7 +110,11 @@ function syncUrl(state) {
 function stateFromUrl() {
   const { site, startMs, windowDays } = parseMissionQuery(location.search);
   const patch = {};
-  if (site) Object.assign(patch, { siteId: site.custom ? CUSTOM_ID : site.id, lat: site.lat, lon: site.lon });
+  if (site?.label) {
+    // Sitio propio con nombre (DEC-049): vuelve a la lista de sitios con ese nombre.
+    const saved = { id: `custom-url`, name: site.label, lat: site.lat, lon: site.lon, custom: true };
+    Object.assign(patch, { customSites: [saved], siteId: saved.id, lat: site.lat, lon: site.lon, siteChosen: true });
+  } else if (site) Object.assign(patch, { siteId: site.custom ? CUSTOM_ID : site.id, lat: site.lat, lon: site.lon, siteChosen: true });
   if (startMs != null) Object.assign(patch, { startMs, windowDays, timeMs: startMs, dateChosen: true });
   return patch;
 }

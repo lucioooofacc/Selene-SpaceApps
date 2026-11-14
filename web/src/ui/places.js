@@ -156,7 +156,7 @@ function renderDates(state) {
       return `
       <li class="place" data-start="${startMs}" tabindex="0" ${current ? 'aria-current="true"' : ""} aria-label="${t("places.dates.aria", { range })}">
         <p class="place-name place-name-date">${range}</p>
-        <p class="place-sub">${t("places.dates.sub", { level: t(`compare.level.${v.overall}`), points: v.points, max: v.maxPoints })}</p>
+        <p class="place-verdict place-verdict-${v.overall}">${t("places.dates.sub", { level: t(`compare.level.${v.overall}`), points: v.points, max: v.maxPoints })}</p>
         <div class="place-stats">
           <span class="icon-box" title="${t("places.comm")}">${icon("antenna")}</span>
           <span class="value">${Math.round(s.communication)}%</span>

@@ -217,6 +217,40 @@ button {
   cursor: not-allowed;
 }
 
+/* Viabilidad de cada fecha bien a la vista: verde alta, dorado media, rojo baja */
+.place-verdict {
+  position: absolute;
+  left: 12px;
+  top: 68px;
+  margin: 0;
+  padding: 2px 10px;
+  border: 1px solid;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.place-verdict-high {
+  color: var(--green);
+  background: var(--green-bg);
+  border-color: var(--green-border);
+}
+
+.place-verdict-mid {
+  color: var(--gold);
+  background: #221f1a;
+  border-color: #4a4232;
+}
+
+.place-verdict-low {
+  color: var(--red);
+  background: var(--red-bg);
+  border-color: var(--red);
+}
+
 .place-name-date {
   font-size: 18px !important;
 }
@@ -586,7 +620,15 @@ button {
   color: var(--muted-2);
 }
 
+/* Sin esto el campo toma el ancho mínimo del navegador y se sale del menú. */
+.map-add-menu,
+.map-add-menu * {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
 .map-add-menu input {
+  width: 100%;
   height: 32px;
   padding: 0 8px;
   background: var(--panel);
@@ -1210,6 +1252,19 @@ button {
 
 .segments.ko span {
   color: var(--red);
+}
+
+/* Ventana de análisis sin sitio o sin fechas elegidas (DEC-049) */
+.criteria-empty {
+  width: 408px;
+  margin: 0;
+  padding: 24px 20px;
+  border: 1px dashed var(--border-field);
+  border-radius: var(--r-md);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--muted-2);
+  text-align: center;
 }
 
 /* Sol y Tierra: posición promedio en el período (DEC-042) */

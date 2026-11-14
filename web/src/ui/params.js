@@ -9,7 +9,7 @@
  *    "Comportamiento de los cuerpos celestes").
  */
 import { t } from "../i18n/index.js";
-import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, setState } from "../state.js";
+import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { dateButtonLabel, initCalendar } from "./calendar.js";
 import { minutesLabel } from "./places.js";
 import { dateUTC, deg } from "../lib/format.js";
@@ -56,7 +56,7 @@ function criterionCard({ icon, name, value, segments, period, periodTitle }) {
 export function initParams() {
   $("site-select").addEventListener("change", (event) => {
     const id = event.target.value;
-    if (id === CUSTOM_ID) setState({ siteId: CUSTOM_ID });
+    if (id === CUSTOM_ID) setState({ siteId: CUSTOM_ID, siteChosen: true });
     else chooseSite(id);
   });
 
@@ -121,15 +121,25 @@ const statsFor = (scenario) => {
   return statsCache.get(scenario);
 };
 
+let lastKey = "";
 let lastScenario = null;
-let lastLang = "";
 
-/** Tarjetas de "Ventana de análisis": dependen solo del escenario (no del instante). */
+/**
+ * Tarjetas de "Ventana de análisis": dependen solo del escenario (no del
+ * instante). Hasta que se elijan un sitio (o punto) y las fechas, se muestra
+ * qué falta elegir en lugar de valores de un ejemplo (DEC-049).
+ */
 export function renderCriteria(scenario) {
-  const lang = document.documentElement.lang;
-  if (scenario === lastScenario && lang === lastLang) return;
+  const { siteChosen, dateChosen } = getState();
+  const key = `${document.documentElement.lang}|${siteChosen}|${dateChosen}`;
+  if (scenario === lastScenario && key === lastKey) return;
   lastScenario = scenario;
-  lastLang = lang;
+  lastKey = key;
+  if (!siteChosen || !dateChosen) {
+    const missing = !siteChosen && !dateChosen ? "both" : !siteChosen ? "site" : "date";
+    $("criteria").innerHTML = `<p class="criteria-empty" role="status">${t(`params.emptyWindow.${missing}`)}</p>`;
+    return;
+  }
   const { criteria } = scenario.viability;
   const stats = statsFor(scenario);
   const mission = { period: "mission", periodTitle: t("params.periodTitle.mission") };

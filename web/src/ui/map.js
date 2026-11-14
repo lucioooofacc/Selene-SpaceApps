@@ -201,7 +201,7 @@ function initAddMenu() {
     const name = input.value.replace(/[<>&"'`]/g, "").trim() || t("map.customName", { n });
     // id único aunque se repitan nombres.
     const site = { id: `custom-${Date.now().toString(36)}`, name, lat, lon, custom: true };
-    setState({ customSites: [...customSites, site], siteId: site.id });
+    setState({ customSites: [...customSites, site], siteId: site.id, siteChosen: true });
     close();
     toast(t("map.addDone", { name }));
   });

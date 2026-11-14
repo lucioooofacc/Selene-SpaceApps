@@ -43,3 +43,20 @@ test("un sitio propio viaja como punto y se reconoce", () => {
   assert.equal(value, "pt:-80.50,12.25");
   assert.equal(parseSiteParam(value).custom, true);
 });
+
+// DEC-049: el nombre de un sitio propio viaja en la URL.
+import { cleanLabel, parseSiteParam as parseSite, siteParam as toParam } from "../src/ui/links.js";
+
+test("un sitio propio con nombre conserva el nombre en la URL, limpio", () => {
+  const param = toParam({ id: "custom-abc", name: "Cráter Norte", lat: -85.1234, lon: 40.5, custom: true });
+  assert.equal(param, "pt:-85.12,40.50~Cráter Norte");
+  const back = parseSite(param);
+  assert.equal(back.name, "Cráter Norte");
+  assert.equal(back.label, "Cráter Norte");
+  assert.equal(toParam(back), param); // ida y vuelta estable
+  assert.equal(parseSite("pt:-85,40~<img src=x>").name, "img src=x");
+  assert.equal(cleanLabel("x".repeat(60)).length, 40);
+  // Sin nombre: como antes.
+  assert.equal(toParam({ id: "custom", lat: -85, lon: 40 }), "pt:-85.00,40.00");
+  assert.equal(parseSite("pt:-85,40").label, null);
+});
