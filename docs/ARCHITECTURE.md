@@ -41,7 +41,7 @@ flowchart LR
 | `src/ui/polar2d.js` | Reproyecta en el navegador el mosaico LROC equirectangular a la vista polar 2D (azimutal equidistante hasta −60°, 0° arriba). |
 | `src/ui/params.js` | "Parámetros de la misión": sitio, coordenadas, duración y tarjetas de "Ventana de análisis". |
 | `src/ui/calendar.js` | Selector de rango de fechas de "Duración de misión (UTC)". |
-| `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. |
+| `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. La cresta es `scenario.horizon(az)` sin recortes, con 0°, puntos cardinales, exageración vertical y fuente del horizonte indicadas (UI-08). |
 | `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
 | `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
 | `src/ui/links.js` | Codifica y lee la selección de la comparación en la URL (`compare.html?a=&b=&start=&days=`) y actualiza los enlaces "Comparar" y "Ver comparación detallada". |
