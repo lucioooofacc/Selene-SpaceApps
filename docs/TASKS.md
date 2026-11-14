@@ -36,6 +36,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** contrato público preservado o migrado explícitamente; continuidad 0°/360°; cobertura/ausencias visibles; casos geométricos y comparación visual documentados.
 - **Fuera de alcance:** modelado de atmósfera o sombras del vehículo.
 
+### TERRAIN-03 — Horizonte LOLA real para Chang'e 4 y Apollo 11
+
+- **Prioridad:** P1 · **Issue:** [#71](https://github.com/lucioooofacc/Selene-SpaceApps/issues/71).
+- **Objetivo:** reemplazar el horizonte sintético (DEC-005) de Chang'e 4 y Apollo 11, fuera de la cobertura de `LDEM_60S_240M`, por uno calculado desde un producto global de LOLA con el algoritmo de TERRAIN-02.
+- **Rama sugerida:** `feat/horizonte-lola-global`.
+- **Dependencias:** TERRAIN-02, CORE-01.
+- **Archivos afectados:** manifiesto del producto global, scripts de descarga y horizonte, `lib/horizon-lola.js`, tabla `lola-horizons.js`, efemérides de esos dos sitios con altura medida, pruebas y docs.
+- **Criterios de aceptación:** los dos sitios con horizonte `source = "lola"` y resolución en `meta`; producto citado con DOI, versión y MD5; tabla reproducible; comparación antes/después y efecto en luz y comunicación documentados; pruebas, build y CI verdes.
+- **Fuera de alcance:** puntos propios al norte de −75°; cambiar coordenadas.
+
 ### DATA-01 — Validar coordenadas de sitios
 
 - **Prioridad:** P0 · **Issue:** [#9](https://github.com/lucioooofacc/Selene-SpaceApps/issues/9).
@@ -75,6 +85,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Archivos afectados:** `lib/ephemeris.js`, `lib/horizon-lola.js`, `lib/polar-dem.js`, `lib/analysis.js`, script del DEM reducido, `public/data/terrain/`, carga en la interfaz y "Datos y fuentes".
 - **Criterios de aceptación:** errores medidos contra los datos completos y documentados; procedencia y resolución visibles; fuera de cobertura, sintético/aproximado marcado; pruebas y build verdes.
 - **Fuera de alcance:** mapa de calor (MAP-01); horizonte real fuera del polo sur.
+
+### DATA-03 — Quitar los parámetros sintéticos de relieve de los sitios curados
+
+- **Prioridad:** P2 · **Issue:** [#72](https://github.com/lucioooofacc/Selene-SpaceApps/issues/72).
+- **Objetivo:** quitar `relief` y `elevationKm` de `data/sites.js`, que solo alimentan el horizonte sintético, cuando todos los sitios curados tengan horizonte LOLA.
+- **Rama sugerida:** `data/quitar-relieve-sintetico`.
+- **Dependencias:** TERRAIN-03.
+- **Archivos afectados:** `data/sites.js`, `main.js` (coordinar con Lucio), `lib/terrain.js`, `lib/horizons.js`, pruebas que los usan, `docs/DECISIONES.md` (DEC-005), `PENDIENTES.md`.
+- **Criterios de aceptación:** ningún sitio curado conserva esos campos; el horizonte sintético sigue funcionando para puntos propios sin datos; pruebas, build y CI verdes.
+- **Fuera de alcance:** eliminar el horizonte sintético (sigue como respaldo).
 
 ### CORE-02 — Unificar criterios de visibilidad
 
