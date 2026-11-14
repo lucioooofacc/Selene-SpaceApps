@@ -368,3 +368,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** mostrar las notas en prosa (rompería el bilingüismo); esperar al contrato de CORE-01 (dejaba sin mostrar datos que ya están).
 - **Estado:** vigente. **Pendiente (resto de UI-01, depende de CORE-01):** fuente, fecha y cobertura de efemérides y horizonte reales; estados de carga, error y faltante; píxeles LOLA con `count = 0` como interpolados (DEC-025).
 
+## DEC-029 — Categorías del ranking de sitios y pestaña ELEVACIÓN (UI-13)
+
+- **Contexto / problema:** el equipo pidió (`PENDIENTES.md`) categorías para rankear "Mejores lugares" (interés científico, comunicación terrestre, luz solar aprovechable) y cambiar el título "MAPA DE CALOR", porque la pestaña muestra elevación (DEC-026).
+- **Decisión:**
+  - Cuatro categorías: **Global** (orden anterior: puntos de viabilidad, después iluminación), **Ciencia**, **Comunicación** (% del tiempo con la Tierra visible, después la altura máxima de la Tierra) y **Luz** (potencia solar relativa promedio, después los minutos con Sol). Las tres últimas ordenan resultados que el motor ya calcula.
+  - **Interés científico** no existe como dato. Se cuenta cuántos **rasgos con fuente citada** tiene cada sitio (decisión del equipo). Cabeus: hielo de agua y región en sombra permanente (Colaprete et al. 2010). Shackleton: junto a un cráter con fondo en sombra permanente (Zuber et al. 2012; ese trabajo no confirma hielo, así que no se le asigna). Malapert: región candidata de Artemis III (NASA, 28/10/2024). Chandrayaan-3: primeras mediciones in situ cerca del polo sur, con azufre (ISRO 2023). Chang'e 4: posible material del manto y cara oculta en la cuenca SPA (Li et al. 2019). Apollo 11: muestras traídas a la Tierra (NASA JSC). IM-1: sin rasgos cargados. **Pendiente de validar por astronomía; no es una métrica científica** (se aclara en la interfaz).
+  - La pestaña pasa a **ELEVACIÓN / ELEVATION**. El identificador interno sigue siendo `heat` (estado, CSS) para no tocar código ajeno; solo cambia el texto visible.
+- **Solución aplicada:** `web/src/data/site-traits.js` (rasgos y citas, separado de `sites.js` para no modificar el contrato de DATA-01); `web/src/lib/ranking.js` (`rankEntries`, puro, con desempate por nombre); `places.js` con selector tipo radiogroup (clic y flechas) y estado `placesCategory`. En "Ciencia", el subtítulo de cada tarjeta muestra los rasgos (máximo dos líneas, con el texto completo como tooltip). El modal "Datos y fuentes" suma "Interés científico" con las citas. Pruebas en `tests/ranking.test.js`.
+- **Alternativas descartadas:** un puntaje científico ponderado (inventaría pesos); dejar la categoría deshabilitada hasta que astronomía defina criterios.
+- **Estado:** vigente. **Pendiente:** validación de los rasgos por Teo, Facu y Lucio, y rasgos para IM-1 si corresponde.
+

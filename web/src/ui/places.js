@@ -1,12 +1,16 @@
 /**
  * "Mejores lugares para alunizar": ranking de los sitios para la ventana
- * elegida. Orden: puntos de viabilidad y, a igualdad, más luz.
+ * elegida, por categoría (UI-13): viabilidad global, interés científico
+ * (rasgos citados, pendientes de validar), comunicación terrestre y luz
+ * solar aprovechable. El orden lo define lib/ranking.js.
  * Cada tarjeta muestra, como en el Figma: cobertura de enlace, altura del Sol,
  * altura de la Tierra y luz acumulada.
  */
 import { computeScenario, sampleAt } from "../lib/analysis.js";
+import { rankEntries } from "../lib/ranking.js";
+import { traitsFor } from "../data/site-traits.js";
 import { t } from "../i18n/index.js";
-import { allSites, chooseSite } from "../state.js";
+import { allSites, chooseSite, setState } from "../state.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_PLACES = 5;
@@ -23,22 +27,25 @@ export function minutesLabel(min) {
 }
 
 let cacheKey = "";
-let ranked = [];
+let entries = [];
 
-function rank(state) {
+/** Escenarios de todos los sitios (se recalculan solo si cambian fechas o sitios). */
+function scenarios(state) {
   const sites = allSites();
   const key = `${state.startMs}|${state.windowDays}|${sites.map((s) => s.id).join(",")}`;
-  if (key === cacheKey) return ranked;
-  ranked = sites
-    .map((site) => ({ site, scenario: computeScenario(site, state.startMs, state.windowDays) }))
-    .sort(
-      (a, b) =>
-        b.scenario.viability.points - a.scenario.viability.points ||
-        b.scenario.summary.illumination - a.scenario.summary.illumination,
-    )
-    .slice(0, MAX_PLACES);
-  cacheKey = key;
-  return ranked;
+  if (key !== cacheKey) {
+    entries = sites.map((site) => ({
+      site,
+      scenario: computeScenario(site, state.startMs, state.windowDays),
+      traits: traitsFor(site.id).length,
+    }));
+    cacheKey = key;
+  }
+  return entries;
+}
+
+function rank(state) {
+  return rankEntries(scenarios(state), state.placesCategory, MAX_PLACES);
 }
 
 /** Íconos con su proporción original (los SVG del Figma se deforman si se fuerzan a cuadrado). */
@@ -49,6 +56,21 @@ const icon = (name) => {
 };
 
 export function initPlaces() {
+  $("places-categories").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-category]");
+    if (button) setState({ placesCategory: button.dataset.category });
+  });
+  // Flechas para moverse entre categorías (patrón radiogroup).
+  $("places-categories").addEventListener("keydown", (event) => {
+    const buttons = [...$("places-categories").querySelectorAll("[data-category]")];
+    const i = buttons.indexOf(event.target);
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+    if (i < 0 || !step) return;
+    event.preventDefault();
+    const next = buttons[(i + step + buttons.length) % buttons.length];
+    next.focus();
+    setState({ placesCategory: next.dataset.category });
+  });
   $("places-list").addEventListener("click", (event) => {
     const item = event.target.closest("[data-site]");
     if (item) chooseSite(item.dataset.site);
@@ -67,7 +89,20 @@ export function rankedSites(state) {
   return rank(state).map(({ site }) => site);
 }
 
+/** Subtítulo de la tarjeta: coordenadas, o los rasgos en la categoría científica. */
+function subtitle(site, category) {
+  if (category !== "science") return t("places.coords", { lat: site.lat.toFixed(2), lon: site.lon.toFixed(2) });
+  const traits = traitsFor(site.id);
+  return traits.length ? traits.map((tr) => t(`traits.${tr.key}`)).join(" · ") : t("places.noTraits");
+}
+
 export function renderPlaces(state) {
+  document.querySelectorAll("#places-categories [data-category]").forEach((button) => {
+    const on = button.dataset.category === state.placesCategory;
+    button.setAttribute("aria-checked", String(on));
+    button.tabIndex = on ? 0 : -1;
+  });
+  $("places-categories").title = state.placesCategory === "science" ? t("places.scienceNote") : "";
   $("places-list").innerHTML = rank(state)
     .map(({ site, scenario }) => {
       const now = sampleAt(scenario, state.timeMs);
@@ -75,7 +110,7 @@ export function renderPlaces(state) {
       return `
       <li class="place" data-site="${site.id}" tabindex="0" ${site.id === state.siteId ? 'aria-current="true"' : ""}>
         <p class="place-name">${site.name}</p>
-        <p class="place-sub">${t("places.coords", { lat: site.lat.toFixed(2), lon: site.lon.toFixed(2) })}</p>
+        <p class="place-sub" title="${subtitle(site, state.placesCategory)}">${subtitle(site, state.placesCategory)}</p>
         <div class="place-stats">
           <span class="icon-box" title="${t("places.comm")}">${icon("antenna")}</span>
           <span class="value">${Math.round(s.communication)}%</span>

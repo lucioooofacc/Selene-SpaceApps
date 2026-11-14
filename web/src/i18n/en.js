@@ -27,6 +27,10 @@ export default {
   },
   places: {
     title: "Best places to land",
+    categoryLabel: "Rank places by",
+    category: { overall: "Overall", science: "Science", communication: "Comms", light: "Light" },
+    noTraits: "No scientific traits documented yet",
+    scienceNote: "Scientific interest: counts traits with a cited source per site. Pending validation by astronomy; not a scientific metric.",
     link: "See detailed comparison",
     coords: "Latitude: {lat}° · Longitude: {lon}°",
     comm: "Communication coverage during the mission",
@@ -37,7 +41,7 @@ export default {
   map: {
     tabsLabel: "Map view",
     global: "GLOBAL",
-    heat: "HEAT MAP",
+    heat: "ELEVATION",
     polar: "SOUTH POLE",
     observed: "Observed point",
     addSite: "Add coordinate as site",
@@ -257,6 +261,7 @@ export default {
     close: "Close data and sources",
     title: "Data and sources",
     siteTitle: "Provenance of {name}",
+    traitsTitle: "Scientific interest (pending validation)",
     provenance: "Site provenance",
     dataTitle: "Data quality",
     noProvenance: "Point picked on the map: no verified provenance.",
@@ -288,5 +293,15 @@ export default {
       thresholds: "Team criterion, adjustable",
     },
     footer: "DEC-xxx references are in the repository's docs/DECISIONES.md.",
+  },
+  traits: {
+    waterIce: "Water ice detected (LCROSS)",
+    permanentShadow: "Inside a permanently shadowed region",
+    permanentShadowNearby: "Next to a crater with a permanently shadowed floor",
+    artemisRegion: "Artemis III candidate region",
+    southPoleInSitu: "First in-situ measurements near the south pole (sulfur)",
+    mantleMaterial: "Possible lunar mantle material",
+    farSide: "Far side, South Pole–Aitken basin",
+    samplesReturned: "Samples returned to Earth",
   },
 };

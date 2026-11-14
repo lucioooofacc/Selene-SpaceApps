@@ -86,6 +86,10 @@ subscribe((state, changed) => {
     return;
   }
   if (has("mapView", "mapMode")) renderMap(state);
+  if (has("placesCategory")) {
+    renderPlaces(state);
+    updateCompareLinks(state, rankedSites(state));
+  }
   if (has("playing", "speed")) renderPlayback(state);
   if (has("timeMs", "playing")) renderInstant(state, { force: changed.has("playing") });
 });

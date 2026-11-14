@@ -357,3 +357,23 @@
   color: var(--muted-2);
   font-size: 13px;
 }
+
+.traits {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.traits strong,
+.traits small {
+  display: block;
+}
+
+.traits small a {
+  color: var(--muted-2);
+}
+
