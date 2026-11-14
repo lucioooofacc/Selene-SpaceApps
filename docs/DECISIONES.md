@@ -7,7 +7,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 ## DEC-000 — Organización del repositorio y flujo de trabajo
 
 - **Contexto / problema:** la carpeta del proyecto no era un repositorio git y había un prototipo suelto (`index.html`) en la raíz. Las reglas del equipo piden trabajar en ramas y documentar decisiones.
-- **Decisión:** usar el repo `lucioooofacc/Hubble27-SpaceApps` con `main` protegido por convención (solo entra código vía PR desde ramas `feat/`, `fix/`, `docs/`, etc.).
+- **Decisión:** usar el repo `lucioooofacc/Hubble27-SpaceApps` (luego migrado a `lucioooofacc/Selene-SpaceApps`, ver DEC-015) con `main` protegido por convención (solo entra código vía PR desde ramas `feat/`, `fix/`, `docs/`, etc.).
 - **Solución aplicada:** `git init`, `AGENTS.md` con las reglas, `CLAUDE.md` que importa `AGENTS.md`, este registro de decisiones y el prototipo anterior movido a `legacy/prototipo-v0.html`. `mensajes.md` (chat interno del equipo) queda fuera del repo mediante `.gitignore`, porque Space Apps exige que el proyecto sea público.
 - **Alternativas descartadas:** borrar el prototipo anterior (se pierde referencia); publicar `mensajes.md` (contiene organización interna).
 - **Estado:** vigente.
@@ -124,3 +124,12 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Franja de 8 px entre encabezado y cuerpo ("Vista 7"):** sin datos de color (se agotó el límite del plan gratuito del MCP de Figma), se usó el color de fondo.
 - **Datos aproximados:** para no agregar elementos visibles, el aviso de modelo aproximado quedó como tooltip del título "Parametros de la misión".
 - **Estado:** vigente. **Pendiente de definir por el equipo:** destino de "Ver comparacion detallada", "Comparar" y "Opcion 3/4/5", y si se corrigen los textos del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion").
+
+---
+
+## DEC-015 — Migración a `Selene-SpaceApps` y commits sin co-autores
+
+- **Contexto / problema:** el equipo no quiere co-autores ni atribuciones de herramientas en el historial ni en los PR.
+- **Decisión:** prohibirlos (regla 6 de `AGENTS.md`) y migrar el proyecto al repositorio `lucioooofacc/Selene-SpaceApps`.
+- **Solución aplicada:** se quitaron las líneas `Co-Authored-By` de todos los commits de `main`, `feat/web-v1` y `design/figma-exacto` (sin tocar el contenido de los archivos). Se subieron las tres ramas al repo nuevo, que pasa a ser `origin`; el anterior queda como remoto `hubble27`. Los PR #1 y #2 se guardaron en `docs/prs/` y se recrearon en el repo nuevo sin atribuciones.
+- **Estado:** vigente.

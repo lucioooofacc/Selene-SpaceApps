@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-13.
+Última actualización: 2026-11-14.
 
 ---
 
@@ -43,6 +43,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 
 ## Repositorio y entrega
 
-- [ ] Revisar y mergear el PR #1 (web v1) y el PR #2 (réplica del Figma). — Equipo
+- [ ] Revisar y mergear el PR #1 (web v1) y el PR #2 (réplica del Figma) en `Selene-SpaceApps`. — Equipo
+- [ ] Archivar o borrar el repo anterior `Hubble27-SpaceApps` (todavía tiene el historial con co-autores y los PR viejos). — Lucio
+- [x] ~~Migrar el proyecto a `Selene-SpaceApps` sin co-autores en el historial.~~ Resuelto 2026-11-14 (DEC-015).
 - [ ] Publicar el build (`npm run build`) en un enlace público para el formulario de Space Apps (GitHub Pages, Netlify o Drive). — Desarrollo web
 - [ ] Declarar en la entrega los datos de la NASA usados (JPL Horizons, LOLA, LROC). — Equipo
