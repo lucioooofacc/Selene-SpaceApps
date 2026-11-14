@@ -1,6 +1,6 @@
 # Catálogo de fuentes científicas
 
-Las fuentes de esta tabla todavía no están integradas. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
+Salvo las coordenadas de sitios (DEC-019) y el adaptador de JPL Horizons (DEC-020), las fuentes de esta tabla todavía no están integradas. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
 
 ## Coordenadas de sitios curados (`web/src/data/sites.js`)
 
@@ -23,16 +23,19 @@ Las fuentes de esta tabla todavía no están integradas. Antes de implementar un
 
 ## NASA JPL Horizons
 
-- **URL oficial:** https://ssd.jpl.nasa.gov/horizons/ · API: https://ssd-api.jpl.nasa.gov/doc/horizons.html
-- **Finalidad:** reemplazar el modelo periódico de `astro.js` con posiciones del Sol y la Tierra respecto de un observador lunar.
-- **Datos requeridos:** azimut/elevación topocéntricos o vectores suficientes para derivarlos; instante/intervalo, sitio, escala temporal y marco explícitos.
-- **Formato:** tablas de observador, vectores o elementos en texto; opción CSV; la API devuelve una envoltura documentada. La selección exacta queda pendiente de prototipo.
-- **Cobertura:** depende del objeto y del tipo de efeméride; debe validarse para cada consulta.
-- **Referencia:** Horizons permite configurar centro/observador, sistema de coordenadas, plano y correcciones. La configuración exacta para superficie lunar está pendiente de validar.
-- **Limitaciones:** red externa, límites y errores de consulta; valores por defecto pueden no ser adecuados; Horizons no aporta el horizonte topográfico local.
-- **Estado:** no integrado; reemplazo previsto de `web/src/lib/astro.js` mediante adaptador y caché.
-- **Módulos responsables:** futuro adaptador de efemérides; consumidor `analysis.js`.
-- **Atribución/licencia:** citar JPL Horizons y conservar parámetros/fecha de consulta. Condiciones específicas de reutilización: pendiente de verificar antes de publicar datos derivados.
+- **URL oficial:** https://ssd.jpl.nasa.gov/horizons/ · API: https://ssd.jpl.nasa.gov/api/horizons.api · documentación: https://ssd-api.jpl.nasa.gov/doc/horizons.html · manual: https://ssd.jpl.nasa.gov/horizons/manual.html
+- **Finalidad:** reemplazar el modelo periódico de `astro.js` con posiciones del Sol y la Tierra respecto de un observador lunar (ASTRO-01, DEC-020).
+- **Consulta (perfil `selene-observer-v1`):** `EPHEM_TYPE=OBSERVER`, `COMMAND=10` (Sol) o `399` (Tierra), `CENTER=coord@301`, `COORD_TYPE=GEODETIC`, `SITE_COORD=lon_E,lat,alt_km`, `TIME_TYPE=UT`, `CAL_FORMAT=JD`, `ANG_FORMAT=DEG`, `APPARENT=AIRLESS`, `REF_SYSTEM=ICRF`, `QUANTITIES=4,10,13`, `CSV_FORMAT=YES`, `ELEV_CUT=-90`, `OBJ_DATA=NO`. La URL exacta la arma `buildQueryUrl()` y queda guardada en cada serie.
+- **Formato:** envoltura JSON de la API (`signature`, `result`, `error`); `result` contiene una tabla CSV entre `$$SOE` y `$$EOE`. Validado con la versión 1.2.
+- **Cobertura:** la de DE441 para Sol y Tierra; cada serie registra inicio, fin, paso, filas, faltantes y período de EOP (medido o predicho). Máximo 50 000 filas por consulta en el adaptador.
+- **Referencia:** centro Luna (301), esfera de 1737,4 km, polo `MEAN_ME (high precision)`, efeméride DE441 (informados por Horizons). Los sitios MOON_ME/DE421 se pasan sin transformar.
+- **Unidades:** azimut/elevación en grados (aparentes, sin aire), % iluminado, diámetro angular en segundos de arco, tiempo JD UT → Unix ms UTC. Detalle en `docs/SCIENCE.md`.
+- **Limitaciones:** requiere red al adquirir (no en la demo); la API responde errores de consulta con HTTP 200 y campo `error`; no aporta horizonte topográfico; la altura del observador debe darse explícitamente (hoy 0 km supuesto).
+- **Caché:** `web/scripts/fetch-horizons.mjs` guarda el crudo sin modificar + SHA-256, la serie normalizada y un `manifest.json`, con clave que incluye fuente, versiones de API y perfil, objetivo, sitio, altura y su base, intervalo y paso. Por defecto en `web/.cache/horizons` (ignorado por git); `--offline` solo lee la caché.
+- **Datos incluidos en el repo:** fixtures de Sol y Tierra desde Shackleton R04, 14–16/11/2026, paso 60 min, obtenidos el 14/11/2026 (`web/tests/fixtures/horizons/README.md`).
+- **Estado:** adaptador, adquisición y caché integrados y probados; **no** consumidos todavía por `analysis.js` ni la UI (CORE-01).
+- **Módulos responsables:** `web/src/lib/horizons.js` (puro, sin red), `web/scripts/fetch-horizons.mjs` (adquisición en Node); pruebas en `web/tests/horizons.test.js` y `web/tests/horizons.fixture.test.js`.
+- **Atribución/licencia:** citar NASA/JPL Horizons y conservar parámetros, versión de API, efeméride y fecha de consulta (ya guardados en `source`). Condiciones específicas de reutilización: pendiente de verificar antes de publicar datos derivados.
 
 ## LOLA / Lunar Reconnaissance Orbiter
 

@@ -40,7 +40,13 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Decidir si la interfaz muestra la procedencia y la confianza de cada sitio (requiere claves nuevas en `es.js`/`en.js` y consultar el diseño). — Desarrollo web · DEC-019, DEC-014
 - [ ] Confirmar qué latitud cubren las imágenes polares (supuesto: hasta −60°) y su orientación (0° arriba). — DEC-016
 - [ ] Confirmar origen y licencia de las imágenes de la Luna que vienen del Figma. — DEC-016
-- [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
+- [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004 · Avance 2026-11-14 (rama `data/efemerides-horizons`, ASTRO-01 #6, DEC-020): adaptador, adquisición, caché y fixtures listos; falta consumirlos en `analysis.js` (CORE-01 #11).
+- [ ] Definir la altura datum de cada sitio para Horizons (hoy 0 km sobre la esfera de 1737,4 km, marcado como supuesto). Depende de TERRAIN-01. — Teo, Facu, Lucio · DEC-020
+- [ ] Validar que pasar coordenadas MOON_ME/DE421 sin transformar al sitio de Horizons (MEAN_ME, DE441) es aceptable a la escala de la app. — Teo, Facu, Lucio · DEC-020
+- [ ] Generar las series Horizons de los 7 sitios para el período de la demo (hoy solo Shackleton R04, 14–16/11/2026, paso 60 min) y decidir dónde se guardan para la web. Coordinar con CORE-01. — Facu · DEC-020
+- [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-020
+- [ ] Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-020
+- [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 

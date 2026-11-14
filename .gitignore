@@ -3,6 +3,9 @@ node_modules/
 dist/
 .vite/
 
+# Caché local de efemérides Horizons (web/scripts/fetch-horizons.mjs, DEC-020)
+.cache/
+
 # Sistema / editores
 .DS_Store
 Thumbs.db
