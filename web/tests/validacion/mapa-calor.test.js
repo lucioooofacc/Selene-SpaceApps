@@ -99,3 +99,14 @@ test("producto real: celdas del atlas reproducidas exactamente", { skip: !hasRea
     for (let k = 0; k < 72; k++) assert.ok(Math.abs(atlas.horizon[(y * 96 + x) * 72 + k] - p.elevationDeg[k]) <= 0.0051);
   }
 });
+
+test("modos combinados: más tiempo con Sol y Tierra a la vez y más viabilidad en el verano austral", () => {
+  // Medido (30 días): 'both' 10,1 % en dic 2026 frente a 7,6 % en jun 2027;
+  // viabilidad media 44,8 % (puntos/6) frente a 33,9 %.
+  for (const mode of ["both", "viability"]) {
+    const dec = computePolarHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: 30, mode });
+    const jun = computePolarHeatmap({ startMs: Date.UTC(2027, 5, 1), windowDays: 30, mode });
+    assert.equal(dec.source.kind, "real");
+    assert.ok(mean(dec) > mean(jun), `${mode}: ${mean(dec)} vs ${mean(jun)}`);
+  }
+});

@@ -106,3 +106,40 @@ test("fuera del rango de Horizons: vuelve al aproximado", () => {
   assert.equal(map.source.kind, "approximate");
   assert.equal(computeRealHeatmap({ startMs: Date.UTC(2029, 0, 1), windowDays: 2, mode: "sun", size: 8, minLat: -80, sunVisible, earthVisible }), null);
 });
+
+test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los umbrales de los sitios", async () => {
+  const { THRESHOLDS, HEAT_MODES } = await import("../src/lib/analysis.js");
+  assert.deepEqual(HEAT_MODES, ["sun", "earth", "both", "viability"]);
+  assert.throws(() => computePolarHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: 2, mode: "otro", size: 8, minLat: -80 }), RangeError);
+  for (const real of [false, true]) {
+    clearEphemerides();
+    clearHeatAtlas();
+    if (real) {
+      loadAll();
+      registerHeatAtlas(flatAtlas(8, -80, 0.3));
+    }
+    const o = { startMs: Date.UTC(2026, 11, 1), windowDays: 5, size: 8, minLat: -80 };
+    const sun = computePolarHeatmap({ ...o, mode: "sun" });
+    const earth = computePolarHeatmap({ ...o, mode: "earth" });
+    const both = computePolarHeatmap({ ...o, mode: "both" });
+    const via = computePolarHeatmap({ ...o, mode: "viability" });
+    assert.equal(both.source.kind, real ? "real" : "approximate");
+    const level = (v, { high, mid }) => (v >= high ? 2 : v >= mid ? 1 : 0);
+    for (let c = 0; c < 64; c++) {
+      if (sun.values[c] < 0) {
+        assert.equal(via.points[c], -1);
+        continue;
+      }
+      const s = sun.values[c];
+      const e = earth.values[c];
+      assert.ok(both.values[c] <= Math.min(s, e) + 1e-6, `celda ${c}`);
+      assert.ok(both.values[c] >= s + e - 1 - 1e-6, `celda ${c}`);
+      assert.equal(via.components.sun[c], s);
+      assert.equal(via.components.earth[c], e);
+      const expected =
+        level(100 * s, THRESHOLDS.illumination) + level(via.components.power[c], THRESHOLDS.power) + level(100 * e, THRESHOLDS.communication);
+      assert.equal(via.points[c], expected);
+      assert.ok(Math.abs(via.values[c] - expected / 6) < 1e-6);
+    }
+  }
+});
