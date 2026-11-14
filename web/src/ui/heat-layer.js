@@ -5,8 +5,8 @@
  * celdas hasta −80° con la misma orientación que la vista polar 2D (0° de
  * longitud arriba). Acá solo se colorea esa grilla con la paleta de la
  * configuración (estándar o apta para daltonismo) y se guarda como imagen.
- * Cada píxel es una celda (~6 km): la imagen se muestra sin suavizar para no
- * aparentar más resolución que la que hay. El cálculo corre en un worker
+ * La imagen se suaviza interpolando los valores entre celdas (DEC-051); la
+ * resolución real (~6 km por celda) se indica en el crédito. El cálculo corre en un worker
  * cuando se puede (PERF-01, DEC-047).
  */
 import { computePolarHeatmap, realDataVersion } from "../lib/analysis.js";
@@ -27,7 +27,7 @@ const keyFor = (layer, startMs, windowDays, palette) => `${layer}|${startMs}|${w
 /** Clave persistente: solo tiene sentido con todos los datos reales del mapa cargados. */
 const persistKey = (layer, startMs, windowDays, palette) => {
   const data = loadedData();
-  return data.ephemerides && data.heatAtlas ? `heat|${layer}|${startMs}|${windowDays}|${palette}` : null;
+  return data.ephemerides && data.heatAtlas ? `heat2|${layer}|${startMs}|${windowDays}|${palette}` : null; // heat2: suavizada (DEC-051)
 };
 
 function remember(key, result) {
@@ -45,22 +45,59 @@ export function cachedHeatLayer(layer, startMs, windowDays, palette) {
   return stored ? remember(key, { ...stored, layer }) : null;
 }
 
-/** Colorea la grilla con la paleta y la devuelve como PNG (data URL). */
+/** Píxeles por celda de la imagen suavizada (DEC-051): 96 celdas → 384 px. */
+const SMOOTH = 4;
+
+/**
+ * Colorea la grilla y la devuelve como PNG (data URL), suavizada (DEC-051):
+ * cada píxel interpola en forma bilineal los VALORES de las 4 celdas vecinas
+ * (no los colores, para no inventar tonos) y recién después toma el color de
+ * la paleta. Las celdas sin dato no participan; el borde del disco se suaviza.
+ */
 function colorize(values, size, palette) {
   const table = lut(palette);
+  const out = size * SMOOTH;
   const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = size;
+  canvas.width = canvas.height = out;
   const ctx = canvas.getContext("2d");
-  const img = ctx.createImageData(size, size);
+  const img = ctx.createImageData(out, out);
   const px = img.data;
-  for (let c = 0; c < values.length; c++) {
-    const v = values[c];
-    if (!(v >= 0)) continue; // fuera del disco: transparente
-    const e = Math.round(Math.min(1, v) * 255) * 3;
-    px[c * 4] = table[e];
-    px[c * 4 + 1] = table[e + 1];
-    px[c * 4 + 2] = table[e + 2];
-    px[c * 4 + 3] = 255;
+  const at = (x, y) => (x < 0 || y < 0 || x >= size || y >= size ? -1 : values[y * size + x]);
+  for (let v = 0; v < out; v++) {
+    const gy = (v + 0.5) / SMOOTH - 0.5;
+    const y0 = Math.floor(gy);
+    const fy = gy - y0;
+    for (let u = 0; u < out; u++) {
+      // Borde del disco (radio 1 = borde de la grilla), con medio píxel de transición.
+      const dx = (u + 0.5) / out - 0.5;
+      const dy = (v + 0.5) / out - 0.5;
+      const edge = Math.min(1, Math.max(0, (1 - Math.hypot(dx, dy) * 2) * out * 0.5 + 0.5));
+      if (edge <= 0) continue;
+      const gx = (u + 0.5) / SMOOTH - 0.5;
+      const x0 = Math.floor(gx);
+      const fx = gx - x0;
+      let sum = 0;
+      let wsum = 0;
+      for (const [x, y, w] of [
+        [x0, y0, (1 - fx) * (1 - fy)],
+        [x0 + 1, y0, fx * (1 - fy)],
+        [x0, y0 + 1, (1 - fx) * fy],
+        [x0 + 1, y0 + 1, fx * fy],
+      ]) {
+        const val = at(x, y);
+        if (val >= 0 && w > 0) {
+          sum += val * w;
+          wsum += w;
+        }
+      }
+      if (wsum === 0) continue; // sin celdas con dato alrededor
+      const e = Math.round(Math.min(1, sum / wsum) * 255) * 3;
+      const o = (v * out + u) * 4;
+      px[o] = table[e];
+      px[o + 1] = table[e + 1];
+      px[o + 2] = table[e + 2];
+      px[o + 3] = Math.round(edge * 255);
+    }
   }
   ctx.putImageData(img, 0, 0);
   return canvas.toDataURL("image/png");
@@ -142,8 +179,8 @@ function loadImage(url) {
 /**
  * Textura equirectangular (centrada en 0°, como la de moon3d.js) con la capa
  * calculada pintada en el casquete polar hasta HEAT_MIN_LAT: cada píxel toma
- * la celda de la grilla que le corresponde por la misma proyección polar
- * (vecino más cercano, sin suavizar). Se cachea por imagen de la capa.
+ * el píxel de la imagen suavizada que le corresponde por la misma proyección
+ * polar (DEC-051). Se cachea por imagen de la capa.
  * @returns {Promise<HTMLCanvasElement>}
  */
 export function heatLayerTexture(result) {
@@ -176,11 +213,12 @@ export function heatLayerTexture(result) {
             const gx = Math.min(size - 1, Math.floor((0.5 + 0.5 * r * Math.sin(lon)) * size));
             const gy = Math.min(size - 1, Math.floor((0.5 - 0.5 * r * Math.cos(lon)) * size));
             const c = (gy * size + gx) * 4;
-            if (cells[c + 3] === 0) continue; // fuera del disco calculado
+            const a = cells[c + 3] / 255; // borde suavizado del disco
+            if (a === 0) continue; // fuera del disco calculado
             const o = ((y - y0) * TEX_W + x) * 4;
-            out[o] = cells[c];
-            out[o + 1] = cells[c + 1];
-            out[o + 2] = cells[c + 2];
+            out[o] = out[o] * (1 - a) + cells[c] * a;
+            out[o + 1] = out[o + 1] * (1 - a) + cells[c + 1] * a;
+            out[o + 2] = out[o + 2] * (1 - a) + cells[c + 2] * a;
           }
         }
         ctx.putImageData(cap, 0, y0);

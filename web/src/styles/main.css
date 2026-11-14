@@ -870,9 +870,8 @@ button {
   border-color: var(--gold);
 }
 
-/* Capa calculada: un píxel por celda de ~6 km, sin suavizar; disco hasta −80°. */
+/* Capa calculada: disco hasta −80°, suavizada entre celdas de ~6 km (DEC-051). */
 .map-area[data-layer="calc"] .map-image {
-  image-rendering: pixelated;
   border-radius: 50%;
 }
 

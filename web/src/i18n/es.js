@@ -106,7 +106,7 @@ export default {
     },
     layerCredit: {
       computing: "Calculando el mapa para el período de la misión…",
-      real: "Calculado para el período de la misión con JPL Horizons y horizontes LOLA (LDEM_60S_240M), hasta 80° S. Cada celda (~{km} km) vale lo de su centro; paso de {step} h.",
+      real: "Calculado para el período de la misión con JPL Horizons y horizontes LOLA (LDEM_60S_240M), hasta 80° S. Celdas de ~{km} km (cada una vale lo de su centro), suavizadas entre sí; paso de {step} h.",
       loading: "Mapa aproximado mientras se cargan los horizontes LOLA (modelo periódico y horizonte sintético).",
       error: "No se pudieron cargar los horizontes LOLA: mapa aproximado (modelo periódico y horizonte sintético).",
       approximate: "Mapa aproximado: el período está fuera de los datos de JPL Horizons (nov 2026 – dic 2027). Modelo periódico y horizonte sintético.",
