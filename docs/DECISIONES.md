@@ -753,3 +753,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/styles/main.css` (`.map-area[data-mode="3d"]` con el tamaño de la tarjeta, `z-index` de los controles, sombra de texto), `web/src/ui/moon3d.js` (`DIST` y `VIEWS`).
 - **Alternativas descartadas:** agrandar el cuadrado del centro (el corte seguía, solo más afuera); una máscara circular en el centro (la Luna seguiría cortada al acercar, ahora en círculo).
 - **Estado:** vigente.
+
+## DEC-054 — "Ubicación de los sitios" en 3D en la comparación
+
+- **Contexto / problema:** bloc de notas de UI 3: la comparación no tenía una vista visual de dónde están los dos puntos; se pidió usar el modelo 3D común, en vista normal, con los dos sitios ubicados y "algo interesante".
+- **Decisión:** panel nuevo "Ubicación de los sitios" debajo de las tarjetas de los sitios:
+  - La misma Luna 3D de la misión (`moon3d.js`, mosaico LROC) en vista normal, centrada en el **punto medio** entre A y B, con sus marcadores (A dorado, B celeste, como el resto de la comparación) y el **camino más corto por la superficie** (arco de círculo máximo) en puntos blancos. Se puede girar y acercar; solo se recentra cuando cambian los sitios.
+  - Al lado, datos para leerla: distancia por la superficie (km y grados de arco), coordenadas, diferencia de latitud y longitud, y % del período con Sol y con la Tierra visible de cada sitio.
+- **Solución aplicada:** `web/src/lib/geo.js` (nuevo, puro: `centralAngle()`, `surfaceDistanceKm()`, `greatCirclePoints()`, `midpoint()`, esfera de 1737,4 km de `SITE_REFERENCE`) y `web/tests/geo.test.js`; `web/src/ui/compare-globe.js` (nuevo); `web/src/ui/compare.js`; `web/compare.html`; `web/src/styles/compare.css`; `web/src/ui/moon3d.js` (vista `compare`); textos `compare.globe.*` (ES/EN).
+- **Supuestos:** distancia sobre la esfera de referencia, sin relieve (es la distancia geodésica, no un recorrido transitable). Si los sitios fueran antípodas, el arco no está definido y no se dibuja.
+- **Alternativas descartadas:** un mapa 2D con los dos puntos (ya existe en la misión; se pidió 3D); mover la cámara automáticamente para encuadrar ambos sitios (se pidió la vista normal).
+- **Estado:** vigente.
