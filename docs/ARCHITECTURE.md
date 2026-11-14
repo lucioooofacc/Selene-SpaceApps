@@ -1,6 +1,6 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; las integraciones con JPL Horizons y LOLA indicadas aquí son propuestas y todavía no están implementadas.
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; la integración de LOLA y el consumo de efemérides Horizons en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa.
 
 ## Vista general
 
@@ -33,6 +33,8 @@ flowchart LR
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
+| `src/lib/horizons.js` | Adaptador puro de JPL Horizons (DEC-024): valida peticiones, arma la consulta y la clave de caché, interpreta y valida tablas `OBSERVER` y produce series normalizadas con fuente, marco, unidades y cobertura. Sin red ni DOM; todavía no lo consume `analysis.js`. |
+| `scripts/fetch-horizons.mjs` | Script Node, fuera del bundle: consulta la API, guarda crudo + SHA-256 + serie normalizada en una caché con manifiesto. |
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
@@ -100,6 +102,20 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 
 `Scenario.summary.illumination` y `.communication` son porcentajes `[0,100]`; `.power` es una razón adimensional; tiempos de ventanas son Unix ms UTC; `.sunMinutes` y `.linkMinutes` son minutos. `STEP_MINUTES` vale actualmente 10.
 
+### `lib/horizons.js` (DEC-024)
+
+| Firma | Entrada | Salida |
+| --- | --- | --- |
+| `normalizeRequest(input)` | `{target: "sun"\|"earth", site: {lat, lon, altitudeKm, altitudeBasis, id?}, startMs, stopMs, stepMinutes}` | petición congelada con `command` y `expectedRows`; `HorizonsError` si es inválida |
+| `buildQueryParams(req)` / `buildQueryUrl(req)` | petición | pares `[clave, valor]` en orden fijo / URL de la API (no la ejecuta) |
+| `cacheKey(req, meta?)` | petición; fuente/versiones opcionales | texto canónico `src=…\|api=…\|profile=…\|…` |
+| `unwrapApiResponse(body)` | texto JSON u objeto de la API | `{result, apiVersion}` o `HorizonsError` (`api-error`, `invalid-envelope`) |
+| `parseObserverTable(result)` | texto `result` | `{meta, columns, samples, missing}` |
+| `normalizeHorizons(body, req, retrieval?)` | cuerpo crudo, petición, metadatos de adquisición | serie `selene.horizons.observer/1` (`source`, `profile`, `request`, `frame`, `units`, `coverage`, `samples`, `assumptions`, `warnings`) |
+| `jdToUnixMs(jdText)` / `formatHorizonsTime(ms)` | JD en texto / Unix ms | Unix ms UTC / `YYYY-MM-DD HH:MM` UTC |
+
+`samples` contiene arreglos paralelos (`timeMs`, `jdUt`, `azimuthDeg`, `elevationDeg`, `illuminatedPct`, `angularDiameterArcsec`, `solarPresence`, `interfererPresence`); los faltantes son `null`. Los errores son `HorizonsError` con `code` estable (`invalid-site`, `missing-altitude`, `no-ephemeris`, `unexpected-columns`, `out-of-range`, `coverage-mismatch`, `site-mismatch`, …).
+
 ### `state.js`
 
 - `getState() -> State`: devuelve la referencia del estado actual; los consumidores no deben mutarla directamente.
@@ -109,6 +125,7 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 ## Dependencias internas
 
 - `analysis.js` depende de `astro.js` y `terrain.js`; ninguno depende de la interfaz.
+- `horizons.js` depende solo de `coordinates.js`. No hace red: la red vive en `scripts/fetch-horizons.mjs`, que se ejecuta con Node antes de la demo.
 - `main.js` es el único coordinador entre análisis y renderizado.
 - Los módulos `ui/` pueden leer/escribir estado, formatear e internacionalizar, pero no deben implementar fórmulas científicas.
 - `map.js` es la excepción de coordinación que invoca el cálculo público del mapa de calor; el cálculo permanece en `lib/analysis.js`.
@@ -118,7 +135,7 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 
 ### Efemérides con JPL Horizons
 
-La integración prevista debe producir el mismo contrato conceptual de `sunPosition()` y `earthPosition()`: azimut y elevación locales en grados para sitio e instante. Un adaptador separado debería:
+El adaptador (`lib/horizons.js`) y la adquisición con caché (`scripts/fetch-horizons.mjs`) ya cumplen los puntos 1, 3, 4 y 5 y la parte de caché del 2 (DEC-024). Falta que CORE-01 cargue las series en el análisis manteniendo el contrato conceptual de `sunPosition()` y `earthPosition()`: azimut y elevación locales en grados para sitio e instante. Requisitos del adaptador:
 
 1. normalizar sitio, intervalo, paso, escala temporal y sistema de referencia;
 2. consultar o leer una caché fuera de los bucles de renderizado y muestreo;
