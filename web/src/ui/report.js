@@ -28,6 +28,17 @@ function formatValue(kind, value) {
 
 const stamp = (ms) => `${dateUTC(ms)} ${timeUTC(ms)}`;
 
+/**
+ * Referencias de los datos (citas oficiales, ver docs/DATA_SOURCES.md). Van
+ * tal cual en los dos idiomas: son citas bibliográficas.
+ */
+const REFERENCES = [
+  "NASA/JPL Solar System Dynamics. Data retrieved on 2026 Nov 14. Horizons System. https://ssd.jpl.nasa.gov",
+  "Giorgini, J. D. and JPL Solar System Dynamics Group. NASA/JPL Horizons On-Line Ephemeris System. https://ssd.jpl.nasa.gov/horizons/ (data retrieved 2026-Nov-14).",
+  "Neumann, G. A. (2011). LRO Moon Laser Altimeter 4 GDR V1.0 [Dataset]. NASA Planetary Data System. https://doi.org/10.17189/1520642",
+  "NASA's Scientific Visualization Studio. CGI Moon Kit (E. Wright), LRO LROC WAC and LOLA data. https://svs.gsfc.nasa.gov/4720/",
+];
+
 /** Ventanas como lista de renglones: "1 dic 2026 00:00 → 3 dic 2026 14:20 (2 d 14 h)". */
 function windowsList(windows, titleKey) {
   const items = windows
@@ -121,6 +132,8 @@ export function renderReport(scenario) {
     <footer class="rep-foot">
       <p>${t("report.sources")}</p>
       <p>${t("compare.criteriaNote")}</p>
+      <h3>${t("report.refsTitle")}</h3>
+      <ol class="rep-refs">${REFERENCES.map((r) => `<li>${r}</li>`).join("")}</ol>
     </footer>`;
 }
 

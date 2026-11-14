@@ -158,4 +158,9 @@
   .rep-foot p {
     margin: 0 0 3pt;
   }
+
+  .rep-refs {
+    margin: 2pt 0 0;
+    padding-left: 14pt;
+  }
 }

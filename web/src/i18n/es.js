@@ -330,6 +330,7 @@ export default {
     linkWindows: "Ventanas de enlace (Tierra visible)",
     none: "Sin ventanas en el período.",
     periodLine: "Período analizado: del {start} 00:00 al {end} 24:00 UTC ({days} días).",
+    refsTitle: "Referencias de los datos",
     windowsTitle: "Ventanas de luz y de enlace",
     avgLine: "elevación media {mean} (mín {min}, máx {max}); visible el {pct} % del período.",
     runs: "Noche más larga: {night}. Luz continua más larga: {light}. Corte de comunicación más largo: {blackout}.",
