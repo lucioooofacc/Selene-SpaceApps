@@ -6,7 +6,8 @@
  * La página de misión guarda su selección del mismo modo (UI-12):
  *   index.html?site=<sitio>&start=AAAA-MM-DD&days=N
  * (las fechas solo si el usuario las eligió).
- * Un sitio es el id de un sitio curado o "pt:lat,lon" para un punto del mapa.
+ * Un sitio es el id de un sitio curado o "pt:lat,lon" para un punto del mapa;
+ * un sitio propio con nombre agrega "~Nombre" (DEC-049): "pt:lat,lon~Nombre".
  */
 import { SITES } from "../data/sites.js";
 import { t } from "../i18n/index.js";
@@ -18,10 +19,17 @@ const isoDay = (ms) => {
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 };
 
-/** Sitio → parámetro de URL. Los sitios propios ("+") viajan como punto. */
+/** Nombre elegido por el usuario: sin caracteres de HTML (se muestra con innerHTML) y hasta 40 caracteres. */
+export const cleanLabel = (value) => String(value ?? "").replace(/[<>&"'`]/g, "").trim().slice(0, 40);
+
+/** Nombre propio del sitio, si lo tiene: los creados con "+" (DEC-043) o los que llegaron con nombre por la URL. */
+const labelOf = (site) => site.label ?? (String(site.id).startsWith("custom-") ? site.name : null);
+
+/** Sitio → parámetro de URL. Los sitios propios ("+") viajan como punto, con su nombre si lo tienen. */
 export function siteParam(site) {
   if (SITES.some((s) => s.id === site.id)) return site.id;
-  return `pt:${site.lat.toFixed(2)},${site.lon.toFixed(2)}`;
+  const label = cleanLabel(labelOf(site));
+  return `pt:${site.lat.toFixed(2)},${site.lon.toFixed(2)}${label ? `~${label}` : ""}`;
 }
 
 /** Parámetro de URL → sitio (curado o punto), o null si no es válido. */
@@ -29,12 +37,13 @@ export function parseSiteParam(value) {
   if (!value) return null;
   const curated = SITES.find((s) => s.id === value);
   if (curated) return curated;
-  const m = /^pt:(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/.exec(value);
+  const m = /^pt:(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?:~(.+))?$/s.exec(value);
   if (!m) return null;
   const lat = Number(m[1]);
   const lon = Number(m[2]);
   if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return null;
-  return { id: value, lat, lon, custom: true, name: t("compare.point", { lat: lat.toFixed(2), lon: lon.toFixed(2) }) };
+  const label = cleanLabel(m[3]) || null;
+  return { id: value, lat, lon, custom: true, label, name: label ?? t("compare.point", { lat: lat.toFixed(2), lon: lon.toFixed(2) }) };
 }
 
 export function compareUrl({ a, b, startMs, windowDays }) {

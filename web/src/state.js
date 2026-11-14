@@ -18,6 +18,7 @@ const state = {
   startMs: DEFAULT_START,
   windowDays: 2, // la línea de tiempo del Figma muestra 48 h
   dateChosen: false, // hasta elegir fechas, el campo muestra "Elegir"
+  siteChosen: false, // hasta elegir un sitio o un punto, no se muestra la "Ventana de análisis" (DEC-049)
   timeMs: DEFAULT_START + 15.5 * HOUR, // T+15:30, como en el Figma
   playing: false,
   speed: 1, // horas simuladas por segundo real
@@ -63,7 +64,7 @@ export function getSite(id) {
 
 export function chooseSite(id) {
   const site = getSite(id);
-  if (site) setState({ siteId: id, lat: site.lat, lon: site.lon });
+  if (site) setState({ siteId: id, lat: site.lat, lon: site.lon, siteChosen: true });
 }
 
 export function chooseCoordinates(lat, lon) {
@@ -71,5 +72,6 @@ export function chooseCoordinates(lat, lon) {
     siteId: CUSTOM_ID,
     lat: Math.max(-90, Math.min(90, Number(lat.toFixed(2)))),
     lon: Math.max(-180, Math.min(180, Number(lon.toFixed(2)))),
+    siteChosen: true,
   });
 }
