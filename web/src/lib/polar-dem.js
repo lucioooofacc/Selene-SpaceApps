@@ -87,6 +87,20 @@ export function polarDemVersion() {
   return version;
 }
 
+/**
+ * Altura del DEM reducido registrado en (lat, lon): `{heightKm, lowConfidence}`
+ * o `null` fuera de cobertura o sin DEM. Solo lectura (lo usa el análisis de
+ * terreno del informe, DEC-059).
+ */
+export function polarDemSample(lat, lon) {
+  return current ? current.sampler(lat, lon) : null;
+}
+
+/** Resolución (m) del nivel más fino registrado, o null. */
+export function polarDemResolutionM() {
+  return current ? current.levels[0].grid.scaleM : null;
+}
+
 /** ¿El punto está dentro de la cobertura del DEM reducido registrado? */
 export function polarDemCovers(site) {
   return Boolean(current && Number.isFinite(site?.lat) && site.lat <= current.maxLatitude && current.sampler(site.lat, site.lon));

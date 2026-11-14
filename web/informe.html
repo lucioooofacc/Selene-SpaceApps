@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>SELENE</title>
+    <link rel="icon" href="./figma/logo.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="stage" id="stage">
+      <!-- Encabezado igual al de la página de misión -->
+      <header class="header">
+        <a href="./index.html"><img class="header-logo" src="./figma/logo.png" alt="" width="80" height="64" /></a>
+        <p class="header-brand">SELENE</p>
+        <nav class="header-nav" data-i18n-attr="aria-label:nav.label">
+          <a href="./index.html" data-mission-link data-i18n="nav.mission"></a>
+          <a href="./compare.html" data-compare-link data-i18n="nav.compare"></a>
+          <a href="./informe.html" aria-current="page" data-i18n="nav.report"></a>
+        </nav>
+        <div class="header-actions">
+          <button type="button" class="icon-button" id="lang-toggle" data-i18n-attr="aria-label:nav.language;title:nav.language">
+            <img src="./figma/icon-globe.svg" alt="" width="46" height="46" />
+          </button>
+          <button type="button" class="icon-button" id="settings-button" data-i18n-attr="aria-label:nav.settings;title:nav.settings">
+            <img src="./figma/icon-gear.svg" alt="" width="44" height="44" style="width:44px;height:44px" />
+          </button>
+        </div>
+      </header>
+
+      <!-- Informe web de un sitio (DEC-059) -->
+      <main class="cmp rep-web" id="informe-web">
+        <div class="cmp-head">
+          <div>
+            <h1 class="cmp-title" id="rw-title"></h1>
+            <p class="cmp-period" id="rw-period"></p>
+          </div>
+          <div class="rw-actions">
+            <button type="button" class="rw-print" data-report-link data-i18n="reportWeb.print"></button>
+            <a class="cmp-back" href="./index.html" data-mission-link data-i18n="compare.back"></a>
+          </div>
+        </div>
+
+        <section class="cmp-controls rw-controls" data-i18n-attr="aria-label:compare.controls">
+          <label class="cmp-field">
+            <span class="params-label" data-i18n="params.site"></span>
+            <span class="params-select">
+              <select id="rw-site"></select>
+              <img src="./figma/param-arrow.svg" alt="" width="8" height="16" />
+            </span>
+          </label>
+          <div class="cmp-field">
+            <span class="params-label" data-i18n="params.duration"></span>
+            <div class="params-date">
+              <button type="button" class="params-date-button" id="date-button" aria-haspopup="dialog" aria-expanded="false"></button>
+              <div class="calendar" id="calendar" role="dialog" hidden></div>
+            </div>
+          </div>
+        </section>
+
+        <p class="cmp-note" id="rw-note" aria-live="polite"></p>
+
+        <section class="cmp-panel" aria-labelledby="rw-summary-title">
+          <div class="cmp-panel-head"><h2 id="rw-summary-title" data-i18n="reportWeb.summary"></h2></div>
+          <div class="rw-kpis" id="rw-kpis"></div>
+        </section>
+
+        <div class="cmp-row">
+          <section class="cmp-panel" aria-labelledby="rw-globe-title">
+            <div class="cmp-panel-head"><h2 id="rw-globe-title" data-i18n="reportWeb.location"></h2></div>
+            <div class="cmp-globe rw-globe" id="rw-globe" data-mode="3d" role="img" tabindex="0">
+              <div class="cmp-globe-pins" id="rw-globe-pins"></div>
+              <p class="map-status map-status-loading" data-i18n="map.loading"></p>
+              <p class="map-status cmp-globe-error" data-i18n="compare.globe.noWebgl"></p>
+            </div>
+          </section>
+          <section class="cmp-panel" aria-labelledby="rw-terrain-title">
+            <div class="cmp-panel-head"><h2 id="rw-terrain-title" data-i18n="reportWeb.terrain.title"></h2></div>
+            <div id="rw-terrain"></div>
+          </section>
+        </div>
+
+        <section class="cmp-panel" aria-labelledby="rw-light-title">
+          <div class="cmp-panel-head">
+            <h2 id="rw-light-title" data-i18n="reportWeb.light"></h2>
+            <p class="cmp-hint" data-i18n="reportWeb.lightHint"></p>
+          </div>
+          <div class="cmp-chart" id="rw-windows"></div>
+          <div id="rw-metrics"></div>
+        </section>
+
+        <div class="cmp-row">
+          <section class="cmp-panel" aria-labelledby="rw-pos-title">
+            <div class="cmp-panel-head"><h2 id="rw-pos-title" data-i18n="params.avgTitle"></h2></div>
+            <div id="rw-position"></div>
+          </section>
+          <section class="cmp-panel" aria-labelledby="rw-dates-title">
+            <div class="cmp-panel-head"><h2 id="rw-dates-title" data-i18n="places.mode.dates"></h2></div>
+            <div id="rw-dates"></div>
+          </section>
+        </div>
+
+        <section class="cmp-panel" aria-labelledby="rw-traj-title">
+          <div class="cmp-panel-head">
+            <h2 id="rw-traj-title" data-i18n="reportWeb.traj.title"></h2>
+            <p class="cmp-hint" data-i18n="reportWeb.traj.hint"></p>
+          </div>
+          <div class="rw-traj" id="rw-traj"></div>
+        </section>
+
+        <section class="cmp-panel" aria-labelledby="rw-quality-title">
+          <div class="cmp-panel-head"><h2 id="rw-quality-title" data-i18n="quality.title"></h2></div>
+          <div class="cmp-row" id="rw-quality"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Informe imprimible (solo texto, DEC-044): se arma al imprimir -->
+    <article class="report" id="report" aria-hidden="true"></article>
+
+    <script type="module" src="./src/informe.js"></script>
+  </body>
+</html>

@@ -106,13 +106,20 @@ export function currentSite(state) {
   return { id: CUSTOM_ID, lat: state.lat, lon: state.lon };
 }
 
+/** URL del informe web de un sitio (DEC-059): mismo formato de consulta que la misión. */
+export function informeUrl(selection) {
+  return `./informe.html${missionQuery(selection)}`;
+}
+
 /**
  * Actualiza los enlaces "Comparar" y "Ver comparación detallada": A = sitio
- * activo, B = el mejor del ranking que no sea A.
+ * activo, B = el mejor del ranking que no sea A. También el enlace "Informe".
  */
 export function updateCompareLinks(state, ranked) {
   const a = currentSite(state);
   const b = ranked.find((s) => s.id !== a.id && (s.lat !== a.lat || s.lon !== a.lon)) ?? SITES[0];
   const href = compareUrl({ a, b, startMs: state.startMs, windowDays: state.windowDays });
   document.querySelectorAll("[data-compare-link]").forEach((el) => el.setAttribute("href", href));
+  const informe = informeUrl({ site: a, startMs: state.startMs, windowDays: state.windowDays, dateChosen: state.dateChosen });
+  document.querySelectorAll("[data-informe-link]").forEach((el) => el.setAttribute("href", informe));
 }

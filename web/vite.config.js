@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, "index.html"),
         compare: resolve(import.meta.dirname, "compare.html"),
+        informe: resolve(import.meta.dirname, "informe.html"), // informe web de un sitio (DEC-059)
       },
     },
   },
