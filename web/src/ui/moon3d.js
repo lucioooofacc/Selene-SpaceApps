@@ -26,6 +26,7 @@ const VIEWS = {
   global: { lat: 0, lon: 0, dist: 4.3 },
   polar: { lat: -90, lon: 0, dist: 4.0 },
   heat: { lat: -90, lon: 0, dist: 4.0 }, // mapa físico (elevación LOLA), centrado en el polo sur
+  heatCalc: { lat: -90, lon: 0, dist: 2.1 }, // capas calculadas hasta −80° (DEC-050): más cerca para que el casquete llene la vista
 };
 
 let threePromise = null;

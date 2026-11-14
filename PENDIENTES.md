@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (bloc de notas de UI 2, rama `fix/notas-ui-2`).
+Última actualización: 2026-11-14 (capas en 3D, rama `feat/capas-3d`).
 
 ---
 
@@ -57,7 +57,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 
 ## Bloc de notas de UI 2 (Lucio, 14/11/2026, noche)
 
-- [ ] Capas Luz, Tierra, Sol + Tierra y Viabilidad también en la Luna 3D, como la elevación. — Lucio
+- [x] ~~Capas Luz, Tierra, Sol + Tierra y Viabilidad también en la Luna 3D, como la elevación. — Lucio~~ Resuelto 2026-11-14 (rama `feat/capas-3d`, DEC-050).
 - [x] ~~Sin sitio o sin fechas elegidos, no mostrar la "Ventana de análisis". — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~Las cajas del menú del "+" se salen del borde. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~El nombre del sitio personalizado no aparece en la comparación. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
