@@ -30,6 +30,9 @@ Desde `web/`:
 | Cabeus sin Sol todo el año | Horizons + LOLA; Colaprete et al. (2010) | 0 % en cada uno de 12 meses | LCROSS se dirigió a Cabeus por estar en sombra permanente. |
 | Estaciones del polo sur (Shackleton R01, Malapert) | Horizons + LOLA | Contraste > 50 puntos; mejor mes oct–feb, peor abr–ago | El Sol cambia de hemisferio lunar con el año de eclipses; bandas anchas porque las estaciones se corren ~19 días por año. |
 | Horizonte negativo en cimas, positivo en el fondo de un cráter | LOLA | Malapert y R01 < −1°; Cabeus > 0° | Un punto alto ve por debajo del horizonte matemático. |
+| Atlas del mapa de calor (`mapa-calor`) | `LDEM_60S_240M` (MD5) | ± 0,005° (con rasters) | Celdas reproducidas con el mismo algoritmo; la tolerancia es la cuantización del archivo (centésimas). |
+| Estaciones y cara visible en el mapa de calor | Horizons + atlas LOLA | Media del polo dic − jun > 5 puntos; Tierra: lado de la cara visible > lado opuesto + 20 puntos | Medido: 33,2 % frente a 21,9 % de luz. |
+| Paso adaptativo del mapa de calor | Horizons + atlas LOLA | ≤ 1 punto por celda (2 h frente a 1 h) | Medido: ≤ 0,42 puntos en 30 días. |
 | Interpolación horaria cerca del horizonte (`incertidumbre`) | Horizons | ≤ 0,002° con paso de 2 h y \|elevación\| < 10° | El error lineal crece con el cuadrado del paso: con 1 h es ~4 veces menor (< 0,0003°), despreciable frente al radio del Sol (≈ 0,27°). |
 
 ## Pruebas que comparan con datos completos (en `web/tests/`)
@@ -40,6 +43,7 @@ Desde `web/`:
 | Traslado de efemérides a otro punto (`real-points`) | Series Horizons reales de otros sitios | Sol < 0,003°; Tierra < 0,03°; fase < 0,2 % | Sol ≤ 0,0016°, Tierra ≤ 0,025°, fase ≤ 0,12 % (DEC-034). |
 | Horizonte LOLA reducido (`real-points`) | Horizonte LOLA de 240 m | Error medio por sitio (ver DEC-034) | R01 0,38°, Malapert 0,19°, Cabeus 0,02°, IM-1 0,77°. |
 | Política de visibilidad (`visibility`) | Geometría exacta del disco | 1e-4 | Área del segmento circular; mapa de calor y escenario coinciden celda a celda. |
+| Mapa de calor real (`heat-map`) | Traslado de efemérides de CORE-03 en el centro de la celda | ≤ 1 muestra de diferencia | Mismo cálculo por dos caminos. |
 
 ## Incertidumbre conocida
 
