@@ -44,7 +44,7 @@ export default {
     customName: "Custom site {n}",
     alt: {
       global: "Global mosaic of the Moon (LROC, NASA)",
-      heat: "Topographic heat map of the lunar south pole",
+      heat: "Elevation map of the lunar south pole down to 60° S (LOLA, NASA)",
       polar: "Lunar south pole down to 60° S, reprojected from the LROC mosaic (NASA)",
     },
     modeLabel: "Map view type",
@@ -54,6 +54,9 @@ export default {
     loading: "Loading map…",
     noWebgl: "This browser does not support 3D (WebGL): showing the 2D view.",
     credit: "Imagery: NASA SVS, CGI Moon Kit (LROC WAC, LOLA). In 3D, relief is exaggerated and lighting is illustrative.",
+    creditHeat: "LOLA elevation: NASA SVS, CGI Moon Kit (ldem_16). Height colors and illustrative shading (exaggerated relief). This is not an illumination map.",
+    legendTitle: "Elevation (km)",
+    legendAria: "Elevation legend: from {min} km to {max} km relative to the mean lunar radius.",
   },
   params: {
     title: "Mission parameters",

@@ -137,7 +137,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 
 - **Contexto / problema:** para ubicar los sitios en "MAPA DE CALOR" y "POLO SUR" hay que saber qué latitud cubre cada imagen. El Figma no lo indica.
 - **Decisión:** suponer una proyección azimutal equidistante centrada en el polo sur, con 0° de longitud arriba y borde en −60° (`POLAR_EDGE_LAT` en `web/src/ui/map.js`).
-- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio) para MAPA DE CALOR. GLOBAL y POLO SUR ya no usan las imágenes del Figma (DEC-021): sus vistas 2D salen del CGI Moon Kit, con la misma proyección por construcción. Falta confirmar el origen y la licencia de la imagen del mapa de calor. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
+- **Estado:** reemplazada por DEC-021 (GLOBAL y POLO SUR) y DEC-024 (MAPA DE CALOR); ninguna pestaña usa ya las imágenes del Figma. Texto original: GLOBAL y POLO SUR ya no usan las imágenes del Figma (DEC-021): sus vistas 2D salen del CGI Moon Kit, con la misma proyección por construcción. Falta confirmar el origen y la licencia de la imagen del mapa de calor. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
 
 ## DEC-017 — Cómo se interpretó cada elemento del Figma
 
@@ -261,4 +261,15 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - `main.js` aplica las opciones antes del primer dibujo y toma `mapMode` de la configuración; `compare.js` también las aplica. Textos en `settings.*` (ES/EN).
 - **Alternativas descartadas:** tamaño de letra (el diseño se escala con `zoom` a 1992 px y rompería la grilla); recolorear la imagen del mapa de calor del Figma (es un bitmap; corresponde a MAP-01).
 - **Estado:** vigente.
+
+## DEC-024 — MAPA DE CALOR con elevación real de LOLA y vista 3D física (UI-11)
+
+- **Contexto / problema:** la pestaña MAPA DE CALOR mostraba una imagen fija del Figma, con origen, licencia y proyección sin confirmar (DEC-016), que no respondía a la paleta para daltonismo (DEC-023). El equipo pidió reemplazarla y sumar una vista 3D del terreno como mapa físico.
+- **Decisión:** mostrar la elevación LOLA del CGI Moon Kit (`ldem_16.tif`), coloreada en el navegador con tinte hipsométrico y sombreado del relieve. Hay leyenda en km y paleta estándar (similar a la del Figma) o cividis (modo para daltonismo). Se suma el selector 3D/2D también en esta pestaña.
+- **Solución aplicada:**
+  - `web/scripts/build-lola-maps.mjs` (Node, sin dependencias) lee el TIFF, reproyecta el polo con la misma proyección que `map.js`, calcula el sombreado y guarda dos PNG más los metadatos (`src/data/lola-maps.js`). Detalles y rangos en `docs/DATA_SOURCES.md`.
+  - `src/ui/elevation.js` colorea los PNG (tabla de 256 colores × sombreado) y cachea por paleta. `map.js` usa la imagen polar en 2D y, en 3D, `moon3d.setSurface("physical", canvas)` con el mapa global, centrado en el polo sur. La configuración emite `selene:palette` para recolorear al instante.
+  - La leyenda muestra el rango del mapa visible (polar en 2D, global en 3D). El crédito aclara que el sombreado es ilustrativo y que **no es un mapa de iluminación** (eso sigue siendo MAP-01).
+- **Alternativas descartadas:** `ldem_4` (polo borroso, ~120 px de radio); esperar al producto PDS de TERRAIN-01 (pesado, prepara recortes por sitio y no estaba integrado); colorear offline (no permitiría cambiar la paleta).
+- **Estado:** vigente. Reemplaza el uso de la imagen del Figma de DEC-016 en MAPA DE CALOR. **Pendiente:** regenerar desde `LDEM_60S_240M` cuando se integre TERRAIN-01, si el equipo lo prefiere.
 

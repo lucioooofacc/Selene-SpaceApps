@@ -605,6 +605,57 @@ button {
   display: none;
 }
 
+/* ---------- Leyenda de elevación de MAPA DE CALOR (UI-11) ---------- */
+.map-legend {
+  position: absolute;
+  left: 36px;
+  top: 300px;
+  width: 72px;
+  height: 300px;
+}
+
+.map-legend[hidden] {
+  display: none;
+}
+
+.map-legend-title {
+  position: absolute;
+  left: 0;
+  top: -40px;
+  width: 88px;
+  color: var(--muted-2);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.map-legend-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 14px;
+  height: 100%;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-field);
+}
+
+.map-legend-max,
+.map-legend-min {
+  position: absolute;
+  left: 22px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.map-legend-max {
+  top: -2px;
+}
+
+.map-legend-min {
+  bottom: -2px;
+}
+
 /* ---------- Parámetros de la misión ---------- */
 .params {
   position: absolute;

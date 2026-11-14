@@ -144,10 +144,14 @@ export function initSettings({ onLanguage, onMapMode }) {
   document.body.append(dialog);
   const showMapMode = typeof onMapMode === "function";
 
+  // La página puede necesitar recolorear imágenes (p. ej. el mapa de calor).
+  const announcePalette = () => document.dispatchEvent(new CustomEvent("selene:palette"));
+
   const update = (patch) => {
     settings = { ...settings, ...patch };
     write(settings);
     applyToDocument();
+    if ("palette" in patch) announcePalette();
   };
 
   dialog.addEventListener("change", (event) => {
@@ -170,6 +174,7 @@ export function initSettings({ onLanguage, onMapMode }) {
       settings = defaultSettings();
       write(settings);
       applyToDocument();
+      announcePalette();
       onMapMode?.(settings.mapMode);
       render(dialog, { showMapMode });
       return;
