@@ -96,7 +96,7 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 | --- | --- | --- |
 | UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ⏳ **desbloqueada** (la Issue sigue con la etiqueta `bloqueada`) | `scenario.ephemeris` (DEC-033/034); la fila Sol y Tierra de "Datos y fuentes" ya distingue real / trasladado / mixto / aproximado |
 | UI-02 (#15): resolución, huecos y cambios asíncronos | ⏳ | CORE-01, UI-01 |
-| MAP-01 (#16): modo de iluminación calculada en el mapa (hoy cada celda usa el modelo aproximado y el horizonte sintético) | ⏳ opcional si no llega | CORE-02; podría reutilizar CORE-03 (DEC-034) |
+| MAP-01 (#16): modo de iluminación calculada en el mapa | 🔄 motor real en revisión (Facundo, DEC-038); falta el selector en la interfaz (Lucio) | — |
 | I18N-01 (#17): revisión de traducciones ES/EN | ⏳ | Textos finales de UI-01/UI-02 |
 
 ## Etapa 5 — Entrega ⏳ (equipo, antes del 15/11 23:59)

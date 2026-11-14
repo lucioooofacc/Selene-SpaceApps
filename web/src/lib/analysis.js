@@ -13,6 +13,7 @@ import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
 import { derivedEphemerisFor, ephemerisFor, ephemerisVersion, positionsAt } from "./ephemeris.js";
 import { POLAR_DEM_COVERAGE_LATITUDE, polarDemVersion, polarHorizonFor } from "./polar-dem.js";
+import { computeRealHeatStats, heatAtlasVersion } from "./heat-map.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -131,7 +132,7 @@ export function needsPolarDem(site) {
  * llega algo nuevo: los cachés de escenarios la incluyen en su clave.
  */
 export function realDataVersion() {
-  return `${ephemerisVersion()}.${polarDemVersion()}`;
+  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}`;
 }
 
 /**
@@ -345,17 +346,21 @@ export function sampleAt(scenario, ms) {
  * punto de una grilla, usando pocas muestras para que sea rápido.
  * Devuelve una matriz size×size en proyección azimutal equidistante.
  */
-export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minLat = -80 }) {
+/** Modos del mapa de calor (MAP-01, DEC-038). */
+export const HEAT_MODES = Object.freeze(["sun", "earth", "both", "viability"]);
+
+/** Potencia relativa de una muestra: fracción visible del disco × orientación del panel. */
+function sunPower(margin, radius, lat, elevation) {
+  return discFraction(margin, radius) * panelFactor(lat, elevation);
+}
+
+/** Estadísticas aproximadas por celda (modelo periódico + horizonte sintético), misma forma que las reales. */
+function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
   const samples = Math.max(16, Math.round(windowDays * 4));
   const stepMs = (windowDays * DAY_MS) / samples;
-  const sunSub = [];
-  const earthSub = [];
-  for (let k = 0; k < samples; k++) {
-    const t = startMs + k * stepMs;
-    sunSub.push(t);
-    earthSub.push(t);
-  }
-  const values = new Float32Array(size * size).fill(-1);
+  const cells = size * size;
+  const mk = (on) => (on ? new Float32Array(cells).fill(-1) : null);
+  const out = { sun: mk(need.sun), earth: mk(need.earth), both: mk(need.sun && need.earth), power: mk(need.sun) };
   const span = 90 + minLat; // grados desde el polo hasta el borde
 
   for (let y = 0; y < size; y++) {
@@ -368,15 +373,73 @@ export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minL
       const lon = (Math.atan2(dx, -dy) * 180) / Math.PI;
       const site = { lat, lon };
       const horizon = createHorizon(site, { precompute: false });
-      let hits = 0;
+      let sunHits = 0;
+      let earthHits = 0;
+      let bothHits = 0;
+      let powerSum = 0;
       for (let k = 0; k < samples; k++) {
-        const pos = mode === "earth" ? earthPosition(site, earthSub[k]) : sunPosition(site, sunSub[k]);
-        const margin = pos.elevation - horizon(pos.azimuth);
-        // Misma política que el escenario (CORE-02, DEC-036).
-        if (mode === "earth" ? earthVisible(margin, EARTH_RADIUS) : sunVisible(margin)) hits++;
+        const t = startMs + k * stepMs;
+        let sunUp = false;
+        let earthUp = false;
+        if (need.sun) {
+          const pos = sunPosition(site, t);
+          const margin = pos.elevation - horizon(pos.azimuth);
+          // Misma política que el escenario (CORE-02, DEC-036).
+          sunUp = sunVisible(margin);
+          powerSum += sunPower(margin, SUN_RADIUS, lat, pos.elevation);
+        }
+        if (need.earth) {
+          const pos = earthPosition(site, t);
+          earthUp = earthVisible(pos.elevation - horizon(pos.azimuth), EARTH_RADIUS);
+        }
+        sunHits += sunUp;
+        earthHits += earthUp;
+        bothHits += sunUp && earthUp;
       }
-      values[y * size + x] = hits / samples;
+      const c = y * size + x;
+      if (out.sun) out.sun[c] = sunHits / samples;
+      if (out.earth) out.earth[c] = earthHits / samples;
+      if (out.both) out.both[c] = bothHits / samples;
+      if (out.power) out.power[c] = powerSum / samples;
     }
   }
-  return { values, size, minLat };
+  return { ...out, size, minLat, source: { kind: "approximate", ephemeris: "periodic-model", horizon: "synthetic" } };
+}
+
+/**
+ * Mapa de calor del polo sur (MAP-01, DEC-038). Modos:
+ * - `"sun"`: fracción del tiempo con el Sol visible;
+ * - `"earth"`: fracción con la Tierra visible;
+ * - `"both"`: fracción con el Sol y la Tierra visibles a la vez (energía y
+ *   comunicación al mismo tiempo);
+ * - `"viability"`: puntos de viabilidad 0–6 de cada celda con los mismos
+ *   criterios y umbrales que los sitios y el ranking "Global" (DEC-007);
+ *   `values` = puntos / 6, `points` trae el entero y `components` las
+ *   fracciones de luz y Tierra y la potencia media de cada celda.
+ * Con el atlas LOLA y las efemérides cargados usa datos reales; si no, o si la
+ * ventana sale de la cobertura de Horizons, el modelo aproximado y el
+ * horizonte sintético. `source.kind` indica cuál ("real" | "approximate").
+ */
+export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minLat = -80 }) {
+  if (!HEAT_MODES.includes(mode)) throw new RangeError(`modo de mapa de calor desconocido: ${mode}`);
+  const need = { sun: mode !== "earth", earth: mode !== "sun" };
+  const stats =
+    computeRealHeatStats({ startMs, windowDays, size, minLat, need, sunVisible, earthVisible, sunPower }) ??
+    approxHeatStats({ startMs, windowDays, size, minLat, need });
+  const base = { size, minLat, mode, source: stats.source };
+  if (mode !== "viability") return { ...base, values: stats[mode] };
+
+  const values = new Float32Array(size * size).fill(-1);
+  const points = new Int8Array(size * size).fill(-1);
+  for (let c = 0; c < values.length; c++) {
+    if (stats.sun[c] < 0) continue;
+    const p =
+      LEVEL_POINTS[level(100 * stats.sun[c], THRESHOLDS.illumination)] +
+      LEVEL_POINTS[level(stats.power[c], THRESHOLDS.power)] +
+      LEVEL_POINTS[level(100 * stats.earth[c], THRESHOLDS.communication)];
+    points[c] = p;
+    values[c] = p / 6;
+  }
+  // Componentes por celda (fracciones de tiempo y potencia media) para leyendas o tooltips.
+  return { ...base, values, points, maxPoints: 6, components: { sun: stats.sun, earth: stats.earth, power: stats.power } };
 }
