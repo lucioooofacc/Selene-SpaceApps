@@ -33,6 +33,7 @@ Desde `web/`:
 | Atlas del mapa de calor (`mapa-calor`) | `LDEM_60S_240M` (MD5) | ± 0,005° (con rasters) | Celdas reproducidas con el mismo algoritmo; la tolerancia es la cuantización del archivo (centésimas). |
 | Estaciones y cara visible en el mapa de calor | Horizons + atlas LOLA | Media del polo dic − jun > 5 puntos; Tierra: lado de la cara visible > lado opuesto + 20 puntos | Medido: 33,2 % frente a 21,9 % de luz. |
 | Paso adaptativo del mapa de calor | Horizons + atlas LOLA | ≤ 1 punto por celda (2 h frente a 1 h) | Medido: ≤ 0,42 puntos en 30 días. |
+| Modos combinados del mapa de calor | Horizons + atlas LOLA | Verano austral > invierno en `both` y `viability` | Medido: 10,1 % frente a 7,6 % y 44,8 % frente a 33,9 %. |
 | Interpolación horaria cerca del horizonte (`incertidumbre`) | Horizons | ≤ 0,002° con paso de 2 h y \|elevación\| < 10° | El error lineal crece con el cuadrado del paso: con 1 h es ~4 veces menor (< 0,0003°), despreciable frente al radio del Sol (≈ 0,27°). |
 
 ## Pruebas que comparan con datos completos (en `web/tests/`)
@@ -44,6 +45,7 @@ Desde `web/`:
 | Horizonte LOLA reducido (`real-points`) | Horizonte LOLA de 240 m | Error medio por sitio (ver DEC-034) | R01 0,38°, Malapert 0,19°, Cabeus 0,02°, IM-1 0,77°. |
 | Política de visibilidad (`visibility`) | Geometría exacta del disco | 1e-4 | Área del segmento circular; mapa de calor y escenario coinciden celda a celda. |
 | Mapa de calor real (`heat-map`) | Traslado de efemérides de CORE-03 en el centro de la celda | ≤ 1 muestra de diferencia | Mismo cálculo por dos caminos. |
+| Modos `both` y `viability` (`heat-map`) | Componentes del mismo cálculo y umbrales de DEC-007 | Exacta | `both` ≤ mín(luz, Tierra) y ≥ luz + Tierra − 1; puntos iguales a los de los sitios. |
 
 ## Incertidumbre conocida
 
