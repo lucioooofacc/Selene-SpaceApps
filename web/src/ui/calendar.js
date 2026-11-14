@@ -3,6 +3,8 @@
  * Replica el calendario del Figma ("image 30"): fondo blanco, extremos del
  * rango en círculos oscuros y días intermedios en gris claro.
  * Primer clic = inicio, segundo clic = fin (máximo MAX_DAYS días).
+ * Teclado: flechas = ±1 día / ±1 semana, Inicio/Fin = inicio/fin de semana,
+ * RePág/AvPág = ±1 mes, Enter/Espacio = elegir, Escape = cerrar.
  */
 import { DAY_MS } from "../lib/astro.js";
 import { getLang, t } from "../i18n/index.js";
@@ -14,6 +16,7 @@ export const MAX_DAYS = 30;
 let viewYear = 2026;
 let viewMonth = 10; // noviembre (0 = enero)
 let pickStart = null; // ms UTC del día de inicio mientras se elige
+let focusMs = null; // día con el foco del teclado (roving tabindex)
 
 const dayStart = (ms) => {
   const d = new Date(ms);
@@ -56,7 +59,10 @@ function render() {
       inRange && isEnd ? "range-end" : "",
       isStart || isEnd ? "edge" : "",
     ].join(" ");
-    cells += `<button type="button" class="${cls}" data-day="${ms}" ${tooFar ? "disabled" : ""}><span>${day}</span></button>`;
+    const label = dayLabel(ms);
+    cells += `<button type="button" class="${cls}" data-day="${ms}" tabindex="${ms === focusMs ? 0 : -1}" aria-label="${label}" ${
+      isStart || isEnd ? 'aria-pressed="true"' : ""
+    } ${tooFar ? "disabled" : ""}><span>${day}</span></button>`;
   }
 
   $("calendar").innerHTML = `
@@ -65,24 +71,73 @@ function render() {
       <strong>${monthName(viewYear, viewMonth)}</strong>
       <button type="button" class="cal-nav" data-nav="1" aria-label="${t("calendar.next")}">›</button>
     </div>
-    <div class="cal-grid">${cells}</div>
+    <div class="cal-grid" role="group" aria-label="${monthName(viewYear, viewMonth)}">${cells}</div>
     <p class="cal-hint">${t(pickStart ? "calendar.pickEnd" : "calendar.pickStart", { max: MAX_DAYS })}</p>`;
 }
+
+function dayLabel(ms) {
+  return new Intl.DateTimeFormat(getLang() === "es" ? "es-UY" : "en-US", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(ms);
+}
+
+/** Mantiene el día enfocado dentro del rango permitido mientras se elige el fin. */
+function clampFocus(ms) {
+  if (pickStart == null) return ms;
+  return Math.max(pickStart, Math.min(pickStart + (MAX_DAYS - 1) * DAY_MS, ms));
+}
+
+/** Mueve el foco a un día, cambiando de mes si hace falta. */
+function moveFocus(ms) {
+  focusMs = clampFocus(dayStart(ms));
+  const d = new Date(focusMs);
+  viewYear = d.getUTCFullYear();
+  viewMonth = d.getUTCMonth();
+  render();
+  $("calendar").querySelector(`[data-day="${focusMs}"]`)?.focus();
+}
+
+/** Un mes antes o después conservando el día (o el último día del mes). */
+function shiftMonth(ms, delta) {
+  const d = new Date(ms);
+  const y = d.getUTCFullYear();
+  const m = d.getUTCMonth() + delta;
+  const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+  return Date.UTC(y, m, Math.min(d.getUTCDate(), last));
+}
+
+const KEY_MOVES = {
+  ArrowLeft: (ms) => ms - DAY_MS,
+  ArrowRight: (ms) => ms + DAY_MS,
+  ArrowUp: (ms) => ms - 7 * DAY_MS,
+  ArrowDown: (ms) => ms + 7 * DAY_MS,
+  Home: (ms) => ms - ((new Date(ms).getUTCDay() + 6) % 7) * DAY_MS,
+  End: (ms) => ms + (6 - ((new Date(ms).getUTCDay() + 6) % 7)) * DAY_MS,
+  PageUp: (ms) => shiftMonth(ms, -1),
+  PageDown: (ms) => shiftMonth(ms, 1),
+};
 
 function open() {
   const d = new Date(getState().startMs);
   viewYear = d.getUTCFullYear();
   viewMonth = d.getUTCMonth();
   pickStart = null;
+  focusMs = dayStart(getState().startMs);
   $("calendar").hidden = false;
   $("date-button").setAttribute("aria-expanded", "true");
   render();
+  $("calendar").querySelector(`[data-day="${focusMs}"]`)?.focus();
 }
 
-function close() {
+function close({ returnFocus = false } = {}) {
   $("calendar").hidden = true;
   $("date-button").setAttribute("aria-expanded", "false");
   pickStart = null;
+  if (returnFocus) $("date-button").focus();
 }
 
 export function initCalendar() {
@@ -94,6 +149,7 @@ export function initCalendar() {
       viewMonth += Number(nav.dataset.nav);
       if (viewMonth < 0) [viewMonth, viewYear] = [11, viewYear - 1];
       if (viewMonth > 11) [viewMonth, viewYear] = [0, viewYear + 1];
+      focusMs = clampFocus(shiftMonth(focusMs ?? Date.UTC(viewYear, viewMonth, 1), Number(nav.dataset.nav)));
       return render();
     }
     const day = event.target.closest("[data-day]");
@@ -101,16 +157,27 @@ export function initCalendar() {
     const ms = Number(day.dataset.day);
     if (pickStart == null) {
       pickStart = ms;
+      focusMs = ms;
       render();
+      $("calendar").querySelector(`[data-day="${ms}"]`)?.focus();
     } else {
       const windowDays = Math.round((ms - pickStart) / DAY_MS) + 1;
       setState({ startMs: pickStart, windowDays, timeMs: pickStart, dateChosen: true });
-      close();
+      // event.detail = 0 cuando se eligió con Enter/Espacio: el foco vuelve al botón.
+      close({ returnFocus: event.detail === 0 });
     }
   });
 
+  $("calendar").addEventListener("keydown", (event) => {
+    const move = KEY_MOVES[event.key];
+    const day = event.target.closest?.("[data-day]");
+    if (!move || !day) return;
+    event.preventDefault();
+    moveFocus(move(Number(day.dataset.day)));
+  });
+
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !$("calendar").hidden) close();
+    if (event.key === "Escape" && !$("calendar").hidden) close({ returnFocus: true });
   });
   document.addEventListener("click", (event) => {
     // composedPath conserva los ancestros aunque el calendario se haya redibujado en el clic.
