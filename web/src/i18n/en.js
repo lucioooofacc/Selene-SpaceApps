@@ -329,6 +329,7 @@ export default {
     linkWindows: "Link windows (Earth visible)",
     none: "No windows in the period.",
     periodLine: "Analysed period: from {start} 00:00 to {end} 24:00 UTC ({days} days).",
+    refsTitle: "Data references",
     windowsTitle: "Light and link windows",
     avgLine: "mean elevation {mean} (min {min}, max {max}); visible {pct} % of the period.",
     runs: "Longest night: {night}. Longest continuous light: {light}. Longest communication gap: {blackout}.",
