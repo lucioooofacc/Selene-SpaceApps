@@ -3,7 +3,7 @@
  * misión, retroceder/avanzar, reproducir, velocidad y deslizador.
  */
 import { DAY_MS } from "../lib/astro.js";
-import { dateUTC, missionTime, timeUTC } from "../lib/format.js";
+import { dateUTC, fromInputValue, missionTime, timeUTC, toInputValue } from "../lib/format.js";
 import { t } from "../i18n/index.js";
 import { getState, setState } from "../state.js";
 
@@ -50,6 +50,14 @@ export function initTimeline() {
     const { startMs, windowDays } = getState();
     setState({ timeMs: startMs + (Number(e.target.value) / RANGE_STEPS) * windowDays * DAY_MS });
   });
+  // Ir a una fecha y hora exactas (UTC) dentro de la misión; se pausa la reproducción.
+  $("time-input").addEventListener("change", (e) => {
+    const ms = fromInputValue(e.target.value);
+    if (ms == null) return;
+    const { startMs, windowDays } = getState();
+    setPlaying(false);
+    setState({ timeMs: Math.max(startMs, Math.min(startMs + windowDays * DAY_MS, ms)) });
+  });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden && getState().playing) setPlaying(false);
   });
@@ -74,6 +82,13 @@ export function renderTime(scenario, sample) {
   $("mission-clock").textContent = missionTime(sample.ms - scenario.startMs);
   $("scrub-date").textContent = `${dateUTC(sample.ms)} · ${timeUTC(sample.ms)} UTC`;
   if (document.activeElement !== $("time-range")) $("time-range").value = Math.round(f * RANGE_STEPS);
+  const input = $("time-input");
+  input.min = toInputValue(scenario.startMs);
+  input.max = toInputValue(scenario.startMs + scenario.windowDays * DAY_MS);
+  if (document.activeElement !== input) input.value = toInputValue(sample.ms);
+  // Respuesta directa: ¿se ven el Sol y la Tierra en ese instante?
+  const body = (key, b) => `<span class="${b.visible ? "is-on" : "is-off"}">${t(`sim.${key}Body`)}: ${t(b.visible ? "params.visible" : "params.hidden").toLowerCase()} (${t("sim.bodyVsRelief", { el: b.elevation.toFixed(1), hz: b.horizon.toFixed(1) })})</span>`;
+  $("time-visibility").innerHTML = `${body("sun", sample.sun)} · ${body("earth", sample.earth)}`;
 }
 
 const PLAY_ICON = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>';

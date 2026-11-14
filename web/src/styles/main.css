@@ -688,6 +688,77 @@ button {
   bottom: -2px;
 }
 
+/* ---------- Período de cada tarjeta e "Ir a fecha y hora" (UI-15) ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.criterion-period {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-field);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted-2);
+  cursor: help;
+}
+
+.criterion-period-now {
+  color: var(--sun);
+  border-color: rgba(232, 173, 91, 0.45);
+}
+
+.tl-goto {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.tl-goto input {
+  height: 28px;
+  padding: 0 8px;
+  background: var(--field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color-scheme: dark;
+}
+
+.tl-goto-utc {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.tl-goto-result {
+  margin: 0 0 0 auto;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.tl-goto-result .is-on {
+  color: var(--green);
+}
+
+.tl-goto-result .is-off {
+  color: var(--red);
+}
+
 /* ---------- Parámetros de la misión ---------- */
 .params {
   position: absolute;
@@ -1258,8 +1329,8 @@ button {
 /* ---------- Línea de tiempo ---------- */
 .timeline {
   width: 1240px;
-  height: 176px;
-  padding: 20px 20px 0;
+  min-height: 176px; /* crece con la fila "Ir a fecha y hora" (UI-15) */
+  padding: 20px 20px 16px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: linear-gradient(180deg, #0d121b, #0a0e15);
