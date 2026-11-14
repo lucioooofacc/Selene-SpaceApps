@@ -76,7 +76,7 @@
   padding: 0;
   border: 1px solid var(--border-field);
   border-radius: 16px;
-  background: var(--panel-2);
+  background: var(--panel-2-solid);
   color: var(--text);
   font-family: var(--font);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);

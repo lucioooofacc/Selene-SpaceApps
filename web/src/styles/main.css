@@ -46,6 +46,8 @@ button {
 }
 
 .stage {
+  position: relative;
+  z-index: 1; /* por encima de la Luna de fondo (DEC-060) */
   width: var(--design-width);
   margin: 0 auto;
 }
@@ -592,7 +594,7 @@ button {
   display: grid;
   gap: 6px;
   padding: 10px;
-  background: var(--field);
+  background: var(--field-solid);
   border: 1px solid var(--gold);
   border-radius: var(--r-md);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
@@ -676,7 +678,7 @@ button {
   z-index: 50;
   max-width: 560px;
   padding: 10px 16px;
-  background: var(--field);
+  background: var(--field-solid);
   border: 1px solid var(--gold);
   border-radius: var(--r-md);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
@@ -1342,7 +1344,7 @@ button {
   background: var(--border-card);
 }
 
-/* ---------- Calendario (imagen "image 30" del Figma) ---------- */
+/* ---------- Calendario (estructura de "image 30" del Figma, con la paleta de la web: DEC-060) ---------- */
 .calendar {
   position: absolute;
   top: 52px;
@@ -1350,10 +1352,11 @@ button {
   z-index: 5;
   width: 404px;
   padding: 16px 16px 12px;
-  background: #fff;
-  color: #222;
+  background: var(--field-solid);
+  color: var(--text);
+  border: 1px solid var(--gold);
   border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
 .calendar[hidden] {
@@ -1370,18 +1373,27 @@ button {
 .cal-head strong {
   flex: 1;
   text-align: center;
+  font-family: var(--font-title);
   font-size: 18px;
   font-weight: 600;
+  color: var(--text);
 }
 
 .cal-nav {
   width: 32px;
   height: 32px;
-  border: 0;
+  border: 1px solid var(--border-field);
   border-radius: 50%;
-  background: none;
-  font-size: 20px;
-  color: #222;
+  background: var(--panel);
+  font-size: 18px;
+  color: var(--gold);
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.cal-nav:hover {
+  border-color: var(--gold);
+  color: var(--text);
 }
 
 .cal-grid {
@@ -1392,8 +1404,11 @@ button {
 }
 
 .cal-dow {
-  font-size: 14px;
-  color: #6b6b6b;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-2);
   padding-bottom: 12px;
 }
 
@@ -1404,11 +1419,12 @@ button {
   border: 0;
   background: none;
   font-size: 16px;
-  color: #222;
+  color: var(--text);
+  cursor: pointer;
 }
 
 .cal-day.in-range {
-  background: #f3f3f3;
+  background: rgba(191, 167, 128, 0.16); /* --gold tenue */
 }
 
 .cal-day.range-start {
@@ -1429,22 +1445,37 @@ button {
   width: 48px;
   height: 48px;
   border-radius: 50%;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.cal-day:not(:disabled):not(.edge):hover span {
+  background: rgba(191, 167, 128, 0.25);
+}
+
+.cal-day:focus-visible {
+  outline: none;
+}
+
+.cal-day:focus-visible span {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
 }
 
 .cal-day.edge span {
-  background: #222;
-  color: #fff;
+  background: var(--gold);
+  color: var(--bg);
+  font-weight: 700;
 }
 
 .cal-day:disabled {
-  color: #c4c4c4;
+  color: var(--muted);
   cursor: default;
 }
 
 .cal-hint {
   margin-top: 8px;
   font-size: 12px;
-  color: #6b6b6b;
+  color: var(--muted-2);
   text-align: center;
 }
 
@@ -2152,5 +2183,88 @@ button {
 
 .pano-orbit-behind {
   opacity: 0.28;
+}
+
+/* ================= Luna de fondo animada (DEC-060) ================= */
+/*
+ * Esfera grande y fija detrás de la página, con el mosaico LROC (NASA SVS)
+ * girando despacio. La tira de textura se mueve con transform (barato de
+ * animar); un degradado da el volumen de la esfera y un halo la separa del
+ * fondo. Con "menos movimiento" queda quieta. Las tarjetas son
+ * semitransparentes (tokens) y las grandes desenfocan lo que tienen detrás.
+ */
+.moon-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.moon-backdrop-sphere {
+  position: absolute;
+  right: -14vmin;
+  top: 18vh;
+  width: 92vmin;
+  height: 92vmin;
+  border-radius: 50%;
+  overflow: hidden;
+  opacity: 0.55;
+  box-shadow: 0 0 120px 20px rgba(150, 170, 210, 0.08);
+}
+
+/* Tira con el mapa repetido: el disco muestra la mitad (un hemisferio) */
+.moon-backdrop-map {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 400%;
+  background-repeat: repeat-x; /* la imagen se define en el HTML, relativa a la página */
+  background-size: 50% 100%;
+  animation: moon-spin 240s linear infinite;
+  will-change: transform;
+}
+
+/* Volumen: luz desde arriba a la izquierda y borde oscuro */
+.moon-backdrop-sphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 38%),
+    radial-gradient(circle at 50% 50%, rgba(4, 6, 11, 0) 52%, rgba(4, 6, 11, 0.55) 76%, rgba(4, 6, 11, 0.95) 100%),
+    linear-gradient(115deg, rgba(4, 6, 11, 0) 40%, rgba(4, 6, 11, 0.7) 100%);
+}
+
+@keyframes moon-spin {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%); /* una vuelta completa del mapa */
+  }
+}
+
+[data-motion="reduced"] .moon-backdrop-map {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) .moon-backdrop-map {
+    animation: none;
+  }
+}
+
+/* Contenedores grandes: desenfocan la Luna que tienen detrás */
+.places,
+.map-card,
+.params,
+.behavior,
+.cmp-panel,
+.cmp-site,
+.cmp-controls,
+.cmp-note {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 
