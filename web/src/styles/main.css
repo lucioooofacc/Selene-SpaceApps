@@ -78,7 +78,8 @@ button {
 
 .header-nav {
   position: absolute;
-  left: 724px;
+  left: 50%;
+  transform: translateX(-50%);
   top: 28px;
   display: flex;
   align-items: center;
@@ -130,16 +131,20 @@ button {
 }
 
 /* ---------- Mejores lugares para alunizar ---------- */
+/*
+ * Columnas de la fila superior dentro de un ancho útil de 40..1952 px (UI-09):
+ * 520 + 60 + 848 + 60 + 424 = 1912, mismos márgenes que la sección inferior.
+ */
 .places-column {
   position: absolute;
-  left: 16px;
+  left: 40px;
   top: 0;
   width: 520px;
 }
 
 .places {
   position: relative;
-  height: 668px;
+  height: 808px; /* + enlace (40) = 848, mismo alto que el mapa y los parámetros */
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
@@ -158,8 +163,9 @@ button {
   position: absolute;
   left: 22px;
   top: 68px;
+  bottom: 24px;
   display: grid;
-  gap: 12px;
+  align-content: space-between;
 }
 
 .place {
@@ -266,7 +272,7 @@ button {
 /* ---------- Mapa ---------- */
 .map-card {
   position: absolute;
-  left: 568px;
+  left: 620px;
   top: 0;
   width: 848px;
   height: 848px;
@@ -300,15 +306,15 @@ button {
 }
 
 .map-tabs-sep {
+  margin: 0 12px;
   font-size: 24px;
   font-weight: 700;
   line-height: 28px;
-  white-space: pre;
 }
 
 .map-tabs-line {
   position: absolute;
-  left: 184px;
+  left: 194px; /* map.js la ajusta al ancho y la posición reales de las pestañas */
   top: 92px;
   width: 460px;
   height: 3px;
@@ -322,7 +328,7 @@ button {
 
 .map-tabs-full {
   left: 0;
-  width: 460px;
+  width: 100%;
 }
 
 .map-tabs-accent {
@@ -338,11 +344,12 @@ button {
 }
 
 /* Posición de la imagen en cada pestaña, igual que en el Figma */
+/* 600 px (antes 640) para que coordenadas y crédito entren en la tarjeta (UI-09) */
 .map-area[data-view="heat"] {
-  left: 104px;
+  left: 124px;
   top: 120px;
-  width: 640px;
-  height: 640px;
+  width: 600px;
+  height: 600px;
 }
 
 .map-area[data-view="polar"] {
@@ -424,8 +431,8 @@ button {
 
 .map-add {
   position: absolute;
-  left: 4px;
-  top: 728px;
+  left: 642px;
+  top: 749px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -457,8 +464,8 @@ button {
 
 .map-coords {
   position: absolute;
-  left: 0;
-  top: 776px;
+  left: 222px;
+  top: 736px;
   width: 404px;
   height: 72px;
   display: grid;
@@ -491,10 +498,10 @@ button {
 
 /* ---------- Luna 3D / 2D en GLOBAL y POLO SUR (UI-07, DEC-021) ---------- */
 .map-area[data-mode="3d"] {
-  left: 104px;
+  left: 124px;
   top: 120px;
-  width: 640px;
-  height: 640px;
+  width: 600px;
+  height: 600px;
   cursor: grab;
 }
 
@@ -584,13 +591,13 @@ button {
 
 .map-credit {
   position: absolute;
-  right: 32px;
-  top: 800px;
-  width: 400px;
+  left: 124px;
+  top: 816px;
+  width: 600px;
   color: var(--muted-2);
   font-size: 11px;
   line-height: 14px;
-  text-align: right;
+  text-align: center;
 }
 
 .map-credit[hidden] {
@@ -600,7 +607,7 @@ button {
 /* ---------- Parámetros de la misión ---------- */
 .params {
   position: absolute;
-  left: 1488px;
+  left: 1528px;
   top: 0;
   width: 424px;
   height: 848px;
@@ -756,7 +763,7 @@ button {
   left: 8px;
   top: 360px;
   display: grid;
-  gap: 12px;
+  gap: 8px;
 }
 
 .criterion {
@@ -975,9 +982,9 @@ button {
 /* ================= Comportamiento de los cuerpos celestes ================= */
 .behavior {
   position: relative;
-  margin: 124px 0 0 40px;
-  width: 1904px;
-  min-height: 1248px;
+  margin: 124px 40px 0;
+  width: 1912px;
+  padding-bottom: 40px;
   background: var(--panel-2);
   border-radius: var(--r-md);
 }
@@ -994,9 +1001,9 @@ button {
 
 .behavior-grid {
   display: grid;
-  grid-template-columns: 1240px 608px;
-  column-gap: 20px;
-  padding: 38px 0 0 40px;
+  grid-template-columns: 1240px 560px;
+  column-gap: 32px;
+  padding: 38px 40px 0;
 }
 
 .behavior-left {
@@ -1094,8 +1101,11 @@ button {
 .pano-caption {
   position: absolute;
   right: 20px;
-  bottom: 24px;
-  width: 440px;
+  top: 112px;
+  max-width: 460px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(5, 8, 15, 0.55);
   text-align: right;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -1442,9 +1452,11 @@ button {
   grid-template-columns: 40px 1fr;
   column-gap: 16px;
   align-items: start;
-  width: 608px;
-  padding: 12px 8px 12px 12px;
+  width: 560px;
+  padding: 16px;
   background: #101620;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
 }
 
 .insight-orb {

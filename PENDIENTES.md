@@ -26,6 +26,7 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
 - [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.
+- [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
 - [x] ~~Las tarjetas de "Mejores lugares" se rompían con valores largos ("890 Min", "-46.2°").~~ Resuelto 2026-11-13: columnas de 66 px y minutos en horas desde 100 min.
