@@ -1,10 +1,10 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad. La integración con JPL Horizons sigue siendo una propuesta. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-021), pero el horizonte todavía no lo consume.
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad. La integración con JPL Horizons sigue siendo una propuesta. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-024), pero el horizonte todavía no lo consume.
 
 ## Vista general
 
-SELENE es una aplicación de una sola página construida con Vite y JavaScript ES modules, sin framework. `src/main.js` coordina un estado global mínimo, el motor científico síncrono de `src/lib/` y los renderizadores imperativos de `src/ui/`.
+SELENE es una aplicación de dos páginas construida con Vite (multipágina) y JavaScript ES modules, sin framework: `index.html` (misión) y `compare.html` (comparación detallada entre dos sitios, UI-05). `src/main.js` coordina un estado global mínimo, el motor científico síncrono de `src/lib/` y los renderizadores imperativos de `src/ui/`.
 
 ```mermaid
 flowchart LR
@@ -31,21 +31,28 @@ flowchart LR
 | `src/lib/astro.js` | Modelo periódico aproximado del punto subsolar y subterrestre; transforma posiciones selenográficas en azimut/elevación local y calcula la fase terrestre. |
 | `src/lib/terrain.js` | Genera un horizonte sintético determinista, estima relieve para sitios no curados y calcula la depresión geométrica por altura. |
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
+| `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
-| `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-021). |
+| `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-024). |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
 | `src/data/terrain/lola-ldem-60s-240m.js` | Manifiesto del producto LOLA seleccionado: DOI, versión, URLs oficiales, bytes, MD5, grilla y proyección. Sin muestras. |
 | `scripts/download-lola.mjs` | Descarga los archivos del manifiesto a `web/data/raw/` con MD5 en streaming y control de tamaño; `--verify` comprueba lo descargado. |
 | `scripts/prepare-lola.mjs` | Lee DEM float32 + conteos int16 por ventanas y escribe un recorte JSON por sitio cubierto en `web/data/derived/` (no versionado). |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
 | `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
-| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR (imágenes del Figma), selección de coordenadas y alta de sitios. |
+| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D (GLOBAL y POLO SUR), selección de coordenadas y alta de sitios. MAPA DE CALOR sigue con la imagen del Figma. |
+| `src/ui/moon3d.js` | Luna 3D con three.js (carga diferida): textura LROC y relieve LOLA del CGI Moon Kit, render a demanda, giro con arrastre o teclado, clic → coordenadas, y marcadores HTML proyectados. |
+| `src/ui/polar2d.js` | Reproyecta en el navegador el mosaico LROC equirectangular a la vista polar 2D (azimutal equidistante hasta −60°, 0° arriba). |
 | `src/ui/params.js` | "Parámetros de la misión": sitio, coordenadas, duración y tarjetas de "Ventana de análisis". |
 | `src/ui/calendar.js` | Selector de rango de fechas de "Duración de misión (UTC)". |
-| `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. |
+| `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. La cresta es `scenario.horizon(az)` sin recortes, con 0°, puntos cardinales, exageración vertical y fuente del horizonte indicadas (UI-08). |
 | `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
 | `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
+| `src/ui/links.js` | Codifica y lee la selección de la comparación en la URL (`compare.html?a=&b=&start=&days=`) y actualiza los enlaces "Comparar" y "Ver comparación detallada". |
+| `src/ui/report.js` | Informe imprimible de la misión ("Informe" en el menú, o `index.html#informe`): arma el informe con el escenario vigente y abre la impresión del navegador; `styles/report.css` lo muestra solo al imprimir. |
+| `src/compare.js` | Entrada de `compare.html`: lee la URL, calcula y cachea los dos escenarios y reutiliza el calendario sobre `state.js`. |
+| `src/ui/compare.js` | Dibuja la comparación: encabezados con viabilidad, tabla de métricas, ventanas de luz/enlace, perfil del horizonte y criterios. |
 
 ## Estado, cálculo y renderizado
 
@@ -138,7 +145,7 @@ La integración prevista debe producir el mismo contrato conceptual de `sunPosit
 
 ### Topografía con LOLA
 
-El pipeline de datos está implementado (DEC-021) para `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (DOI 10.17189/1520642): `web/scripts/download-lola.mjs` descarga los archivos oficiales con MD5 en streaming, `web/scripts/prepare-lola.mjs` escribe recortes por sitio en la grilla nativa (sin remuestreo) y `web/src/lib/terrain-data.js` los consulta sin DOM ni red. Los rasters y los recortes no se versionan.
+El pipeline de datos está implementado (DEC-024) para `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (DOI 10.17189/1520642): `web/scripts/download-lola.mjs` descarga los archivos oficiales con MD5 en streaming, `web/scripts/prepare-lola.mjs` escribe recortes por sitio en la grilla nativa (sin remuestreo) y `web/src/lib/terrain-data.js` los consulta sin DOM ni red. Los rasters y los recortes no se versionan.
 
 TERRAIN-02 debe extraer un DEM alrededor del sitio y calcular el ángulo máximo de obstrucción por azimut incluyendo curvatura lunar. El resultado puede implementar el contrato `horizon(azimuthDeg) -> elevationDeg`, acompañado de metadatos y cobertura. No debe descargarse topografía dentro de `computeScenario()` ni dentro de bucles de renderizado.
 

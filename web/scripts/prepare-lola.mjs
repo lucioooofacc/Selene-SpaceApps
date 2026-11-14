@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Prepara recortes por sitio del producto LOLA seleccionado (TERRAIN-01, DEC-021).
+ * Prepara recortes por sitio del producto LOLA seleccionado (TERRAIN-01, DEC-024).
  *
  * Entradas (descargadas con download-lola.mjs):
  * - `ldem_60s_240m_float.img`: float32 little-endian, altura en km sobre la

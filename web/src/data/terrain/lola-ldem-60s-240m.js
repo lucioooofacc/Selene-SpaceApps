@@ -1,5 +1,5 @@
 /**
- * Manifiesto del producto topográfico seleccionado para TERRAIN-01 (DEC-021).
+ * Manifiesto del producto topográfico seleccionado para TERRAIN-01 (DEC-024).
  *
  * NASA PDS, LRO LOLA Gridded Data Record (data set LRO-L-LOLA-4-GDR-V1.0,
  * DOI 10.17189/1520642): DEM polar sur `LDEM_60S_240M_FLOAT` V2.1 y su mapa de

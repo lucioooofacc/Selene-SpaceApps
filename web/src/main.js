@@ -7,11 +7,14 @@
  *  3. Se redibuja solo lo que depende de lo que cambió.
  */
 import "./styles/main.css";
+import "./styles/report.css";
 import { computeScenario, sampleAt } from "./lib/analysis.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
 import { getSite, getState, subscribe } from "./state.js";
 import { initMap, placeAccent, renderMap } from "./ui/map.js";
-import { initPlaces, renderPlaces } from "./ui/places.js";
+import { initPlaces, rankedSites, renderPlaces } from "./ui/places.js";
+import { updateCompareLinks } from "./ui/links.js";
+import { initReport } from "./ui/report.js";
 import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
 import { refreshCalendar } from "./ui/calendar.js";
 import { renderInsight, renderStatus } from "./ui/status.js";
@@ -50,6 +53,7 @@ function renderInstant(state, { force = false } = {}) {
     renderStatus(sample);
     renderInsight(scenario, sample);
     renderPlaces(state);
+    updateCompareLinks(state, rankedSites(state));
     lastPanelsAt = now;
   }
 }
@@ -78,7 +82,7 @@ subscribe((state, changed) => {
     renderInstant(state, { force: true });
     return;
   }
-  if (has("mapView")) renderMap(state);
+  if (has("mapView", "mapMode")) renderMap(state);
   if (has("playing", "speed")) renderPlayback(state);
   if (has("timeMs", "playing")) renderInstant(state, { force: changed.has("playing") });
 });
@@ -110,6 +114,7 @@ function init() {
   document.fonts?.ready.then(placeAccent);
 
   renderAll();
+  initReport(() => scenario);
 }
 
 init();
