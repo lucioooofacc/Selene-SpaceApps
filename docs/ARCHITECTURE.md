@@ -1,6 +1,6 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025) y el horizonte LOLA de los sitios curados está precalculado (`lib/horizon-lola.js`, DEC-030), pero `analysis.js` todavía usa el horizonte sintético.
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025) y el horizonte LOLA de los sitios curados está precalculado (`lib/horizon-lola.js`, DEC-030); `analysis.js` lo usa para esos sitios y el sintético para el resto (DEC-032).
 
 ## Vista general
 
@@ -34,7 +34,7 @@ flowchart LR
 | `src/state.js` | Conserva el estado mutable único y notifica un `Set` de claves cambiadas a los suscriptores. |
 | `src/lib/astro.js` | Modelo periódico aproximado del punto subsolar y subterrestre; transforma posiciones selenográficas en azimut/elevación local y calcula la fase terrestre. |
 | `src/lib/terrain.js` | Genera un horizonte sintético determinista, estima relieve para sitios no curados y calcula la depresión geométrica por altura. |
-| `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
+| `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte (`scenarioHorizon`: LOLA en sitios curados cubiertos, sintético en el resto, DEC-032) y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
 | `src/lib/ranking.js` | Orden de "Mejores lugares" por categoría (global, interés científico, comunicación, luz) sobre resultados de `computeScenario`; sin fórmulas nuevas (DEC-029). |
 | `src/data/site-traits.js` | Rasgos de interés científico por sitio con cita (pendientes de validar por astronomía); separado de `sites.js` (DEC-029). |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
@@ -44,7 +44,7 @@ flowchart LR
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
 | `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-025). |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
-| `src/lib/horizon-lola.js` | Horizonte topográfico desde el DEM LOLA: rayos sobre círculos máximos con curvatura exacta, calidad (`count = 0`, truncamiento) y `createLolaHorizon(siteId)` → `horizon(az)` con `source = "lola"`. Puro; todavía no lo consume `analysis.js` (DEC-030). |
+| `src/lib/horizon-lola.js` | Horizonte topográfico desde el DEM LOLA: rayos sobre círculos máximos con curvatura exacta, calidad (`count = 0`, truncamiento) y `createLolaHorizon(siteId)` → `horizon(az)` con `source = "lola"`. Puro; lo usa `analysis.js` (DEC-030, DEC-032). |
 | `src/data/terrain/lola-horizons.js` | Tabla generada del horizonte LOLA de los sitios cubiertos (720 azimuts), con producto, MD5, algoritmo y parámetros. |
 | `scripts/build-lola-horizons.mjs` | Carga los rasters LOLA verificados, calcula la tabla de horizonte y, con `--svg`, la comparación visual con el horizonte sintético. |
 | `src/data/terrain/lola-ldem-60s-240m.js` | Manifiesto del producto LOLA seleccionado: DOI, versión, URLs oficiales, bytes, MD5, grilla y proyección. Sin muestras. |

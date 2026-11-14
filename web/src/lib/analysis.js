@@ -2,13 +2,15 @@
  * Análisis de un escenario (sitio + fecha de inicio + ventana de días).
  *
  * Muestrea el Sol y la Tierra cada 10 minutos y calcula:
- *  - visibilidad real (cuerpo por encima del horizonte del relieve),
+ *  - visibilidad real (cuerpo por encima del horizonte del relieve: LOLA en
+ *    los sitios curados cubiertos, sintético en el resto; ver scenarioHorizon),
  *  - potencia solar relativa y calidad de enlace,
  *  - ventanas de luz y de comunicación,
  *  - la viabilidad del escenario con criterios simples y explicables (DEC-007).
  */
 import { DAY_MS, EARTH_RADIUS, SUN_RADIUS, earthPhase, earthPosition, sunPosition } from "./astro.js";
 import { createHorizon } from "./terrain.js";
+import { createLolaHorizon } from "./horizon-lola.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -61,8 +63,24 @@ function level(value, { high, mid }) {
 
 const LEVEL_POINTS = { high: 2, mid: 1, low: 0 };
 
+/**
+ * Horizonte del escenario (CORE-01 parte A, DEC-032): el topográfico real de
+ * LOLA (TERRAIN-02, DEC-030) para los sitios curados cubiertos y, si no hay
+ * (sitios propios, Chang'e 4, Apollo 11), el sintético de `terrain.js`
+ * (DEC-005). Solo se usa LOLA si el sitio no es propio y sus coordenadas son
+ * exactamente las de la tabla, para no aplicar el horizonte de otro punto.
+ * El LOLA trae `source = "lola"`; el sintético no trae `source`.
+ */
+export function scenarioHorizon(site) {
+  if (!site.custom && site.id) {
+    const lola = createLolaHorizon(site.id);
+    if (lola && lola.meta.lat === site.lat && lola.meta.lon === site.lon) return lola;
+  }
+  return createHorizon(site);
+}
+
 export function computeScenario(site, startMs, windowDays) {
-  const horizon = createHorizon(site);
+  const horizon = scenarioHorizon(site);
   const windowSteps = Math.round((windowDays * DAY_MS) / STEP_MS);
   const total = windowSteps + Math.round((LOOKAHEAD_DAYS * DAY_MS) / STEP_MS);
 

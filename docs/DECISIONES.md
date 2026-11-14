@@ -55,7 +55,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Contexto / problema:** sin atmósfera, el horizonte lo define el relieve. Con un horizonte plano, Shackleton daba 0 % de luz, cuando en la realidad es de los puntos más iluminados.
 - **Decisión:** horizonte sintético por sitio (suma de ondas según el azimut), con un "relieve" característico y la depresión geométrica por altura: `acos(R / (R + h))`.
 - **Solución aplicada:** `web/src/lib/terrain.js`. Las formas del horizonte dependen suavemente de la posición, para que el mapa de calor sea continuo. Con los parámetros actuales, el promedio anual de Shackleton queda en ~90 % de luz, coherente con la literatura.
-- **Estado:** vigente para v1. **Reemplazo previsto:** horizonte calculado con mapas de elevación LOLA.
+- **Estado:** vigente para v1. **Reemplazo previsto:** horizonte calculado con mapas de elevación LOLA. **Reemplazada parcialmente por DEC-032** (14/11/2026): los sitios curados al sur de −60° usan el horizonte LOLA; el sintético sigue para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor.
 
 ## DEC-006 — Sitios curados
 
@@ -424,3 +424,27 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** reemplazar el horizonte en `analysis.js` desde la interfaz (es CORE-01 y cambia todos los resultados publicados); esperar sin mostrar nada.
 - **Estado:** vigente. Depende de que se integre el PR #50.
 
+
+## DEC-032 — El cálculo usa el horizonte LOLA en los sitios curados cubiertos (CORE-01, parte A)
+
+- **Contexto / problema:** el horizonte LOLA (TERRAIN-02, DEC-030) existía y la interfaz lo mostraba como vista previa (UI-14, DEC-031), pero `analysis.js` seguía calculando luz, potencia, comunicación y viabilidad con el horizonte sintético (DEC-005). CORE-01 (#11) se divide en dos partes por el plazo: **A**, horizonte real; **B**, efemérides JPL Horizons (rango acordado: nov 2026 – dic 2027, paso 1 h).
+- **Decisión:** `computeScenario()` usa el horizonte LOLA cuando el sitio es curado, está en la tabla y sus coordenadas coinciden exactamente; si no, el sintético. No se extrapola LOLA a otros puntos.
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: nueva `scenarioHorizon(site)`; `computeScenario()` la usa. Sitios con `custom: true`, ids desconocidos o coordenadas distintas de la tabla → sintético. `scenario.horizon.source === "lola"` hace que `ui/lola.js` pase de "vista previa" a "en uso" sin tocar la interfaz.
+  - `web/src/lib/horizon-lola.js`: `horizon.meta` incluye `lat`/`lon` del perfil para esa comprobación.
+  - Pruebas en `web/tests/analysis.test.js`: selección de horizonte (cubiertos, fuera de cobertura, propios, coordenadas distintas), `sampleAt` coherente y control físico de Cabeus.
+  - Sin cambios en el contrato de `computeScenario()`, `sampleAt()` ni en la UI. `computePolarHeatmap()` sigue con el sintético (MAP-01, #16). El Sol y la Tierra siguen saliendo del modelo aproximado (DEC-004) hasta la parte B.
+- **Efecto medido** (modelo astronómico aproximado; media de 12 ventanas de 30 días desde el 14/11/2026):
+
+  | Sitio | Luz sintético → LOLA | Comunicación sintético → LOLA |
+  | --- | --- | --- |
+  | Shackleton R04 | 96,1 % → 8,9 % | 62,4 % → 25,6 % |
+  | Malapert R23 | 53,4 % → 37,7 % (0 % a 74 % según la estación) | 87,6 % → 54,0 % |
+  | Cabeus (LCROSS) | 29,8 % → **0,0 %** | 59,3 % → 15,0 % |
+  | IM-1 | 48,0 % → 37,9 % | 100 % → 100 % |
+  | Chandrayaan-3 | 48,8 % → 48,4 % | 100 % → 100 % |
+
+  - **Control físico:** Cabeus es el sitio de impacto de LCROSS, elegido por estar en sombra permanente; con LOLA da 0 % de luz todo el año (el sintético le daba ~30 %).
+  - **Shackleton:** la caída se debe a que R04 cae en la pared interior del cráter según el DEM (hallazgo de DEC-030, pendiente de astronomía). Si se corrige la coordenada, hay que regenerar la tabla (`npm run data:lola:horizons`).
+- **Alternativas descartadas:** elegir el horizonte por id sin comprobar coordenadas (un punto propio con id repetido recibiría el horizonte de otro lugar); calcular LOLA para sitios propios en el navegador (requiere el raster; pendiente PERF-01); esperar a la parte B para integrar ambos juntos (demoraba el dato real ya disponible).
+- **Estado:** vigente. Pendiente: parte B (efemérides Horizons) y revisión de Shackleton R04. Se adelanta a TEST-01 (#10), todavía sin hacer.
