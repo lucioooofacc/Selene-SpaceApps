@@ -657,3 +657,13 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/ui/report.js` (`renderReport()` y `windowsList()` reescritos), `web/src/styles/report.css` reescrito (una regla anula fondos, bordes y sombras dentro del informe; las etiquetas de calidad se imprimen entre corchetes), textos `report.periodLine`, `report.windowsTitle`, `report.avgLine`, `report.runs` (ES/EN).
 - **Alternativas descartadas:** mantener tablas sin bordes (siguen leyéndose como recuadros alineados en columnas angostas); generar un PDF propio (agrega una dependencia; el navegador ya guarda en PDF).
 - **Estado:** vigente. Reemplaza el diseño del informe de UI-06 (DEC-020 sigue vigente para su contenido y su acceso desde el menú).
+
+## DEC-045 — "Resumen del período" en Comportamiento de los cuerpos celestes, y hover
+
+- **Contexto / problema:** bloc de notas de UI de Lucio: la sección "Comportamiento de los cuerpos celestes" tenía poca información y espacio libre en la columna derecha; había datos importantes escondidos (la viabilidad global, puntos sobre 6, solo aparecía en la comparación y el informe; "Datos y fuentes" solo era accesible con un botón "i"), y faltaban hover y respuestas visibles en varios controles.
+- **Decisión:**
+  - Tarjeta **"Resumen del período"** debajo de "Lectura del momento", con el estilo de las tarjetas existentes: viabilidad global (nivel y puntos, con su color), noche más larga, luz continua más larga, corte de comunicación más largo y % del período con el Sol y la Tierra visibles a la vez. Cada dato explica en su tooltip para qué sirve (baterías, satélite de relevo, energía y enlace simultáneos). Un enlace "Ver datos y fuentes" abre el mismo modal que el botón "i". No depende del instante: complementa las tarjetas instantáneas de arriba.
+  - **Hover y foco visible** en pestañas, categorías, chips, selector 3D/2D, capas, botones de la línea de tiempo, campos y tarjetas (cambio de borde o de color, sin movimiento; con "menos movimiento" no hay transiciones).
+- **Solución aplicada:** `web/src/lib/stats.js` (`bothFraction`) y su prueba; `web/src/ui/status.js` (`renderPeriodSummary()`, `initPeriodSummary()`); `web/index.html` (`#period-card`); `web/src/main.js`; `main.css` (separación de la columna de 36 a 24 px para que termine a la par del panorama y la línea de tiempo; bloque de hover); textos `periodCard.*` (ES/EN).
+- **Alternativas descartadas:** agregar más datos a las tarjetas de energía y comunicación (mezclaría instante y período, el mismo problema de DEC-042); un gráfico de rachas (recarga la sección).
+- **Estado:** vigente.

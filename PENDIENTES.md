@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (informe solo texto, rama `design/informe-texto`).
+Última actualización: 2026-11-14 (resumen del período y hover, rama `feat/resumen-periodo`).
 
 ---
 
@@ -48,10 +48,10 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Botón "+": que abra un menú (el texto que tiene al lado) en lugar de agregar directo. — Lucio~~ Resuelto 2026-11-14 (rama `feat/menu-agregar-sitio`, DEC-043).
 - [x] ~~Poder ponerle nombre a un sitio personalizado al crearlo. — Lucio~~ Resuelto 2026-11-14 (rama `feat/menu-agregar-sitio`, DEC-043).
 - [ ] Los sitios propios no se guardan al recargar ni viajan con su nombre a la comparación (llegan como "Punto (lat · lon)"). — Desarrollo web · DEC-043
-- [ ] "Comportamiento de los cuerpos celestes": sumar datos útiles para recabar información y comparar sitios, sin recargar. — Lucio
+- [x] ~~"Comportamiento de los cuerpos celestes": sumar datos útiles para recabar información y comparar sitios, sin recargar. — Lucio~~ Resuelto 2026-11-14 (rama `feat/resumen-periodo`, DEC-045): tarjeta "Resumen del período".
 - [x] ~~Informe: solo texto, apto para impresión, sin recuadros ni bordes redondeados. — Lucio~~ Resuelto 2026-11-14 (rama `design/informe-texto`, DEC-044).
-- [ ] Hover y respuestas visibles a las acciones del usuario. — Lucio
-- [ ] Sacar a la vista datos importantes que hoy están escondidos. — Lucio
+- [x] ~~Hover y respuestas visibles a las acciones del usuario. — Lucio~~ Resuelto 2026-11-14 (ramas `feat/menu-agregar-sitio` y `feat/resumen-periodo`, DEC-043 y DEC-045): aviso al agregar un sitio, hover y foco visible en todos los controles.
+- [x] ~~Sacar a la vista datos importantes que hoy están escondidos. — Lucio~~ Resuelto 2026-11-14 (DEC-042 y DEC-045): viabilidad global y rachas en el resumen del período, criterio de orden del ranking a la vista y acceso con texto a "Datos y fuentes". Si el equipo detecta otros datos escondidos, anotarlos acá.
 - [ ] "Mejores fechas para alunizar" en un punto dado, como "Mejores lugares". — Lucio
 
 ## Datos y astronomía (Teo, Facu, Lucio)
