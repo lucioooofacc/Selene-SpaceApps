@@ -62,6 +62,11 @@ export function initPlaces() {
   });
 }
 
+/** Sitios del ranking, del mejor al peor (para el enlace a la comparación). */
+export function rankedSites(state) {
+  return rank(state).map(({ site }) => site);
+}
+
 export function renderPlaces(state) {
   $("places-list").innerHTML = rank(state)
     .map(({ site, scenario }) => {

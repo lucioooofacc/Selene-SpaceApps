@@ -1,0 +1,379 @@
+/*
+ * Página de comparación detallada (UI-05, DEC-019). El Figma no tiene esta
+ * pantalla: se arma con los tokens, tipografías y componentes de la página
+ * de misión (paneles --panel-2, campos --field, dorado para el sitio A y
+ * celeste de la Tierra para el sitio B). Mismo escenario de 1992 px.
+ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.header-nav a[aria-current="page"] {
+  color: var(--gold);
+}
+
+.cmp {
+  padding: 8px 80px 64px;
+  display: grid;
+  gap: 24px;
+}
+
+.cmp-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.cmp-title {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 700;
+}
+
+.cmp-period {
+  margin-top: 4px;
+  color: var(--muted-2);
+  font-size: 22px;
+}
+
+.cmp-back {
+  color: var(--gold);
+  font-size: 22px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Selección */
+.cmp-controls {
+  display: grid;
+  grid-template-columns: 520px 56px 520px 440px;
+  align-items: end;
+  gap: 24px;
+  padding: 20px 24px;
+  background: var(--panel-2);
+  border-radius: var(--r-md);
+}
+
+.cmp-field {
+  display: grid;
+  gap: 8px;
+}
+
+.cmp-field .params-label {
+  color: var(--muted-2);
+  font-size: 16px;
+  line-height: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cmp-field .params-select,
+.cmp-field .params-date {
+  position: relative;
+  left: auto;
+  top: auto;
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+
+.cmp-field .params-select select {
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  padding: 0 40px 0 12px;
+  background: var(--field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.cmp-field .params-select img {
+  position: absolute;
+  right: 14px;
+  top: 16px;
+  transform: rotate(90deg);
+  pointer-events: none;
+}
+
+.cmp-field .params-date-button {
+  height: 48px;
+  padding: 0 12px;
+}
+
+.cmp-swap {
+  width: 56px;
+  height: 48px;
+  background: var(--field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  font-size: 26px;
+  color: var(--gold);
+}
+
+.cmp-note {
+  padding: 12px 16px;
+  border-left: 3px solid var(--gold);
+  background: var(--panel);
+  color: var(--muted-2);
+  font-size: 20px;
+  line-height: 28px;
+}
+
+/* Encabezados de los sitios */
+.cmp-sites {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.cmp-site {
+  padding: 20px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  border-top: 4px solid var(--gold);
+}
+
+.cmp-site-b {
+  border-top-color: var(--earth);
+}
+
+.cmp-slot,
+.cmp-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-2);
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cmp-slot i,
+.cmp-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.cmp-site-name {
+  margin: 6px 0 2px;
+  font-size: 36px;
+  line-height: 44px;
+}
+
+.cmp-site-sub {
+  color: var(--muted-2);
+  font-size: 20px;
+}
+
+.cmp-verdict {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-field);
+  font-size: 20px;
+}
+
+.cmp-verdict strong {
+  font-size: 24px;
+}
+
+.cmp-verdict em {
+  font-style: normal;
+  color: var(--muted-2);
+}
+
+.cmp-level-high {
+  color: var(--green);
+  background: var(--green-bg);
+  border-color: var(--green-border);
+}
+
+.cmp-level-mid {
+  color: var(--gold);
+  background: #221f1a;
+  border-color: #4a4232;
+}
+
+.cmp-level-low {
+  color: var(--red);
+  background: var(--red-bg);
+  border-color: #4f3236;
+}
+
+/* Paneles */
+.cmp-panel {
+  padding: 20px 24px;
+  background: var(--panel-2);
+  border-radius: var(--r-md);
+}
+
+.cmp-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.cmp-panel h2 {
+  font-size: 26px;
+  line-height: 32px;
+}
+
+.cmp-summary {
+  color: var(--gold);
+  font-size: 22px;
+}
+
+.cmp-hint {
+  color: var(--muted-2);
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.cmp-legend {
+  display: flex;
+  gap: 24px;
+}
+
+.cmp-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Tablas */
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 22px;
+}
+
+.cmp-table th,
+.cmp-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-card);
+  vertical-align: middle;
+}
+
+.cmp-table thead th {
+  color: var(--muted-2);
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cmp-table tbody th {
+  font-weight: 400;
+  width: 30%;
+}
+
+.cmp-table tbody th small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.cmp-value {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.cmp-bar {
+  display: block;
+  height: 6px;
+  margin-top: 6px;
+  background: var(--field);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+
+.cmp-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  opacity: 0.55;
+}
+
+.is-better .cmp-bar i {
+  opacity: 1;
+}
+
+.is-better .cmp-value::after {
+  content: " ▲";
+  color: var(--green);
+  font-size: 16px;
+}
+
+.cmp-adv {
+  color: var(--muted-2);
+}
+
+.cmp-criteria tbody th {
+  width: auto;
+}
+
+.cmp-th {
+  color: var(--muted-2);
+  font-size: 18px;
+}
+
+.cmp-chip {
+  display: inline-block;
+  padding: 4px 14px;
+  border: 1px solid;
+  border-radius: var(--r-pill);
+  font-size: 18px;
+}
+
+/* Gráficos */
+.cmp-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cmp-grid {
+  stroke: var(--border-card);
+  stroke-width: 1;
+}
+
+.cmp-zero {
+  stroke: var(--muted);
+  stroke-dasharray: 6 6;
+}
+
+.cmp-axis,
+.cmp-lane {
+  fill: var(--muted-2);
+  font-family: var(--font);
+  font-size: 16px;
+}
+
+.cmp-lane {
+  fill: var(--text);
+  dominant-baseline: middle;
+}
+
+.cmp-lane-bg {
+  fill: var(--field);
+}
