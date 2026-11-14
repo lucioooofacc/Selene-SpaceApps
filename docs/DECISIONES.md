@@ -542,3 +542,19 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Efecto:** con la regla elegida los resultados casi no cambian (media anual: Shackleton 62,2 % de luz y 46,5 % de comunicación; Cabeus 21,6 % → 21,7 % de comunicación). Se gana coherencia entre pantallas, radios medidos y una regla documentada y probada.
 - **Alternativas descartadas:** Sol con cualquier parte (sobrestima la energía útil con un borde de Sol); Sol solo con disco entero (subestima, el panel ya recibe energía antes); Tierra por el centro (subestima el enlace); seguir con radios fijos (error de hasta ±8 % en la Tierra).
 - **Estado:** vigente. La visibilidad geométrica de la Tierra sigue sin ser un presupuesto de enlace (fuera de alcance). El mapa de calor usa la regla, pero sigue con el modelo aproximado y el horizonte sintético (MAP-01).
+
+## DEC-037 — Validaciones separadas, controles físicos e integración continua (TEST-01)
+
+- **Contexto / problema:** TEST-01 (#10) pide ampliar las pruebas matemáticas y separar las validaciones contra fuentes reales, con casos límite, unidades, continuidad, faltantes e incertidumbre cubiertos, fixtures citados, tolerancias justificadas y CI o ejecución documentada. Ya había 127 pruebas, pero las validaciones contra datos reales estaban mezcladas con las unitarias, los controles físicos medidos no estaban formalizados y el repo no tenía CI. CORE-01 se había adelantado a esta tarea por el plazo.
+- **Decisión (Facundo, 14/11/2026):**
+  - Validaciones contra datos reales en `web/tests/validacion/` (`npm run test:validation`); pruebas matemáticas en `web/tests/` (`npm run test:unit`); `npm test` sigue corriendo todo.
+  - Controles físicos independientes de nuestro código, con tolerancias derivadas de constantes conocidas o de lo medido, sin valores de referencia inventados.
+  - Integración continua con GitHub Actions.
+- **Solución aplicada:**
+  - Movidas a `web/tests/validacion/`: `horizons-fixture.test.js` y `horizonte-lola-tabla.test.js`.
+  - Nuevas: `controles-fisicos.test.js` (altura máxima del Sol = colatitud + oblicuidad 1,543°; período sinódico; Tierra siempre visible desde Apollo 11 y nunca desde Chang'e 4; fase de la Tierra al mediodía y a la medianoche lunar; Cabeus sin Sol todo el año; estaciones del polo sur; horizonte negativo en cimas) e `incertidumbre.test.js` (error de la interpolación horaria cerca del horizonte).
+  - `docs/VALIDACION.md`: cómo correr cada grupo, tabla de validaciones con fuente, tolerancia y justificación, y tabla de incertidumbre conocida.
+  - `.github/workflows/ci.yml`: `npm ci`, `test:unit`, `test:validation` y `build` en cada PR y push a `main` (Node 22, solo lectura). Las pruebas con rasters LOLA se omiten solas.
+- **Resultados:** 136 pruebas (112 unitarias + 24 validaciones), 134 pasan y 2 se omiten sin rasters. Medidos: Sol máximo en Shackleton R01 2,05° (colatitud 0,54°); mes sinódico medio 29,5336 d; Tierra en Apollo 11 entre 58,0° y 73,7°; interpolación horaria cerca del horizonte < 0,0003°.
+- **Alternativas descartadas:** comparar contra iluminación publicada (no hay valores integrados y no se inventan); correr las pruebas con rasters en CI (descarga de ~345 MiB por corrida); separar con un framework de pruebas nuevo (agrega una dependencia sin necesidad).
+- **Estado:** vigente. Pendientes: marco MOON_ME vs MEAN_ME, EOP predichos y comparación con horizontes o iluminación publicados.

@@ -168,3 +168,6 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 6. Comparar contra casos controlados y datos externos sin convertir valores de referencia no verificados en “verdad NASA”.
 7. Mostrar en la UI fuente, modelo, resolución, fecha de obtención, cobertura y advertencias.
 
+## Validación
+
+Las validaciones contra fuentes reales, sus tolerancias y la incertidumbre conocida están en `docs/VALIDACION.md` (TEST-01, DEC-037).
