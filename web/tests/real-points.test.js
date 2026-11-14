@@ -87,7 +87,8 @@ test("DEM reducido: archivos coherentes y cobertura hasta −75°", () => {
 test("DEM reducido: horizonte cerca del de 240 m (errores medidos, DEC-034)", () => {
   registerPolarDem([level(480), level(960)]);
   // Error medio y máximo medidos al crear el DEM; margen pequeño por redondeos.
-  const limits = { shackleton: [0.2, 0.5], malapert: [0.25, 1.0], cabeus: [0.05, 0.15], im1: [0.85, 2.0] };
+  // shackleton = R01 Connecting Ridge desde DEC-035 (medido 0,38° / 1,07°).
+  const limits = { shackleton: [0.45, 1.2], malapert: [0.25, 1.0], cabeus: [0.05, 0.15], im1: [0.85, 2.0] };
   for (const [id, [meanMax, maxMax]] of Object.entries(limits)) {
     const full = createLolaHorizon(id);
     const red = polarHorizonFor({ ...site(id), custom: true });

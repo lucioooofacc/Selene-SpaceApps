@@ -13,7 +13,7 @@ import {
 // Valores confirmados por astronomía el 2026-11-14 (DEC-019). Cambiarlos exige
 // actualizar DEC-019 y citar la fuente.
 const CONFIRMED = {
-  shackleton: [-89.7668, -171.87, "Shackleton Rim R04", "study-point"],
+  shackleton: [-89.4632, -137.49, "Connecting Ridge R01", "study-point"],
   malapert: [-85.9948, -0.23578, "Malapert Massif R23", "study-point"],
   cabeus: [-84.6796, -48.7093, "LCROSS Centaur impact site", "impact"],
   im1: [-80.1277, 1.4357, "IM-1 Odysseus lander", "lander"],

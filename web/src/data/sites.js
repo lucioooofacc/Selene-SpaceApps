@@ -70,16 +70,18 @@ export const SITES = [
   {
     id: "shackleton",
     name: "Shackleton",
-    lat: -89.7668,
-    lon: -171.87,
+    // DEC-035: R01 Connecting Ridge reemplaza a R04 "Shackleton Rim" (−89.7668,
+    // −171.87), cuyo centro de polígono cae en la pared interior del cráter.
+    lat: -89.4632,
+    lon: -137.49,
     relief: 0.7,
     elevationKm: 1,
     agency: "NASA · Artemis",
-    point: { name: "Shackleton Rim R04", type: "study-point" },
+    point: { name: "Connecting Ridge R01", type: "study-point" },
     provenance: {
       ...CONFIRMED,
       reference:
-        "NASA Lunar Surface Data Book Rev A (ACD-50044, 2023), tabla A2-2: \"R04 or Site04, Shackleton Rim\" -89.7668, -171.87. Terminología según Mazarico et al. (2011).",
+        "NASA Lunar Surface Data Book Rev A (ACD-50044, 2023), tabla A2-2: \"R01 or Site01, Connecting Ridge\" -89.4632, -137.49 (cresta que une los bordes de Shackleton y de Gerlache). Las coordenadas de la tabla son centros de polígonos. Reemplaza a R04 \"Shackleton Rim\" (DEC-035). Terminología según Mazarico et al. (2011).",
       sourceFrameVerified: false,
       frameNote: LSDB_FRAME,
       urls: [SOURCE_URLS.lunarSurfaceDataBook],

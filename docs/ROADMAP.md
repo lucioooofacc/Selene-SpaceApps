@@ -63,7 +63,7 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 | CORE-01 parte A (#11): horizonte LOLA en el cálculo | ✅ (PR #54) | Los resultados de los sitios polares ya usan el relieve real (DEC-032) |
 | **CORE-01 parte B (#11): efemérides Horizons en el cálculo** | ✅ en revisión | Series de los 7 sitios, nov 2026–dic 2027, paso 1 h; fuera de ese rango, modelo aproximado; `scenario.ephemeris` informa el origen (DEC-033) |
 
-**Qué estamos viendo:** con el horizonte real, los resultados cambiaron mucho. Shackleton R04 bajó de ~96 % a ~9 % de luz y Cabeus quedó en 0 % (sombra permanente, el control esperado). La coordenada de Shackleton R04 cae en la pared interior del cráter según LOLA: **la tiene que revisar astronomía** (etapa 3) antes de presentar conclusiones sobre ese sitio.
+**Qué estamos viendo:** con el horizonte real, los resultados cambiaron mucho. Shackleton R04 bajó de ~96 % a ~9 % de luz y Cabeus quedó en 0 % (sombra permanente, el control esperado). R04 resultó ser el centro de un polígono de la tabla de NASA, que cae en la pared del cráter; desde DEC-035 Shackleton usa **R01 Connecting Ridge** (62 % de luz, 46 % de comunicación).
 
 **CORE-03 (#59, DEC-034), en revisión:** los puntos elegidos en el mapa usan el Sol y la Tierra de Horizons (trasladados) y, al sur de −75°, un horizonte LOLA reducido (480/960 m) calculado en el navegador.
 
@@ -71,7 +71,7 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 
 Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Datos y astronomía":
 
-1. **Shackleton R04:** ¿la coordenada es la correcta para el borde? (DEC-030, DEC-032). Es lo más urgente, porque cambia el ranking publicado.
+1. ~~**Shackleton R04:** ¿la coordenada es la correcta para el borde?~~ Resuelto: R04 era el centro de un polígono; se usa R01 Connecting Ridge (DEC-035, #61).
 2. Marcos de R04/R23, IM-1 y Chandrayaan-3, y orientación de la proyección polar (DEC-019, DEC-025).
 3. Altura datum de cada sitio para Horizons y validez de MOON_ME/DE421 frente a MEAN_ME/DE441 (DEC-024).
 4. Rasgos de "Interés científico" (DEC-029) y umbrales de viabilidad (DEC-007).
@@ -104,7 +104,7 @@ PERF-01 (#18): worker y caché persistente. SCIENCE-02 (#19): cruces temporales 
 
 ## Orden sugerido para lo que queda
 
-1. **Ahora:** Facundo cierra CORE-01 parte B. Astronomía revisa Shackleton R04.
+1. ~~**Ahora:** Facundo cierra CORE-01 parte B. Astronomía revisa Shackleton R04.~~ Hecho (DEC-033, DEC-035).
 2. **Después de la parte B:** Lucio completa UI-01 (fuente y cobertura de las efemérides reales). Se actualizan los avisos de "aproximado".
 3. **Domingo a la mañana:** TEST-01 y CORE-02 si llegan; si no, documentar la limitación. Revisión de textos (I18N-01).
 4. **Domingo a la tarde:** DEPLOY-01 (checklist de arriba) y video.
