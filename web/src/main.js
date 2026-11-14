@@ -92,7 +92,7 @@ subscribe((state, changed) => {
     return;
   }
   if (has("mapView", "mapMode", "heatLayer")) renderMap(state);
-  if (has("placesCategory")) {
+  if (has("placesCategory", "placesMode")) {
     renderPlaces(state);
     updateCompareLinks(state, rankedSites(state));
   }

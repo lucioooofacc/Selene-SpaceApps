@@ -28,6 +28,22 @@ export default {
   },
   places: {
     title: "Mejores lugares para alunizar",
+    modeLabel: "Qué ordenar",
+    mode: { sites: "Mejores lugares", dates: "Mejores fechas" },
+    dates: {
+      computing: "Calculando las mejores fechas para este sitio…",
+      none: "Sin datos de JPL Horizons para este sitio todavía: las fechas se ordenan solo con efemérides reales.",
+      hint: {
+        overall: "Fechas de inicio para este sitio con la misma duración ({days} días), entre el {from} y el {to} (datos de JPL Horizons), sin períodos superpuestos, ordenadas por puntos de viabilidad; a igualdad, por horas de luz.",
+        communication: "Fechas de inicio para este sitio con la misma duración ({days} días), entre el {from} y el {to} (datos de JPL Horizons), sin períodos superpuestos, ordenadas por el porcentaje del período con la Tierra visible.",
+        light: "Fechas de inicio para este sitio con la misma duración ({days} días), entre el {from} y el {to} (datos de JPL Horizons), sin períodos superpuestos, ordenadas por la potencia solar media aprovechable.",
+      },
+      aria: "Usar el período {range}",
+      sub: "Viabilidad {level} · {points}/{max} puntos",
+      sunPct: "Porcentaje del período con Sol",
+      earthPeak: "Altura máxima de la Tierra en el período",
+      noScience: "No aplica a fechas: los rasgos científicos dependen del sitio, no de la fecha.",
+    },
     categoryLabel: "Ordenar los lugares por",
     category: { overall: "Global", science: "Ciencia", communication: "Comunicación", light: "Luz" },
     categoryHint: {

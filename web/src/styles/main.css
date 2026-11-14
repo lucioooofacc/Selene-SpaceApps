@@ -186,6 +186,49 @@ button {
   line-height: 28px;
 }
 
+/* Pestañas "Mejores lugares / Mejores fechas" (DEC-046), como las del mapa */
+.places-modes {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--muted-2);
+}
+
+.places-modes button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--muted-2);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.places-modes button[aria-selected="true"] {
+  color: var(--text);
+}
+
+.places-modes button:hover:not([aria-selected="true"]) {
+  color: var(--gold);
+}
+
+.places-categories button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.place-name-date {
+  font-size: 18px !important;
+}
+
+.places-empty {
+  width: 476px;
+  padding: 24px 0;
+  text-align: center;
+  color: var(--muted-2);
+  font-size: 14px;
+}
+
 .places-list {
   list-style: none;
   position: absolute;
