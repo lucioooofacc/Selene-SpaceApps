@@ -1,4 +1,4 @@
-// Pruebas unitarias del adaptador Horizons (ASTRO-01, DEC-020).
+// Pruebas unitarias del adaptador Horizons (ASTRO-01, DEC-023).
 // Usan textos construidos en la prueba; la validación contra la respuesta
 // oficial está separada en horizons.fixture.test.js.
 import test from "node:test";

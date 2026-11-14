@@ -1,4 +1,4 @@
-# Fixtures de JPL Horizons (ASTRO-01, DEC-020)
+# Fixtures de JPL Horizons (ASTRO-01, DEC-023)
 
 Respuestas **oficiales y sin modificar** de la API de NASA/JPL Horizons, usadas para validar el adaptador `web/src/lib/horizons.js`. No son datos de producción de la interfaz.
 
@@ -36,7 +36,7 @@ node scripts/fetch-horizons.mjs --site shackleton --assume-zero-altitude \
   --out tests/fixtures/horizons --force
 ```
 
-Con `--offline` en lugar de `--force` solo se revalida la caché existente, sin red. Una nueva descarga cambia `retrievedAt`, el hash crudo y posiblemente los valores (nuevos EOP o efemérides): si eso pasa, revisar el diff y actualizar DEC-020.
+Con `--offline` en lugar de `--force` solo se revalida la caché existente, sin red. Una nueva descarga cambia `retrievedAt`, el hash crudo y posiblemente los valores (nuevos EOP o efemérides): si eso pasa, revisar el diff y actualizar DEC-023.
 
 ## Qué validan
 

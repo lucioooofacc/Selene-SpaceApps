@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>SELENE</title>
+    <link rel="icon" href="./figma/logo.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="stage" id="stage">
+      <!-- Encabezado igual al de la página de misión (Vista 6) -->
+      <header class="header">
+        <a href="./index.html"><img class="header-logo" src="./figma/logo.png" alt="" width="80" height="64" /></a>
+        <p class="header-brand">SELENE</p>
+        <nav class="header-nav" data-i18n-attr="aria-label:nav.label">
+          <a href="./index.html" data-i18n="nav.mission"></a>
+          <a href="./compare.html" aria-current="page" data-i18n="nav.compare"></a>
+          <a href="./index.html#informe" data-i18n="nav.report"></a>
+        </nav>
+        <div class="header-actions">
+          <button type="button" class="icon-button" id="lang-toggle" data-i18n-attr="aria-label:nav.language;title:nav.language">
+            <img src="./figma/icon-globe.svg" alt="" width="46" height="46" />
+          </button>
+          <button type="button" class="icon-button" data-i18n-attr="aria-label:nav.settings;title:nav.settings">
+            <img src="./figma/icon-gear.svg" alt="" width="44" height="44" style="width:44px;height:44px" />
+          </button>
+        </div>
+      </header>
+
+      <main class="cmp" id="comparacion">
+        <div class="cmp-head">
+          <div>
+            <h1 class="cmp-title" data-i18n="compare.title"></h1>
+            <p class="cmp-period" id="cmp-period"></p>
+          </div>
+          <a class="cmp-back" href="./index.html" data-i18n="compare.back"></a>
+        </div>
+
+        <!-- Selección -->
+        <section class="cmp-controls" data-i18n-attr="aria-label:compare.controls">
+          <label class="cmp-field">
+            <span class="params-label" data-i18n="compare.slot.a"></span>
+            <span class="params-select">
+              <select id="site-a"></select>
+              <img src="./figma/param-arrow.svg" alt="" width="8" height="16" />
+            </span>
+          </label>
+          <button type="button" class="cmp-swap" id="swap" data-i18n-attr="aria-label:compare.swap;title:compare.swap">⇄</button>
+          <label class="cmp-field">
+            <span class="params-label" data-i18n="compare.slot.b"></span>
+            <span class="params-select">
+              <select id="site-b"></select>
+              <img src="./figma/param-arrow.svg" alt="" width="8" height="16" />
+            </span>
+          </label>
+          <div class="cmp-field">
+            <span class="params-label" data-i18n="params.duration"></span>
+            <div class="params-date">
+              <button type="button" class="params-date-button" id="date-button" aria-haspopup="dialog" aria-expanded="false"></button>
+              <div class="calendar" id="calendar" role="dialog" hidden></div>
+            </div>
+          </div>
+        </section>
+
+        <p class="cmp-note" data-i18n="compare.modelNote"></p>
+
+        <section class="cmp-sites" id="cmp-sites" aria-live="polite"></section>
+
+        <section class="cmp-panel" aria-labelledby="cmp-metrics-title">
+          <div class="cmp-panel-head">
+            <h2 id="cmp-metrics-title" data-i18n="compare.metricsTitle"></h2>
+            <p class="cmp-summary" id="cmp-summary"></p>
+          </div>
+          <div id="cmp-metrics"></div>
+        </section>
+
+        <section class="cmp-panel" aria-labelledby="cmp-windows-title">
+          <div class="cmp-panel-head">
+            <h2 id="cmp-windows-title" data-i18n="compare.windowsTitle"></h2>
+            <p class="cmp-hint" data-i18n="compare.windowsHint"></p>
+          </div>
+          <div class="cmp-chart" id="cmp-windows"></div>
+        </section>
+
+        <div class="cmp-row">
+          <section class="cmp-panel" aria-labelledby="cmp-horizon-title">
+            <div class="cmp-panel-head">
+              <h2 id="cmp-horizon-title" data-i18n="compare.horizonTitle"></h2>
+              <p class="cmp-legend" id="cmp-horizon-legend"></p>
+            </div>
+            <div class="cmp-chart" id="cmp-horizon"></div>
+            <p class="cmp-hint" data-i18n="compare.horizonNote"></p>
+          </section>
+
+          <section class="cmp-panel" aria-labelledby="cmp-criteria-title">
+            <div class="cmp-panel-head">
+              <h2 id="cmp-criteria-title" data-i18n="compare.criteriaTitle"></h2>
+            </div>
+            <div id="cmp-criteria"></div>
+            <p class="cmp-hint" data-i18n="compare.criteriaNote"></p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="./src/compare.js"></script>
+  </body>
+</html>
