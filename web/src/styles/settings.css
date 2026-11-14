@@ -290,6 +290,14 @@
   border-color: var(--border-field);
 }
 
+/* Dato real que todavía se está bajando (UI-01, DEC-039): sin animación. */
+.q-loading {
+  color: var(--muted-2);
+  background: var(--field);
+  border-color: var(--border-field);
+  border-style: dashed;
+}
+
 .prov {
   display: grid;
   grid-template-columns: auto 1fr;

@@ -11,11 +11,21 @@
  *   y el horizonte es sintético (DEC-005) salvo que la función del horizonte
  *   declare `source === "lola"` (propuesta para TERRAIN-02).
  *
+ * - Efemérides (UI-01, DEC-039): estado, fuente, cobertura y fecha de consulta
+ *   de las series de JPL Horizons, y los estados de carga, error y faltante de
+ *   las efemérides y del DEM LOLA reducido (`data-status.js`).
+ *
  * Solo presenta: no calcula nada.
  */
 import { t } from "../i18n/index.js";
 import { TRAIT_SOURCES, traitsFor } from "../data/site-traits.js";
 import { lolaForScenario } from "./lola.js";
+import { dataStatus, onDataStatus } from "./data-status.js";
+import { dateUTC, pct } from "../lib/format.js";
+import { findSite } from "../data/sites.js";
+import { needsPolarDem } from "../lib/analysis.js";
+
+const HORIZONS_DOCS = "https://ssd.jpl.nasa.gov/horizons/";
 
 const SOURCE_LABELS = [
   ["nssdc.gsfc.nasa.gov", "NASA NSSDCA"],
@@ -77,7 +87,11 @@ export function traitsHtml(site) {
 /** Resumen del horizonte LOLA del sitio (TERRAIN-02, DEC-030), o por qué no hay. */
 export function lolaHtml(scenario) {
   const { horizon, mode } = lolaForScenario(scenario);
-  if (!horizon) return `<p class="prov-none">${qualityTag("none")} ${t("quality.lola.none")}</p>`;
+  if (!horizon) {
+    const dem = polarDemState(scenario);
+    if (dem) return `<p class="prov-none" role="status">${qualityTag(dem === "loading" ? "loading" : "none")} ${t(`quality.lola.dem.${dem}`)}</p>`;
+    return `<p class="prov-none">${qualityTag("none")} ${t("quality.lola.none")}</p>`;
+  }
   const { observer, summary, product } = horizon.meta;
   const deg = (v) => `${v.toFixed(1)}°`;
   const pct = (v) => `${(v * 100).toFixed(1)} %`;
@@ -92,6 +106,65 @@ export function lolaHtml(scenario) {
     </dl>`;
 }
 
+/**
+ * Estado del DEM LOLA reducido si el escenario es un punto propio que lo
+ * necesita y todavía no tiene horizonte LOLA: "loading" | "error" | null.
+ */
+function polarDemState(scenario) {
+  if (scenario?.horizon?.source === "lola" || !scenario?.site?.custom || !needsPolarDem(scenario.site)) return null;
+  const { state } = dataStatus().polarDem;
+  return state === "loading" ? "loading" : state === "error" ? "error" : null;
+}
+
+/**
+ * Estado de las efemérides del escenario: "real" | "derived" | "mixed" |
+ * "loading" | "error" | "siteFailed" | "outside" (fuera de la cobertura o
+ * sin series pedidas, como en las pruebas).
+ */
+function ephemerisState(scenario) {
+  const eph = scenario?.ephemeris;
+  if (eph?.source === "horizons") return eph.derived ? "derived" : "real";
+  if (eph?.source === "mixed") return "mixed";
+  const { state, failed } = dataStatus().ephemerides;
+  if (state === "loading") return "loading";
+  if (state === "error") return "error";
+  if (failed.some((f) => f.id === scenario?.site?.id)) return "siteFailed";
+  return "outside";
+}
+
+const EPHEMERIS_TAG = { real: "real", derived: "real", mixed: "approx", loading: "loading", error: "approx", siteFailed: "approx", outside: "approx" };
+
+/** Altura del observador usada en la consulta a Horizons. */
+function observerText(observer) {
+  if (observer?.altitudeBasis === "measured-datum") {
+    return t("quality.eph.altitudeMeasured", { m: Math.round(observer.altitudeKm * 1000) });
+  }
+  return t("quality.eph.altitudeAssumed");
+}
+
+/** Bloque "Efemérides del Sol y la Tierra" (UI-01, DEC-039). */
+export function ephemerisHtml(scenario) {
+  const state = ephemerisState(scenario);
+  const head = `<dt>${t("quality.eph.status")}</dt><dd>${qualityTag(EPHEMERIS_TAG[state])} ${t(`quality.eph.state.${state}`)}</dd>`;
+  const meta = scenario?.ephemeris?.meta;
+  if (!meta) return `<dl class="prov" role="status">${head}</dl>`;
+
+  const { windowFraction, lookaheadComplete } = scenario.ephemeris;
+  const cov = meta.coverage;
+  const from = meta.derivedFrom ? findSite(meta.derivedFrom) : null;
+  const retrieved = Date.parse(meta.sun?.retrievedAt);
+  return `
+    <dl class="prov" role="status">
+      ${head}
+      <dt>${t("quality.eph.source")}</dt><dd><a href="${HORIZONS_DOCS}" target="_blank" rel="noopener noreferrer">${meta.name ?? "NASA/JPL Horizons"}</a> · ${meta.ephemeris ?? "—"} · ${meta.centerPole ?? "—"}</dd>
+      ${from ? `<dt>${t("quality.eph.derivedFrom")}</dt><dd>${t("quality.eph.derivedFromValue", { name: from.name, km: meta.derivedDistanceKm })}</dd>` : ""}
+      <dt>${t("quality.eph.coverage")}</dt><dd>${t("quality.eph.coverageValue", { from: dateUTC(cov.startMs), to: dateUTC(cov.stopMs), step: cov.stepMinutes })}</dd>
+      <dt>${t("quality.eph.window")}</dt><dd>${pct(windowFraction * 100)}${lookaheadComplete ? "" : ` · ${t("quality.eph.lookahead")}`}</dd>
+      <dt>${t("quality.eph.retrieved")}</dt><dd>${Number.isFinite(retrieved) ? dateUTC(retrieved) : "—"}</dd>
+      <dt>${t("quality.eph.observer")}</dt><dd>${observerText(meta.observer)}</dd>
+    </dl>`;
+}
+
 /** Filas de calidad de los datos de la página para el escenario dado. */
 export function qualityRows(site, scenario) {
   const lola = lolaForScenario(scenario);
@@ -102,7 +175,11 @@ export function qualityRows(site, scenario) {
       ? { key: "horizon", hint: "horizonActive", kind: "real", ref: "DEC-030" }
       : lola.mode === "preview"
         ? { key: "horizon", hint: "horizonPreview", kind: "synthetic", ref: "DEC-005 · DEC-030" }
-        : { key: "horizon", kind: "synthetic", ref: "DEC-005" };
+        : polarDemState(scenario) === "loading"
+          ? { key: "horizon", hint: "horizonLoading", kind: "loading", ref: "DEC-034" }
+          : polarDemState(scenario) === "error"
+            ? { key: "horizon", hint: "horizonError", kind: "synthetic", ref: "DEC-034 · DEC-005" }
+            : { key: "horizon", kind: "synthetic", ref: "DEC-005" };
   // Origen del Sol y la Tierra según el escenario (CORE-01 parte B, DEC-033).
   const source = scenario?.ephemeris?.source;
   const ephemerisRow =
@@ -112,7 +189,11 @@ export function qualityRows(site, scenario) {
       ? { key: "ephemeris", hint: "ephemerisReal", kind: "real", ref: "DEC-033" }
       : source === "mixed"
         ? { key: "ephemeris", hint: "ephemerisMixed", kind: "approx", ref: "DEC-033 · DEC-004" }
-        : { key: "ephemeris", kind: "approx", ref: "DEC-004" };
+        : ephemerisState(scenario) === "loading"
+          ? { key: "ephemeris", hint: "ephemerisLoading", kind: "loading", ref: "DEC-033" }
+          : ephemerisState(scenario) === "outside"
+            ? { key: "ephemeris", kind: "approx", ref: "DEC-004" }
+            : { key: "ephemeris", hint: "ephemerisError", kind: "approx", ref: "DEC-033 · DEC-004" };
   return [
     { key: "coords", kind: site?.provenance ? "real" : "none", ref: "DEC-019" },
     ephemerisRow,
@@ -163,6 +244,10 @@ export function initQualityDialog(getContext) {
           ${provenanceHtml(site)}
         </fieldset>
         <fieldset>
+          <legend>${t("quality.eph.title")}</legend>
+          ${ephemerisHtml(scenario)}
+        </fieldset>
+        <fieldset>
           <legend>${t("quality.lola.title")}</legend>
           ${lolaHtml(scenario)}
         </fieldset>
@@ -189,4 +274,14 @@ export function initQualityDialog(getContext) {
     if (event.target === dialog) dialog.close();
   });
   dialog.addEventListener("close", () => button.focus());
+  // Si llegan (o fallan) datos con el modal abierto, se actualiza. El nuevo
+  // escenario lo calcula quien escucha la carga; se espera un cuadro para leerlo.
+  onDataStatus(() =>
+    requestAnimationFrame(() => {
+      if (!dialog.open) return;
+      const hadFocus = dialog.contains(document.activeElement);
+      render();
+      if (hadFocus) dialog.querySelector(".settings-close")?.focus();
+    }),
+  );
 }

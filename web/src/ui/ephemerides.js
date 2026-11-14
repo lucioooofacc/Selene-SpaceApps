@@ -6,6 +6,7 @@
  * `lib/ephemeris.js` (sube `ephemerisVersion()`) y quien llamó vuelve a dibujar.
  * Si un archivo falla, ese sitio sigue con el modelo aproximado.
  */
+import { setDataStatus } from "./data-status.js";
 import { loadEphemerides } from "../lib/ephemeris.js";
 import { needsPolarDem } from "../lib/analysis.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
@@ -21,11 +22,14 @@ async function fetchJson(id) {
 
 /** Carga (una sola vez por página) las series de todos los sitios curados. */
 export function loadSiteEphemerides() {
+  if (!loading) setDataStatus("ephemerides", { state: "loading" });
   loading ??= loadEphemerides(
     SITES.map((s) => s.id),
     fetchJson,
   ).then((result) => {
     for (const f of result.failed) console.warn(`Efemérides de ${f.id} no disponibles (modelo aproximado): ${f.error}`);
+    const state = !result.failed.length ? "ready" : result.loaded.length ? "partial" : "error";
+    setDataStatus("ephemerides", { state, loaded: result.loaded, failed: result.failed });
     return result;
   });
   return loading;
@@ -52,11 +56,16 @@ async function fetchPolarLevel(name) {
  */
 export function ensurePolarTerrain(sites, onLoaded) {
   if (polarLoading || !sites.some(needsPolarDem)) return;
+  setDataStatus("polarDem", { state: "loading" });
   polarLoading = Promise.all(POLAR_LEVELS.map(fetchPolarLevel)).then(
     (levels) => {
       registerPolarDem(levels);
+      setDataStatus("polarDem", { state: "ready" });
       onLoaded?.();
     },
-    (error) => console.warn(`DEM LOLA reducido no disponible (horizonte sintético en puntos propios): ${error.message}`),
+    (error) => {
+      setDataStatus("polarDem", { state: "error", error: error.message });
+      console.warn(`DEM LOLA reducido no disponible (horizonte sintético en puntos propios): ${error.message}`);
+    },
   );
 }
