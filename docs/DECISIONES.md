@@ -559,6 +559,27 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** comparar contra iluminación publicada (no hay valores integrados y no se inventan); correr las pruebas con rasters en CI (descarga de ~345 MiB por corrida); separar con un framework de pruebas nuevo (agrega una dependencia sin necesidad).
 - **Estado:** vigente. Pendientes: marco MOON_ME vs MEAN_ME, EOP predichos y comparación con horizontes o iluminación publicados.
 
+## DEC-038 — Mapa de calor del polo sur con datos reales: motor (MAP-01)
+
+- **Contexto / problema:** `computePolarHeatmap()` calculaba, para cada celda del polo sur, la fracción del tiempo con el Sol o la Tierra visibles, pero con el modelo aproximado y el horizonte sintético, y ninguna pantalla lo usaba: la pestaña del medio muestra elevación LOLA (DEC-026, DEC-029). MAP-01 (#16) pide un modo de iluminación calculada que no quite la elevación. Calcular el horizonte LOLA de cada celda en el navegador tardaría ~150 ms por celda (~23 min para 96 × 96).
+- **Decisión (Facundo, 14/11/2026):** Facundo hace el motor y **Lucio la interfaz** (selector Elevación / Luz / Tierra en la pestaña ELEVACIÓN).
+  - **Atlas de horizontes precalculado offline:** horizonte LOLA del centro de cada celda de la grilla de 96 × 96 hasta −80° (7238 celdas, ~6,3 km), cada 5° de azimut, con el algoritmo de TERRAIN-02 sobre `LDEM_60S_240M` completo (rayos de 300 km, paso 240 m, observador a 2 m).
+  - **Sol y Tierra:** direcciones de JPL Horizons en el marco fijo a la Luna, calculadas una vez por instante desde la serie más cercana al polo y proyectadas en cada celda; la Tierra se corrige por paralaje desde la altura del suelo de la celda (como DEC-034).
+  - **Visibilidad:** la política única (DEC-036).
+  - **Paso:** 1 h, o el múltiplo de 1 h que deja ≤ 360 instantes (30 días → 2 h). Medido: cambia ≤ 0,42 puntos por celda frente a 1 h.
+  - Si el atlas no cargó, no hay efemérides o la ventana sale de nov 2026 – dic 2027: el cálculo aproximado de siempre. `source.kind` indica `"real"` o `"approximate"`.
+  - **Cuatro modos** (Facundo pidió un modo equilibrado y eligió incluir dos variantes): `"sun"` (% del tiempo con Sol), `"earth"` (% con Tierra), `"both"` (% con Sol **y** Tierra a la vez: energía y comunicación al mismo tiempo) y `"viability"` (puntos 0–6 por celda con los **mismos criterios y umbrales que los sitios y el ranking "Global"**, DEC-007; `values` = puntos/6, `points` y `components` con luz, Tierra y potencia por celda). Se descartó el promedio simple de luz y Tierra (pesos arbitrarios; una zona sin Tierra saldría "regular").
+- **Solución aplicada:**
+  - `web/scripts/build-heat-atlas.mjs` (`npm run data:heat-atlas`, ~6,5 min): `web/public/data/terrain/heat-atlas-96.{bin,json}` (1,3 MiB, ~0,8 MB comprimido): horizontes int16 en centésimas de grado, altura del suelo y % de azimuts de baja confianza por celda, con MD5 del producto y SHA-256.
+  - `web/src/lib/heat-map.js` (puro): `cellCenter`, `decodeHeatAtlas`, registro con `heatAtlasVersion()`, `computeRealHeatmap()` y `heatStepMinutes()`. `web/src/lib/ephemeris.js`: `bodyVectorsAt(ms)`.
+  - `web/src/lib/analysis.js`: `computePolarHeatmap()` usa el mapa real cuando puede; el resultado trae `source` (antes no traía). `realDataVersion()` incluye el atlas.
+  - `web/src/ui/ephemerides.js`: `ensureHeatAtlas(onLoaded)` para que la interfaz baje el atlas. **No se tocó `ui/map.js`.**
+  - Pruebas: `web/tests/heat-map.test.js` (geometría, decodificación, caída al aproximado y coherencia celda a celda con el traslado de CORE-03) y `web/tests/validacion/mapa-calor.test.js` (procedencia, estaciones, cara visible, paso adaptativo y, con rasters, reproducción de celdas).
+- **Resultados** (30 días): Sol, media del polo 33,2 % en diciembre 2026 frente a 21,9 % en junio 2027; Tierra, mucho más visible hacia la cara visible; Sol y Tierra a la vez, 10,1 % frente a 7,6 %; viabilidad media 44,8 % frente a 33,9 % (ninguna celda llega a 6 puntos; 14 % del polo tiene 5 en diciembre). Tiempo de cálculo en Node: 0,15–0,40 s por mapa de un cuerpo y ~0,8–0,95 s en los modos combinados.
+- **Límites:** cada celda vale lo que su **centro** (no un promedio del área de ~6 km); horizonte cada 5° de azimut; fuera de −80° no hay mapa. Para no bloquear la interfaz en equipos lentos convendría un worker (PERF-01).
+- **Alternativas descartadas:** calcular el horizonte por celda en el navegador (~23 min); usar el DEM reducido de CORE-03 (más lento y menos exacto que precalcular con el de 240 m); precalcular el mapa de luz para fechas fijas (no seguiría la ventana elegida).
+- **Estado:** vigente (motor). Falta la interfaz (Lucio, #16).
+
 ## DEC-039 — Fuente, cobertura y estados de carga de los datos reales en "Datos y fuentes" (UI-01, resto)
 
 - **Contexto / problema:** UI-01 (#13) pide que la fuente, la fecha y la cobertura de los datos reales sean visibles y que haya estados de carga, error y faltante, sin presentar aproximaciones como reales. DEC-028 dejó esa parte pendiente hasta que existiera el contrato de CORE-01. Con DEC-033/034, `scenario.ephemeris` ya informa el origen (`horizons` / `mixed` / `approximate`, `derived`, `windowFraction`, `lookaheadComplete`, `meta`), pero la interfaz solo mostraba una fila resumida. Mientras se bajan las series (o si fallan), el cálculo usa el modelo aproximado sin que la página lo diga.
