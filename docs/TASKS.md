@@ -1,12 +1,14 @@
 # Backlog de la hackathon
 
-Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `completada`. Todas las tareas comienzan sin asignar y no deben marcarse como completadas sin evidencia en código y pruebas.
+Este archivo define **qué** es cada tarea: identificador, prioridad, objetivo, dependencias, archivos y criterios de aceptación. El **estado** (`pendiente`, `en curso`, `bloqueada`, `en revisión`, `completada`) y el **responsable** de cada tarea viven solo en su Issue de GitHub; no se registran acá para no duplicarlos. El protocolo está en `AGENTS.md` (sección 8, *Coordinación de tareas*) y la decisión en DEC-013.
+
+Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#12`) o `sin crear` si todavía no existe. Ninguna tarea se considera completada sin evidencia en código y pruebas y sin el PR integrado a `main`.
 
 ## P0 — Imprescindibles
 
 ### ASTRO-01 — Integrar efemérides reales
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** sustituir las posiciones periódicas por series verificables del Sol y la Tierra.
 - **Rama sugerida:** `data/efemerides-horizons`.
 - **Dependencias:** definición de marco y contrato; acceso a Horizons; DATA-01.
@@ -16,7 +18,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### TERRAIN-01 — Obtener y procesar datos LOLA
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** seleccionar y preparar un producto topográfico oficial para los sitios de demostración.
 - **Rama sugerida:** `data/lola-dem`.
 - **Dependencias:** DATA-01; selección de producto, datum y resolución.
@@ -26,7 +28,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### TERRAIN-02 — Calcular horizonte topográfico real
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** producir `horizon(azimuth) -> elevation` desde el DEM y la curvatura lunar.
 - **Rama sugerida:** `feat/horizonte-lola`.
 - **Dependencias:** TERRAIN-01; marco/datum acordados.
@@ -36,7 +38,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### DATA-01 — Validar coordenadas de sitios
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** verificar coordenadas y procedencia de todos los sitios curados.
 - **Rama sugerida:** `data/validar-sitios`.
 - **Dependencias:** fuente oficial o cartográfica elegida; revisión de astronomía.
@@ -46,7 +48,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### TEST-01 — Pruebas científicas
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** ampliar las pruebas matemáticas y crear validaciones separadas contra fuentes reales.
 - **Rama sugerida:** `test/modelos-cientificos`.
 - **Dependencias:** ASTRO-01, TERRAIN-02 para validaciones reales.
@@ -56,7 +58,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### CORE-01 — Integrar los modelos reales
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** combinar efemérides y horizonte reales en escenarios sin romper la UI.
 - **Rama sugerida:** `feat/integracion-modelos-reales`.
 - **Dependencias:** ASTRO-01, TERRAIN-02, TEST-01.
@@ -66,7 +68,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### CORE-02 — Unificar criterios de visibilidad
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** usar una única definición documentada de visibilidad en escenario, muestra y mapa de calor.
 - **Rama sugerida:** `fix/criterios-visibilidad`.
 - **Dependencias:** acuerdo científico sobre disco parcial y horizonte.
@@ -76,7 +78,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### UI-01 — Identificar fuentes y calidad de datos
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** mostrar si un resultado es aproximado, sintético, real, incompleto o no disponible.
 - **Rama sugerida:** `feat/calidad-datos-ui`.
 - **Dependencias:** contrato de metadatos de CORE-01.
@@ -86,7 +88,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### DEPLOY-01 — Despliegue y validación final
 
-- **Prioridad / estado / responsable:** P0 · pendiente · sin asignar.
+- **Prioridad:** P0 · **Issue:** sin crear.
 - **Objetivo:** publicar una versión reproducible y comprobar la entrega.
 - **Rama sugerida:** `chore/despliegue-final`.
 - **Dependencias:** tareas P0 aceptadas; textos y atribuciones cerrados.
@@ -98,7 +100,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### UI-02 — Adaptar visualizaciones a modelos reales
 
-- **Prioridad / estado / responsable:** P1 · pendiente · sin asignar.
+- **Prioridad:** P1 · **Issue:** sin crear.
 - **Objetivo:** representar resolución, huecos y cambios asíncronos sin perder legibilidad.
 - **Rama sugerida:** `design/visualizaciones-datos-reales`.
 - **Dependencias:** CORE-01, UI-01.
@@ -108,7 +110,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### MAP-01 — Adaptar el mapa de calor
 
-- **Prioridad / estado / responsable:** P1 · pendiente · sin asignar.
+- **Prioridad:** P1 · **Issue:** sin crear.
 - **Objetivo:** calcular el mapa con fuentes y criterios unificados sin bloquear la interfaz.
 - **Rama sugerida:** `feat/mapa-calor-real`.
 - **Dependencias:** CORE-01, CORE-02, TERRAIN-01.
@@ -118,7 +120,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### I18N-01 — Revisar traducciones
 
-- **Prioridad / estado / responsable:** P1 · pendiente · sin asignar.
+- **Prioridad:** P1 · **Issue:** sin crear.
 - **Objetivo:** revisar equivalencia y claridad científica ES/EN.
 - **Rama sugerida:** `i18n/revision-cientifica`.
 - **Dependencias:** textos finales de UI-01/UI-02.
@@ -130,7 +132,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### PERF-01 — Worker y caché persistente
 
-- **Prioridad / estado / responsable:** P2 · pendiente · sin asignar.
+- **Prioridad:** P2 · **Issue:** sin crear.
 - **Objetivo:** aislar cálculos intensivos y reutilizar resultados entre sesiones.
 - **Rama sugerida:** `perf/worker-cache`.
 - **Dependencias:** CORE-01 y esquema estable de versión.
@@ -140,7 +142,7 @@ Estados válidos: `pendiente`, `en curso`, `bloqueada`, `en revisión`, `complet
 
 ### SCIENCE-02 — Refinar cruces temporales
 
-- **Prioridad / estado / responsable:** P2 · pendiente · sin asignar.
+- **Prioridad:** P2 · **Issue:** sin crear.
 - **Objetivo:** interpolar o buscar con mayor precisión amaneceres, ocasos y Earthset.
 - **Rama sugerida:** `feat/refinar-ventanas`.
 - **Dependencias:** CORE-02 y fuentes reales estables.

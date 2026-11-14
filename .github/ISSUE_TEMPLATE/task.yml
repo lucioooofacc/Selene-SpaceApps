@@ -1,0 +1,68 @@
+name: Tarea del backlog
+description: Seguimiento de una tarea definida en docs/TASKS.md (estado y responsable).
+title: "[ID-00] Título de la tarea"
+labels: ["tarea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        La definición técnica de la tarea vive en `docs/TASKS.md`; esta Issue registra su estado y responsable.
+        Protocolo: `AGENTS.md`, sección 8 (*Coordinación de tareas*). Estados: sin etiqueta = pendiente, `estado: en curso`, `estado: bloqueada`, `estado: en revisión`; cerrada por PR integrado = completada.
+  - type: input
+    id: task-id
+    attributes:
+      label: Identificador de tarea
+      description: El ID tal como figura en docs/TASKS.md.
+      placeholder: ASTRO-01
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridad
+      options:
+        - P0 — Imprescindible
+        - P1 — Importante
+        - P2 — Opcional
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Responsable humano
+      description: Persona del equipo que responde por la tarea. Asignarla también en "Assignees". Vacío si todavía no se tomó.
+      placeholder: "@usuario"
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objetivo
+      description: Resumen; la versión completa está en docs/TASKS.md.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencias
+      description: IDs de tareas o Issues que deben estar completadas antes (ej. DATA-01 / #12).
+      placeholder: Ninguna
+  - type: input
+    id: branch
+    attributes:
+      label: Rama de trabajo
+      placeholder: feat/horizonte-lola
+  - type: textarea
+    id: files
+    attributes:
+      label: Archivos previstos
+      description: Archivos o carpetas que se espera modificar, para detectar conflictos con otras tareas.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación
+      description: Copiados de docs/TASKS.md.
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Bloqueos y observaciones
