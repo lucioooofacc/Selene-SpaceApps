@@ -1095,7 +1095,7 @@ button {
   position: absolute;
   right: 20px;
   bottom: 24px;
-  width: 300px;
+  width: 440px;
   text-align: right;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -1103,6 +1103,23 @@ button {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #6f7885;
+}
+
+/* Escala del relieve en el panorama (UI-08) */
+.pano-zero {
+  stroke: rgba(200, 210, 230, 0.18);
+  stroke-dasharray: 4 6;
+}
+
+.pano-tick {
+  stroke: rgba(200, 210, 230, 0.35);
+}
+
+.pano-scale {
+  fill: rgba(200, 210, 230, 0.5);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
 }
 
 .pano-label {

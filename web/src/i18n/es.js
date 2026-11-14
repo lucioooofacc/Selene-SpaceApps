@@ -24,6 +24,7 @@ export default {
     S: "S",
     E: "E",
     W: "O",
+    decimal: ",",
   },
   places: {
     title: "Mejores lugares para alunizar",
@@ -85,6 +86,9 @@ export default {
   },
   sim: {
     caption: "Vista panorámica ilustrativa · cielo sin atmósfera",
+    relief: "Relieve: {source} · escala vertical ×{exag}",
+    horizonSynthetic: "horizonte sintético (modelo v1, no es topografía real)",
+    horizonLola: "horizonte LOLA",
     missionTime: "Tiempo de misión",
     back: "Retroceder una hora",
     forward: "Avanzar una hora",

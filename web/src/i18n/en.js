@@ -23,6 +23,7 @@ export default {
     S: "S",
     E: "E",
     W: "W",
+    decimal: ".",
   },
   places: {
     title: "Best places to land",
@@ -84,6 +85,9 @@ export default {
   },
   sim: {
     caption: "Illustrative panoramic view · sky without atmosphere",
+    relief: "Relief: {source} · vertical scale ×{exag}",
+    horizonSynthetic: "synthetic horizon (v1 model, not real topography)",
+    horizonLola: "LOLA horizon",
     missionTime: "Mission time",
     back: "Go back one hour",
     forward: "Go forward one hour",
