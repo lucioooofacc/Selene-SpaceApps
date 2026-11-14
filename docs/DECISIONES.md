@@ -615,3 +615,15 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** cada celda vale lo de su centro (DEC-038); el primer cálculo de cada capa y período bloquea 0,2–1 s el hilo principal (PERF-01, opcional); la capa elegida no se guarda en la URL.
 - **Alternativas descartadas:** mostrar la grilla con la proyección hasta −60° (el disco calculado ocuparía un tercio del radio); pintar la capa sobre la Luna 3D (la grilla solo cubre el polo y requeriría otra textura); suavizar la imagen (sugiere una resolución que no existe); un selector de colores propio (DEC-014).
 - **Estado:** vigente.
+
+## DEC-041 — Origen de los datos en la línea de tiempo, el panorama, el informe y la comparación (UI-02)
+
+- **Contexto / problema:** UI-02 (#15) pide representar resolución, huecos y cambios asíncronos sin perder legibilidad. Con los datos reales integrados (DEC-033/034/038), la interfaz seguía diciendo "valores calculados con el modelo aproximado v1" en el informe, la comparación y el tooltip de Parámetros, aunque casi siempre se usan JPL Horizons y LOLA. Además, cuando el período sale de la cobertura de las series (nov 2026 – dic 2027) o todavía se están cargando, la línea de tiempo no mostraba qué tramo usa el modelo aproximado.
+- **Decisión:**
+  - **Línea de tiempo:** un rayado gris (no solo color, para cualquier paleta) sobre el deslizador marca los tramos del período con el modelo aproximado del Sol y la Tierra, con una nota debajo que dice por qué (fuera de cobertura, todo aproximado o cargando). Si todo el período tiene datos de Horizons no se muestra nada.
+  - **Panorama:** la línea del relieve empieza con el origen del Sol y la Tierra (Horizons / trasladadas / Horizons y aproximado / aproximado), sin sumar renglones.
+  - **Informe y comparación:** el aviso fijo se reemplaza por una nota calculada del escenario: origen del Sol y la Tierra, origen del horizonte (LOLA / LOLA reducido / sintético) y que los umbrales son criterio del equipo. En la comparación va una nota por sitio, porque pueden diferir.
+  - **Tooltip de Parámetros:** deja de afirmar "modelo aproximado" y remite al botón "i" (Datos y fuentes, DEC-028/039).
+- **Solución aplicada:** `web/src/ui/provenance.js` (`dataNote()` y `approxSegments()`, que solo compara instantes con `meta.coverage`, sin calcular posiciones), `web/src/ui/timeline.js` (`renderCoverage()`), `web/src/main.js` (la llama al recalcular el escenario y al cambiar de idioma), `web/src/ui/panorama.js`, `web/src/ui/report.js`, `web/src/ui/compare.js`, `web/index.html`, `web/compare.html`, `main.css` y textos `dataNote.*`, `sim.bodies.*`, `sim.coverage.*`, `params.dataHint` (ES/EN; se quitan `params.modelNote` y `compare.modelNote`). Pruebas en `web/tests/data-status.test.js`.
+- **Alternativas descartadas:** guardar en la serie qué muestras son reales (cambiaría el contrato de `analysis.js`, compartido con el motor; la cobertura declarada alcanza para ubicar los tramos); un aviso emergente al salir de la cobertura (interrumpe y agrega un elemento que el Figma no tiene).
+- **Estado:** vigente. Pendiente: revisión de los textos nuevos en I18N-01 (#17).
