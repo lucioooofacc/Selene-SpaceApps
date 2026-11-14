@@ -150,7 +150,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Menú "Opcion 3/4/5", botón de configuración y "Ver comparacion detallada":** se replican tal cual, pero todavía no tienen destino, porque el diseño no define esas pantallas. El globo cambia el idioma ES/EN.
 - **Franja de 8 px entre encabezado y cuerpo ("Vista 7"):** sin datos de color (se agotó el límite del plan gratuito del MCP de Figma), se usó el color de fondo.
 - **Datos aproximados:** para no agregar elementos visibles, el aviso de modelo aproximado quedó como tooltip del título "Parametros de la misión".
-- **Estado:** vigente. **Pendiente de definir por el equipo:** destino de "Ver comparacion detallada", "Comparar" y "Opcion 3/4/5", y si se corrigen los textos del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion").
+- **Estado:** vigente, salvo los destinos del menú, la ortografía y las imágenes de GLOBAL/POLO SUR, que pasan a DEC-019.
 
 ---
 
@@ -160,3 +160,18 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Decisión:** prohibirlos (regla 5 de `AGENTS.md`, que en la integración absorbió la regla 6 de esta rama) y migrar el proyecto al repositorio `lucioooofacc/Selene-SpaceApps`.
 - **Solución aplicada:** se quitaron las líneas `Co-Authored-By` de todos los commits de `main`, `feat/web-v1` y `design/figma-exacto` (sin tocar el contenido de los archivos). Se subieron las tres ramas al repo nuevo, que pasa a ser `origin`; el anterior se borró el 2026-11-14. `CLAUDE.md` se mantiene porque Claude Code lo usa para cargar las reglas de `AGENTS.md`. Los PR #1 y #2 se guardaron en `docs/prs/` y se recrearon en el repo nuevo sin atribuciones.
 - **Estado:** vigente.
+
+## DEC-019 — Destinos del menú, ortografía y vistas del mapa (decisiones del equipo)
+
+- **Contexto / problema:** DEC-017 dejó pendientes de definir varios elementos del Figma sin pantalla de destino y la ortografía heredada del archivo.
+- **Decisión** (equipo, 14/11/2026, anotada en `PENDIENTES.md`):
+  - "Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios con métricas técnicas (UI-05).
+  - "Opción 3" pasa a ser el informe imprimible de la misión planificada (UI-06). "Opción 4" y "Opción 5" se quitan.
+  - Se corrigen las faltas de ortografía del Figma (UI-03).
+  - "Mejores lugares" usa "Latitud · Longitud" (confirmado).
+  - GLOBAL y POLO SUR pasan a un modelo 3D de la Luna con fuentes NASA y alternancia a vistas 2D (UI-07). MAPA DE CALOR queda como está hasta MAP-01.
+  - El panorama dibuja fielmente el horizonte del motor (UI-08); el relieve real llega con TERRAIN-02 (Facundo).
+  - Franja de 8 px: si el MCP de Figma sigue sin responder, se mantiene el color de fondo.
+- **Solución aplicada:** una tarea y una Issue por bloque (#21 a #26) en `docs/TASKS.md`. Cada tarea registra acá su implementación.
+- **Alternativas descartadas:** comparación como vista con hash dentro de la misma página (la página aparte es más simple y no necesita router); calcular el horizonte LOLA desde el frontend (duplicaría TERRAIN-01/02).
+- **Estado:** vigente. **Pendiente:** destino del botón de configuración.

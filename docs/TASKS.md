@@ -128,6 +128,70 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** mismas claves; revisión de Lucio/Cata; terminología y advertencias equivalentes; sin texto visible incrustado en JS/HTML.
 - **Fuera de alcance:** nuevos idiomas.
 
+## Frontend — Pendientes del diseño (DEC-019)
+
+Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dependen de CORE-01.
+
+### UI-03 — Corregir textos y navegación del encabezado
+
+- **Prioridad:** P0 · **Issue:** [#21](https://github.com/lucioooofacc/Selene-SpaceApps/issues/21).
+- **Objetivo:** corregir la ortografía heredada del Figma, quitar "Opción 4/5", confirmar el subtítulo "Latitud · Longitud" y resolver el color de la franja de 8 px.
+- **Rama sugerida:** `fix/textos-navegacion`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `web/index.html`, `web/src/i18n/es.js`, `en.js`, `web/src/styles/main.css`, `docs/DECISIONES.md`.
+- **Criterios de aceptación:** textos corregidos en ES/EN; menú con Misión, Comparar e Informe; franja con el color del Figma o el fondo vigente si el MCP no responde.
+- **Fuera de alcance:** redactar textos nuevos más allá de las correcciones.
+
+### UI-04 — Navegar el calendario con el teclado
+
+- **Prioridad:** P1 · **Issue:** [#22](https://github.com/lucioooofacc/Selene-SpaceApps/issues/22).
+- **Objetivo:** moverse entre los días del calendario con las flechas, Inicio/Fin y RePág/AvPág.
+- **Rama sugerida:** `feat/calendario-teclado`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `web/src/ui/calendar.js`, estilos.
+- **Criterios de aceptación:** las flechas mueven el foco y cambian de mes en los bordes; Enter/Espacio eligen; foco visible; Escape cierra y devuelve el foco al botón.
+- **Fuera de alcance:** cambiar el diseño del calendario.
+
+### UI-05 — Página de comparación detallada entre dos sitios
+
+- **Prioridad:** P0 · **Issue:** [#23](https://github.com/lucioooofacc/Selene-SpaceApps/issues/23).
+- **Objetivo:** página nueva que compara dos sitios elegidos con métricas técnicas del motor. "Comparar" y "Ver comparación detallada" llevan a ella.
+- **Rama sugerida:** `feat/comparacion-sitios`.
+- **Dependencias:** ninguna (usa `computeScenario`; con modelos reales se actualiza sola).
+- **Archivos afectados:** `web/compare.html`, `web/src/compare.js`, `web/src/ui/compare.js`, `web/vite.config.js`, i18n, estilos.
+- **Criterios de aceptación:** Vite multipágina; mismo encabezado y tokens; métricas tomadas de `lib/analysis.js` (la UI no calcula); datos aproximados marcados; ES/EN; teclado.
+- **Fuera de alcance:** modelos científicos nuevos.
+
+### UI-06 — Informe imprimible de la misión planificada
+
+- **Prioridad:** P1 · **Issue:** [#24](https://github.com/lucioooofacc/Selene-SpaceApps/issues/24).
+- **Objetivo:** "Opción 3" pasa a ser "Informe": imprime o guarda en PDF un informe con sitio, fechas, viabilidad, ventanas y avisos de datos aproximados.
+- **Rama sugerida:** `feat/informe-imprimible`.
+- **Dependencias:** UI-03 (menú).
+- **Archivos afectados:** `web/src/ui/report.js`, estilos de impresión, i18n, `web/index.html`.
+- **Criterios de aceptación:** el botón del menú abre la impresión; hoja A4 legible; ES/EN; incluye el aviso de modelo aproximado.
+- **Fuera de alcance:** exportar a formatos distintos de la impresión del navegador.
+
+### UI-07 — Luna en 3D con alternancia 2D en GLOBAL y POLO SUR
+
+- **Prioridad:** P1 · **Issue:** [#25](https://github.com/lucioooofacc/Selene-SpaceApps/issues/25).
+- **Objetivo:** reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (three.js + CGI Moon Kit de NASA SVS), con opción de alternar a vistas 2D de fuentes NASA.
+- **Rama sugerida:** `feat/luna-3d`.
+- **Dependencias:** aprobación de three.js como dependencia (dada por el equipo el 14/11/2026).
+- **Archivos afectados:** `web/src/ui/moon3d.js`, `web/src/ui/map.js`, `web/public/nasa/`, `web/package.json`, i18n, estilos, `docs/DATA_SOURCES.md`.
+- **Criterios de aceptación:** esfera con textura LROC y relieve LOLA; sitios marcados y clic para elegir coordenadas; control 3D/2D accesible; fuentes citadas; respeto de `prefers-reduced-motion`.
+- **Fuera de alcance:** mapa de calor calculado (MAP-01).
+
+### UI-08 — Panorama fiel al horizonte del sitio
+
+- **Prioridad:** P1 · **Issue:** [#26](https://github.com/lucioooofacc/Selene-SpaceApps/issues/26).
+- **Objetivo:** que el relieve del panorama represente fielmente `scenario.horizon(az)` y acercar la iluminación al Figma. Con el horizonte LOLA (TERRAIN-02) se ve sin cambios en la UI.
+- **Rama sugerida:** `design/panorama-relieve`.
+- **Dependencias:** ninguna para la UI; la fidelidad real depende de TERRAIN-02.
+- **Archivos afectados:** `web/src/ui/panorama.js`, estilos, i18n.
+- **Criterios de aceptación:** perfil del horizonte sin recortar; escala vertical indicada; etiqueta de horizonte sintético mientras no haya LOLA; Sol y Tierra tapados por el relieve correcto.
+- **Fuera de alcance:** calcular el horizonte LOLA (TERRAIN-01/02).
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente
