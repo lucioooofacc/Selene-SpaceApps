@@ -62,6 +62,14 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Todo dato aproximado o simulado tiene que estar marcado como tal en la interfaz y en `docs/DECISIONES.md`.
 - Dirigir la consulta a las personas responsables (ver roles).
 
+### 5. Autoría de commits y contribuciones
+
+- Ningún agente de IA debe agregarse como autor, coautor o contribuidor de los commits.
+- Está prohibido incluir etiquetas `Co-authored-by` que hagan referencia a Claude, Codex, ChatGPT, Copilot o cualquier otro agente de IA.
+- Los commits deben respetar la identidad de Git del usuario responsable.
+- No modificar la configuración de autoría de Git.
+- Verificar que los mensajes de commit no incluyan atribuciones automáticas a agentes de IA.
+
 ## Roles del equipo (a quién consultar)
 
 | Área | Responsables |
