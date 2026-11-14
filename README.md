@@ -2,6 +2,8 @@
 
 Proyecto del equipo **Hubble27** para el **NASA Space Apps Challenge 2026** (sede Salto/Paysandú, Uruguay), desafío 4: *Crea un explorador de misiones lunares*.
 
+**Sitio publicado:** https://selene-space-apps.vercel.app
+
 Herramienta web para comparar sitios y fechas de alunizaje, con foco en el polo sur lunar. Muestra la posición del Sol y de la Tierra respecto del horizonte local para evaluar la **generación de energía solar** y las **ventanas de comunicación directa con la Tierra**.
 
 ## Estructura
@@ -30,6 +32,19 @@ npm run dev      # servidor local en http://localhost:5173
 npm test         # pruebas nativas de Node.js
 npm run build    # versión de producción en web/dist
 ```
+
+## Despliegue (Vercel)
+
+El sitio se publica en Vercel desde `main` (cada integración a `main` actualiza el sitio público). Configuración del proyecto:
+
+| Campo | Valor |
+| --- | --- |
+| Root Directory | `web` |
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+El build es estático y multipágina (`index.html` y `compare.html`, con rutas relativas). Las texturas de NASA de `web/public/nasa/` se copian tal cual; las de elevación LOLA se regeneran con `node web/scripts/build-lola-maps.mjs /ruta/a/ldem_16.tif` (ver `docs/DATA_SOURCES.md`).
 
 Las pruebas actuales cubren invariantes matemáticas y el comportamiento aproximado/sintético implementado. Las futuras validaciones contra datos NASA deben mantenerse separadas y conservar la procedencia de sus fixtures.
 

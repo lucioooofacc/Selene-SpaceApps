@@ -20,6 +20,10 @@ flowchart LR
   D[data/sites.js] --> M
   D --> UI
   R --> DOM[index.html]
+  CMP[compare.js · ui/compare] --> A
+  CMP --> DOM2[compare.html]
+  SET[ui/settings] -->|data-* en html| DOM
+  SET --> DOM2
 ```
 
 ## Responsabilidades
@@ -43,7 +47,7 @@ flowchart LR
 | `scripts/prepare-lola.mjs` | Lee DEM float32 + conteos int16 por ventanas y escribe un recorte JSON por sitio cubierto en `web/data/derived/` (no versionado). |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
 | `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
-| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D (GLOBAL y POLO SUR), selección de coordenadas y alta de sitios. MAPA DE CALOR sigue con la imagen del Figma. |
+| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D en las tres, selección de coordenadas y alta de sitios. MAPA DE CALOR muestra elevación LOLA con leyenda (DEC-026). |
 | `src/ui/moon3d.js` | Luna 3D con three.js (carga diferida): textura LROC y relieve LOLA del CGI Moon Kit, render a demanda, giro con arrastre o teclado, clic → coordenadas, y marcadores HTML proyectados. |
 | `src/ui/elevation.js` | Colorea en el navegador los PNG de elevación LOLA (tinte hipsométrico × sombreado) con la paleta estándar o cividis, para MAPA DE CALOR en 2D y 3D (DEC-026). Los PNG los genera `web/scripts/build-lola-maps.mjs`. |
 | `src/ui/polar2d.js` | Reproyecta en el navegador el mosaico LROC equirectangular a la vista polar 2D (azimutal equidistante hasta −60°, 0° arriba). |
@@ -68,7 +72,7 @@ flowchart LR
 6. Durante la reproducción se actualizan panorama y línea de tiempo en cada cuadro; los paneles textuales se limitan aproximadamente a ocho actualizaciones por segundo.
 7. Los cambios de mapa, reproducción o idioma actualizan únicamente sus consumidores principales.
 
-`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` sigue en `lib/analysis.js` (cubierto por las pruebas), pero la interfaz actual no lo usa: la pestaña MAPA DE CALOR muestra la imagen del Figma (DEC-014, DEC-016).
+`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` sigue en `lib/analysis.js` (cubierto por las pruebas), pero la interfaz actual no lo usa: la pestaña MAPA DE CALOR muestra la elevación LOLA precomputada (DEC-026). Un modo de iluminación calculada queda para MAP-01.
 
 ## Contratos públicos
 
@@ -147,8 +151,8 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 - `horizons.js` depende solo de `coordinates.js`. No hace red: la red vive en `scripts/fetch-horizons.mjs`, que se ejecuta con Node antes de la demo.
 - `main.js` es el único coordinador entre análisis y renderizado.
 - Los módulos `ui/` pueden leer/escribir estado, formatear e internacionalizar, pero no deben implementar fórmulas científicas.
-- `map.js` es la excepción de coordinación que invoca el cálculo público del mapa de calor; el cálculo permanece en `lib/analysis.js`.
-- No existen dependencias de ejecución aparte del navegador; Vite es dependencia de desarrollo.
+- `map.js` no calcula: muestra imágenes (LROC y elevación LOLA precomputada) y delega la vista 3D en `moon3d.js`.
+- La única dependencia de ejecución es `three` (DEC-021), cargada con `import()` diferido solo al abrir una vista 3D; Vite es dependencia de desarrollo.
 
 ## Evolución hacia datos reales
 
@@ -198,4 +202,8 @@ flowchart LR
 - Mover cálculo intensivo a un Web Worker; enviar estructuras serializables o buffers transferibles.
 - No hacer peticiones de red desde `requestAnimationFrame`, `sampleAt()`, bucles temporales ni celdas del mapa de calor.
 - Tratar ausencia parcial de datos como tal y propagarla hasta la UI; no interpolar fuera de cobertura sin una política documentada.
+
+## Despliegue
+
+El sitio público es https://selene-space-apps.vercel.app (Vercel, desde `main`). Vercel usa `web` como directorio raíz, el preset de Vite, `npm run build` y la carpeta `dist`. El build es estático: no hay servidor ni llamadas a APIs externas en tiempo de ejecución (Horizons y LOLA se adquieren con scripts fuera del navegador). Cada integración a `main` actualiza el sitio, así que `main` tiene que quedar siempre funcionando (`AGENTS.md`, regla 1).
 

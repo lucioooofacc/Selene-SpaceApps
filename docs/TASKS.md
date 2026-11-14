@@ -111,7 +111,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 ### MAP-01 — Adaptar el mapa de calor
 
 - **Prioridad:** P1 · **Issue:** [#16](https://github.com/lucioooofacc/Selene-SpaceApps/issues/16).
-- **Objetivo:** calcular el mapa con fuentes y criterios unificados sin bloquear la interfaz.
+- **Objetivo:** calcular el mapa con fuentes y criterios unificados sin bloquear la interfaz. Hoy la pestaña MAPA DE CALOR muestra elevación LOLA (UI-11, DEC-026); MAP-01 agrega el modo de iluminación calculada, sin quitar la elevación.
 - **Rama sugerida:** `feat/mapa-calor-real`.
 - **Dependencias:** CORE-01, CORE-02, TERRAIN-01.
 - **Archivos afectados:** `analysis.js`, `ui/map.js`, worker/caché y pruebas.
@@ -221,6 +221,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Archivos afectados:** `web/scripts/build-lola-maps.mjs`, `web/public/nasa/`, `web/src/data/lola-maps.js`, `web/src/ui/elevation.js`, `map.js`, `moon3d.js`, `settings.js`, `index.html`, estilos, i18n.
 - **Criterios de aceptación:** datos citados y procedimiento reproducible; leyenda en km; paletas estándar y para daltonismo; 2D con la proyección de los marcadores; vista 3D física; ES/EN; sin presentarlo como mapa de iluminación.
 - **Fuera de alcance:** mapa de iluminación (MAP-01); horizonte topográfico (TERRAIN-02).
+
+### DOC-01 — Sincronizar documentación con la interfaz y registrar el despliegue
+
+- **Prioridad:** P1 · **Issue:** [#44](https://github.com/lucioooofacc/Selene-SpaceApps/issues/44).
+- **Objetivo:** alinear `ARCHITECTURE.md`, `TASKS.md`, `web/src/ui/AGENTS.md` y el README con la interfaz actual y documentar el sitio publicado en Vercel.
+- **Rama sugerida:** `docs/sincronizar-despliegue`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `README.md`, `docs/ARCHITECTURE.md`, `docs/TASKS.md`, `web/src/ui/AGENTS.md`, `PENDIENTES.md`.
+- **Criterios de aceptación:** sin menciones desactualizadas; URL y configuración de Vercel documentadas; reglas de UI al día.
+- **Fuera de alcance:** validación final de la entrega (DEPLOY-01).
 
 ## P2 — Opcionales
 
