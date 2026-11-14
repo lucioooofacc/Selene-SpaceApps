@@ -52,7 +52,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Datos incluidos en el repo:** fixtures de Sol y Tierra desde Shackleton R04, 14–16/11/2026, paso 60 min, obtenidos el 14/11/2026 (`web/tests/fixtures/horizons/README.md`).
 - **Estado:** adaptador, adquisición y caché integrados y probados. Desde DEC-033, series de los 7 sitios (01/11/2026 – 01/01/2028, paso 1 h, DE441) versionadas en `web/public/data/ephemerides/` (~2,1 MB) y usadas por `analysis.js`; se regeneran con `fetch-horizons.mjs` + `npm run data:ephemerides`.
 - **Módulos responsables:** `web/src/lib/horizons.js` (puro, sin red), `web/scripts/fetch-horizons.mjs` (adquisición en Node); pruebas en `web/tests/horizons.test.js` y `web/tests/horizons.fixture.test.js`.
-- **Atribución/licencia:** citar NASA/JPL Horizons y conservar parámetros, versión de API, efeméride y fecha de consulta (ya guardados en `source`). Condiciones específicas de reutilización: pendiente de verificar antes de publicar datos derivados.
+- **Atribución/licencia** (verificado el 15/11/2026 en https://ssd.jpl.nasa.gov/horizons/, https://ssd.jpl.nasa.gov/about/ y el manual v4.98e): las páginas oficiales **no fijan licencia ni restricciones de redistribución** y tampoco declaran los datos de dominio público; advierten que el servicio es "best-effort" y que decidir si los resultados sirven para cada uso es responsabilidad del usuario. JPL pide citar los datos descargados del sitio SSD así: *NASA/JPL Solar System Dynamics. Data retrieved on (año, mes, día). (Título de la página). https://ssd.jpl.nasa.gov*. El manual lista como primera referencia del sistema: *Giorgini, J. D. and JPL Solar System Dynamics Group, NASA/JPL Horizons On-Line Ephemeris System, https://ssd.jpl.nasa.gov/horizons/, data retrieved YYYY-MON-DD*. Se usan las dos en el informe imprimible; la fecha de consulta de cada serie queda en `meta.sun.retrievedAt` (14/11/2026). La política de uso del nombre y el logo de JPL (https://www.jpl.nasa.gov/jpl-image-use-policy) no se revisó: la web no usa sus logos.
 
 ## LOLA / Lunar Reconnaissance Orbiter
 
@@ -69,7 +69,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Atlas del mapa de calor (DEC-038):** `web/scripts/build-heat-atlas.mjs` calcula el horizonte del centro de cada celda de 96 × 96 hasta −80° desde `LDEM_60S_240M` y escribe `web/public/data/terrain/heat-atlas-96.*` (1,3 MiB). Es un derivado.
 - **Estado:** producto seleccionado, descargado y verificado (2026-11-14). Recortes reales no versionados. El horizonte de los cinco sitios cubiertos está precalculado y versionado (TERRAIN-02, DEC-030) y `analysis.js` lo usa para esos sitios (CORE-01 parte A, DEC-032).
 - **Módulos responsables:** `web/scripts/*-lola.mjs`, `web/src/lib/terrain-data.js`, `web/src/data/terrain/`; `web/src/lib/horizon-lola.js` y `web/scripts/build-lola-horizons.mjs` (horizonte, DEC-030).
-- **Atribución/licencia:** citar LRO/LOLA y el DOI 10.17189/1520642 con la cita que publica PDS para el data set (autores y año pendientes de copiar textualmente). Los datos del PDS son de NASA y de uso público; revisar la política de citación antes de publicar derivados.
+- **Atribución/licencia:** cita oficial del data set (DataCite, consultada el 15/11/2026): *Neumann, G. A. (2011). LRO Moon Laser Altimeter 4 GDR V1.0 [Dataset]. NASA Planetary Data System. https://doi.org/10.17189/1520642*. Los datos del PDS son de NASA y de uso público; se cita el data set en el informe imprimible y en este documento.
 
 ## NASA PDS Geosciences Node
 

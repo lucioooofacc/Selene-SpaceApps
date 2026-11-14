@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (capa del mapa en la URL, rama `feat/capa-en-url`).
+Última actualización: 2026-11-15 (citas de datos, rama `docs/citas-datos`).
 
 ---
 
@@ -101,7 +101,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Mapa de calor con efemérides de Horizons (hoy modelo aproximado en cada celda; necesitaría series por celda o un modelo mejor). — Desarrollo web · MAP-01 #16, DEC-033~~ Motor listo: Sol y Tierra de Horizons por celda. Resuelto 2026-11-14 (rama `feat/mapa-calor-real`, #16, DEC-038).
 - [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-024
 - [x] ~~Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-024~~ Sí: radios de Horizons por instante y política única de visibilidad. Resuelto 2026-11-14 (rama `fix/criterios-visibilidad`, #12, DEC-036).
-- [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
+- [x] ~~Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`~~ Revisado 2026-11-15 (rama `docs/citas-datos`): las páginas oficiales no fijan licencia ni restricciones de redistribución; JPL pide citar NASA/JPL SSD y la referencia de Giorgini. Citas en `docs/DATA_SOURCES.md` y en el informe. Si el equipo quiere certeza legal, consultar a JPL.
 - [x] ~~Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005~~ Hecho para los sitios curados al sur de −60°; sigue sintético en sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
 - [x] ~~Mapa de calor con horizonte real (hoy sintético en cada celda). — Desarrollo web · MAP-01 #16, DEC-032~~ Motor listo: atlas LOLA por celda (96 × 96 hasta −80°). Resuelto 2026-11-14 (rama `feat/mapa-calor-real`, #16, DEC-038).
 - [x] ~~MAP-01, interfaz: selector en la pestaña ELEVACIÓN (Elevación / Luz / Tierra / Equilibrado: "Sol y Tierra a la vez" y/o "Viabilidad") que llame a `ensureHeatAtlas()` y `computePolarHeatmap()` y muestre `source` (real / aproximado). — Lucio · #16, DEC-038~~ Resuelto 2026-11-14 (rama `feat/mapa-calor-ui`, DEC-040): capas Elevación / Luz / Tierra / Sol + Tierra / Viabilidad, 2D hasta −80°, leyenda y procedencia en el crédito.
@@ -121,7 +121,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~SCIENCE-02: refinar los instantes de amaneceres, ocasos y salidas y puestas de la Tierra (antes redondeados al paso de 10 min). — #19~~ Resuelto 2026-11-14 (rama `feat/refinar-ventanas`, DEC-048).
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01
 - [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).
-- [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025
+- [x] ~~Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025~~ Resuelto 2026-11-15 (rama `docs/citas-datos`): Neumann, G. A. (2011), según DataCite; en `DATA_SOURCES.md` y en el informe (los manifiestos JSON conservan el DOI).
 - [x] ~~Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025~~ El panorama marca los tramos de baja confianza y los truncados, y "Datos y fuentes" indica la falta de cobertura. Resuelto 2026-11-14 (PR #53, DEC-031).
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
@@ -138,4 +138,4 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Archivar o borrar el repo anterior `Hubble27-SpaceApps` (todavía tiene el historial con co-autores y los PR viejos).~~ Resuelto 2026-11-14: repo borrado por Lucio. `CLAUDE.md` se mantiene.
 - [x] ~~Migrar el proyecto a `Selene-SpaceApps` sin co-autores en el historial.~~ Resuelto 2026-11-14 (DEC-018).
 - [x] ~~Publicar el build (`npm run build`) en un enlace público para el formulario de Space Apps (GitHub Pages, Netlify o Drive). Hay una vista previa privada en un artifact de claude.ai (hay que compartirla desde su menú). — Desarrollo web~~ Publicado en https://selene-space-apps.vercel.app (Vercel, desde `main`). Resuelto 2026-11-14 (rama `docs/sincronizar-despliegue`, #44).
-- [ ] Declarar en la entrega los datos de la NASA usados (JPL Horizons, LOLA, LROC). — Equipo
+- [ ] Declarar en la entrega los datos de la NASA usados (JPL Horizons, LOLA, LROC). — Equipo · Borrador del texto para el formulario en `docs/ENTREGA.md` (2026-11-15, rama `docs/citas-datos`).
