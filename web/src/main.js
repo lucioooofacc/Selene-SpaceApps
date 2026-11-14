@@ -88,7 +88,7 @@ subscribe((state, changed) => {
     renderInstant(state, { force: true });
     return;
   }
-  if (has("mapView", "mapMode")) renderMap(state);
+  if (has("mapView", "mapMode", "heatLayer")) renderMap(state);
   if (has("placesCategory")) {
     renderPlaces(state);
     updateCompareLinks(state, rankedSites(state));

@@ -84,17 +84,24 @@ let atlasLoading = null;
  * entonces, o si falla, devuelve el aproximado. Devuelve la promesa de carga.
  */
 export function ensureHeatAtlas(onLoaded) {
+  const first = !atlasLoading;
   atlasLoading ??= (async () => {
     const base = `${import.meta.env.BASE_URL}data/terrain/heat-atlas-96`;
     const [metaRes, binRes] = await Promise.all([fetch(`${base}.json`), fetch(`${base}.bin`)]);
     if (!metaRes.ok || !binRes.ok) throw new Error(`HTTP ${metaRes.status}/${binRes.status}`);
     registerHeatAtlas(decodeHeatAtlas(await binRes.arrayBuffer(), await metaRes.json()));
   })().then(
-    () => true,
+    () => {
+      setDataStatus("heatAtlas", { state: "ready" });
+      return true;
+    },
     (error) => {
+      setDataStatus("heatAtlas", { state: "error", error: error.message });
       console.warn(`Atlas del mapa de calor no disponible (mapa aproximado): ${error.message}`);
       return false;
     },
   );
+  // Después de guardar la promesa: quien escucha el estado puede volver a llamar acá.
+  if (first) setDataStatus("heatAtlas", { state: "loading" });
   return onLoaded ? atlasLoading.then((ok) => ok && onLoaded()) : atlasLoading;
 }

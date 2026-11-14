@@ -8,8 +8,10 @@
  *  - MAPA DE CALOR: elevación real de LOLA (elevation.js, DEC-026): en 2D, el
  *    polo sur con la misma proyección polar; en 3D, la Luna como mapa físico
  *    (tinte hipsométrico × sombreado). Leyenda en km; la paleta sigue la
- *    configuración (estándar o apta para daltonismo). No es un mapa de
- *    iluminación (eso es MAP-01).
+ *    configuración (estándar o apta para daltonismo).
+ *    Con el selector de capa (MAP-01, DEC-040) muestra, en 2D y hasta −80°,
+ *    luz, Tierra, Sol + Tierra o viabilidad calculados por el motor (DEC-038)
+ *    para el período de la misión (heat-layer.js).
  * Clic en el mapa = elegir coordenadas ("Punto observado").
  * Botón "+" = agregar el punto observado como sitio.
  */
@@ -17,6 +19,9 @@ import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { polarImage } from "./polar2d.js";
 import { LOLA_MAPS, elevationCanvas, elevationUrl, paletteGradient } from "./elevation.js";
+import { HEAT_MIN_LAT, cachedHeatLayer, computeHeatLayer } from "./heat-layer.js";
+import { ensureHeatAtlas } from "./ephemerides.js";
+import { dataStatus, onDataStatus } from "./data-status.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -37,22 +42,27 @@ const uses3d = (state) => state.mapMode === "3d";
 const palette = () => (document.documentElement.dataset.palette === "cvd" ? "cvd" : "default");
 const heatUrls = {}; // paleta → URL de la imagen polar coloreada
 
+/** true si la pestaña ELEVACIÓN muestra una capa calculada (MAP-01): siempre 2D y hasta −80°. */
+const calcLayer = (state) => state.mapView === "heat" && state.heatLayer !== "elevation";
+/** Latitud del borde de la imagen polar: −80° en las capas calculadas, −60° en el resto. */
+const edgeFor = (state) => (calcLayer(state) ? HEAT_MIN_LAT : POLAR_EDGE_LAT);
+
 /** lat/lon → posición relativa (0..1) dentro de la imagen, o null si queda afuera. */
-function project(view, lat, lon) {
+function project(view, lat, lon, edge = POLAR_EDGE_LAT) {
   if (view === "global") return { x: (lon + 180) / 360, y: (90 - lat) / 180 };
-  const r = (90 + lat) / (90 + POLAR_EDGE_LAT);
+  const r = (90 + lat) / (90 + edge);
   if (r > 1) return null;
   const a = (lon * Math.PI) / 180;
   return { x: 0.5 + 0.5 * r * Math.sin(a), y: 0.5 - 0.5 * r * Math.cos(a) };
 }
 
-function unproject(view, x, y) {
+function unproject(view, x, y, edge = POLAR_EDGE_LAT) {
   if (view === "global") return { lat: 90 - y * 180, lon: x * 360 - 180 };
   const dx = x - 0.5;
   const dy = y - 0.5;
   const r = Math.hypot(dx, dy) * 2;
   if (r > 1) return null;
-  return { lat: -90 + r * (90 + POLAR_EDGE_LAT), lon: (Math.atan2(dx, -dy) * 180) / Math.PI };
+  return { lat: -90 + r * (90 + edge), lon: (Math.atan2(dx, -dy) * 180) / Math.PI };
 }
 
 function pinMarkup({ x, y, lat, lon, label, sub, id, current }) {
@@ -117,7 +127,8 @@ export function initMap() {
     const pin = event.target.closest("[data-site]");
     if (pin) return chooseSite(pin.dataset.site);
     const box = $("map-image").getBoundingClientRect();
-    const p = unproject(getState().mapView, (event.clientX - box.left) / box.width, (event.clientY - box.top) / box.height);
+    const state = getState();
+    const p = unproject(state.mapView, (event.clientX - box.left) / box.width, (event.clientY - box.top) / box.height, edgeFor(state));
     if (p) chooseCoordinates(p.lat, p.lon);
   });
 
@@ -126,6 +137,15 @@ export function initMap() {
   );
   document.querySelectorAll("[data-map-mode]").forEach((button) =>
     button.addEventListener("click", () => setState({ mapMode: button.dataset.mapMode })),
+  );
+  document.querySelectorAll("[data-heat-layer]").forEach((button) =>
+    button.addEventListener("click", () => setState({ heatLayer: button.dataset.heatLayer })),
+  );
+  // Si cambia la carga del atlas con una capa calculada a la vista, se actualiza el crédito.
+  onDataStatus(() =>
+    requestAnimationFrame(() => {
+      if (calcLayer(getState())) renderMap(getState());
+    }),
   );
   // La configuración avisa cuando cambia la paleta: se recolorea el mapa de calor.
   document.addEventListener("selene:palette", () => renderMap(getState()));
@@ -172,11 +192,24 @@ function ensureMoon3d() {
   return moon3dLoading;
 }
 
+/** Leyenda de una capa calculada: % del tiempo (0–100) o puntos de viabilidad (0–6). */
+function renderCalcLegend(layer) {
+  const legend = $("map-legend");
+  const [min, max] = layer === "viability" ? [t("map.layerUnit.points", { n: 0 }), t("map.layerUnit.points", { n: 6 })] : ["0 %", "100 %"];
+  legend.innerHTML = `
+    <span class="map-legend-title">${t(`map.layerLegend.${layer}`)}</span>
+    <span class="map-legend-bar" style="background:${paletteGradient(palette())}"></span>
+    <span class="map-legend-max">${max}</span>
+    <span class="map-legend-min">${min}</span>`;
+  legend.setAttribute("aria-label", t("map.layerLegendAria", { name: t(`map.layerLegend.${layer}`), min, max }));
+}
+
 /** Leyenda de elevación (solo en MAPA DE CALOR): 2D usa el rango polar y 3D, el global. */
-function renderLegend(view, is3d) {
+function renderLegend(view, is3d, state) {
   const legend = $("map-legend");
   legend.hidden = view !== "heat";
   if (legend.hidden) return;
+  if (calcLayer(state)) return renderCalcLegend(state.heatLayer);
   const { minKm, maxKm } = is3d ? LOLA_MAPS.global : LOLA_MAPS.polar;
   const km = (v) => `${v > 0 ? "+" : ""}${v.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "es-UY")}`;
   legend.innerHTML = `
@@ -187,8 +220,47 @@ function renderLegend(view, is3d) {
   legend.setAttribute("aria-label", t("map.legendAria", { min: km(minKm), max: km(maxKm) }));
 }
 
+let heatPending = null; // clave del cálculo programado
+
+/**
+ * Imagen de la capa calculada. Si no está en caché, muestra "Calculando…" y la
+ * calcula en el próximo turno (bloquea 0,2–1 s el hilo principal; PERF-01).
+ */
+function calcImage(state) {
+  const p = palette();
+  const { heatLayer, startMs, windowDays } = state;
+  const hit = cachedHeatLayer(heatLayer, startMs, windowDays, p);
+  if (hit) return hit;
+  const key = `${heatLayer}|${startMs}|${windowDays}|${p}`;
+  if (heatPending !== key) {
+    heatPending = key;
+    $("map-area").dataset.loading = "true";
+    setTimeout(() => {
+      heatPending = null;
+      const now = getState();
+      delete $("map-area").dataset.loading;
+      if (!calcLayer(now)) return;
+      computeHeatLayer(now.heatLayer, now.startMs, now.windowDays, palette());
+      renderMap(now);
+    }, 30);
+  }
+  return null;
+}
+
+/** Crédito de la capa calculada: procedencia, resolución y estado de carga del atlas. */
+function calcCredit(result) {
+  if (!result) return t("map.layerCredit.computing");
+  if (result.source?.kind === "real") {
+    const num = (v) => v.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "es-UY");
+    return t("map.layerCredit.real", { km: num(result.source.cellKm), step: num(result.source.stepMinutes / 60) });
+  }
+  const atlas = dataStatus().heatAtlas.state;
+  return t(atlas === "loading" ? "map.layerCredit.loading" : atlas === "error" ? "map.layerCredit.error" : "map.layerCredit.approximate");
+}
+
 /** Imagen 2D de cada pestaña. La polar se genera una vez desde el mosaico LROC. */
-function image2d(view) {
+function image2d(view, state) {
+  if (calcLayer(state)) return calcImage(state)?.url ?? null;
   if (view === "heat") {
     const p = palette();
     if (heatUrls[p]) return heatUrls[p];
@@ -214,9 +286,13 @@ function image2d(view) {
 export function renderMap(state) {
   const view = state.mapView;
   const area = $("map-area");
-  const is3d = uses3d(state);
+  const calc = calcLayer(state);
+  const is3d = uses3d(state) && !calc;
+  const edge = edgeFor(state);
+  if (calc) ensureHeatAtlas(); // ~0,8 MB, una vez; al llegar cambia realDataVersion() y se recalcula
   area.dataset.view = view;
   area.dataset.mode = is3d ? "3d" : "2d";
+  area.dataset.layer = calc ? "calc" : "base";
   // En 3D el contenedor recibe el foco para girar con las flechas.
   if (is3d) {
     area.tabIndex = 0;
@@ -230,16 +306,19 @@ export function renderMap(state) {
   document.querySelectorAll("[data-map-mode]").forEach((button) =>
     button.setAttribute("aria-pressed", String(button.dataset.mapMode === state.mapMode)),
   );
-  $("map-mode").hidden = false;
-  $("map-credit").hidden = false;
-  $("map-credit").textContent = t(view === "heat" ? "map.creditHeat" : "map.credit");
-  renderLegend(view, is3d);
+  // Las capas calculadas son solo 2D: el selector 3D/2D se oculta mientras se ven.
+  $("map-mode").hidden = calc;
+  $("heat-layers").hidden = view !== "heat";
+  document.querySelectorAll("[data-heat-layer]").forEach((button) =>
+    button.setAttribute("aria-pressed", String(button.dataset.heatLayer === state.heatLayer)),
+  );
+  renderLegend(view, is3d, state);
 
   const img = $("map-image");
   if (!is3d) {
-    const src = image2d(view);
+    const src = image2d(view, state);
     if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
-    img.alt = t(`map.alt.${view}`);
+    img.alt = t(calc ? `map.layerAlt.${state.heatLayer}` : `map.alt.${view}`);
   } else if (moon3d) {
     if (moon3dView !== view) moon3d.setView(view);
     moon3dView = view;
@@ -259,10 +338,15 @@ export function renderMap(state) {
     tab.setAttribute("aria-selected", String(tab.dataset.mapView === view)),
   );
   placeAccent();
+  // El crédito va después de pedir la imagen: así refleja la capa ya calculada.
+  $("map-credit").hidden = false;
+  $("map-credit").textContent = calc
+    ? calcCredit(cachedHeatLayer(state.heatLayer, state.startMs, state.windowDays, palette()))
+    : t(view === "heat" ? "map.creditHeat" : "map.credit");
 
   const pins = allSites()
     .map((site) => {
-      const p = project(view, site.lat, site.lon);
+      const p = project(view, site.lat, site.lon, edge);
       // En 3D se marcan todos los sitios (los de atrás quedan ocultos al girar).
       const at = p ?? (is3d ? { x: 0, y: 0 } : null);
       return at
@@ -271,7 +355,7 @@ export function renderMap(state) {
     })
     .join("");
 
-  const observedAt = state.siteId === CUSTOM_ID ? project(view, state.lat, state.lon) ?? (is3d ? { x: 0, y: 0 } : null) : null;
+  const observedAt = state.siteId === CUSTOM_ID ? project(view, state.lat, state.lon, edge) ?? (is3d ? { x: 0, y: 0 } : null) : null;
   const observed = observedAt && { ...observedAt, lat: state.lat, lon: state.lon };
   $("map-pins").innerHTML =
     pins +

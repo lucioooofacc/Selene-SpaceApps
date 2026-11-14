@@ -637,11 +637,49 @@ button {
   display: none;
 }
 
+/* ---------- Selector de capa de ELEVACIÓN (MAP-01, DEC-040) ---------- */
+.heat-layers {
+  position: absolute;
+  left: 16px;
+  top: 128px;
+  width: 100px;
+  display: grid;
+  gap: 4px;
+}
+
+.heat-layers[hidden] {
+  display: none;
+}
+
+.heat-layers button {
+  height: 26px;
+  padding: 0 6px;
+  background: var(--field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted-2);
+  text-align: left;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.heat-layers button[aria-pressed="true"] {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* Capa calculada: un píxel por celda de ~6 km, sin suavizar; disco hasta −80°. */
+.map-area[data-layer="calc"] .map-image {
+  image-rendering: pixelated;
+  border-radius: 50%;
+}
+
 /* ---------- Leyenda de elevación de MAPA DE CALOR (UI-11) ---------- */
 .map-legend {
   position: absolute;
   left: 36px;
-  top: 300px;
+  top: 340px; /* debajo del selector de capa (MAP-01) */
   width: 72px;
   height: 300px;
 }

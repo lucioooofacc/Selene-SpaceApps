@@ -33,7 +33,8 @@ export const PALETTES = {
   ],
 };
 
-function lut(palette) {
+/** Tabla de 256 colores RGB de la paleta (también la usa el mapa de calor calculado, MAP-01). */
+export function lut(palette) {
   const stops = PALETTES[palette] ?? PALETTES.default;
   const table = new Uint8Array(256 * 3);
   for (let i = 0; i < 256; i++) {

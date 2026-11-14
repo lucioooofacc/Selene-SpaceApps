@@ -596,3 +596,22 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos:** el estado `idle` (las series nunca se pidieron, como en las pruebas o el informe sin cargar) se muestra como modelo aproximado, no como "cargando". La cobertura textual "nov 2026 – dic 2027" del estado "fuera de cobertura" es la de DEC-033; la cobertura exacta se lee de `meta.coverage` cuando hay serie.
 - **Alternativas descartadas:** un indicador de carga en la pantalla principal (agrega un elemento que el Figma no tiene, DEC-014); mostrar `meta.assumptions` (están solo en español, como las notas de `sites.js` en DEC-028); un spinner animado (innecesario y en conflicto con "menos movimiento").
 - **Estado:** vigente. Pendiente: revisión de los textos nuevos en I18N-01 (#17).
+
+## DEC-040 — Capas calculadas en la pestaña ELEVACIÓN (MAP-01, interfaz)
+
+- **Contexto / problema:** el motor de MAP-01 (DEC-038) calcula luz, Tierra, Sol + Tierra y viabilidad por celda del polo sur con datos reales, pero ninguna pantalla lo mostraba. La pestaña ELEVACIÓN muestra la elevación LOLA (DEC-026) y el Figma no tiene un mapa de iluminación.
+- **Decisión** (reparto acordado con Facundo en #16 y DEC-038): un selector de capa en la pestaña ELEVACIÓN, con la elevación como capa por defecto para que la vista inicial siga igual al Figma.
+  - Capas: **Elevación**, **Luz** (% del tiempo con Sol), **Tierra** (% con la Tierra visible), **Sol + Tierra** (% con los dos a la vez) y **Viabilidad** (0–6 puntos con los criterios del ranking "Global"). Se muestran las dos variantes "equilibradas" del motor porque responden preguntas distintas (simultaneidad vs. criterios de la misión).
+  - Las capas calculadas se ven **solo en 2D**, con la proyección polar hasta **−80°** (el borde de la grilla) para que el disco ocupe el mapa; el selector 3D/2D se oculta mientras se ven. Los marcadores y el clic usan esa misma proyección.
+  - **Un píxel por celda** (~6,3 km) sin suavizar (`image-rendering: pixelated`), para no aparentar más resolución que la del cálculo.
+  - Misma paleta que la elevación (estándar o cividis para daltonismo): no se agregan colores. Leyenda en % (0–100) o en puntos (0–6).
+  - **Procedencia en el crédito** debajo del mapa: real (JPL Horizons + horizontes LOLA, tamaño de celda y paso) o aproximado, con el motivo (cargando el atlas, error de carga o período fuera de nov 2026 – dic 2027).
+  - El período es el de la misión (fecha de inicio y ventana de análisis elegidas).
+- **Solución aplicada:**
+  - `web/src/ui/heat-layer.js` (nuevo): llama a `computePolarHeatmap()` y colorea la grilla en un PNG de 96 × 96; caché por capa, período, paleta y `realDataVersion()` (24 entradas).
+  - `web/src/ui/map.js`: selector, proyección con borde variable (`edgeFor`), leyenda, crédito y cálculo diferido con el aviso "Cargando mapa…". Pide el atlas (`ensureHeatAtlas`) recién al elegir una capa calculada.
+  - `web/src/ui/data-status.js` y `web/src/ui/ephemerides.js`: estado de carga del atlas (el estado se publica después de guardar la promesa para evitar llamadas recursivas).
+  - `web/src/ui/elevation.js`: exporta `lut()` para reutilizar la paleta. `web/src/state.js`: `heatLayer`. `web/index.html`: grupo de botones con `aria-pressed`. Estilos en `main.css` (la leyenda baja 40 px para dejar lugar al selector). Textos `map.layer*` (ES/EN).
+- **Supuestos y límites:** cada celda vale lo de su centro (DEC-038); el primer cálculo de cada capa y período bloquea 0,2–1 s el hilo principal (PERF-01, opcional); la capa elegida no se guarda en la URL.
+- **Alternativas descartadas:** mostrar la grilla con la proyección hasta −60° (el disco calculado ocuparía un tercio del radio); pintar la capa sobre la Luna 3D (la grilla solo cubre el polo y requeriría otra textura); suavizar la imagen (sugiere una resolución que no existe); un selector de colores propio (DEC-014).
+- **Estado:** vigente.

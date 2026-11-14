@@ -1,7 +1,8 @@
 /**
  * Estado de carga de los datos reales que la página baja en segundo plano
  * (UI-01, DEC-039): efemérides JPL Horizons de los sitios curados (DEC-033) y
- * DEM LOLA polar reducido de los puntos propios (DEC-034).
+ * DEM LOLA polar reducido de los puntos propios (DEC-034) y atlas de
+ * horizontes del mapa de calor (DEC-038).
  *
  * Solo guarda y avisa: no baja ni calcula nada. Lo escribe `ephemerides.js`
  * y lo leen los paneles de "Datos y fuentes".
@@ -13,6 +14,7 @@
 const status = {
   ephemerides: { state: "idle", loaded: [], failed: [] },
   polarDem: { state: "idle", error: null },
+  heatAtlas: { state: "idle", error: null },
 };
 const listeners = new Set();
 
@@ -21,6 +23,7 @@ export function dataStatus() {
   return {
     ephemerides: { ...status.ephemerides },
     polarDem: { ...status.polarDem },
+    heatAtlas: { ...status.heatAtlas },
   };
 }
 

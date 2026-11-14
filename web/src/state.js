@@ -24,6 +24,7 @@ const state = {
   mapView: "heat", // "global" | "heat" | "polar"
   placesCategory: "overall", // ranking de "Mejores lugares": overall | science | communication | light (UI-13)
   mapMode: "3d", // GLOBAL y POLO SUR: "3d" (modelo) | "2d" (imagen NASA), DEC-021
+  heatLayer: "elevation", // pestaña ELEVACIÓN: elevation | sun | earth | both | viability (MAP-01, DEC-040)
   customSites: [], // sitios agregados con el botón "+"
 };
 

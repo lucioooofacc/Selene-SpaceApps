@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (UI-01, rama `feat/calidad-datos-efemerides`).
+Última actualización: 2026-11-14 (MAP-01 interfaz, rama `feat/mapa-calor-ui`).
 
 ---
 
@@ -70,7 +70,9 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
 - [x] ~~Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005~~ Hecho para los sitios curados al sur de −60°; sigue sintético en sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
 - [x] ~~Mapa de calor con horizonte real (hoy sintético en cada celda). — Desarrollo web · MAP-01 #16, DEC-032~~ Motor listo: atlas LOLA por celda (96 × 96 hasta −80°). Resuelto 2026-11-14 (rama `feat/mapa-calor-real`, #16, DEC-038).
-- [ ] MAP-01, interfaz: selector en la pestaña ELEVACIÓN (Elevación / Luz / Tierra / Equilibrado: "Sol y Tierra a la vez" y/o "Viabilidad") que llame a `ensureHeatAtlas()` y `computePolarHeatmap()` y muestre `source` (real / aproximado). — Lucio · #16, DEC-038
+- [x] ~~MAP-01, interfaz: selector en la pestaña ELEVACIÓN (Elevación / Luz / Tierra / Equilibrado: "Sol y Tierra a la vez" y/o "Viabilidad") que llame a `ensureHeatAtlas()` y `computePolarHeatmap()` y muestre `source` (real / aproximado). — Lucio · #16, DEC-038~~ Resuelto 2026-11-14 (rama `feat/mapa-calor-ui`, DEC-040): capas Elevación / Luz / Tierra / Sol + Tierra / Viabilidad, 2D hasta −80°, leyenda y procedencia en el crédito.
+- [ ] El cálculo de una capa del mapa bloquea 0,2–1 s el hilo principal la primera vez por período; mover a un worker si molesta. — Desarrollo web · PERF-01 #18, DEC-040
+- [ ] La capa elegida del mapa no se guarda en la URL ni en la configuración (vuelve a Elevación al recargar). — Desarrollo web · DEC-040
 - [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
 - [x] ~~TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-025, TERRAIN-02 #8~~ El horizonte usa rayos de 300 km sobre el raster completo fuera del navegador y se versiona solo la tabla de horizonte (~65 KB); los recortes no se versionan. Resuelto 2026-11-14 (rama `feat/horizonte-lola`, DEC-030).
 - [x] ~~Shackleton R04 (−89,7668°, −171,87°) cae en la pared interior del cráter según el DEM LOLA: cresta a ~2 km al este, horizonte de hasta ~31°. Verificar la coordenada y su marco (¿MOON_PA vs MOON_ME?, ¿otro punto de borde?). Desde DEC-032 la web ya muestra Shackleton con ~9 % de luz anual (antes ~96 %); si se corrige, regenerar la tabla. — Teo, Facu, Lucio · DEC-030, DEC-019~~ R04 es el centro de un polígono de la tabla de NASA; se reemplazó por R01 Connecting Ridge (62 % de luz, 46 % de comunicación). Resuelto 2026-11-14 (rama `data/shackleton-r01`, #61, DEC-035).
