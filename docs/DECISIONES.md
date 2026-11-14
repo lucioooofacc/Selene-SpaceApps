@@ -237,3 +237,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - MAPA DE CALOR no cambia (imagen del Figma) hasta MAP-01.
 - **Alternativas descartadas:** renderer propio sin dependencias (más tiempo y menos calidad); imágenes polares de LROC ya proyectadas (otra descarga, con un borde y una orientación que habría que hacer coincidir con `map.js`); textura de 2k (el polo sur se veía borroso en 2D).
 - **Estado:** vigente. La imagen 2D del polo sur pierde detalle cerca de −90° porque sale de un mosaico de 4096 px (~11 px por grado); si hace falta más detalle, usar la de 8k o un mosaico polar de LROC.
+
+## DEC-022 — Ajustes de alineación y desbordes sobre el Figma (UI-09)
+
+- **Contexto / problema:** con las medidas del Figma, la fila superior iba de 16 a 1912 px (espacios entre columnas de 32 y 72 px) y la sección inferior, de 40 a 1944 px. "Lectura del momento" (608 px) se salía de la sección. Las coordenadas y el botón "+" pisaban la esquina redondeada del mapa, el crédito de la fuente chocaba con las coordenadas, el menú y la línea de las pestañas no estaban centrados, la última tarjeta de parámetros tocaba el borde y la leyenda del panorama se superponía con la antena.
+- **Decisión:** priorizar alineación y contención sobre la posición exacta del Figma (pedido del equipo, 14/11/2026). Paleta, tipografías y componentes no cambian.
+- **Solución aplicada** (`web/src/styles/main.css`, `compare.css`, `web/src/ui/map.js`, `web/index.html`):
+  - Ancho útil de 40 a 1952 px en todas las secciones. Fila superior: 520 + 60 + 848 + 60 + 424; "Mejores lugares" estirado a 808 px para terminar a la misma altura que el mapa y los parámetros. Sección inferior: 1912 px, padding 40, columnas 1240 + 32 + 560; "Lectura del momento" de 560 px con el borde de las tarjetas. Se quitó el `min-height` de 1248 px, que dejaba un vacío abajo.
+  - Mapa: área de 600 px (antes 640) en MAPA DE CALOR y 3D. Las coordenadas quedan centradas abajo con el "+" a la derecha y el crédito centrado debajo, todo dentro de la tarjeta.
+  - Pestañas con separadores iguales; `placeAccent()` ajusta la línea al ancho real del texto. El menú queda centrado en la página.
+  - Parámetros: 8 px entre tarjetas. Leyenda del panorama arriba a la derecha, bajo el reloj, con fondo.
+  - Comparación: mismos márgenes de 40 px y controles a todo el ancho.
+- **Alternativas descartadas:** mantener las posiciones del Figma y solo recortar (seguían las cajas desalineadas).
+- **Estado:** vigente. Ajusta DEC-014 en las medidas mencionadas.
+

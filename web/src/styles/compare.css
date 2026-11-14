@@ -19,7 +19,7 @@
 }
 
 .cmp {
-  padding: 8px 80px 64px;
+  padding: 8px 40px 64px; /* mismos márgenes laterales que la página de misión (UI-09) */
   display: grid;
   gap: 24px;
 }
@@ -54,7 +54,7 @@
 /* Selección */
 .cmp-controls {
   display: grid;
-  grid-template-columns: 520px 56px 520px 440px;
+  grid-template-columns: 1fr 56px 1fr 1fr;
   align-items: end;
   gap: 24px;
   padding: 20px 24px;

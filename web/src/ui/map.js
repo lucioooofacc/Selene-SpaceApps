@@ -93,7 +93,13 @@ export function placeAccent() {
   if (!active || !line) return;
   // offsetLeft/offsetWidth no dependen del zoom aplicado al escenario.
   const tabs = active.parentElement;
-  const left = tabs.offsetLeft + active.offsetLeft - line.offsetLeft;
+  // La línea completa ocupa exactamente el ancho del texto de las pestañas (centrado).
+  const first = tabs.firstElementChild;
+  const last = tabs.lastElementChild;
+  const textLeft = tabs.offsetLeft + first.offsetLeft;
+  line.style.left = `${textLeft}px`;
+  line.style.width = `${last.offsetLeft + last.offsetWidth - first.offsetLeft}px`;
+  const left = tabs.offsetLeft + active.offsetLeft - textLeft;
   accent.style.width = `${active.offsetWidth}px`;
   accent.style.transform = `translateX(${left}px)`;
 }

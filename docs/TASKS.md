@@ -192,6 +192,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** perfil del horizonte sin recortar; escala vertical indicada; etiqueta de horizonte sintético mientras no haya LOLA; Sol y Tierra tapados por el relieve correcto.
 - **Fuera de alcance:** calcular el horizonte LOLA (TERRAIN-01/02).
 
+### UI-09 — Corregir alineaciones y desbordes de la interfaz
+
+- **Prioridad:** P0 · **Issue:** [#35](https://github.com/lucioooofacc/Selene-SpaceApps/issues/35).
+- **Objetivo:** corregir columnas desalineadas, cajas que se salen de su contenedor, elementos descentrados y superposiciones.
+- **Rama sugerida:** `design/ajustes-layout`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `web/src/styles/main.css`, `compare.css`, `web/src/ui/map.js`, `web/index.html`.
+- **Criterios de aceptación:** márgenes laterales iguales; ninguna caja sale de su contenedor; menú y pestañas centrados; sin superposiciones; revisión en escritorio ≥ 1200 px.
+- **Fuera de alcance:** rediseñar componentes o cambiar la paleta.
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente
