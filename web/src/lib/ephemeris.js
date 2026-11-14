@@ -240,3 +240,32 @@ export function derivedEphemerisFor(site) {
     },
   };
 }
+
+/**
+ * Direcciones del Sol y la Tierra en el marco fijo a la Luna en el instante
+ * `ms`, desde la serie registrada más cercana al polo sur (mapa de calor,
+ * MAP-01, DEC-038): `sunDir` unitario, `earthPos` en km respecto del centro
+ * de la Luna (con `EARTH_DISTANCE_KM`) y los radios angulares. `null` si no
+ * hay series o el instante está fuera de la cobertura.
+ */
+export function bodyVectorsAt(ms) {
+  let ref = null;
+  for (const eph of registry.values()) if (!ref || eph.site.lat < ref.site.lat) ref = eph;
+  if (!ref) return null;
+  const p = positionsAt(ref, ms);
+  if (!p) return null;
+  const f = localFrame(ref.site.lat, ref.site.lon);
+  const radius = MOON_RADIUS_KM + (ref.meta.observer?.altitudeKm ?? 0);
+  const u = toBody(f, p.earth.azimuth, p.earth.elevation);
+  return {
+    refId: ref.site.id,
+    meta: ref.meta,
+    sunDir: toBody(f, p.sun.azimuth, p.sun.elevation),
+    earthPos: [0, 1, 2].map((i) => f.up[i] * radius + u[i] * EARTH_DISTANCE_KM),
+    sunRadius: p.sun.radius,
+    earthRadius: p.earth.radius,
+  };
+}
+
+/** Ejes locales de un punto (exportado para el mapa de calor). */
+export { localFrame };

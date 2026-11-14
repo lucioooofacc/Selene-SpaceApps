@@ -13,6 +13,7 @@ import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
 import { derivedEphemerisFor, ephemerisFor, ephemerisVersion, positionsAt } from "./ephemeris.js";
 import { POLAR_DEM_COVERAGE_LATITUDE, polarDemVersion, polarHorizonFor } from "./polar-dem.js";
+import { computeRealHeatmap, heatAtlasVersion } from "./heat-map.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -131,7 +132,7 @@ export function needsPolarDem(site) {
  * llega algo nuevo: los cachés de escenarios la incluyen en su clave.
  */
 export function realDataVersion() {
-  return `${ephemerisVersion()}.${polarDemVersion()}`;
+  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}`;
 }
 
 /**
@@ -345,7 +346,16 @@ export function sampleAt(scenario, ms) {
  * punto de una grilla, usando pocas muestras para que sea rápido.
  * Devuelve una matriz size×size en proyección azimutal equidistante.
  */
+/**
+ * Mapa de calor del polo sur: fracción del tiempo con el Sol (`mode: "sun"`) o
+ * la Tierra (`"earth"`) visibles en cada celda. Con el atlas LOLA y las
+ * efemérides cargados usa datos reales (MAP-01, DEC-038); si no, o si la
+ * ventana sale de la cobertura de Horizons, el modelo aproximado y el
+ * horizonte sintético. `source.kind` indica cuál ("real" | "approximate").
+ */
 export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minLat = -80 }) {
+  const real = computeRealHeatmap({ startMs, windowDays, mode, size, minLat, sunVisible, earthVisible });
+  if (real) return real;
   const samples = Math.max(16, Math.round(windowDays * 4));
   const stepMs = (windowDays * DAY_MS) / samples;
   const sunSub = [];
@@ -378,5 +388,5 @@ export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minL
       values[y * size + x] = hits / samples;
     }
   }
-  return { values, size, minLat };
+  return { values, size, minLat, source: { kind: "approximate", ephemeris: "periodic-model", horizon: "synthetic" } };
 }
