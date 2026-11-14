@@ -137,7 +137,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 
 - **Contexto / problema:** para ubicar los sitios en "MAPA DE CALOR" y "POLO SUR" hay que saber qué latitud cubre cada imagen. El Figma no lo indica.
 - **Decisión:** suponer una proyección azimutal equidistante centrada en el polo sur, con 0° de longitud arriba y borde en −60° (`POLAR_EDGE_LAT` en `web/src/ui/map.js`).
-- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio). También hay que confirmar el origen y la licencia de las tres imágenes. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
+- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio) para MAPA DE CALOR. GLOBAL y POLO SUR ya no usan las imágenes del Figma (DEC-021): sus vistas 2D salen del CGI Moon Kit, con la misma proyección por construcción. Falta confirmar el origen y la licencia de la imagen del mapa de calor. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
 
 ## DEC-017 — Cómo se interpretó cada elemento del Figma
 
@@ -150,7 +150,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Menú "Opcion 3/4/5", botón de configuración y "Ver comparacion detallada":** se replican tal cual, pero todavía no tienen destino, porque el diseño no define esas pantallas. El globo cambia el idioma ES/EN.
 - **Franja de 8 px entre encabezado y cuerpo ("Vista 7"):** sin datos de color (se agotó el límite del plan gratuito del MCP de Figma), se usó el color de fondo.
 - **Datos aproximados:** para no agregar elementos visibles, el aviso de modelo aproximado quedó como tooltip del título "Parametros de la misión".
-- **Estado:** vigente. **Pendiente de definir por el equipo:** destino de "Ver comparacion detallada", "Comparar" y "Opcion 3/4/5", y si se corrigen los textos del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion").
+- **Estado:** vigente, salvo los destinos del menú, la ortografía y las imágenes de GLOBAL/POLO SUR, que pasan a DEC-020.
 
 ---
 
@@ -204,3 +204,36 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - `relief` y `elevationKm` siguen siendo parámetros sintéticos (DEC-005). Con el modelo actual, la luz anual de Shackleton pasa de ~96,2 % (−89,9°, 0°) a ~96,3 % (R04). DEC-005 sigue valiendo.
 - **Alternativas descartadas:** convertir los valores entre marcos sin conocer el de origen (se agregaría un error en lugar de quitarlo); deducir la exactitud de la cantidad de decimales (confunde representación con exactitud); usar el valor de CNSA para Chang'e 4 (otra referencia cartográfica); usar el centro USGS del cráter como punto del sitio; citar referencias escritas de memoria sin verificarlas; recortar latitudes fuera de rango en lugar de rechazarlas (ocultaría errores de datos).
 - **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3.
+
+## DEC-020 — Destinos del menú, ortografía y vistas del mapa (decisiones del equipo)
+
+- **Contexto / problema:** DEC-017 dejó pendientes de definir varios elementos del Figma sin pantalla de destino y la ortografía heredada del archivo.
+- **Decisión** (equipo, 14/11/2026, anotada en `PENDIENTES.md`):
+  - "Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios con métricas técnicas (UI-05).
+  - "Opción 3" pasa a ser el informe imprimible de la misión planificada (UI-06). "Opción 4" y "Opción 5" se quitan.
+  - Se corrigen las faltas de ortografía del Figma (UI-03).
+  - "Mejores lugares" usa "Latitud · Longitud" (confirmado).
+  - GLOBAL y POLO SUR pasan a un modelo 3D de la Luna con fuentes NASA y alternancia a vistas 2D (UI-07). MAPA DE CALOR queda como está hasta MAP-01.
+  - El panorama dibuja fielmente el horizonte del motor (UI-08); el relieve real llega con TERRAIN-02 (Facundo).
+  - Franja de 8 px: si el MCP de Figma sigue sin responder, se mantiene el color de fondo.
+- **Solución aplicada:** una tarea y una Issue por bloque (#21 a #26) en `docs/TASKS.md`. Cada tarea registra acá su implementación.
+  - **UI-08 (#26):** `src/ui/panorama.js` dibuja la cresta con `scenario.horizon(az)` cada 2 px (~0,6° de azimut), sin recortes. Se quitaron las dunas decorativas cercanas, que inventaban relieve; delante queda un suelo plano (zona de alunizaje). Se agregaron la línea de 0° (horizonte matemático), los puntos cardinales y una leyenda con la fuente del horizonte y la exageración vertical (12 px/° en vertical contra 1240/360 px/° en horizontal ≈ ×3,5). La leyenda dice "horizonte LOLA" si la función del horizonte trae `source === "lola"`; si no, "horizonte sintético". Esa propiedad opcional es una **propuesta para TERRAIN-02 (Facundo)**: hoy no existe y no cambia el contrato. La luz sigue la ilustración del Figma (`SELENE.fig`, imagen 1242×546): halo cálido más alto que ancho, brillo en el horizonte bajo el Sol y luz rasante sobre la cresta del lado del Sol, más fuerte con el Sol bajo. Un Sol o una Tierra más altos que el cielo dibujado (~31°) se muestran arriba con "↑" y su altura real, en lugar de recortarse en silencio.
+  - **UI-06 (#24):** "Informe" (`data-report-link`) arma `#report` con `src/ui/report.js` desde el escenario vigente y llama a `window.print()`; desde el diálogo también se guarda en PDF. `src/styles/report.css` oculta la interfaz al imprimir y muestra el informe en A4: sitio, período, viabilidad y criterios, las 9 métricas de `lib/compare.js`, ventanas de luz y enlace (hasta 12 por tabla), aviso de modelo aproximado y fuentes. `beforeprint` lo actualiza también con Ctrl+P. Desde la comparación, "Informe" abre `index.html#informe`, que imprime al cargar.
+  - **UI-05 (#23):** página `web/compare.html` (Vite multipágina, `vite.config.js`), con entrada `src/compare.js`, vista `src/ui/compare.js`, estilos `src/styles/compare.css` y enlaces `src/ui/links.js`. La selección viaja en la URL (`?a=&b=&start=&days=`): un sitio es un id curado o `pt:lat,lon`. A es el sitio activo de la misión y B, el mejor del ranking. La lógica comparativa está en `src/lib/compare.js` (con pruebas en `tests/compare.test.js`): reordena el resumen de `computeScenario`, sin fórmulas nuevas. Hay empate si la diferencia es menor que un paso de muestreo, 0,5 p. p., 0,01 de potencia relativa o 0,1°; esas tolerancias son de presentación y el equipo las puede ajustar. Sin diseño en el Figma, la página usa los tokens y componentes de la página de misión (A en dorado, B en el celeste de la Tierra).
+  - **UI-03 (#21):** `es.js` corrige "Misión", "Parámetros", "Duración de misión", "Disponibilidad de comunicación" y "Ver comparación detallada". La clave `nav.option3` pasa a `nav.report` ("Informe" / "Report") y se quitan `option4` y `option5` de `index.html` y de los dos idiomas. La franja de 8 px mantiene el color de fondo: el MCP de Figma necesita la URL del archivo en figma.com, y en el repo solo está el `.fig` local.
+- **Alternativas descartadas:** comparación como vista con hash dentro de la misma página (la página aparte es más simple y no necesita router); calcular el horizonte LOLA desde el frontend (duplicaría TERRAIN-01/02).
+- **Estado:** vigente. **Pendiente:** destino del botón de configuración.
+
+## DEC-021 — Luna 3D con three.js y vistas 2D del CGI Moon Kit
+
+- **Contexto / problema:** el equipo pidió reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D con fuentes NASA, con opción de alternar a 2D (DEC-020, UI-07). Las imágenes del Figma tenían origen, licencia y proyección sin confirmar (DEC-016).
+- **Decisión:** usar three.js como dependencia (aprobada por el equipo el 14/11/2026) y las texturas del CGI Moon Kit de NASA SVS (color LROC WAC y relieve LOLA). Detalles de la fuente en `docs/DATA_SOURCES.md`.
+- **Solución aplicada:**
+  - `three@0.186.1` con versión exacta en `web/package.json` (la última con más de dos semanas publicada; la 0.187 tenía dos). Se carga con `import()` diferido: el chunk (~187 KB gzip) solo se descarga al abrir GLOBAL o POLO SUR en 3D.
+  - `src/ui/moon3d.js`: esfera de 384×192 segmentos con `displacementMap`/`bumpMap` LOLA y escala vertical exagerada (`RELIEF_SCALE = 0.03` del radio, contra ~0,012 real). Luz ilustrativa (ambiente + luz rasante que acompaña a la cámara). Render a demanda, sin rotación automática. Arrastrar o flechas = girar; rueda o +/− = acercar; Enter = elegir el centro; clic = elegir coordenadas (raycast sobre la esfera base). Los marcadores son los mismos elementos HTML de `map.js`: se proyectan desde `data-lat`/`data-lon` y se ocultan del lado de atrás.
+  - Convención: lon 0 → +X, lon 90° E → −Z, norte → +Y (coincide con las UV de `SphereGeometry` y la textura centrada en 0°). GLOBAL arranca en (0°, 0°); POLO SUR, en el polo con 0° de longitud arriba, igual que la vista 2D.
+  - Vistas 2D: GLOBAL usa el mosaico equirectangular; POLO SUR se reproyecta en el navegador (`src/ui/polar2d.js`) a azimutal equidistante hasta `POLAR_EDGE_LAT = −60°`. Imagen y marcadores usan la misma fórmula, así que coinciden por construcción.
+  - Selector 3D/2D (`state.mapMode`, por defecto "3d"), crédito de la fuente bajo el mapa y estado "Cargando mapa…". Sin WebGL, se vuelve a 2D con un aviso.
+  - MAPA DE CALOR no cambia (imagen del Figma) hasta MAP-01.
+- **Alternativas descartadas:** renderer propio sin dependencias (más tiempo y menos calidad); imágenes polares de LROC ya proyectadas (otra descarga, con un borde y una orientación que habría que hacer coincidir con `map.js`); textura de 2k (el polo sur se veía borroso en 2D).
+- **Estado:** vigente. La imagen 2D del polo sur pierde detalle cerca de −90° porque sale de un mosaico de 4096 px (~11 px por grado); si hace falta más detalle, usar la de 8k o un mosaico polar de LROC.

@@ -12,13 +12,20 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 
 ## Diseño (réplica del Figma)
 
-- [ ] Leer el color de la franja de 8 px entre el encabezado y el cuerpo (frame "Vista 7"). Ahora usa el color de fondo, porque se agotó el límite del MCP de Figma. — DEC-017
-- [ ] Verificar con `get_design_context` las pestañas GLOBAL y POLO SUR (frames 44:5 y 44:6): posición exacta de las imágenes y del subrayado. Ahora se toman de los metadatos. — DEC-017
-- [ ] Definir el destino de "Ver comparacion detallada", "Comparar", "Opcion 3/4/5" y del botón de configuración (el diseño no tiene esas pantallas). — Equipo
-- [ ] Decidir si se corrigen las faltas de ortografía del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion", "Mision", "Opcion") o se dejan tal cual. — Alfonso, Cata
-- [ ] En el Figma, "Mejores lugares" mezcla dos subtítulos ("Latitud · Longitud" y "Azimut · margen"); la web usa siempre el primero. Confirmar. — Equipo
-- [ ] Panorama: acercar más la iluminación de las dunas y el resplandor al de la ilustración del Figma. — Desarrollo web
-- [ ] Calendario: permitir moverse entre días con las flechas del teclado.
+- [x] ~~Leer el color de la franja de 8 px entre el encabezado y el cuerpo (frame "Vista 7").~~ Se mantiene el color de fondo: el MCP de Figma necesita la URL del archivo en figma.com y el repo solo tiene el `.fig` local. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
+- [x] ~~Reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (fuentes NASA), con opción de alternar entre 3D y vistas 2D.~~ three.js + CGI Moon Kit de NASA SVS. Resuelto 2026-11-14 (rama `feat/luna-3d`, #25, DEC-021).
+- [ ] Mejorar el detalle del polo sur en 2D (textura de 8k o mosaico polar de LROC) si el equipo lo necesita. — Desarrollo web, DEC-021
+- [x] ~~"Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios elegidos con métricas técnicas.~~ `compare.html`. Resuelto 2026-11-14 (rama `feat/comparacion-sitios`, #23).
+- [ ] Al volver de la comparación a la misión se pierde la selección (sitio y fechas), porque la página de misión no lee la URL. — Desarrollo web, UI-05
+- [x] ~~"Opción 3" pasa a ser el informe imprimible de la misión planificada.~~ "Informe" en el menú. Resuelto 2026-11-14 (rama `feat/informe-imprimible`, #24).
+- [ ] "Informe" desde la página de comparación imprime la misión por defecto, no los sitios comparados (misma causa: la misión no lee la URL). — Desarrollo web, UI-06
+- [x] ~~Quitar "Opción 4" y "Opción 5" del menú.~~ "Opción 3" pasa a llamarse "Informe". Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
+- [x] ~~Corregir las faltas de ortografía heredadas del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion", "Mision", "Opcion").~~ Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
+- [x] ~~"Mejores lugares": confirmado el subtítulo "Latitud · Longitud".~~ La web ya lo usaba. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
+- [x] ~~Panorama: acercar la iluminación de las dunas y el resplandor a la ilustración del Figma, y que el relieve represente fielmente el horizonte del punto (montañoso, plano, con cráteres).~~ La cresta es el horizonte del motor sin decoración, con escala y fuente indicadas. Resuelto 2026-11-14 (rama `design/panorama-relieve`, #26).
+- [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
+- [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
+- [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
 - [x] ~~Las tarjetas de "Mejores lugares" se rompían con valores largos ("890 Min", "-46.2°").~~ Resuelto 2026-11-13: columnas de 66 px y minutos en horas desde 100 min.
@@ -38,16 +45,16 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Chang'e 4: decidir si se documenta en la interfaz la discrepancia de ≈ 415 m entre NSSDCA (usado) y CNSA (177,5991° E, 45,4446° S). — Teo, Facu, Lucio · DEC-019
 - [x] ~~Cargar la exactitud declarada por cada fuente en `precision.accuracyM` (hoy `null`). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): 10 m en R04/R23 y 115 m (1σ) en Cabeus, con `accuracyBasis`. Las demás fuentes no la declaran (`null`).
 - [ ] Decidir si la interfaz muestra la procedencia y la confianza de cada sitio (requiere claves nuevas en `es.js`/`en.js` y consultar el diseño). — Desarrollo web · DEC-019, DEC-014
-- [ ] Confirmar qué latitud cubren las imágenes polares (supuesto: hasta −60°) y su orientación (0° arriba). — DEC-016
-- [ ] Confirmar origen y licencia de las imágenes de la Luna que vienen del Figma. — DEC-016
+- [ ] Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021). — DEC-016
+- [ ] Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS). — DEC-016
 - [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
 ## Textos y traducción
 
-- [ ] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
-- [ ] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
+- [x] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
+- [x] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
 
 ## Repositorio y entrega
 
