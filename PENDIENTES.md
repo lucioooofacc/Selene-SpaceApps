@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (UI-02, rama `design/visualizaciones-datos-reales`).
+Última actualización: 2026-11-14 (textos desactualizados, rama `fix/textos-datos-reales`).
 
 ---
 
@@ -72,6 +72,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Mapa de calor con horizonte real (hoy sintético en cada celda). — Desarrollo web · MAP-01 #16, DEC-032~~ Motor listo: atlas LOLA por celda (96 × 96 hasta −80°). Resuelto 2026-11-14 (rama `feat/mapa-calor-real`, #16, DEC-038).
 - [x] ~~MAP-01, interfaz: selector en la pestaña ELEVACIÓN (Elevación / Luz / Tierra / Equilibrado: "Sol y Tierra a la vez" y/o "Viabilidad") que llame a `ensureHeatAtlas()` y `computePolarHeatmap()` y muestre `source` (real / aproximado). — Lucio · #16, DEC-038~~ Resuelto 2026-11-14 (rama `feat/mapa-calor-ui`, DEC-040): capas Elevación / Luz / Tierra / Sol + Tierra / Viabilidad, 2D hasta −80°, leyenda y procedencia en el crédito.
 - [x] ~~UI-02: avisos de "modelo aproximado v1" desactualizados (informe, comparación, tooltip de Parámetros) y sin marca de los tramos aproximados en la línea de tiempo. — Lucio · #15~~ Resuelto 2026-11-14 (rama `design/visualizaciones-datos-reales`, DEC-041).
+- [x] ~~Textos que contradecían el estado actual ("modelo v1", "SINTÉTICO hasta CORE-01", "el cálculo todavía usa el sintético", pie del informe con "reemplazos previstos"). — Desarrollo web · DEPLOY-01 #14~~ Resuelto 2026-11-14 (rama `fix/textos-datos-reales`): corregidos en ES y EN; falta la revisión de estilo de Alfonso y Cata (I18N-01).
 - [ ] Revisar los textos nuevos `dataNote.*`, `sim.bodies.*`, `sim.coverage.*` y `params.dataHint` en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-041
 - [ ] El cálculo de una capa del mapa bloquea 0,2–1 s el hilo principal la primera vez por período; mover a un worker si molesta. — Desarrollo web · PERF-01 #18, DEC-040
 - [ ] La capa elegida del mapa no se guarda en la URL ni en la configuración (vuelve a Elevación al recargar). — Desarrollo web · DEC-040
