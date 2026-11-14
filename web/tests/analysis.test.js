@@ -82,3 +82,38 @@ test("el mapa de calor conserva forma, rangos y determinismo", () => {
   for (const value of first.values) assert.ok(value === -1 || (value >= 0 && value <= 1));
 });
 
+
+// ---------- CORE-01 parte A: horizonte LOLA en el cálculo (DEC-032) ----------
+import { SITES } from "../src/data/sites.js";
+import { scenarioHorizon } from "../src/lib/analysis.js";
+
+const curated = (id) => SITES.find((s) => s.id === id);
+
+test("scenarioHorizon: LOLA para los sitios curados cubiertos", () => {
+  for (const id of ["shackleton", "malapert", "cabeus", "im1", "chandrayaan3"]) {
+    const h = scenarioHorizon(curated(id));
+    assert.equal(h.source, "lola", id);
+    assert.equal(h.meta.siteId, id);
+  }
+});
+
+test("scenarioHorizon: sintético fuera de cobertura, en sitios propios o con coordenadas distintas", () => {
+  for (const id of ["change4", "apollo11"]) assert.equal(scenarioHorizon(curated(id)).source, undefined, id);
+  const shackleton = curated("shackleton");
+  assert.equal(scenarioHorizon({ ...shackleton, custom: true }).source, undefined);
+  assert.equal(scenarioHorizon({ ...shackleton, lat: shackleton.lat + 0.01 }).source, undefined);
+  assert.equal(scenarioHorizon({ id: "custom-1", lat: -85, lon: 10, custom: true }).source, undefined);
+});
+
+test("computeScenario expone el horizonte usado y la interfaz lo puede identificar", () => {
+  const scenario = computeScenario(curated("malapert"), startMs, 1);
+  assert.equal(scenario.horizon.source, "lola");
+  const sample = sampleAt(scenario, startMs + DAY_MS / 2);
+  assert.equal(sample.sun.horizon, scenario.horizon(sample.sun.azimuth));
+});
+
+test("Cabeus (impacto LCROSS, sombra permanente) no recibe Sol con el horizonte LOLA", () => {
+  // Control físico: el sintético le daba ~20–40 % de luz; el relieve real lo deja en sombra.
+  const scenario = computeScenario(curated("cabeus"), startMs, 30);
+  assert.equal(scenario.summary.illumination, 0);
+});

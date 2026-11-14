@@ -231,6 +231,8 @@ export function createLolaHorizon(siteId, table = LOLA_HORIZONS) {
   horizon.meta = Object.freeze({
     source: "lola",
     siteId,
+    lat: entry.lat,
+    lon: entry.lon,
     product: table.source,
     algorithm: table.algorithm,
     params: table.params,
