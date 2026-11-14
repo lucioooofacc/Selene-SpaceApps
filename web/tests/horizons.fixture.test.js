@@ -11,6 +11,9 @@ import { readFile } from "node:fs/promises";
 import { ALTITUDE_BASIS, HORIZONS_PROFILE, cacheKey, normalizeHorizons, buildQueryUrl } from "../src/lib/horizons.js";
 import { SITES } from "../src/data/sites.js";
 
+/** Punto de los fixtures: Shackleton Rim R04 (DEC-019), antes de DEC-035. */
+const R04 = Object.freeze({ lat: -89.7668, lon: -171.87 });
+
 const DIR = new URL("./fixtures/horizons/", import.meta.url);
 const read = (name) => readFile(new URL(name, DIR), "utf8");
 const manifest = JSON.parse(await read("manifest.json"));
@@ -50,7 +53,9 @@ for (const entry of manifest.entries) {
   });
 
   test(`${entry.target}: la altura 0 está declarada como supuesto, no como medida`, () => {
-    const site = SITES.find((s) => s.id === fixture.request.site.id);
+    // El fixture se obtuvo para Shackleton R04 (DEC-019), reemplazado en el
+    // catálogo por R01 (DEC-035); se conserva como descarga histórica.
+    const site = { ...SITES.find((s) => s.id === fixture.request.site.id), ...R04 };
     assert.equal(fixture.request.site.lat, site.lat);
     assert.equal(fixture.request.site.lon, site.lon);
     assert.equal(fixture.request.site.altitudeKm, 0);

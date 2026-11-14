@@ -12,7 +12,7 @@ Respuestas **oficiales y sin modificar** de la API de NASA/JPL Horizons, usadas 
 | Perfil | `selene-observer-v1` (`HORIZONS_PROFILE` en `horizons.js`) |
 | Objetivos | Sol (`10`) y Tierra (`399`) |
 | Centro | `coord@301`, sitio geodésico sobre la Luna, polo `MEAN_ME (high precision)`, esfera de 1737,4 km |
-| Sitio | `shackleton` (Shackleton Rim R04, DEC-019): lat −89,7668°, lon E −171,87° (Horizons lo informa como 188,13° E) |
+| Sitio | `shackleton` (Shackleton Rim R04, DEC-019): lat −89,7668°, lon E −171,87° (Horizons lo informa como 188,13° E). Desde DEC-035 el sitio del catálogo es R01; este fixture se conserva como descarga histórica de R04. |
 | Altura | **0 km — SUPUESTO** (`assumed-zero-reference-sphere`): no hay altura datum del sitio. No se usa `elevationKm` (sintético, DEC-005). |
 | Intervalo | 2026-11-14 00:00 UTC → 2026-11-16 00:00 UTC, paso 60 min, 49 filas |
 | Cantidades | `4,10,13`: azimut/elevación aparentes (sin aire), % iluminado, diámetro angular |

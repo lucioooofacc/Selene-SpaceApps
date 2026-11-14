@@ -405,7 +405,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   | Chandrayaan-3 | 529,7 | 0,383 / 1,335 / 2,455 | 4,0 % | 12,4 % (rayos al norte, borde −60°) |
 
   Comparación visual en `docs/img/horizonte-lola.svg`.
-- **Hallazgo a validar por astronomía (Teo, Facu, Lucio) — Shackleton R04:** con la coordenada de DEC-019 (−89,7668°, −171,87°) el DEM ubica el punto sobre la **pared interior** del cráter: la cresta (≈ 1730 m) está a ~2 km hacia el este (azimut 90–110°) y el terreno baja hacia el fondo al oeste-suroeste. Por eso el horizonte llega a ~31° entre 30° y 150° de azimut. No es un artefacto del píxel: ignorando el primer kilómetro el máximo sigue en ~31° (media 12,1°). La orientación del DEM está verificada (DEC-025). El marco de R04 figura como inferido (`sourceFrameVerified: false`); una diferencia MOON_PA/MOON_ME (~0,9 km) no alcanza por sí sola a explicar 2 km. Cuando CORE-01 integre este horizonte, la iluminación de Shackleton bajará respecto del ~90 % del modelo sintético (DEC-005). No se cambió la coordenada (corresponde a DATA-01).
+- **Hallazgo a validar por astronomía (Teo, Facu, Lucio) — Shackleton R04** (*resuelto en DEC-035: R04 es un centro de polígono; se usa R01*): con la coordenada de DEC-019 (−89,7668°, −171,87°) el DEM ubica el punto sobre la **pared interior** del cráter: la cresta (≈ 1730 m) está a ~2 km hacia el este (azimut 90–110°) y el terreno baja hacia el fondo al oeste-suroeste. Por eso el horizonte llega a ~31° entre 30° y 150° de azimut. No es un artefacto del píxel: ignorando el primer kilómetro el máximo sigue en ~31° (media 12,1°). La orientación del DEM está verificada (DEC-025). El marco de R04 figura como inferido (`sourceFrameVerified: false`); una diferencia MOON_PA/MOON_ME (~0,9 km) no alcanza por sí sola a explicar 2 km. Cuando CORE-01 integre este horizonte, la iluminación de Shackleton bajará respecto del ~90 % del modelo sintético (DEC-005). No se cambió la coordenada (corresponde a DATA-01).
 - **Supuestos:** alturas sobre la esfera de 1737,4 km (sin geoide); 240 m/píxel limita el detalle a menos de ~0,5 km; la interpolación bilineal suaviza bordes en ±1 píxel; observador a 2 m (mástil o antena típica, no un vehículo concreto). Más allá de ~250 km la curvatura hace que el relieve lunar (≲ 10 km) no pueda levantar el horizonte de sitios bajos; 300 km da margen para horizontes negativos en cimas.
 - **Alternativas descartadas:** calcular en el navegador (raster de ~345 MiB); versionar recortes de ±300 km (~25 MB por sitio); aproximar la curvatura con `d²/2R` (la fórmula exacta cuesta lo mismo); modificar `createHorizon()` (cambio de contrato y de resultados que corresponde a CORE-01); horizonte para sitios personalizados (requiere el raster en tiempo de ejecución: pendiente, PERF-01/CORE-01).
 - **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores.
@@ -501,3 +501,26 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** fuera de −75° (o si el DEM no cargó) el horizonte de un punto propio sigue sintético; fuera del 01/11/2026–01/01/2028, el modelo aproximado. El mapa de calor no cambia (MAP-01). La distancia Tierra–Luna fija agrega < 0,02° a la Tierra.
 - **Alternativas descartadas:** consultar Horizons por punto (el navegador no puede); bajar el raster completo (~345 MiB); un solo nivel de 480 m hasta −75° (~11 MB); recortes nativos por teselas (~44 MB en el repo); tomar el máximo en vez del promedio de cada bloque (corrige el sesgo a ojo, sin respaldo).
 - **Estado:** vigente. Pendiente de validar por astronomía la clasificación "aproximado" del horizonte reducido.
+
+## DEC-035 — Shackleton: R01 Connecting Ridge reemplaza a R04 (DATA-02)
+
+- **Contexto / problema:** el sitio "Shackleton" usaba R04 "Shackleton Rim" (−89,7668°, −171,87°, DEC-019). Con el horizonte LOLA (DEC-030) caía en la pared interior del cráter: cresta a ~2 km al este, horizonte de hasta ~31°. Con LOLA + Horizons daba 10,9 % de luz y **0 % de Tierra visible** al año (DEC-033), y eso cambiaba el ranking publicado.
+- **Causa (verificada en la fuente):** la tabla A2-2 del *Lunar Surface Data Book* Rev A dice que sus coordenadas son *"the center points of the original polygons"* (sección A2.1). R04 es el centro de una zona que sigue un tramo curvo del borde, así que ese centro queda hacia adentro del cráter. La coordenada estaba bien copiada; el problema era usarla como punto de aterrizaje.
+- **Comparación** (LOLA 240 m + Horizons, 01/11/2026–01/11/2027, cada 1 h; método de la investigación de Facundo, 14/11/2026):
+
+  | Punto (tabla A2-2 salvo indicación) | Suelo | Luz | Tierra visible |
+  | --- | --- | --- | --- |
+  | R04 Shackleton Rim (anterior) | 771 m | 9 % | 0 % |
+  | Cresta a 1,6 km al ENE de R04 (calculada, no oficial) | ~1690 m | ~58 % | ~44–48 % |
+  | **R01 Connecting Ridge** | **1943 m** | **60 %** | **46 %** |
+  | LM1 Shackleton Rim B | −32 m | 36 % | 52 % |
+
+- **Decisión (Facundo, 14/11/2026):** usar **R01 "Connecting Ridge"** (−89,4632°, −137,49°), de la misma tabla oficial: la cresta que une los bordes de Shackleton y de Gerlache. Se descartó la cresta calculada por nosotros porque sería presentar como oficial un punto propio.
+- **Solución aplicada:**
+  - `web/src/data/sites.js`: coordenadas, `point.name = "Connecting Ridge R01"` y referencia. Se mantienen el id `shackleton` (enlaces y URL), el nombre visible "Shackleton" (la cresta sale de su borde) y el rasgo "junto a un cráter con fondo en sombra permanente" (Zuber et al. 2012), que sigue valiendo.
+  - Tabla de horizonte regenerada (`npm run data:lola:horizons`): suelo 1942,5 m; horizonte −3,344° / −0,375° / 1,264° (mín./medio/máx.), sin `count = 0` ni truncamiento. Comparación visual actualizada en `docs/img/horizonte-lola.svg`.
+  - Efemérides regeneradas con `fetch-horizons.mjs` (altura 1,9445 km = suelo + 2 m) y `npm run data:ephemerides`.
+  - Pruebas: catálogo; el fixture de ASTRO-01 (descarga histórica de R04) se conserva y se compara contra R04 documentado; el cruce con ese fixture usa la serie de R01 trasladada a R04 (DEC-034, < 0,002°); límite del horizonte reducido en R01 medido en 0,38° / 1,07°.
+- **Efecto:** Shackleton pasa de 10,9 % a **62,2 %** de luz y de 0 % a **46,5 %** de comunicación (media de 13 ventanas de 30 días), con 100 % de luz en el verano austral (nov–ene).
+- **Alternativas descartadas:** mantener R04 explicándolo (el sitio quedaba como un mal lugar por un artefacto de la tabla); la cresta calculada (no oficial); LM1 Shackleton Rim B (más bajo y con menos luz).
+- **Estado:** vigente. Reemplaza el punto de Shackleton de DEC-019 y resuelve el hallazgo de DEC-030. Los valores históricos de R04 en DEC-030, DEC-032 y DEC-033 se dejan como estaban.

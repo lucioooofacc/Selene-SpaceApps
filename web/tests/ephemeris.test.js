@@ -13,6 +13,7 @@ import {
   EPHEMERIS_SCHEMA,
   clearEphemerides,
   decodeEphemeris,
+  derivedEphemerisFor,
   ephemerisFor,
   ephemerisVersion,
   loadEphemerides,
@@ -104,15 +105,18 @@ test("archivos versionados: los 7 sitios, rango acordado y coordenadas del catá
   }
 });
 
-test("cruce con el fixture crudo de ASTRO-01 (Shackleton, 14–16/11/2026)", () => {
-  const eph = decodeEphemeris(readSite("shackleton"));
+test("cruce con el fixture crudo de ASTRO-01 (Shackleton R04, 14–16/11/2026)", () => {
+  // El fixture es del punto R04 (DEC-019); el sitio ahora es R01 (DEC-035), a
+  // ~10 km. Se compara la serie de R01 trasladada a R04 (DEC-034).
+  registerEphemeris(decodeEphemeris(readSite("shackleton")));
+  const eph = derivedEphemerisFor({ id: "r04", lat: -89.7668, lon: -171.87, custom: true });
   const fx = (name) => JSON.parse(readFileSync(resolve(import.meta.dirname, "fixtures/horizons", name), "utf8")).samples;
   const sun = fx("sun-a821ce09040a6d31.normalized.json");
   const earth = fx("earth-83a4e9a22af040bb.normalized.json");
-  // El fixture usa altura 0 km y la serie la del suelo LOLA + 2 m (0,7727 km):
+  // El fixture usa altura 0 km y la serie de R01 la del suelo LOLA + 2 m:
   // a la distancia del Sol y la Tierra la diferencia es < 0,001°.
   for (let i = 0; i < sun.timeMs.length; i++) {
-    const p = positionsAt(eph, sun.timeMs[i]);
+    const p = eph.at(sun.timeMs[i]);
     assert.ok(Math.abs(p.sun.elevation - sun.elevationDeg[i]) < 0.002, `Sol fila ${i}`);
     assert.ok(Math.abs(p.earth.elevation - earth.elevationDeg[i]) < 0.002, `Tierra fila ${i}`);
     assert.ok(Math.abs(p.earth.phase - earth.illuminatedPct[i] / 100) < 0.001);
