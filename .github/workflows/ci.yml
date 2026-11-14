@@ -1,0 +1,38 @@
+# Integración continua (TEST-01, DEC-037): pruebas y build de la web en cada
+# PR y en cada push a main. Las validaciones con los rasters LOLA crudos
+# (~345 MiB) se omiten solas aquí; ver docs/VALIDACION.md para correrlas.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Pruebas unitarias
+        run: npm run test:unit
+      - name: Validaciones contra datos reales
+        run: npm run test:validation
+      - name: Build
+        run: npm run build
