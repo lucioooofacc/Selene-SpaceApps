@@ -9,9 +9,9 @@
     {
       "id": "shackleton",
       "file": "shackleton.json",
-      "bytes": 296852,
+      "bytes": 297083,
       "observer": {
-        "altitudeKm": 0.7727,
+        "altitudeKm": 1.9445,
         "altitudeBasis": "measured-datum"
       }
     },
