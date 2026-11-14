@@ -202,6 +202,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** márgenes laterales iguales; ninguna caja sale de su contenedor; menú y pestañas centrados; sin superposiciones; revisión en escritorio ≥ 1200 px.
 - **Fuera de alcance:** rediseñar componentes o cambiar la paleta.
 
+### UI-10 — Modal de configuración: accesibilidad y paleta para daltonismo
+
+- **Prioridad:** P1 · **Issue:** [#37](https://github.com/lucioooofacc/Selene-SpaceApps/issues/37).
+- **Objetivo:** modal del engranaje con idioma, paleta apta para daltonismo, alto contraste, reducir movimiento y vista del mapa por defecto.
+- **Rama sugerida:** `feat/configuracion`.
+- **Dependencias:** UI-09 (comparte estilos e HTML).
+- **Archivos afectados:** `web/src/ui/settings.js`, `web/src/styles/settings.css`, `web/src/main.js`, `web/src/compare.js`, `web/index.html`, `web/compare.html`, i18n.
+- **Criterios de aceptación:** modal accesible (Escape cierra y devuelve el foco); opciones aplicadas al instante y recordadas; verde/rojo → azul/naranja en estados y barras; ES/EN; misión y comparación.
+- **Fuera de alcance:** recolorear la imagen del mapa de calor; tamaño de letra.
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente

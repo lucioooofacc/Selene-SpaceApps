@@ -12,6 +12,7 @@ import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/i
 import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
 import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js";
 import { renderComparison } from "./ui/compare.js";
+import { applySettings, initSettings } from "./ui/settings.js";
 import { compareUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
 
 const DESIGN_WIDTH = 1992;
@@ -72,6 +73,7 @@ function fitStage() {
 }
 
 function init() {
+  applySettings();
   setLang(initialLang());
   fitStage();
 
@@ -105,6 +107,12 @@ function init() {
     if (changed.has("startMs") || changed.has("windowDays")) render();
   });
   window.addEventListener("resize", fitStage);
+  initSettings({
+    onLanguage: () => {
+      relabelPoints();
+      render();
+    },
+  });
 
   render();
 }

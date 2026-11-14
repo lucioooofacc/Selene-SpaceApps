@@ -251,3 +251,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** mantener las posiciones del Figma y solo recortar (seguían las cajas desalineadas).
 - **Estado:** vigente. Ajusta DEC-014 en las medidas mencionadas.
 
+## DEC-023 — Modal de configuración: accesibilidad y paleta para daltonismo (UI-10)
+
+- **Contexto / problema:** el botón del engranaje no tenía destino. El equipo decidió (anotado en `PENDIENTES.md`) un modal con accesibilidad, modo para daltonismo y otras opciones.
+- **Decisión:** un `<dialog>` nativo, compartido por la misión y la comparación, con: idioma (ES/EN); colores estándar o aptos para daltonismo; alto contraste; reducir movimiento (por defecto sigue la preferencia del sistema operativo); y, solo en la misión, la vista del mapa en GLOBAL y POLO SUR (3D/2D).
+- **Solución aplicada:**
+  - `web/src/ui/settings.js`: arma el modal, aplica las opciones al instante con `data-palette`, `data-contrast` y `data-motion` en `<html>`, y las guarda en `localStorage` (`selene.settings`) como comodidad (si el navegador lo bloquea, funciona con los valores por defecto). "Restablecer" vuelve a los valores por defecto. Escape, "Listo", × o clic en el fondo cierran el modal y devuelven el foco al engranaje.
+  - `web/src/styles/settings.css` (importado desde `main.css`): la paleta para daltonismo usa los colores de Okabe e Ito (azul `#56B4E9` para favorable, naranja `#E69F00` para desfavorable y amarillo `#F0E442` para intermedio). Cambia los tokens `--green`/`--red`, las etiquetas de estado y el punto de VIABLE/INVIABLE (un SVG del Figma con color fijo, que en este modo se dibuja con CSS). El alto contraste aclara `--muted`, `--muted-2`, los bordes y los segmentos apagados. Reducir movimiento anula transiciones y animaciones.
+  - `main.js` aplica las opciones antes del primer dibujo y toma `mapMode` de la configuración; `compare.js` también las aplica. Textos en `settings.*` (ES/EN).
+- **Alternativas descartadas:** tamaño de letra (el diseño se escala con `zoom` a 1992 px y rompería la grilla); recolorear la imagen del mapa de calor del Figma (es un bitmap; corresponde a MAP-01).
+- **Estado:** vigente.
+
