@@ -7,6 +7,7 @@
  * altura de la Tierra y luz acumulada.
  */
 import { computeScenario, sampleAt } from "../lib/analysis.js";
+import { ephemerisVersion } from "../lib/ephemeris.js";
 import { rankEntries } from "../lib/ranking.js";
 import { traitsFor } from "../data/site-traits.js";
 import { t } from "../i18n/index.js";
@@ -32,7 +33,7 @@ let entries = [];
 /** Escenarios de todos los sitios (se recalculan solo si cambian fechas o sitios). */
 function scenarios(state) {
   const sites = allSites();
-  const key = `${state.startMs}|${state.windowDays}|${sites.map((s) => s.id).join(",")}`;
+  const key = `${state.startMs}|${state.windowDays}|${sites.map((s) => s.id).join(",")}|${ephemerisVersion()}`;
   if (key !== cacheKey) {
     entries = sites.map((site) => ({
       site,

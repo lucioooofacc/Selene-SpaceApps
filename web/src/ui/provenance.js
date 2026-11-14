@@ -6,7 +6,8 @@
  *   verificado y enlaces a las fuentes oficiales. Las notas en prosa de
  *   `sites.js` existen solo en español y no se muestran.
  * - Calidad: dice, para cada dato de la página, si es real, aproximado o
- *   sintético. Hoy el Sol y la Tierra salen del modelo aproximado (DEC-004)
+ *   sintético. El Sol y la Tierra salen de JPL Horizons o del modelo aproximado según
+ *   `scenario.ephemeris` (DEC-033)
  *   y el horizonte es sintético (DEC-005) salvo que la función del horizonte
  *   declare `source === "lola"` (propuesta para TERRAIN-02).
  *
@@ -100,9 +101,17 @@ export function qualityRows(site, scenario) {
       : lola.mode === "preview"
         ? { key: "horizon", hint: "horizonPreview", kind: "synthetic", ref: "DEC-005 · DEC-030" }
         : { key: "horizon", kind: "synthetic", ref: "DEC-005" };
+  // Origen del Sol y la Tierra según el escenario (CORE-01 parte B, DEC-033).
+  const source = scenario?.ephemeris?.source;
+  const ephemerisRow =
+    source === "horizons"
+      ? { key: "ephemeris", hint: "ephemerisReal", kind: "real", ref: "DEC-033" }
+      : source === "mixed"
+        ? { key: "ephemeris", hint: "ephemerisMixed", kind: "approx", ref: "DEC-033 · DEC-004" }
+        : { key: "ephemeris", kind: "approx", ref: "DEC-004" };
   return [
     { key: "coords", kind: site?.provenance ? "real" : "none", ref: "DEC-019" },
-    { key: "ephemeris", kind: "approx", ref: "DEC-004" },
+    ephemerisRow,
     horizonRow,
     { key: "imagery", kind: "real", ref: "DEC-021 · DEC-026" },
     { key: "thresholds", kind: "approx", ref: "DEC-007" },

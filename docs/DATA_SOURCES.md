@@ -1,6 +1,6 @@
 # Catálogo de fuentes científicas
 
-Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo las coordenadas de sitios curados (DEC-019), el adaptador de JPL Horizons (DEC-024), que todavía no consume el análisis, y el CGI Moon Kit, que se usa solo como imagen del mapa (DEC-021). El producto LOLA ya se descarga y se recorta por sitio (DEC-025) y de él se precalcula el horizonte de los sitios curados (DEC-030), que el análisis usa desde DEC-032. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
+Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo las coordenadas de sitios curados (DEC-019), las efemérides de JPL Horizons (DEC-024, DEC-033), que el análisis usa para los sitios curados entre nov 2026 y dic 2027, y el CGI Moon Kit, que se usa solo como imagen del mapa (DEC-021). El producto LOLA ya se descarga y se recorta por sitio (DEC-025) y de él se precalcula el horizonte de los sitios curados (DEC-030), que el análisis usa desde DEC-032. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
 
 ## NASA SVS — CGI Moon Kit (imagen del mapa, integrado)
 
@@ -50,7 +50,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Limitaciones:** requiere red al adquirir (no en la demo); la API responde errores de consulta con HTTP 200 y campo `error`; no aporta horizonte topográfico; la altura del observador debe darse explícitamente (hoy 0 km supuesto).
 - **Caché:** `web/scripts/fetch-horizons.mjs` guarda el crudo sin modificar + SHA-256, la serie normalizada y un `manifest.json`, con clave que incluye fuente, versiones de API y perfil, objetivo, sitio, altura y su base, intervalo y paso. Por defecto en `web/.cache/horizons` (ignorado por git); `--offline` solo lee la caché.
 - **Datos incluidos en el repo:** fixtures de Sol y Tierra desde Shackleton R04, 14–16/11/2026, paso 60 min, obtenidos el 14/11/2026 (`web/tests/fixtures/horizons/README.md`).
-- **Estado:** adaptador, adquisición y caché integrados y probados; **no** consumidos todavía por `analysis.js` ni la UI (CORE-01).
+- **Estado:** adaptador, adquisición y caché integrados y probados. Desde DEC-033, series de los 7 sitios (01/11/2026 – 01/01/2028, paso 1 h, DE441) versionadas en `web/public/data/ephemerides/` (~2,1 MB) y usadas por `analysis.js`; se regeneran con `fetch-horizons.mjs` + `npm run data:ephemerides`.
 - **Módulos responsables:** `web/src/lib/horizons.js` (puro, sin red), `web/scripts/fetch-horizons.mjs` (adquisición en Node); pruebas en `web/tests/horizons.test.js` y `web/tests/horizons.fixture.test.js`.
 - **Atribución/licencia:** citar NASA/JPL Horizons y conservar parámetros, versión de API, efeméride y fecha de consulta (ya guardados en `source`). Condiciones específicas de reutilización: pendiente de verificar antes de publicar datos derivados.
 

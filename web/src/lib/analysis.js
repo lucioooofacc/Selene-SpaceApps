@@ -11,6 +11,7 @@
 import { DAY_MS, EARTH_RADIUS, SUN_RADIUS, earthPhase, earthPosition, sunPosition } from "./astro.js";
 import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
+import { ephemerisFor, positionsAt } from "./ephemeris.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -79,8 +80,28 @@ export function scenarioHorizon(site) {
   return createHorizon(site);
 }
 
+/**
+ * Origen de las posiciones del Sol y la Tierra (CORE-01 parte B, DEC-033):
+ * JPL Horizons si hay serie registrada para el sitio y cubre el instante; si
+ * no, el modelo aproximado de astro.js (DEC-004).
+ */
+function makePositions(site) {
+  const eph = ephemerisFor(site);
+  return {
+    eph,
+    at(t) {
+      const p = eph ? positionsAt(eph, t) : null;
+      if (p) return { sun: p.sun, earth: p.earth, phase: p.earth.phase, real: true };
+      return { sun: sunPosition(site, t), earth: earthPosition(site, t), phase: earthPhase(t), real: false };
+    },
+  };
+}
+
 export function computeScenario(site, startMs, windowDays) {
   const horizon = scenarioHorizon(site);
+  const positions = makePositions(site);
+  let realWindow = 0;
+  let realTotal = 0;
   const windowSteps = Math.round((windowDays * DAY_MS) / STEP_MS);
   const total = windowSteps + Math.round((LOOKAHEAD_DAYS * DAY_MS) / STEP_MS);
 
@@ -94,14 +115,19 @@ export function computeScenario(site, startMs, windowDays) {
     earthHz: new Float32Array(total),
     sunVis: new Uint8Array(total),
     earthVis: new Uint8Array(total),
+    earthPhase: new Float32Array(total),
     power: new Float32Array(total),
     link: new Float32Array(total),
   };
 
   for (let i = 0; i < total; i++) {
     const t = startMs + i * STEP_MS;
-    const sun = sunPosition(site, t);
-    const earth = earthPosition(site, t);
+    const { sun, earth, phase, real } = positions.at(t);
+    if (real) {
+      realTotal++;
+      if (i < windowSteps) realWindow++;
+    }
+    s.earthPhase[i] = phase;
     const sunHz = horizon(sun.azimuth);
     const earthHz = horizon(earth.azimuth);
     const sunMargin = sun.elevation - sunHz;
@@ -157,6 +183,16 @@ export function computeScenario(site, startMs, windowDays) {
     windowSteps,
     series: s,
     horizon,
+    ephemeris: {
+      // "horizons": toda la ventana con JPL Horizons; "approximate": nada;
+      // "mixed": parte de la ventana fuera de la cobertura de las series.
+      source: realWindow === windowSteps ? "horizons" : realWindow === 0 ? "approximate" : "mixed",
+      windowFraction: realWindow / windowSteps,
+      // Los días extra (próximo amanecer/ocaso) también pueden salir del rango.
+      lookaheadComplete: realTotal === total,
+      // Procedencia de la serie, solo si se usó para alguna muestra.
+      meta: realTotal > 0 ? positions.eph.meta : null,
+    },
     summary: {
       illumination,
       sunMinutes: sunSteps * STEP_MINUTES,
@@ -229,7 +265,7 @@ export function sampleAt(scenario, ms) {
       margin: earthEl - earthHz,
       visible: Boolean(s.earthVis[i]),
       link: lerp(s.link),
-      phase: earthPhase(ms),
+      phase: lerp(s.earthPhase),
       next: nextChange(s.earthVis, s.times, i),
     },
     accumulated: {

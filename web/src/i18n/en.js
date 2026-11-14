@@ -313,7 +313,9 @@ export default {
     },
     rowHint: {
       coords: "Curated sites with an official source; map points have none",
-      ephemeris: "Approximate periodic model; JPL Horizons is not used in the calculation yet",
+      ephemeris: "Approximate periodic model (outside the dates with JPL Horizons data, or a custom point)",
+      ephemerisReal: "NASA/JPL Horizons ephemerides (DE441), hourly and interpolated",
+      ephemerisMixed: "Part of the period from JPL Horizons and part from the approximate model (outside Nov 2026 – Dec 2027)",
       horizon: "Synthetic profile; no LOLA horizon for this site",
       horizonPreview: "The calculation uses the synthetic profile; the real LOLA horizon is available as a preview",
       horizonActive: "Real topographic horizon from LOLA (240 m/pixel)",

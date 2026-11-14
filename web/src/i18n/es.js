@@ -314,7 +314,9 @@ export default {
     },
     rowHint: {
       coords: "Sitios curados con fuente oficial; los puntos del mapa no la tienen",
-      ephemeris: "Modelo periódico aproximado; JPL Horizons todavía no se usa en el cálculo",
+      ephemeris: "Modelo periódico aproximado (fuera de las fechas con datos de JPL Horizons o punto propio)",
+      ephemerisReal: "Efemérides de NASA/JPL Horizons (DE441), cada 1 h e interpoladas",
+      ephemerisMixed: "Parte del período con JPL Horizons y parte con el modelo aproximado (fuera de nov 2026 – dic 2027)",
       horizon: "Perfil sintético; no hay horizonte LOLA para este sitio",
       horizonPreview: "El cálculo usa el perfil sintético; el horizonte LOLA real ya está disponible como vista previa",
       horizonActive: "Horizonte topográfico real desde LOLA (240 m/píxel)",

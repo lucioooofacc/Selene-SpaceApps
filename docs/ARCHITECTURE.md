@@ -1,6 +1,6 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025) y el horizonte LOLA de los sitios curados está precalculado (`lib/horizon-lola.js`, DEC-030); `analysis.js` lo usa para esos sitios y el sintético para el resto (DEC-032).
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición existen (DEC-024) y sus series alimentan `analysis.js` para los sitios curados (`lib/ephemeris.js`, DEC-033). El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025) y el horizonte LOLA de los sitios curados está precalculado (`lib/horizon-lola.js`, DEC-030); `analysis.js` lo usa para esos sitios y el sintético para el resto (DEC-032).
 
 ## Vista general
 
@@ -39,11 +39,14 @@ flowchart LR
 | `src/data/site-traits.js` | Rasgos de interés científico por sitio con cita (pendientes de validar por astronomía); separado de `sites.js` (DEC-029). |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
-| `src/lib/horizons.js` | Adaptador puro de JPL Horizons (DEC-024): valida peticiones, arma la consulta y la clave de caché, interpreta y valida tablas `OBSERVER` y produce series normalizadas con fuente, marco, unidades y cobertura. Sin red ni DOM; todavía no lo consume `analysis.js`. |
+| `src/lib/horizons.js` | Adaptador puro de JPL Horizons (DEC-024): valida peticiones, arma la consulta y la clave de caché, interpreta y valida tablas `OBSERVER` y produce series normalizadas con fuente, marco, unidades y cobertura. Sin red ni DOM; sus series llegan al cálculo por `lib/ephemeris.js` (DEC-033). |
 | `scripts/fetch-horizons.mjs` | Script Node, fuera del bundle: consulta la API, guarda crudo + SHA-256 + serie normalizada en una caché con manifiesto. |
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
 | `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-025). |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
+| `src/lib/ephemeris.js` | Series de JPL Horizons para el cálculo (DEC-033): decodifica `public/data/ephemerides/*.json`, interpola (`positionsAt`), registro en memoria con `ephemerisVersion()` y `ephemerisFor(site)`. Puro, sin red. |
+| `scripts/build-ephemerides.mjs` | Arma `public/data/ephemerides/<id>.json` desde la caché validada de `fetch-horizons.mjs` (7 sitios, nov 2026 – dic 2027, paso 1 h). |
+| `src/ui/ephemerides.js` | Baja en segundo plano las series de los sitios curados y las registra; `main.js`, `ui/places.js` y `compare.js` recalculan al llegar. |
 | `src/lib/horizon-lola.js` | Horizonte topográfico desde el DEM LOLA: rayos sobre círculos máximos con curvatura exacta, calidad (`count = 0`, truncamiento) y `createLolaHorizon(siteId)` → `horizon(az)` con `source = "lola"`. Puro; lo usa `analysis.js` (DEC-030, DEC-032). |
 | `src/data/terrain/lola-horizons.js` | Tabla generada del horizonte LOLA de los sitios cubiertos (720 azimuts), con producto, MD5, algoritmo y parámetros. |
 | `scripts/build-lola-horizons.mjs` | Carga los rasters LOLA verificados, calcula la tabla de horizonte y, con `--svg`, la comparación visual con el horizonte sintético. |
