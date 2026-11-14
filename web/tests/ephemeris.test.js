@@ -42,6 +42,8 @@ function tiny(overrides = {}) {
       earthAz: [90000, 90000, 90000],
       earthEl: [5000, 5000, 5000],
       earthIllum: [5000, 6000, 7000],
+      sunRadius: [2670, 2670, 2670],
+      earthRadius: [9500, 9600, 9700],
     },
     ...overrides,
   };
@@ -59,7 +61,8 @@ test("decode: valida esquema, longitudes y faltantes", () => {
 
 test("positionsAt: valores exactos, interpolación, azimut por el camino corto y fuera de rango", () => {
   const eph = decodeEphemeris(tiny());
-  assert.deepEqual(positionsAt(eph, 0).sun, { azimuth: 359, elevation: 1 });
+  assert.deepEqual(positionsAt(eph, 0).sun, { azimuth: 359, elevation: 1, radius: 0.267 });
+  assert.ok(Math.abs(positionsAt(eph, H / 2).earth.radius - 0.955) < 1e-12);
   const mid = positionsAt(eph, H / 2);
   assert.ok(Math.abs(mid.sun.azimuth - 0) < 1e-9 || Math.abs(mid.sun.azimuth - 360) < 1e-9); // 359 → 1 pasa por 0
   assert.ok(Math.abs(mid.sun.elevation - 1.5) < 1e-12);
