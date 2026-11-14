@@ -200,4 +200,21 @@ export default {
     },
     criteriaNote: "Thresholds from DEC-007, adjustable by the team. High = 2 points, medium = 1, low = 0.",
   },
+  report: {
+    title: "Planned mission report",
+    generated: "Generated on {date} UTC",
+    siteTitle: "Site",
+    agency: "Agency / mission",
+    periodTitle: "Period (UTC)",
+    start: "Start",
+    end: "End",
+    length: "Duration",
+    days: "Days",
+    lightWindows: "Light windows (Sun visible)",
+    linkWindows: "Link windows (Earth visible)",
+    none: "No windows in the period.",
+    more: "… and {n} more windows.",
+    sources:
+      "SELENE · NASA Space Apps Challenge 2026 · Team Hubble27. Approximate v1 model: Sun and Earth (DEC-004), synthetic horizon (DEC-005), sites pending validation (DEC-006). Planned replacements: JPL Horizons and LOLA.",
+  },
 };

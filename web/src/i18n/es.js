@@ -201,4 +201,21 @@ export default {
     },
     criteriaNote: "Umbrales de DEC-007, ajustables por el equipo. Alta = 2 puntos, media = 1, baja = 0.",
   },
+  report: {
+    title: "Informe de la misión planificada",
+    generated: "Generado el {date} UTC",
+    siteTitle: "Sitio",
+    agency: "Agencia / misión",
+    periodTitle: "Período (UTC)",
+    start: "Inicio",
+    end: "Fin",
+    length: "Duración",
+    days: "Días",
+    lightWindows: "Ventanas de luz (Sol visible)",
+    linkWindows: "Ventanas de enlace (Tierra visible)",
+    none: "Sin ventanas en el período.",
+    more: "… y {n} ventanas más.",
+    sources:
+      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Modelo aproximado v1: Sol y Tierra (DEC-004), horizonte sintético (DEC-005), sitios pendientes de validar (DEC-006). Reemplazos previstos: JPL Horizons y LOLA.",
+  },
 };
