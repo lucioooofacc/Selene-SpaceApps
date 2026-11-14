@@ -1,5 +1,5 @@
 /**
- * Textos en español, tal cual el Figma SELENE.
+ * Textos en español del Figma SELENE, con la ortografía corregida (DEC-019).
  * Responsables de redacción: Alfonso y Cata. Si agregás una clave acá,
  * agregala también en en.js.
  */
@@ -9,11 +9,9 @@ export default {
   },
   nav: {
     label: "Navegación principal",
-    mission: "Mision",
+    mission: "Misión",
     compare: "Comparar",
-    option3: "Opcion 3",
-    option4: "Opcion 4",
-    option5: "Opcion 5",
+    report: "Informe",
     language: "Cambiar idioma (ES / EN)",
     settings: "Configuración",
   },
@@ -29,7 +27,7 @@ export default {
   },
   places: {
     title: "Mejores lugares para alunizar",
-    link: "Ver comparacion detallada",
+    link: "Ver comparación detallada",
     coords: "Latitud: {lat}° · Longitud: {lon}°",
     comm: "Cobertura de comunicación en la misión",
     sun: "Altura del Sol ahora",
@@ -51,18 +49,18 @@ export default {
     },
   },
   params: {
-    title: "Parametros de la misión",
+    title: "Parámetros de la misión",
     modelNote: "Valores calculados con un modelo aproximado (versión 1).",
     site: "Sitio de alunizaje",
     custom: "Sitio personalizado (Mapa)",
     lat: "Latitud",
     lon: "Longitud",
-    duration: "Duracion de mision (UTC)",
+    duration: "Duración de misión (UTC)",
     choose: "Elegir",
     window: "Ventana de análisis",
     light: "Luz acumulada",
     sun: "Sol",
-    comm: "Disponilidad de comunicacion",
+    comm: "Disponibilidad de comunicación",
     coverage: "{pct}% de cobertura",
     earth: "Tierra",
     viable: "VIABLE",

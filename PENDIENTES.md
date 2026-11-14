@@ -12,13 +12,13 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 
 ## Diseño (réplica del Figma)
 
-- [ ] Leer el color de la franja de 8 px entre el encabezado y el cuerpo (frame "Vista 7"). Decisión del equipo: volver a consultar el MCP de Figma y, si sigue sin responder, dejar el color de fondo actual. — UI-03 (#21), DEC-019
+- [x] ~~Leer el color de la franja de 8 px entre el encabezado y el cuerpo (frame "Vista 7").~~ Se mantiene el color de fondo: el MCP de Figma necesita la URL del archivo en figma.com y el repo solo tiene el `.fig` local. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [ ] Reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (fuentes NASA), con opción de alternar entre 3D y vistas 2D. Reemplaza la verificación de posición de las imágenes (frames 44:5 y 44:6). — UI-07 (#25), DEC-019
 - [ ] "Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios elegidos con métricas técnicas. — UI-05 (#23), DEC-019
 - [ ] "Opción 3" pasa a ser el informe imprimible de la misión planificada. — UI-06 (#24), DEC-019
-- [ ] Quitar "Opción 4" y "Opción 5" del menú. — UI-03 (#21), DEC-019
-- [ ] Corregir las faltas de ortografía heredadas del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion", "Mision", "Opcion"). — UI-03 (#21), DEC-019
-- [ ] "Mejores lugares": confirmado el subtítulo "Latitud · Longitud" (ya es el que usa la web). Registrar como resuelto. — UI-03 (#21), DEC-019
+- [x] ~~Quitar "Opción 4" y "Opción 5" del menú.~~ "Opción 3" pasa a llamarse "Informe". Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
+- [x] ~~Corregir las faltas de ortografía heredadas del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion", "Mision", "Opcion").~~ Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
+- [x] ~~"Mejores lugares": confirmado el subtítulo "Latitud · Longitud".~~ La web ya lo usaba. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [ ] Panorama: acercar la iluminación de las dunas y el resplandor a la ilustración del Figma, y que el relieve represente fielmente el horizonte del punto (montañoso, plano, con cráteres). La UI dibuja `scenario.horizon(az)`; la fidelidad real depende del horizonte LOLA (TERRAIN-02, #8, Facundo). — UI-08 (#26), DEC-019
 - [ ] Calendario: permitir moverse entre días con las flechas del teclado. — UI-04 (#22)
 - [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Equipo
