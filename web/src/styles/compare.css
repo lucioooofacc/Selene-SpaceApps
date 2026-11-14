@@ -418,3 +418,9 @@
   width: 150px;
   font-size: 15px;
 }
+
+.cmp-legend-dash::before {
+  content: "";
+  width: 22px;
+  border-top: 2px dashed var(--muted-2);
+}

@@ -409,3 +409,18 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos:** alturas sobre la esfera de 1737,4 km (sin geoide); 240 m/píxel limita el detalle a menos de ~0,5 km; la interpolación bilineal suaviza bordes en ±1 píxel; observador a 2 m (mástil o antena típica, no un vehículo concreto). Más allá de ~250 km la curvatura hace que el relieve lunar (≲ 10 km) no pueda levantar el horizonte de sitios bajos; 300 km da margen para horizontes negativos en cimas.
 - **Alternativas descartadas:** calcular en el navegador (raster de ~345 MiB); versionar recortes de ±300 km (~25 MB por sitio); aproximar la curvatura con `d²/2R` (la fórmula exacta cuesta lo mismo); modificar `createHorizon()` (cambio de contrato y de resultados que corresponde a CORE-01); horizonte para sitios personalizados (requiere el raster en tiempo de ejecución: pendiente, PERF-01/CORE-01).
 - **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores.
+
+## DEC-031 — El horizonte LOLA real en la interfaz, antes y después de CORE-01 (UI-14)
+
+- **Contexto / problema:** TERRAIN-02 (#50, DEC-030) precalcula el horizonte real de los cinco sitios curados al sur de −60°, pero conectarlo al cálculo es CORE-01 (#11, trabajo de motor). El equipo pidió aplicar en la interfaz los datos reales que ya existen.
+- **Decisión:** no tocar `analysis.js`. Mostrar el horizonte LOLA como **vista previa**, marcada como tal, mientras el escenario use el sintético, y dejar la interfaz lista para cuando lo use.
+- **Solución aplicada:**
+  - `web/src/ui/lola.js` → `lolaForScenario(scenario)` devuelve el modo `active` (el escenario ya trae `horizon.source === "lola"`), `preview` (hay LOLA para el sitio, pero el cálculo usa el sintético) o `none` (sitio propio, o Chang'e 4 y Apollo 11, fuera de cobertura).
+  - **Panorama:** en `preview`, el relieve LOLA se superpone con una línea punteada dorada y la leyenda aclara que el cálculo todavía usa el sintético. En los dos modos, los tramos con baja confianza (`count = 0`, rojo) o truncados por la cobertura (cota inferior, gris) se marcan con `horizon.detail(az)`.
+  - **"Datos y fuentes":** bloque "Horizonte LOLA real" con el estado, la altura del suelo, el horizonte mínimo/medio/máximo, el % de azimuts de baja confianza y fuera de cobertura, y el producto con su DOI. La fila "Horizonte" de calidad distingue los tres casos.
+  - **Comparación:** perfiles LOLA punteados sobre el gráfico del horizonte, con leyenda.
+  - Pruebas en `tests/lola-ui.test.js`.
+- **Hallazgo visible:** en Shackleton R04, el relieve LOLA llega a ~31° (la pared del cráter, ya señalado en DEC-030), mientras el cálculo sintético da el Sol visible. La vista previa lo deja a la vista hasta que astronomía revise la coordenada y CORE-01 conecte el horizonte.
+- **Alternativas descartadas:** reemplazar el horizonte en `analysis.js` desde la interfaz (es CORE-01 y cambia todos los resultados publicados); esperar sin mostrar nada.
+- **Estado:** vigente. Depende de que se integre el PR #50.
+

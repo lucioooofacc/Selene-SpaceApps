@@ -62,6 +62,7 @@ flowchart LR
 | `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
 | `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
 | `src/ui/links.js` | Codifica y lee la selección en la URL: comparación (`compare.html?a=&b=&start=&days=`) y misión (`index.html?site=&start=&days=`, UI-12). Actualiza los enlaces entre páginas para que conserven sitio y fechas. |
+| `src/ui/lola.js` | Acceso de la interfaz al horizonte LOLA de TERRAIN-02: vista previa mientras el escenario usa el sintético y uso directo cuando CORE-01 lo conecte (DEC-031). |
 | `src/ui/provenance.js` | Procedencia de los sitios (metadatos de DEC-019 traducibles) y calidad de cada dato (real / aproximado / sintético) para el modal "Datos y fuentes" de la misión, la comparación y el informe (DEC-028). |
 | `src/ui/settings.js` | Modal de configuración (engranaje) compartido por las dos páginas: idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa; aplica `data-*` en `<html>` y recuerda las opciones en el navegador (DEC-023). |
 | `src/ui/report.js` | Informe imprimible de la misión ("Informe" en el menú, o `index.html#informe`): arma el informe con el escenario vigente y abre la impresión del navegador; `styles/report.css` lo muestra solo al imprimir. |
