@@ -6,9 +6,8 @@
  */
 import "./styles/main.css";
 import "./styles/compare.css";
-import { computeScenario } from "./lib/analysis.js";
-import { ephemerisVersion } from "./lib/ephemeris.js";
-import { loadSiteEphemerides } from "./ui/ephemerides.js";
+import { computeScenario, realDataVersion } from "./lib/analysis.js";
+import { ensurePolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { SITES } from "./data/sites.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
 import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
@@ -25,8 +24,9 @@ let extraSites = []; // puntos del mapa que llegaron por la URL
 const cache = new Map();
 
 function scenarioFor(site, startMs, windowDays) {
-  const key = `${siteParam(site)}|${startMs}|${windowDays}|${ephemerisVersion()}`;
+  const key = `${siteParam(site)}|${startMs}|${windowDays}|${realDataVersion()}`;
   if (!cache.has(key)) cache.set(key, computeScenario(site, startMs, windowDays));
+  ensurePolarTerrain([site], render);
   return cache.get(key);
 }
 
