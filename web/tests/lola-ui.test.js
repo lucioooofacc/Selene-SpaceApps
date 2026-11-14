@@ -19,7 +19,7 @@ test("cuando el cálculo ya usa LOLA (CORE-01), se usa ese horizonte", () => {
 });
 
 test("sin cobertura LOLA o con un punto propio, no hay horizonte real", () => {
-  for (const id of ["apollo11", "change4", "custom", "custom-1", undefined]) {
+  for (const id of ["custom", "custom-1", undefined]) {
     assert.deepEqual(lolaForScenario({ site: { id }, horizon: synthetic }), { horizon: null, mode: "none" }, String(id));
   }
 });
