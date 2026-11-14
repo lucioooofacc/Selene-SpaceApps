@@ -165,6 +165,45 @@ export function ephemerisHtml(scenario) {
     </dl>`;
 }
 
+/**
+ * Una línea con el origen de los datos del escenario (UI-02, DEC-041):
+ * Sol y Tierra (Horizons / trasladadas / mixto / cargando / aproximado) y
+ * horizonte (LOLA / LOLA reducido / sintético). Reemplaza el aviso fijo de
+ * "modelo aproximado v1" en el informe y la comparación.
+ */
+export function dataNote(scenario) {
+  const state = ephemerisState(scenario);
+  const ephKey = { real: "real", derived: "derived", mixed: "mixed", loading: "loading", error: "error", siteFailed: "error", outside: "approx" }[state];
+  const pct = Math.round(100 * (scenario?.ephemeris?.windowFraction ?? 0));
+  const lola = lolaForScenario(scenario);
+  const horizonKey = lola.mode === "active" ? (lola.horizon.meta?.reduced ? "reduced" : "lola") : "synthetic";
+  return t("dataNote.text", {
+    eph: t(`dataNote.eph.${ephKey}`, { pct }),
+    horizon: t(`dataNote.horizon.${horizonKey}`),
+  });
+}
+
+/**
+ * Tramos del período (fracciones 0..1 de la ventana) en los que el Sol y la
+ * Tierra salen del modelo aproximado, para marcarlos en la línea de tiempo.
+ * Solo compara instantes con la cobertura declarada por la serie: no calcula
+ * posiciones.
+ * @returns {Array<[number, number]>}
+ */
+export function approxSegments(scenario) {
+  const eph = scenario?.ephemeris;
+  if (!eph || eph.source === "horizons") return [];
+  const cov = eph.meta?.coverage;
+  if (eph.source === "approximate" || !cov) return [[0, 1]];
+  const span = scenario.endMs - scenario.startMs;
+  const a = (cov.startMs - scenario.startMs) / span;
+  const b = (cov.stopMs - scenario.startMs) / span;
+  const segments = [];
+  if (a > 0) segments.push([0, Math.min(1, a)]);
+  if (b < 1) segments.push([Math.max(0, b), 1]);
+  return segments;
+}
+
 /** Filas de calidad de los datos de la página para el escenario dado. */
 export function qualityRows(site, scenario) {
   const lola = lolaForScenario(scenario);

@@ -84,3 +84,33 @@ test("el horizonte de un punto propio informa la carga y el error del DEM reduci
   assert.equal(horizonRow().kind, "synthetic");
   assert.equal(horizonRow().hint, "horizonError");
 });
+
+// ---------------------------------------------------------------------------
+// UI-02 (DEC-041): tramos aproximados de la línea de tiempo y nota de datos
+// ---------------------------------------------------------------------------
+import { approxSegments, dataNote } from "../src/ui/provenance.js";
+
+test("tramos aproximados: nada con Horizons completo, todo sin serie y el final en un período mixto", () => {
+  registerEphemeris(decodeEphemeris(readSite("malapert")));
+  setDataStatus("ephemerides", { state: "ready", loaded: ["malapert"], failed: [] });
+  const real = computeScenario(site("malapert"), Date.UTC(2027, 0, 10), 2);
+  assert.deepEqual(approxSegments(real), []);
+  const outside = computeScenario(site("malapert"), Date.UTC(2030, 0, 10), 2);
+  assert.deepEqual(approxSegments(outside), [[0, 1]]);
+  // 20 días desde el 21/12/2027: la serie termina el 1/1/2028 → algo más de la mitad final es aproximada.
+  const mixed = computeScenario(site("malapert"), Date.UTC(2027, 11, 21), 20);
+  assert.equal(mixed.ephemeris.source, "mixed");
+  const segs = approxSegments(mixed);
+  assert.equal(segs.length, 1);
+  assert.equal(segs[0][1], 1);
+  assert.ok(Math.abs(segs[0][0] - mixed.ephemeris.windowFraction) < 0.01);
+});
+
+test("la nota de datos ya no dice 'modelo aproximado v1' cuando hay datos reales", () => {
+  registerEphemeris(decodeEphemeris(readSite("malapert")));
+  setDataStatus("ephemerides", { state: "ready", loaded: ["malapert"], failed: [] });
+  const note = dataNote(computeScenario(site("malapert"), Date.UTC(2027, 0, 10), 2));
+  assert.match(note, /JPL Horizons/);
+  assert.doesNotMatch(note, /modelo aproximado/);
+  assert.match(dataNote(computeScenario(site("malapert"), Date.UTC(2030, 0, 10), 2)), /modelo aproximado/);
+});

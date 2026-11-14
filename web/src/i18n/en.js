@@ -87,7 +87,7 @@ export default {
   },
   params: {
     title: "Mission parameters",
-    modelNote: "Values computed with an approximate model (version 1).",
+    dataHint: "Values computed for the chosen period. The “i” button shows the provenance and quality of each value.",
     site: "Landing site",
     custom: "Custom site (Map)",
     lat: "Latitude",
@@ -121,6 +121,17 @@ export default {
     title: "Behavior of celestial bodies during the mission",
   },
   sim: {
+    bodies: {
+      real: "Sun and Earth: JPL Horizons",
+      derived: "Sun and Earth: JPL Horizons (transferred)",
+      mixed: "Sun and Earth: JPL Horizons and approximate model",
+      approx: "Sun and Earth: approximate model",
+    },
+    coverage: {
+      mixed: "Marked span: outside the JPL Horizons ephemerides (Nov 2026 – Dec 2027); there the Sun and the Earth come from the approximate model.",
+      approx: "The whole period uses the approximate Sun and Earth model (outside the JPL Horizons ephemerides or no series for this point).",
+      loading: "Loading the JPL Horizons ephemerides: meanwhile the Sun and the Earth come from the approximate model.",
+    },
     caption: "Illustrative panoramic view · sky without atmosphere",
     relief: "Relief: {source} · vertical scale ×{exag}",
     horizonSynthetic: "synthetic horizon (v1 model, not real topography)",
@@ -200,8 +211,6 @@ export default {
     slot: { a: "Site A", b: "Site B" },
     point: "Point ({lat}° · {lon}°)",
     period: "From {start} to {end} · {days} days (UTC)",
-    modelNote:
-      "Values computed with the approximate v1 model: periodic Sun and Earth positions (DEC-004) and a synthetic horizon (DEC-005). Use them to compare sites with each other, not as real mission values.",
     viability: "Viability",
     points: "{points}/{max} points",
     level: { high: "High", mid: "Medium", low: "Low" },
@@ -292,6 +301,22 @@ export default {
     map2d: "2D map",
     reset: "Reset",
     done: "Done",
+  },
+  dataNote: {
+    text: "{eph} · {horizon}. Viability thresholds are a team criterion.",
+    eph: {
+      real: "Sun and Earth: NASA/JPL Horizons ephemerides",
+      derived: "Sun and Earth: JPL Horizons transferred from the nearest curated site",
+      mixed: "Sun and Earth: JPL Horizons for {pct} % of the period and the approximate model for the rest",
+      loading: "Sun and Earth: approximate model while the JPL Horizons ephemerides load",
+      error: "Sun and Earth: approximate model (the JPL Horizons ephemerides could not be loaded)",
+      approx: "Sun and Earth: approximate model (period outside the JPL Horizons ephemerides, Nov 2026 – Dec 2027)",
+    },
+    horizon: {
+      lola: "horizon: real LOLA terrain",
+      reduced: "horizon: LOLA terrain at lower resolution (approximate)",
+      synthetic: "horizon: synthetic profile (not real topography)",
+    },
   },
   quality: {
     open: "Data and sources",

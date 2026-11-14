@@ -1522,6 +1522,34 @@ button {
   color: #6f7885;
 }
 
+/* Tramos con el modelo aproximado del Sol y la Tierra (UI-02, DEC-041):
+   rayado (no solo color) para que se distinga con cualquier paleta. */
+.scrub-coverage {
+  position: relative;
+  height: 6px;
+  margin: 8px 10px -4px; /* 10 px: el pulgar del deslizador no llega a los bordes */
+}
+
+.scrub-coverage i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 2px;
+  background: repeating-linear-gradient(135deg, var(--muted-2) 0 3px, transparent 3px 6px);
+  opacity: 0.8;
+}
+
+.scrub-coverage-note {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 14px;
+  color: var(--muted-2);
+}
+
+.scrub-coverage-note[hidden] {
+  display: none;
+}
+
 /* ---------- Energía solar / Comunicación ---------- */
 .status-card {
   width: 560px;

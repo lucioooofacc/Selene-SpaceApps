@@ -90,6 +90,8 @@ function scenery() {
 
 let built = false;
 let lastHorizon = null;
+let reliefNotes = []; // notas del relieve (cambian con el horizonte)
+let lastNotesKey = "";
 
 function build() {
   $("panorama-svg").innerHTML = `
@@ -255,7 +257,16 @@ export function renderPanorama(scenario, sample, { full = false } = {}) {
       lola.mode === "preview" ? t("sim.lolaPreview") : "",
       marks ? t("sim.lolaMarks") : "",
     ];
-    $("pano-relief").innerHTML = notes.filter(Boolean).join("<br />");
+    reliefNotes = notes.filter(Boolean);
+  }
+  // Origen del Sol y la Tierra (UI-02, DEC-041) delante de la línea del relieve.
+  const eph = scenario.ephemeris;
+  const bodies = eph?.source === "horizons" ? (eph.derived ? "derived" : "real") : eph?.source === "mixed" ? "mixed" : "approx";
+  const notesKey = `${bodies}|${reliefNotes.join("|")}`;
+  if (full || notesKey !== lastNotesKey) {
+    const [first = "", ...rest] = reliefNotes;
+    $("pano-relief").innerHTML = [`${t(`sim.bodies.${bodies}`)} · ${first}`, ...rest].join("<br />");
+    lastNotesKey = notesKey;
   }
 
   const { sun, earth } = sample;

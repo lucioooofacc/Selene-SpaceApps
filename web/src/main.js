@@ -22,7 +22,7 @@ import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
 import { refreshCalendar } from "./ui/calendar.js";
 import { renderInsight, renderStatus } from "./ui/status.js";
 import { renderPanorama } from "./ui/panorama.js";
-import { initTimeline, renderPlayback, renderTicks, renderTime } from "./ui/timeline.js";
+import { initTimeline, renderCoverage, renderPlayback, renderTicks, renderTime } from "./ui/timeline.js";
 
 const DESIGN_WIDTH = 1992;
 
@@ -70,6 +70,7 @@ function renderAll() {
   renderParamsFields(state);
   renderMap(state);
   renderTicks(state.windowDays);
+  renderCoverage(scenario);
   renderPlayback(state);
   refreshCalendar();
   renderInstant(state, { force: true });
@@ -85,6 +86,7 @@ subscribe((state, changed) => {
     renderParamsFields(state);
     renderMap(state);
     renderTicks(state.windowDays);
+    renderCoverage(scenario);
     renderInstant(state, { force: true });
     return;
   }
