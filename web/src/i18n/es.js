@@ -45,7 +45,7 @@ export default {
     customName: "Sitio propio {n}",
     alt: {
       global: "Mosaico global de la Luna (LROC, NASA)",
-      heat: "Mapa de calor topográfico del polo sur lunar",
+      heat: "Mapa de elevación del polo sur lunar hasta 60° S (LOLA, NASA)",
       polar: "Polo sur lunar hasta 60° S, reproyectado del mosaico LROC (NASA)",
     },
     modeLabel: "Tipo de vista del mapa",
@@ -55,6 +55,9 @@ export default {
     loading: "Cargando mapa…",
     noWebgl: "Este navegador no permite 3D (WebGL): se muestra la vista 2D.",
     credit: "Imagen: NASA SVS, CGI Moon Kit (LROC WAC, LOLA). En 3D, el relieve está exagerado y la luz es ilustrativa.",
+    creditHeat: "Elevación LOLA: NASA SVS, CGI Moon Kit (ldem_16). Colores por altura y sombreado ilustrativo (relieve exagerado). No es un mapa de iluminación.",
+    legendTitle: "Elevación (km)",
+    legendAria: "Leyenda de elevación: de {min} km a {max} km respecto del radio lunar medio.",
   },
   params: {
     title: "Parámetros de la misión",

@@ -13,6 +13,12 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Limitaciones:** en 3D el relieve se exagera (`RELIEF_SCALE` en `moon3d.js`) y la luz es ilustrativa, no solar. El mosaico de color tiene poco contraste cerca de los polos. La conversión de unidades del `ldem_3_8bit` (gris → km) no se usa ni se verificó: el relieve 3D es solo visual.
 - **Atribución/licencia:** NASA's Scientific Visualization Studio, CGI Moon Kit (Ernie Wright), con datos de LRO/LROC WAC y LOLA. Material de NASA, en general de dominio público; se acredita en la interfaz ("Imagen: NASA SVS…").
 
+### Elevación LOLA para MAPA DE CALOR (UI-11, DEC-026)
+
+- **Archivo:** `ldem_16.tif` del mismo kit (5760×2880, 16 px por grado, float32 en km respecto de un radio de 1737,4 km, equirectangular centrado en 0°; SHA-256 `1ea42bf44f7e9d694f79c3afa7145f97fbf06cc67372067d9fe73dce43bad796`). Descargado el 14/11/2026; **no se sube al repo**.
+- **Procesamiento reproducible:** `node web/scripts/build-lola-maps.mjs /ruta/a/ldem_16.tif` genera `web/public/nasa/lola_polar_1024.png` (polo sur hasta −60°, azimutal equidistante, 0° arriba) y `lola_global_2048.png` (equirectangular), más `web/src/data/lola-maps.js` con rangos y procedencia. Canales: R = elevación cuantizada a 8 bits entre los percentiles 1 y 99 redondeados a 0,5 km (polo: −7 a +4,5 km; globo: −5,5 a +6 km), G = sombreado (luz del noroeste a 45°, relieve ×4 solo para el sombreado), B = dato válido.
+- **Limitaciones:** la cuantización a 8 bits deja escalones de ~45 m. El DEM del kit es un producto de visualización; para cálculos, usar el producto PDS de TERRAIN-01. El producto polar `LDEM_60S_240M` (TERRAIN-01, DEC-025) ya está integrado: se puede regenerar el mapa desde esa fuente, que tiene más resolución.
+
 ## Coordenadas de sitios curados (`web/src/data/sites.js`)
 
 - **Finalidad:** fijar punto, marco y procedencia de los 7 sitios curados (DATA-01, DEC-019).

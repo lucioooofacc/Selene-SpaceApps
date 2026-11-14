@@ -212,6 +212,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** modal accesible (Escape cierra y devuelve el foco); opciones aplicadas al instante y recordadas; verde/rojo → azul/naranja en estados y barras; ES/EN; misión y comparación.
 - **Fuera de alcance:** recolorear la imagen del mapa de calor; tamaño de letra.
 
+### UI-11 — Mapa de calor con elevación real de LOLA y vista 3D física
+
+- **Prioridad:** P1 · **Issue:** [#42](https://github.com/lucioooofacc/Selene-SpaceApps/issues/42).
+- **Objetivo:** reemplazar la imagen fija del MAPA DE CALOR por la elevación LOLA, coloreada con leyenda en km y paleta compatible con el modo para daltonismo, y sumar una vista 3D tipo mapa físico.
+- **Rama sugerida:** `feat/mapa-elevacion`.
+- **Dependencias:** ninguna bloqueante; relación con TERRAIN-01 (#39) y MAP-01 (#16).
+- **Archivos afectados:** `web/scripts/build-lola-maps.mjs`, `web/public/nasa/`, `web/src/data/lola-maps.js`, `web/src/ui/elevation.js`, `map.js`, `moon3d.js`, `settings.js`, `index.html`, estilos, i18n.
+- **Criterios de aceptación:** datos citados y procedimiento reproducible; leyenda en km; paletas estándar y para daltonismo; 2D con la proyección de los marcadores; vista 3D física; ES/EN; sin presentarlo como mapa de iluminación.
+- **Fuera de alcance:** mapa de iluminación (MAP-01); horizonte topográfico (TERRAIN-02).
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente

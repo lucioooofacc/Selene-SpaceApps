@@ -5,13 +5,18 @@
  *      · Global 2D: mapa equirectangular (longitud -180..180, latitud 90..-90).
  *      · Polo sur 2D: reproyección azimutal equidistante hasta POLAR_EDGE_LAT
  *        (polar2d.js), 0° arriba.
- *  - MAPA DE CALOR: imagen del Figma (hasta MAP-01), misma proyección polar.
+ *  - MAPA DE CALOR: elevación real de LOLA (elevation.js, DEC-026): en 2D, el
+ *    polo sur con la misma proyección polar; en 3D, la Luna como mapa físico
+ *    (tinte hipsométrico × sombreado). Leyenda en km; la paleta sigue la
+ *    configuración (estándar o apta para daltonismo). No es un mapa de
+ *    iluminación (eso es MAP-01).
  * Clic en el mapa = elegir coordenadas ("Punto observado").
  * Botón "+" = agregar el punto observado como sitio.
  */
 import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { polarImage } from "./polar2d.js";
+import { LOLA_MAPS, elevationCanvas, elevationUrl, paletteGradient } from "./elevation.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -22,14 +27,15 @@ const $ = (id) => document.getElementById(id);
 const POLAR_EDGE_LAT = -60;
 
 const NASA_COLOR = "./nasa/lroc_color_4k.jpg";
-const HEAT_IMAGE = "./figma/moon-heatmap.png";
 
 let moon3d = null; // vista 3D (se crea la primera vez que se usa)
 let moon3dLoading = null;
 let moon3dView = null;
 let polarUrl = null; // imagen polar 2D reproyectada
 
-const uses3d = (state) => state.mapView !== "heat" && state.mapMode === "3d";
+const uses3d = (state) => state.mapMode === "3d";
+const palette = () => (document.documentElement.dataset.palette === "cvd" ? "cvd" : "default");
+const heatUrls = {}; // paleta → URL de la imagen polar coloreada
 
 /** lat/lon → posición relativa (0..1) dentro de la imagen, o null si queda afuera. */
 function project(view, lat, lon) {
@@ -121,6 +127,8 @@ export function initMap() {
   document.querySelectorAll("[data-map-mode]").forEach((button) =>
     button.addEventListener("click", () => setState({ mapMode: button.dataset.mapMode })),
   );
+  // La configuración avisa cuando cambia la paleta: se recolorea el mapa de calor.
+  document.addEventListener("selene:palette", () => renderMap(getState()));
 
   $("add-site").addEventListener("click", () => {
     const { lat, lon, customSites, siteId } = getState();
@@ -164,9 +172,34 @@ function ensureMoon3d() {
   return moon3dLoading;
 }
 
+/** Leyenda de elevación (solo en MAPA DE CALOR): 2D usa el rango polar y 3D, el global. */
+function renderLegend(view, is3d) {
+  const legend = $("map-legend");
+  legend.hidden = view !== "heat";
+  if (legend.hidden) return;
+  const { minKm, maxKm } = is3d ? LOLA_MAPS.global : LOLA_MAPS.polar;
+  const km = (v) => `${v > 0 ? "+" : ""}${v.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "es-UY")}`;
+  legend.innerHTML = `
+    <span class="map-legend-title">${t("map.legendTitle")}</span>
+    <span class="map-legend-bar" style="background:${paletteGradient(palette())}"></span>
+    <span class="map-legend-max">${km(maxKm)}</span>
+    <span class="map-legend-min">${km(minKm)}</span>`;
+  legend.setAttribute("aria-label", t("map.legendAria", { min: km(minKm), max: km(maxKm) }));
+}
+
 /** Imagen 2D de cada pestaña. La polar se genera una vez desde el mosaico LROC. */
 function image2d(view) {
-  if (view === "heat") return HEAT_IMAGE;
+  if (view === "heat") {
+    const p = palette();
+    if (heatUrls[p]) return heatUrls[p];
+    $("map-area").dataset.loading = "true";
+    elevationUrl("polar", p).then((url) => {
+      heatUrls[p] = url;
+      delete $("map-area").dataset.loading;
+      renderMap(getState());
+    });
+    return null;
+  }
   if (view === "global") return NASA_COLOR;
   if (polarUrl) return polarUrl;
   $("map-area").dataset.loading = "true";
@@ -197,8 +230,10 @@ export function renderMap(state) {
   document.querySelectorAll("[data-map-mode]").forEach((button) =>
     button.setAttribute("aria-pressed", String(button.dataset.mapMode === state.mapMode)),
   );
-  $("map-mode").hidden = view === "heat";
-  $("map-credit").hidden = view === "heat";
+  $("map-mode").hidden = false;
+  $("map-credit").hidden = false;
+  $("map-credit").textContent = t(view === "heat" ? "map.creditHeat" : "map.credit");
+  renderLegend(view, is3d);
 
   const img = $("map-image");
   if (!is3d) {
@@ -208,6 +243,14 @@ export function renderMap(state) {
   } else if (moon3d) {
     if (moon3dView !== view) moon3d.setView(view);
     moon3dView = view;
+    if (view === "heat") {
+      const p = palette();
+      elevationCanvas("global", p).then((canvas) => {
+        // Solo si el usuario sigue en MAPA DE CALOR 3D con la misma paleta.
+        const now = getState();
+        if (now.mapView === "heat" && uses3d(now) && palette() === p) moon3d.setSurface("physical", canvas);
+      });
+    } else moon3d.setSurface("color");
   } else {
     ensureMoon3d();
   }

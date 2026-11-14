@@ -25,6 +25,7 @@ const DIST = { min: 2.1, max: 4.6 }; // con FOV 30°, la esfera entera entra des
 const VIEWS = {
   global: { lat: 0, lon: 0, dist: 4.3 },
   polar: { lat: -90, lon: 0, dist: 4.0 },
+  heat: { lat: -90, lon: 0, dist: 4.0 }, // mapa físico (elevación LOLA), centrado en el polo sur
 };
 
 let threePromise = null;
@@ -138,17 +139,29 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     requestRender();
   }
 
-  // Texturas: primero la de 1k (rápida) y después la de 4k.
-  const setColor = (tex) => {
+  // Superficies: "color" (mosaico LROC) o "physical" (elevación LOLA coloreada, UI-11).
+  let surface = "color";
+  let colorTex = null;
+  let physicalTex = null;
+  const prepare = (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-    material.map?.dispose();
-    material.map = tex;
+    return tex;
+  };
+  const applySurface = () => {
+    material.map = surface === "physical" && physicalTex ? physicalTex : colorTex;
     material.needsUpdate = true;
     requestRender();
   };
+
+  // Texturas: primero la de 1k (rápida) y después la de 4k.
+  const setColor = (tex) => {
+    if (colorTex && colorTex !== tex) colorTex.dispose();
+    colorTex = prepare(tex);
+    applySurface();
+  };
   loader.load(TEXTURES.colorPreview, (tex) => {
-    if (!material.map) setColor(tex);
+    if (!colorTex) setColor(tex);
     onReady?.();
   });
   loader.load(TEXTURES.color, setColor);
@@ -254,6 +267,18 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
       view.lat = lat;
       view.lon = lon;
       requestRender();
+    },
+    /**
+     * Cambia la superficie: "color" (LROC) o "physical" con el canvas de
+     * elevación coloreada (equirectangular, centrado en 0°).
+     */
+    setSurface(name, canvas = null) {
+      if (name === "physical" && canvas && physicalTex?.image !== canvas) {
+        physicalTex?.dispose();
+        physicalTex = prepare(new THREE.CanvasTexture(canvas));
+      }
+      surface = name;
+      applySurface();
     },
     refreshPins: requestRender,
     resize,
