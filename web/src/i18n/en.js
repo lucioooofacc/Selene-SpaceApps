@@ -105,7 +105,7 @@ export default {
     },
     layerCredit: {
       computing: "Computing the map for the mission period…",
-      real: "Computed for the mission period with JPL Horizons and LOLA horizons (LDEM_60S_240M), down to 80° S. Each cell (~{km} km) takes the value of its center; {step} h step.",
+      real: "Computed for the mission period with JPL Horizons and LOLA horizons (LDEM_60S_240M), down to 80° S. ~{km} km cells (each takes the value of its center), smoothed between them; {step} h step.",
       loading: "Approximate map while the LOLA horizons load (periodic model and synthetic horizon).",
       error: "The LOLA horizons could not be loaded: approximate map (periodic model and synthetic horizon).",
       approximate: "Approximate map: the period is outside the JPL Horizons data (Nov 2026 – Dec 2027). Periodic model and synthetic horizon.",
