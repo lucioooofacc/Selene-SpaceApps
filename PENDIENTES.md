@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (informe web, rama `feat/informe-web`).
+Última actualización: 2026-11-15 (calendario y Luna de fondo, rama `design/calendario-luna-fondo`).
 
 ---
 
@@ -76,6 +76,8 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~El título de la pestaña "ELEVACIÓN" quedó desactualizado: ahora tiene cinco capas. — Lucio~~ Resuelto 2026-11-15 (rama `fix/nombre-pestana-mapa`, DEC-058): "MAPA DE CALOR" / "HEAT MAP".
 - [x] ~~"Informe" no solo imprimible: una página web de un sitio, como la comparación pero con mucha más información (viabilidad del terreno, trayectoria Tierra–Luna). — Lucio~~ Resuelto 2026-11-15 (rama `feat/informe-web`, DEC-059).
 - [ ] Validar los umbrales orientativos de pendiente del informe (verde < 5°, dorado 5–10°, rojo ≥ 10°) y los supuestos de la trayectoria (órbitas de 185 y 100 km, 1 día en órbita lunar). — Teo, Facu, Lucio · DEC-059
+- [x] ~~Calendario desplegable adaptado a la paleta de la web, con la misma estructura. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
+- [x] ~~Luna animada de fondo y tarjetas semitransparentes. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 

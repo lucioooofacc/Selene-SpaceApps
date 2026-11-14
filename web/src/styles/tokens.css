@@ -6,9 +6,14 @@
 :root {
   /* Fondos */
   --bg: #04060b; /* página y encabezado */
-  --panel: #090c12; /* tarjetas, mapa, "Mejores lugares" */
-  --panel-2: #0b1019; /* "Parámetros de la misión" y sección inferior */
-  --field: #0c111a; /* campos, chips, tooltip */
+  /* Colores del Figma, opacos: menús emergentes, calendario, modales y avisos */
+  --panel-solid: #090c12;
+  --panel-2-solid: #0b1019;
+  --field-solid: #0c111a;
+  /* Tarjetas semitransparentes sobre la Luna de fondo (DEC-060): mismo color, con alfa */
+  --panel: rgba(9, 12, 18, 0.74); /* tarjetas, mapa, "Mejores lugares" */
+  --panel-2: rgba(11, 16, 25, 0.78); /* "Parámetros de la misión" y sección inferior */
+  --field: rgba(12, 17, 26, 0.86); /* campos, chips, tooltip */
 
   /* Bordes */
   --border: #2c3137; /* tarjetas de "Mejores lugares" */
