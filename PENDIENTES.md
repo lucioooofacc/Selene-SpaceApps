@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (recorridos en el panorama, rama `feat/panorama-orbitas`).
+Última actualización: 2026-11-15 (capa del mapa en la URL, rama `feat/capa-en-url`).
 
 ---
 
@@ -109,7 +109,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Textos que contradecían el estado actual ("modelo v1", "SINTÉTICO hasta CORE-01", "el cálculo todavía usa el sintético", pie del informe con "reemplazos previstos"). — Desarrollo web · DEPLOY-01 #14~~ Resuelto 2026-11-14 (rama `fix/textos-datos-reales`): corregidos en ES y EN; falta la revisión de estilo de Alfonso y Cata (I18N-01).
 - [ ] Revisar los textos nuevos `dataNote.*`, `sim.bodies.*`, `sim.coverage.*` y `params.dataHint` en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-041
 - [x] ~~El cálculo de una capa del mapa bloquea 0,2–1 s el hilo principal la primera vez por período; mover a un worker si molesta. — Desarrollo web · PERF-01 #18, DEC-040~~ Resuelto 2026-11-14 (rama `perf/worker-cache`, PERF-01 #18, DEC-047): worker de cálculo y caché persistente.
-- [ ] La capa elegida del mapa no se guarda en la URL ni en la configuración (vuelve a Elevación al recargar). — Desarrollo web · DEC-040
+- [x] ~~La capa elegida del mapa no se guarda en la URL ni en la configuración (vuelve a Elevación al recargar). — Desarrollo web · DEC-040~~ Resuelto 2026-11-15 (rama `feat/capa-en-url`, DEC-057): viaja en la URL (`layer=`).
 - [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
 - [x] ~~TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-025, TERRAIN-02 #8~~ El horizonte usa rayos de 300 km sobre el raster completo fuera del navegador y se versiona solo la tabla de horizonte (~65 KB); los recortes no se versionan. Resuelto 2026-11-14 (rama `feat/horizonte-lola`, DEC-030).
 - [x] ~~Shackleton R04 (−89,7668°, −171,87°) cae en la pared interior del cráter según el DEM LOLA: cresta a ~2 km al este, horizonte de hasta ~31°. Verificar la coordenada y su marco (¿MOON_PA vs MOON_ME?, ¿otro punto de borde?). Desde DEC-032 la web ya muestra Shackleton con ~9 % de luz anual (antes ~96 %); si se corrige, regenerar la tabla. — Teo, Facu, Lucio · DEC-030, DEC-019~~ R04 es el centro de un polígono de la tabla de NASA; se reemplazó por R01 Connecting Ridge (62 % de luz, 46 % de comunicación). Resuelto 2026-11-14 (rama `data/shackleton-r01`, #61, DEC-035).
