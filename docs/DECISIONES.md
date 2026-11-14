@@ -366,7 +366,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **Calidad de los datos:** coordenadas (real si hay procedencia), Sol y Tierra (aproximado, DEC-004), horizonte (sintético, DEC-005; pasa a real si la función declara `source === "lola"`), imágenes del mapa (real, DEC-021/026) y umbrales (aproximado, DEC-007).
 - **Solución aplicada:** `web/src/ui/provenance.js` arma los dos bloques. Se muestran en un modal "Datos y fuentes" (botón "i" en el panel de parámetros de la misión), en la comparación (procedencia plegable por sitio y panel de calidad) y en el informe imprimible. Las etiquetas usan los tokens de color, así que siguen la paleta para daltonismo. Textos en `quality.*` (ES/EN). El pie del informe dejó de decir que los sitios están "pendientes de validar".
 - **Alternativas descartadas:** mostrar las notas en prosa (rompería el bilingüismo); esperar al contrato de CORE-01 (dejaba sin mostrar datos que ya están).
-- **Estado:** vigente. **Pendiente (resto de UI-01, depende de CORE-01):** fuente, fecha y cobertura de efemérides y horizonte reales; estados de carga, error y faltante; píxeles LOLA con `count = 0` como interpolados (DEC-025).
+- **Estado:** vigente. **Pendiente (resto de UI-01, depende de CORE-01):** fuente, fecha y cobertura de efemérides y horizonte reales; estados de carga, error y faltante; píxeles LOLA con `count = 0` como interpolados (DEC-025). Completado: píxeles interpolados en DEC-031; efemérides y estados de carga en DEC-039.
 
 ## DEC-029 — Categorías del ranking de sitios y pestaña ELEVACIÓN (UI-13)
 
@@ -579,3 +579,20 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Límites:** cada celda vale lo que su **centro** (no un promedio del área de ~6 km); horizonte cada 5° de azimut; fuera de −80° no hay mapa. Para no bloquear la interfaz en equipos lentos convendría un worker (PERF-01).
 - **Alternativas descartadas:** calcular el horizonte por celda en el navegador (~23 min); usar el DEM reducido de CORE-03 (más lento y menos exacto que precalcular con el de 240 m); precalcular el mapa de luz para fechas fijas (no seguiría la ventana elegida).
 - **Estado:** vigente (motor). Falta la interfaz (Lucio, #16).
+
+## DEC-039 — Fuente, cobertura y estados de carga de los datos reales en "Datos y fuentes" (UI-01, resto)
+
+- **Contexto / problema:** UI-01 (#13) pide que la fuente, la fecha y la cobertura de los datos reales sean visibles y que haya estados de carga, error y faltante, sin presentar aproximaciones como reales. DEC-028 dejó esa parte pendiente hasta que existiera el contrato de CORE-01. Con DEC-033/034, `scenario.ephemeris` ya informa el origen (`horizons` / `mixed` / `approximate`, `derived`, `windowFraction`, `lookaheadComplete`, `meta`), pero la interfaz solo mostraba una fila resumida. Mientras se bajan las series (o si fallan), el cálculo usa el modelo aproximado sin que la página lo diga.
+- **Decisión:** mostrar todo dentro del modal "Datos y fuentes" (ya existente, DEC-028), sin agregar elementos a la pantalla principal (DEC-014: réplica del Figma).
+  - Bloque nuevo **"Efemérides del Sol y la Tierra"**: estado (series de Horizons del sitio / trasladadas a un punto propio / parcial / cargando / error / falta la serie del sitio / fuera de cobertura), fuente con enlace a la documentación oficial de JPL Horizons, efemérides (DE441) y marco (MEAN_ME), sitio de origen y distancia si están trasladadas, cobertura de la serie (UTC y paso), % del período elegido con Horizons, aviso si el próximo amanecer u ocaso cae fuera, fecha de consulta y altura del observador (medida = suelo LOLA + 2 m, o 0 m supuesto).
+  - Etiqueta de calidad nueva **"Cargando"** (borde punteado, sin animación) para datos reales que todavía se están bajando. Un error de carga se muestra como "Aproximado" con su motivo: el dato que se usa es el del modelo, no uno faltante.
+  - El horizonte de un punto propio al sur de −75° informa si el DEM LOLA reducido se está cargando o falló (sigue el sintético).
+- **Solución aplicada:**
+  - `web/src/ui/data-status.js` (nuevo): registro mínimo del estado de carga (`idle` / `loading` / `ready` / `partial` / `error`) con suscripción. Solo guarda y avisa.
+  - `web/src/ui/ephemerides.js`: escribe ese estado al pedir y al recibir las efemérides y el DEM reducido. No cambia qué se baja ni cómo.
+  - `web/src/ui/provenance.js`: `ephemerisHtml()`, estados en `qualityRows()` y `lolaHtml()`, y el modal se vuelve a dibujar si llegan datos con él abierto (conserva el foco en el diálogo). La comparación y el informe heredan las filas nuevas porque usan `qualityHtml()`.
+  - Textos en `quality.eph.*`, `quality.lola.dem.*`, `quality.tag.loading` y `quality.rowHint.{ephemeris,horizon}{Loading,Error}` (ES/EN). Estilo `.q-loading` en `settings.css`.
+  - Pruebas: `web/tests/data-status.test.js` (carga, error, serie real con cobertura, fuera de cobertura, punto propio trasladado y DEM reducido).
+- **Supuestos:** el estado `idle` (las series nunca se pidieron, como en las pruebas o el informe sin cargar) se muestra como modelo aproximado, no como "cargando". La cobertura textual "nov 2026 – dic 2027" del estado "fuera de cobertura" es la de DEC-033; la cobertura exacta se lee de `meta.coverage` cuando hay serie.
+- **Alternativas descartadas:** un indicador de carga en la pantalla principal (agrega un elemento que el Figma no tiene, DEC-014); mostrar `meta.assumptions` (están solo en español, como las notas de `sites.js` en DEC-028); un spinner animado (innecesario y en conflicto con "menos movimiento").
+- **Estado:** vigente. Pendiente: revisión de los textos nuevos en I18N-01 (#17).
