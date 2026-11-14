@@ -25,6 +25,13 @@ export function duration(minutes) {
 
 const pad = (n) => String(n).padStart(2, "0");
 
+/** Rango corto y localizado en UTC: "10 – 19 nov 2027" / "Nov 10 – 19, 2027". */
+export function rangeUTC(a, b) {
+  const f = new Intl.DateTimeFormat(locale(), { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  // Igual que dateUTC(): sin puntos y, en español, sin los "de".
+  return f.formatRange(a, b).replace(/\./g, "").replace(/ de /g, " ");
+}
+
 /** "14 nov 2026" en UTC. */
 export function dateUTC(ms) {
   return new Intl.DateTimeFormat(locale(), {

@@ -57,6 +57,15 @@ async function fetchPolarLevel(name) {
  */
 export function ensurePolarTerrain(sites, onLoaded) {
   if (polarLoading || !sites.some(needsPolarDem)) return;
+  loadPolarTerrain(onLoaded);
+}
+
+/**
+ * Baja el DEM polar reducido aunque ningún sitio lo necesite para el
+ * horizonte (el informe web lo usa para el terreno, DEC-059). Una sola vez.
+ */
+export function loadPolarTerrain(onLoaded) {
+  if (polarLoading) return;
   setDataStatus("polarDem", { state: "loading" });
   polarLoading = Promise.all(POLAR_LEVELS.map(fetchPolarLevel)).then(
     (levels) => {

@@ -14,7 +14,7 @@ import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
 import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js";
 import { renderComparison } from "./ui/compare.js";
 import { applySettings, initSettings } from "./ui/settings.js";
-import { compareUrl, missionUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
+import { compareUrl, informeUrl, missionUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
 
 const DESIGN_WIDTH = 1992;
 const $ = (id) => document.getElementById(id);
@@ -71,6 +71,9 @@ function render() {
   // Volver a la misión (o imprimir su informe) con el sitio A y las mismas fechas (UI-12).
   document.querySelectorAll("[data-mission-link]").forEach((link) => {
     link.href = missionUrl({ site: selection.a, startMs, windowDays, dateChosen: true }, link.dataset.missionLink);
+  });
+  document.querySelectorAll("[data-informe-link]").forEach((link) => {
+    link.href = informeUrl({ site: selection.a, startMs, windowDays, dateChosen: true });
   });
 }
 
