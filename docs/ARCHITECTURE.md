@@ -34,7 +34,7 @@ flowchart LR
 | `src/state.js` | Conserva el estado mutable único y notifica un `Set` de claves cambiadas a los suscriptores. |
 | `src/lib/astro.js` | Modelo periódico aproximado del punto subsolar y subterrestre; transforma posiciones selenográficas en azimut/elevación local y calcula la fase terrestre. |
 | `src/lib/terrain.js` | Genera un horizonte sintético determinista, estima relieve para sitios no curados y calcula la depresión geométrica por altura. |
-| `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte (`scenarioHorizon`: LOLA en sitios curados cubiertos, sintético en el resto, DEC-032) y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
+| `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte (`scenarioHorizon`: LOLA en sitios curados cubiertos, sintético en el resto, DEC-032) y la política única de visibilidad (`VISIBILITY_POLICY`, radios de Horizons, DEC-036), calcula ventanas, métricas, viabilidad y mapas de calor. |
 | `src/lib/ranking.js` | Orden de "Mejores lugares" por categoría (global, interés científico, comunicación, luz) sobre resultados de `computeScenario`; sin fórmulas nuevas (DEC-029). |
 | `src/data/site-traits.js` | Rasgos de interés científico por sitio con cita (pendientes de validar por astronomía); separado de `sites.js` (DEC-029). |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |

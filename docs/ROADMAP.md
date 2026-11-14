@@ -87,7 +87,7 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 2. Marcos de R01/R23, IM-1 y Chandrayaan-3, y orientación de la proyección polar (DEC-019, DEC-025).
 3. ~~Altura datum de cada sitio para Horizons~~ (suelo LOLA + 2 m, DEC-033) y validez de MOON_ME/DE421 frente a MEAN_ME/DE441 (DEC-024).
 4. Rasgos de "Interés científico" (DEC-029) y umbrales de viabilidad (DEC-007).
-5. TEST-01 (#10): pruebas contra fuentes reales. CORE-02 (#12): un solo criterio de visibilidad y, si conviene, el diámetro angular real de Horizons en lugar de radios fijos.
+5. TEST-01 (#10): pruebas contra fuentes reales. ~~CORE-02 (#12): un solo criterio de visibilidad~~ en revisión: Sol con medio disco, Tierra con cualquier parte, radios de Horizons (DEC-036).
 6. Si el horizonte LOLA reducido de los puntos del mapa se muestra como "aproximado" o "real" (DEC-034).
 
 ## Etapa 4 — Visualizaciones con datos reales ⏳ / ⛔ (Lucio, con Facundo)

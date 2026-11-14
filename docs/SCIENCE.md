@@ -52,7 +52,7 @@ Estas expresiones generan movimiento coherente para la interfaz, pero no son efe
 - **Validación:** valores fuera de rango, filas o pasos irregulares, cobertura distinta de la pedida y sitio/objetivo/perfil no coincidentes son errores (`HorizonsError`), no se recortan.
 - **Cobertura:** cada serie registra inicio, fin, paso, filas y completitud, y el período de EOP usado (`frame.eopCoverage`); fuera del período medido Horizons usa EOP predichos.
 - **Comparación con la fuente:** exacta (tolerancia 0) contra las respuestas oficiales guardadas en `web/tests/fixtures/horizons/`. No se mide aún la diferencia con el modelo de `astro.js`.
-- **Radios angulares:** Horizons entrega el diámetro real (≈ 1942″ del Sol, ≈ 6486″ de la Tierra en los fixtures); `analysis.js` sigue usando radios fijos hasta que CORE-01/CORE-02 decidan el cambio.
+- **Radios angulares:** Horizons entrega el diámetro real; desde DEC-036 `analysis.js` usa la mitad de ese diámetro en cada instante (ver "Visibilidad, radios angulares y fracción parcial").
 
 ## Horizonte sintético y curvatura
 
@@ -106,10 +106,12 @@ Este módulo **no** calcula un horizonte topográfico ni incorpora curvatura por
 
 ## Visibilidad, radios angulares y fracción parcial
 
-Para cada cuerpo se calcula el margen `elevación - horizonte(azimut)`.
+Política única (CORE-02, DEC-036), la misma en `computeScenario()`, `sampleAt()` y `computePolarHeatmap()` (`VISIBILITY_POLICY` en `analysis.js`). Para cada cuerpo se calcula el margen `m = elevación − horizonte(azimut)` y se toma el horizonte localmente recto a la escala del disco.
 
-- Sol: radio angular fijo `0,27°`. La fracción aparente se aproxima linealmente como `clamp((margen + radio) / (2 × radio))`. Se marca visible si esa fracción supera `0,5`, equivalente al centro por encima del horizonte. Esta interpolación no es el área exacta de un disco ocultado.
-- Tierra: radio angular fijo `0,95°`. Se marca visible si el margen es mayor que `-0,95°`, por lo que cualquier porción por encima del horizonte cuenta como visible.
+- **Radio angular `r`:** el de JPL Horizons en cada instante (mitad del diámetro, interpolado por hora) cuando hay serie: Sol 0,261°–0,272°, Tierra 0,899°–1,025° (media 0,951°) entre nov 2026 y dic 2027. Con el modelo aproximado, los radios medios `0,27°` y `0,95°`.
+- **Sol visible:** asoma al menos la mitad del disco (`m > 0`).
+- **Potencia:** proporcional a la fracción del disco que asoma, con el área exacta del segmento circular: `f = 1 − (acos(d) − d·√(1 − d²)) / π`, con `d = m / r` (0 si `m ≤ −r`, 1 si `m ≥ r`).
+- **Tierra visible (comunicación):** asoma cualquier parte del disco (`m > −r`).
 
 La visibilidad geométrica de la Tierra **no garantiza comunicación**. No incorpora enlace de radio, potencia, ganancia, orientación de antena, banda, ruido, propagación, ocultaciones por infraestructura ni disponibilidad de estaciones terrestres.
 
@@ -153,7 +155,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 - Marco lunar del modelo astronómico y datum aún no formalizados.
 - Resolución temporal fija de 10 minutos y cruces sin refinamiento.
 - Ausencia de incertidumbre, metadatos de calidad y cobertura.
-- El mapa de calor usa menos muestras que el análisis principal y prueba el centro del cuerpo, por lo que no comparte exactamente todos los criterios de visibilidad de `computeScenario()`.
+- El mapa de calor aplica la misma política de visibilidad (DEC-036), pero con menos muestras, el modelo aproximado y el horizonte sintético (MAP-01).
 - Las métricas de comunicación y potencia son indicadores geométricos, no subsistemas de ingeniería.
 
 ## Sustitución por datos reales

@@ -64,7 +64,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Generar las series Horizons de los 7 sitios para el período de la demo (hoy solo Shackleton R04, 14–16/11/2026, paso 60 min) y decidir dónde se guardan para la web. Coordinar con CORE-01. — Facu · DEC-024~~ 01/11/2026 – 01/01/2028, paso 1 h, en `web/public/data/ephemerides/`. Resuelto 2026-11-14 (rama `feat/efemerides-horizons-calculo`, DEC-033).
 - [ ] Mapa de calor con efemérides de Horizons (hoy modelo aproximado en cada celda; necesitaría series por celda o un modelo mejor). — Desarrollo web · MAP-01 #16, DEC-033
 - [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-024
-- [ ] Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-024
+- [x] ~~Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-024~~ Sí: radios de Horizons por instante y política única de visibilidad. Resuelto 2026-11-14 (rama `fix/criterios-visibilidad`, #12, DEC-036).
 - [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
 - [x] ~~Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005~~ Hecho para los sitios curados al sur de −60°; sigue sintético en sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
 - [ ] Mapa de calor con horizonte real (hoy sintético en cada celda). — Desarrollo web · MAP-01 #16, DEC-032
