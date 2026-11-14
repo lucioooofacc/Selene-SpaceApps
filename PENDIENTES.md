@@ -30,7 +30,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Regenerar el mapa de elevación desde el producto polar `LDEM_60S_240M` (TERRAIN-01, #39, ya integrado; DEC-025), si el equipo lo prefiere. — Facundo, Desarrollo web · DEC-026
 - [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
 - [x] ~~Mostrar en la interfaz los datos reales disponibles (horizonte LOLA de TERRAIN-02).~~ Vista previa en el panorama, la comparación y "Datos y fuentes", con marcas de calidad. Resuelto 2026-11-14 (rama `feat/horizonte-lola-ui`, #52, DEC-031).
-- [ ] CORE-01: conectar el horizonte LOLA (y las efemérides Horizons cuando haya series) en `analysis.js`; la interfaz ya pasa de "vista previa" a "en uso" sola. — Facundo · #11, DEC-031
+- [x] ~~CORE-01: conectar el horizonte LOLA (y las efemérides Horizons cuando haya series) en `analysis.js`; la interfaz ya pasa de "vista previa" a "en uso" sola. — Facundo · #11, DEC-031~~ Horizonte LOLA conectado (parte A). Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
+- [ ] CORE-01 parte B: efemérides JPL Horizons en `analysis.js` (series nov 2026 – dic 2027, paso 1 h, interpoladas; fuera del rango, modelo aproximado marcado). — Facundo · #11, DEC-024, DEC-032
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
 - [x] ~~Las tarjetas de "Mejores lugares" se rompían con valores largos ("890 Min", "-46.2°").~~ Resuelto 2026-11-13: columnas de 66 px y minutos en horas desde 100 min.
@@ -63,10 +64,11 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-024
 - [ ] Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-024
 - [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
-- [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
+- [x] ~~Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005~~ Hecho para los sitios curados al sur de −60°; sigue sintético en sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
+- [ ] Mapa de calor con horizonte real (hoy sintético en cada celda). — Desarrollo web · MAP-01 #16, DEC-032
 - [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
 - [x] ~~TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-025, TERRAIN-02 #8~~ El horizonte usa rayos de 300 km sobre el raster completo fuera del navegador y se versiona solo la tabla de horizonte (~65 KB); los recortes no se versionan. Resuelto 2026-11-14 (rama `feat/horizonte-lola`, DEC-030).
-- [ ] Shackleton R04 (−89,7668°, −171,87°) cae en la pared interior del cráter según el DEM LOLA: cresta a ~2 km al este, horizonte de hasta ~31°. Verificar la coordenada y su marco (¿MOON_PA vs MOON_ME?, ¿otro punto de borde?) antes de que CORE-01 cambie la iluminación de Shackleton. — Teo, Facu, Lucio · DEC-030, DEC-019
+- [ ] Shackleton R04 (−89,7668°, −171,87°) cae en la pared interior del cráter según el DEM LOLA: cresta a ~2 km al este, horizonte de hasta ~31°. Verificar la coordenada y su marco (¿MOON_PA vs MOON_ME?, ¿otro punto de borde?). Desde DEC-032 la web ya muestra Shackleton con ~9 % de luz anual (antes ~96 %); si se corrige, regenerar la tabla. — Teo, Facu, Lucio · DEC-030, DEC-019
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01
 - [ ] Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01
 - [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025

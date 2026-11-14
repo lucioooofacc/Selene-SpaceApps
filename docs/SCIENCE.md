@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). La interfaz no usa aún efemérides JPL Horizons ni topografía LOLA; desde DEC-024 existe un adaptador Horizons validado (`lib/horizons.js`) que se integrará en CORE-01, y existe un pipeline de elevación LOLA (DEC-025), pero el análisis todavía no lo consume: el horizonte sigue siendo sintético.
+SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con el horizonte **real de LOLA** en los sitios curados al sur de −60° (DEC-032) y un horizonte **sintético** en el resto, y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). La interfaz no usa aún efemérides JPL Horizons: desde DEC-024 existe un adaptador validado (`lib/horizons.js`) que se integrará en CORE-01 (parte B).
 
 ## Convenciones y unidades
 
@@ -76,7 +76,7 @@ con `δ = d / R`, `r = R + h(d)` y `r₀ = R + h₀ + 2 m` (observador a 2 m sob
 
 - El cálculo se hace fuera del navegador (`scripts/build-lola-horizons.mjs`); la web interpola la tabla `data/terrain/lola-horizons.js` con continuidad 0°/360°.
 - Calidad por azimut: distancia del punto que define el horizonte, baja confianza si usa píxeles con `count = 0` y distancia alcanzada. Si el rayo sale de la cobertura (−60°) el valor es una cota inferior.
-- Solo existe para los sitios curados al sur de −60°. `analysis.js` todavía usa el horizonte sintético; el cambio es de CORE-01.
+- Solo existe para los sitios curados al sur de −60°. `analysis.js` lo usa para esos sitios (`scenarioHorizon`, DEC-032) y el sintético para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor.
 
 ## Datos de elevación LOLA (TERRAIN-01)
 
