@@ -7,7 +7,7 @@ Este documento dice **en qué estado está SELENE, qué se está viendo ahora y 
 - `PENDIENTES.md`: la lista detallada de lo que falta.
 - `docs/DECISIONES.md`: por qué se hizo cada cosa (DEC-xxx).
 
-**Actualizado:** 14/11/2026, 14:30 (día 1 de la hackathon). **Entrega:** domingo 15/11/2026 a las 23:59. Después no se puede modificar nada.
+**Actualizado:** 14/11/2026, noche (día 1 de la hackathon). **Entrega:** domingo 15/11/2026 a las 23:59. Después no se puede modificar nada.
 **Sitio publicado:** https://selene-space-apps.vercel.app (se actualiza solo con cada integración a `main`).
 
 Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖ descartado u opcional.
@@ -21,11 +21,11 @@ Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖
 | 0 | Base: réplica del Figma, repo y despliegue | ✅ | Equipo |
 | 1 | Interfaz completa y pulida | ✅ | Lucio |
 | 2 | Datos reales en el motor | ✅ | Facundo |
-| 3 | Validación científica | ⏳ | Teo, Facu, Lucio |
-| 4 | Visualizaciones con los datos reales | ⏳ / ⛔ | Lucio (con Facundo) |
+| 3 | Validación científica | 🔄 (TEST-01 y SCIENCE-02 hechos; quedan revisiones de astronomía y TERRAIN-03) | Teo, Facu, Lucio |
+| 4 | Visualizaciones con los datos reales | ✅ (falta I18N-01) | Lucio (con Facundo) |
 | 5 | Entrega final | ⏳ | Equipo |
 
-**Hoy estamos entre las etapas 3 y 4:** la interfaz está terminada y publicada, y el motor ya calcula con datos reales. Sol y Tierra salen de JPL Horizons (nov 2026 – dic 2027) y el horizonte, de LOLA, para los sitios curados y para los puntos elegidos en el mapa (DEC-030 a DEC-035). Falta validar (etapa 3), terminar de mostrar la procedencia (etapa 4) y entregar (etapa 5).
+**Hoy estamos entre las etapas 3 y 5:** la interfaz muestra los datos reales con su procedencia (UI-01, UI-02), el mapa de calor calcula luz, Tierra y viabilidad reales (MAP-01), el cálculo pesado corre en un worker (PERF-01) y los cruces de Sol y Tierra están refinados (SCIENCE-02). También se aplicó el bloc de notas de UI de Lucio (DEC-042 a DEC-046). Falta la revisión de astronomía y TERRAIN-03/DATA-03 (etapa 3), la revisión de traducciones (I18N-01) y la entrega (etapa 5).
 
 ---
 
@@ -48,7 +48,7 @@ Todo integrado y publicado:
 | UI-01 parcial (#13) | "Datos y fuentes": procedencia y calidad de cada dato | 028 |
 | UI-13 (#49) | Categorías del ranking (Global, Ciencia, Comunicación, Luz) | 029 |
 | UI-14 (#52) | Horizonte LOLA en la interfaz (vista previa → en uso) | 031 |
-| UI-15 (#57) | Tarjetas con período (MISIÓN / AHORA, VISIBLE / OCULTO) e "Ir a fecha y hora" | 033 |
+| UI-15 (#57) | Tarjetas con período (MISIÓN / AHORA, VISIBLE / OCULTO) e "Ir a fecha y hora" (la parte "AHORA" del panel de parámetros la reemplazó DEC-042) | 033, 042 |
 
 La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 
@@ -64,6 +64,8 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 | CORE-01 parte B (#11): efemérides Horizons en el cálculo | ✅ (PR #56) | Series de los 7 sitios, nov 2026–dic 2027, paso 1 h; fuera de ese rango, modelo aproximado; `scenario.ephemeris` informa el origen (DEC-033) |
 | CORE-03 (#59): datos reales para puntos del mapa | ✅ (PR #60) | Sol y Tierra de Horizons trasladados a cualquier punto; horizonte LOLA reducido (480/960 m) al sur de −75°, marcado aproximado (DEC-034) |
 | DATA-02 (#61): Shackleton R04 → R01 | ✅ (PR #62) | R04 era el centro de un polígono en la pared del cráter; R01 Connecting Ridge (DEC-035) |
+| TERRAIN-03 (#71): horizonte LOLA real para Chang'e 4 y Apollo 11 | ⏳ | Hoy sintético: fuera de `LDEM_60S_240M` |
+| DATA-03 (#72): quitar `relief`/`elevationKm` de los sitios curados | ⛔ | Depende de TERRAIN-03 |
 
 **Qué cambió con los datos reales** (media anual, Sol y Tierra de Horizons + horizonte LOLA):
 
@@ -87,17 +89,31 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 2. Marcos de R01/R23, IM-1 y Chandrayaan-3, y orientación de la proyección polar (DEC-019, DEC-025).
 3. ~~Altura datum de cada sitio para Horizons~~ (suelo LOLA + 2 m, DEC-033) y validez de MOON_ME/DE421 frente a MEAN_ME/DE441 (DEC-024).
 4. Rasgos de "Interés científico" (DEC-029) y umbrales de viabilidad (DEC-007).
-5. ~~TEST-01 (#10): pruebas contra fuentes reales~~ en revisión: validaciones separadas, controles físicos, tolerancias en `docs/VALIDACION.md` y CI (DEC-037). ~~CORE-02 (#12): un solo criterio de visibilidad~~ hecho: Sol con medio disco, Tierra con cualquier parte, radios de Horizons (DEC-036).
+5. ~~TEST-01 (#10): pruebas contra fuentes reales~~ hecho (PR #65): validaciones separadas, controles físicos, tolerancias en `docs/VALIDACION.md` y CI (DEC-037). ~~CORE-02 (#12): un solo criterio de visibilidad~~ hecho: Sol con medio disco, Tierra con cualquier parte, radios de Horizons (DEC-036).
 6. Si el horizonte LOLA reducido de los puntos del mapa se muestra como "aproximado" o "real" (DEC-034).
+7. ~~SCIENCE-02 (#19): instantes de amaneceres y ocasos~~ hecho: bisección con tolerancia de 5 s (PR #80, DEC-048).
+8. TERRAIN-03 (#71): horizonte LOLA real para Chang'e 4 y Apollo 11; luego DATA-03 (#72): quitar `relief`/`elevationKm` (Facundo; DATA-03 toca `main.js`, coordinar con Lucio).
 
 ## Etapa 4 — Visualizaciones con datos reales ⏳ / ⛔ (Lucio, con Facundo)
 
 | Tarea | Estado | Depende de |
 | --- | --- | --- |
 | UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ✅ (PR #67, DEC-039) | — |
-| UI-02 (#15): resolución, huecos y cambios asíncronos | 🔄 en revisión (rama `design/visualizaciones-datos-reales`, DEC-041) | — |
+| UI-02 (#15): resolución, huecos y cambios asíncronos | ✅ (PR #69, DEC-041) | — |
 | MAP-01 (#16): modo de iluminación calculada en el mapa | ✅ motor (PR #66, DEC-038) e interfaz (PR #68, DEC-040) | — |
-| I18N-01 (#17): revisión de traducciones ES/EN | ⏳ | Textos finales de UI-01/UI-02 |
+| Textos que contradecían los datos reales | ✅ (PR #70) | — |
+| PERF-01 (#18): worker y caché persistente | ✅ (PR #79, DEC-047) | — |
+| I18N-01 (#17): revisión de traducciones ES/EN | ⏳ (Lucio, Cata) | Textos de hoy listados en `PENDIENTES.md` |
+
+### Bloc de notas de UI (Lucio, 14/11) ✅
+
+| Cambio | PR | DEC |
+| --- | --- | --- |
+| Espaciado de los paneles; "Ventana de análisis" con posición promedio del Sol y la Tierra | #74 | 042 |
+| Menú del botón "+" con nombre del sitio y aviso de confirmación | #75 | 043 |
+| Informe imprimible como documento de texto | #76 | 044 |
+| "Resumen del período" (viabilidad, rachas, Sol y Tierra a la vez) y hover | #77 | 045 |
+| "Mejores fechas" para el sitio elegido | #78 | 046 |
 
 ## Etapa 5 — Entrega ⏳ (equipo, antes del 15/11 23:59)
 
@@ -111,16 +127,16 @@ DEPLOY-01 (#14):
 
 ## Opcional (después de lo anterior) ➖
 
-~~PERF-01 (#18): worker y caché persistente.~~ En revisión (rama `perf/worker-cache`, DEC-047). SCIENCE-02 (#19): cruces temporales más precisos.
+~~PERF-01 (#18): worker y caché persistente.~~ ✅ PR #79 (DEC-047). ~~SCIENCE-02 (#19): cruces temporales más precisos.~~ ✅ PR #80 (DEC-048).
 
 ---
 
 ## Orden sugerido para lo que queda
 
 1. ~~**Ahora:** Facundo cierra CORE-01 parte B. Astronomía revisa Shackleton R04.~~ Hecho (DEC-033, DEC-034, DEC-035).
-2. **Sábado a la tarde:** Lucio completa UI-01 (fuente, cobertura y estados de carga de las efemérides reales). Facundo hace CORE-02 (criterio único de visibilidad), porque cambia los números que van al video.
-3. **Sábado a la noche:** TEST-01 (pasar a pruebas formales las validaciones ya medidas: Cabeus en sombra, cruces con fixtures, errores del DEM reducido y del traslado).
-4. **Domingo a la mañana:** revisión de textos (I18N-01) y revisión visual en ES y EN. MAP-01 solo si sobra tiempo; si no, documentar la limitación.
+2. ~~**Sábado a la tarde:** UI-01 y CORE-02.~~ Hecho (PR #64, #67).
+3. ~~**Sábado a la noche:** TEST-01.~~ Hecho (PR #65). También MAP-01, UI-02, PERF-01, SCIENCE-02 y el bloc de notas de UI (PR #66–#80).
+4. **Domingo a la mañana:** revisión de textos (I18N-01), revisión visual en ES y EN y, si llega, TERRAIN-03.
 5. **Domingo a la tarde:** DEPLOY-01 (checklist de arriba) y video, con los números de la tabla de la etapa 2.
 6. **Antes de las 23:59:** enviar el formulario. Después de enviarlo, no integrar nada más a `main`.
 
