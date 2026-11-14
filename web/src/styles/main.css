@@ -191,9 +191,21 @@ button {
   position: absolute;
   left: 22px;
   top: 108px; /* debajo del selector de categoría (UI-13) */
-  bottom: 24px;
   display: grid;
-  align-content: space-between;
+  gap: 8px; /* igual que las tarjetas de "Ventana de análisis" (DEC-042) */
+  align-content: start;
+}
+
+/* Criterio de orden de la categoría elegida, debajo de las tarjetas (DEC-042) */
+.places-hint {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 20px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted-2);
 }
 
 .place {
@@ -751,10 +763,6 @@ button {
   cursor: help;
 }
 
-.criterion-period-now {
-  color: var(--sun);
-  border-color: rgba(232, 173, 91, 0.45);
-}
 
 .tl-goto {
   display: flex;
@@ -815,7 +823,7 @@ button {
 .params-title {
   left: 0;
   right: 0;
-  top: 4px;
+  top: 12px;
   text-align: center;
   font-size: 24px;
   font-weight: 700;
@@ -831,12 +839,12 @@ button {
 
 .params > .params-label {
   left: 10px;
-  top: 34px;
+  top: 54px;
 }
 
 .params-select {
   left: 10px;
-  top: 54px;
+  top: 72px;
   width: 402px;
   height: 44px;
 }
@@ -863,7 +871,7 @@ button {
 
 .params-chips {
   left: 10px;
-  top: 104px;
+  top: 122px;
   display: grid;
   grid-template-columns: repeat(4, 96px);
   gap: 6px;
@@ -890,19 +898,19 @@ button {
 .params-rule {
   left: 0;
   width: 424px;
-  top: 144px;
+  top: 160px;
   margin: 0;
   border: 0;
   border-top: 1px solid var(--border-card);
 }
 
 .params-rule-2 {
-  top: 318px;
+  top: 324px;
 }
 
 .params-coords {
   left: 8px;
-  top: 158px;
+  top: 172px;
   display: grid;
   grid-template-columns: 188px 198px;
   column-gap: 16px;
@@ -928,16 +936,16 @@ button {
 }
 
 .params > .params-label-duration {
-  top: 238px;
+  top: 244px;
 }
 
 .params > .params-label-window {
-  top: 332px;
+  top: 334px;
 }
 
 .params-date {
   left: 10px;
-  top: 262px;
+  top: 264px;
   width: 402px;
 }
 
@@ -954,7 +962,7 @@ button {
 
 .criteria {
   left: 8px;
-  top: 360px;
+  top: 350px;
   display: grid;
   gap: 8px;
 }
@@ -962,7 +970,7 @@ button {
 .criterion {
   position: relative;
   width: 408px;
-  height: 112px;
+  height: 106px;
   background: var(--panel);
   border: 1px solid var(--border-card);
   border-radius: var(--r-md);
@@ -1057,10 +1065,58 @@ button {
   color: var(--red);
 }
 
+/* Sol y Tierra: posición promedio en el período (DEC-042) */
+.criteria-subtitle {
+  display: grid;
+  gap: 2px;
+  margin: 2px 2px 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
+  cursor: help;
+}
+
+.criteria-subtitle small {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted-2);
+}
+
+.criterion-value small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted-2);
+}
+
+.verdict.neutral {
+  color: var(--text);
+  background: var(--field);
+  border-color: var(--border-field);
+  font-size: 14px;
+  padding: 0 10px;
+  cursor: help;
+}
+
+.criterion-range {
+  position: absolute;
+  left: 12px;
+  top: 74px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.criterion-period-avg {
+  color: var(--earth);
+  border-color: rgba(92, 198, 216, 0.45);
+}
+
 .criterion-line {
   position: absolute;
   left: 12px;
-  top: 100px;
+  top: 98px;
   width: 386px;
   height: 1px;
   background: var(--border-card);

@@ -1,16 +1,21 @@
 /**
- * "Parámetros de la misión": sitio, coordenadas, duración y las cuatro
- * tarjetas de "Ventana de análisis" (Luz acumulada, Sol, Disponibilidad de
- * comunicación y Tierra), cada una con 3 segmentos (UI-15, DEC-033):
- *  - Luz acumulada y Comunicación evalúan TODA la misión → VIABLE/INVIABLE.
- *  - Sol y Tierra muestran el INSTANTE elegido en la línea de tiempo →
- *    VISIBLE/OCULTO. Cada tarjeta indica su período ("MISIÓN" / "AHORA").
+ * "Parámetros de la misión": sitio, coordenadas, duración y las tarjetas de
+ * "Ventana de análisis" (DEC-042, reemplaza la parte "AHORA" de UI-15):
+ *  - Luz acumulada y Comunicación, juntas: evalúan TODA la misión →
+ *    VIABLE/INVIABLE con 3 segmentos.
+ *  - Sol y Tierra, juntas y bajo el título "Posición promedio en el período":
+ *    elevación media, mínima y máxima y % del tiempo visible en las fechas
+ *    elegidas. No dependen del instante de la línea de tiempo (eso queda en
+ *    "Comportamiento de los cuerpos celestes").
  */
 import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, setState } from "../state.js";
 import { dateButtonLabel, initCalendar } from "./calendar.js";
-import { elev, minutesLabel } from "./places.js";
-import { missionTime } from "../lib/format.js";
+import { minutesLabel } from "./places.js";
+import { dateUTC, deg } from "../lib/format.js";
+import { DAY_MS } from "../lib/astro.js";
+import { STEP_MINUTES } from "../lib/analysis.js";
+import { windowStats } from "../lib/stats.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -23,20 +28,14 @@ const PARAM_ICON_SIZE = { bulb: [14, 14], sun: [16, 16], antenna: [18, 12], eart
 const SEGMENTS_BY_LEVEL = { high: 3, mid: 2, low: 1 };
 const PERCENT_BY_SEGMENTS = { 1: "33%", 2: "66%", 3: "100%" };
 
-/** Segmentos según el margen sobre el horizonte del relieve. */
-function segmentsForBody(body) {
-  if (!body.visible) return 1;
-  return body.margin >= 3 ? 3 : 2;
-}
-
 /**
- * @param {"mission"|"now"} period  qué evalúa la tarjeta: toda la misión o el instante.
- * @param {string} periodTitle      explicación completa del período (tooltip y lector de pantalla).
+ * Tarjeta de misión (VIABLE/INVIABLE).
+ * @param {string} periodTitle  explicación completa del período (tooltip y lector de pantalla).
  */
 function criterionCard({ icon, name, value, segments, period, periodTitle }) {
   const ok = segments >= 2;
   const cls = ok ? "ok" : "ko";
-  const label = period === "now" ? (ok ? "params.visible" : "params.hidden") : ok ? "params.viable" : "params.notViable";
+  const label = ok ? "params.viable" : "params.notViable";
   return `
     <article class="criterion">
       <span class="icon-box"><img src="./figma/param-${icon}.svg" alt="" width="${PARAM_ICON_SIZE[icon][0]}" height="${PARAM_ICON_SIZE[icon][1]}" /></span>
@@ -101,11 +100,41 @@ export function renderParamsFields(state) {
   $("date-button").textContent = dateButtonLabel(state);
 }
 
-/** Tarjetas de "Ventana de análisis" (dependen también del instante actual). */
-export function renderCriteria(scenario, sample) {
+/** Tarjeta de posición promedio del Sol o la Tierra en el período (DEC-042). */
+function averageCard({ icon, name, body, periodTitle }) {
+  const { mean, min, max } = body.elevation;
+  return `
+    <article class="criterion criterion-avg">
+      <span class="icon-box"><img src="./figma/param-${icon}.svg" alt="" width="${PARAM_ICON_SIZE[icon][0]}" height="${PARAM_ICON_SIZE[icon][1]}" /></span>
+      <p class="criterion-name">${name}</p>
+      <span class="criterion-period criterion-period-avg" title="${periodTitle}">${t("params.period.avg")}<span class="sr-only"> · ${periodTitle}</span></span>
+      <p class="criterion-value">${deg(mean)} <small>${t("params.avgElevation")}</small></p>
+      <span class="verdict neutral" title="${t("params.avgVisibleTitle")}">${t("params.avgVisible", { pct: Math.round(body.visibleFraction * 100) })}</span>
+      <p class="criterion-range">${t("params.avgRange", { min: deg(min), max: deg(max), hz: deg(body.relief) })}</p>
+      <span class="criterion-line" aria-hidden="true"></span>
+    </article>`;
+}
+
+const statsCache = new WeakMap();
+const statsFor = (scenario) => {
+  if (!statsCache.has(scenario)) statsCache.set(scenario, windowStats(scenario, STEP_MINUTES));
+  return statsCache.get(scenario);
+};
+
+let lastScenario = null;
+let lastLang = "";
+
+/** Tarjetas de "Ventana de análisis": dependen solo del escenario (no del instante). */
+export function renderCriteria(scenario) {
+  const lang = document.documentElement.lang;
+  if (scenario === lastScenario && lang === lastLang) return;
+  lastScenario = scenario;
+  lastLang = lang;
   const { criteria } = scenario.viability;
+  const stats = statsFor(scenario);
   const mission = { period: "mission", periodTitle: t("params.periodTitle.mission") };
-  const now = { period: "now", periodTitle: t("params.periodTitle.now", { time: missionTime(sample.ms - scenario.startMs) }) };
+  const range = { from: dateUTC(scenario.startMs), to: dateUTC(scenario.endMs - DAY_MS) };
+  const avgTitle = t("params.periodTitle.avg", range);
   $("criteria").innerHTML = [
     criterionCard({
       ...mission,
@@ -115,25 +144,14 @@ export function renderCriteria(scenario, sample) {
       segments: SEGMENTS_BY_LEVEL[criteria.illumination.level],
     }),
     criterionCard({
-      ...now,
-      icon: "sun",
-      name: t("params.sun"),
-      value: elev(sample.sun.elevation),
-      segments: segmentsForBody(sample.sun),
-    }),
-    criterionCard({
       ...mission,
       icon: "antenna",
       name: t("params.comm"),
       value: t("params.coverage", { pct: Math.round(scenario.summary.communication) }),
       segments: SEGMENTS_BY_LEVEL[criteria.communication.level],
     }),
-    criterionCard({
-      ...now,
-      icon: "earth",
-      name: t("params.earth"),
-      value: elev(sample.earth.elevation),
-      segments: segmentsForBody(sample.earth),
-    }),
+    `<h3 class="criteria-subtitle" title="${avgTitle}">${t("params.avgTitle")}<small>${t("params.avgSubtitle", range)}</small></h3>`,
+    averageCard({ icon: "sun", name: t("params.sun"), body: stats.sun, periodTitle: avgTitle }),
+    averageCard({ icon: "earth", name: t("params.earth"), body: stats.earth, periodTitle: avgTitle }),
   ].join("");
 }

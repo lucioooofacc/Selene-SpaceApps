@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (tareas TERRAIN-03 y DATA-03, rama `docs/tareas-relieve-global`).
+Última actualización: 2026-11-14 (tareas TERRAIN-03 y DATA-03 y bloc de notas de UI de Lucio).
 
 ---
 
@@ -39,6 +39,19 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~El calendario cortaba la columna del domingo.~~ Resuelto 2026-11-13.
 - [x] ~~En el panel de la izquierda, del top 5 lugares, tiene que haber categorias para rankear los sitios. Por ejemplo: Interes cientifico, comunicacion terrestre, luz solar aprovechable.~~ Categorías Global, Ciencia, Comunicación y Luz. Resuelto 2026-11-14 (rama `feat/ranking-categorias`, #49, DEC-029).
 - [x] ~~Cambiar titulo de Mapa de Calor, a algo relacionado a que el mapa muestra elevacion del terreno~~ Ahora se llama ELEVACIÓN / ELEVATION. Resuelto 2026-11-14 (rama `feat/ranking-categorias`, #49, DEC-029).
+
+## Bloc de notas de UI (Lucio, 14/11/2026)
+
+- [x] ~~"Mejores lugares": la separación entre tarjetas es exagerada; igualarla a la del panel derecho. — Lucio~~ Resuelto 2026-11-14 (rama `design/paneles-promedios`, DEC-042): 8 px en los dos paneles; el espacio libre muestra el criterio de orden de la categoría.
+- [x] ~~Títulos del panel derecho demasiado apretados ("Parámetros de la misión", "Sitio de alunizaje"). — Lucio~~ Resuelto 2026-11-14 (rama `design/paneles-promedios`, DEC-042).
+- [x] ~~"Ventana de análisis": Luz acumulada y Comunicación seguidas; Sol y Tierra juntas bajo un título que aclare que son el promedio del período, no un instante. — Lucio~~ Resuelto 2026-11-14 (rama `design/paneles-promedios`, DEC-042).
+- [ ] Botón "+": que abra un menú (el texto que tiene al lado) en lugar de agregar directo. — Lucio
+- [ ] Poder ponerle nombre a un sitio personalizado al crearlo. — Lucio
+- [ ] "Comportamiento de los cuerpos celestes": sumar datos útiles para recabar información y comparar sitios, sin recargar. — Lucio
+- [ ] Informe: solo texto, apto para impresión, sin recuadros ni bordes redondeados. — Lucio
+- [ ] Hover y respuestas visibles a las acciones del usuario. — Lucio
+- [ ] Sacar a la vista datos importantes que hoy están escondidos. — Lucio
+- [ ] "Mejores fechas para alunizar" en un punto dado, como "Mejores lugares". — Lucio
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
