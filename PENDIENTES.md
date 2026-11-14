@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (resumen del período y hover, rama `feat/resumen-periodo`).
+Última actualización: 2026-11-14 (mejores fechas, rama `feat/mejores-fechas`).
 
 ---
 
@@ -52,7 +52,8 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Informe: solo texto, apto para impresión, sin recuadros ni bordes redondeados. — Lucio~~ Resuelto 2026-11-14 (rama `design/informe-texto`, DEC-044).
 - [x] ~~Hover y respuestas visibles a las acciones del usuario. — Lucio~~ Resuelto 2026-11-14 (ramas `feat/menu-agregar-sitio` y `feat/resumen-periodo`, DEC-043 y DEC-045): aviso al agregar un sitio, hover y foco visible en todos los controles.
 - [x] ~~Sacar a la vista datos importantes que hoy están escondidos. — Lucio~~ Resuelto 2026-11-14 (DEC-042 y DEC-045): viabilidad global y rachas en el resumen del período, criterio de orden del ranking a la vista y acceso con texto a "Datos y fuentes". Si el equipo detecta otros datos escondidos, anotarlos acá.
-- [ ] "Mejores fechas para alunizar" en un punto dado, como "Mejores lugares". — Lucio
+- [x] ~~"Mejores fechas para alunizar" en un punto dado, como "Mejores lugares". — Lucio~~ Resuelto 2026-11-14 (rama `feat/mejores-fechas`, DEC-046).
+- [ ] "Mejores fechas" bloquea 0,4–1 s la primera vez por sitio y duración; mover a un worker junto con el mapa. — Desarrollo web · PERF-01 #18, DEC-046
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 

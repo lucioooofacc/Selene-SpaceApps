@@ -667,3 +667,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/lib/stats.js` (`bothFraction`) y su prueba; `web/src/ui/status.js` (`renderPeriodSummary()`, `initPeriodSummary()`); `web/index.html` (`#period-card`); `web/src/main.js`; `main.css` (separación de la columna de 36 a 24 px para que termine a la par del panorama y la línea de tiempo; bloque de hover); textos `periodCard.*` (ES/EN).
 - **Alternativas descartadas:** agregar más datos a las tarjetas de energía y comunicación (mezclaría instante y período, el mismo problema de DEC-042); un gráfico de rachas (recarga la sección).
 - **Estado:** vigente.
+
+## DEC-046 — "Mejores fechas" para el sitio elegido
+
+- **Contexto / problema:** bloc de notas de UI de Lucio: "así como hay mejores lugares para alunizar, debe haber mejores fechas para hacerlo en un punto determinado".
+- **Decisión:**
+  - El título del panel "Mejores lugares para alunizar" pasa a dos pestañas de texto, con el patrón de las del mapa: **Mejores lugares / Mejores fechas**. Lugares queda por defecto.
+  - En **Mejores fechas** se evalúan todas las fechas de inicio a las 00:00 UTC, una por día, con la duración elegida, **solo dentro de la cobertura de JPL Horizons** del sitio (nov 2026 – dic 2027; serie propia o trasladada), para que el orden salga de datos reales. Sin serie, se avisa en lugar de ordenar con el modelo aproximado.
+  - Mismo orden que los lugares (`rankEntries`): Global (puntos y horas de luz), Comunicación y Luz. **Ciencia** queda deshabilitada (los rasgos dependen del sitio, no de la fecha). A igualdad gana la fecha más temprana.
+  - Se muestran 5 fechas **cuyos períodos no se superponen** (si no, salían 21, 22 y 23 de julio: la misma ventana corrida un día).
+  - Cada tarjeta muestra el rango (con `Intl.formatRange`, localizado), la viabilidad, cobertura de comunicación, % con Sol, altura máxima de la Tierra y horas de luz. Un clic aplica la fecha de inicio (misma duración).
+- **Solución aplicada:** `web/src/lib/dates.js` (nuevo, puro: `dateScenarios()` y `pickDistinct()`) y `web/tests/dates.test.js`; `web/src/ui/places.js` (modo fechas, cálculo diferido con "Calculando…" y caché por sitio, duración y versión de datos); `web/src/state.js` (`placesMode`); `web/src/main.js`; `web/index.html`; `main.css`; textos `places.mode*` y `places.dates.*` (ES/EN).
+- **Supuestos y límites:** paso de un día entre candidatas; el cálculo (0,4–1 s, medido 0,4–0,7 s en Node) corre en el hilo principal la primera vez (PERF-01).
+- **Alternativas descartadas:** ponerlo dentro del calendario (queda escondido en un desplegable); ordenar también fuera de la cobertura con el modelo aproximado (mezclaría datos reales y aproximados en un mismo ranking).
+- **Estado:** vigente.
