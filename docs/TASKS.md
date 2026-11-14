@@ -242,6 +242,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** la misión restaura y actualiza la URL; los enlaces desde la comparación conservan el sitio A y las fechas; lo inválido se ignora; pruebas del parseo.
 - **Fuera de alcance:** guardar el instante de la línea de tiempo o la pestaña del mapa.
 
+### UI-13 — Categorías para rankear sitios y pestaña ELEVACIÓN
+
+- **Prioridad:** P1 · **Issue:** [#49](https://github.com/lucioooofacc/Selene-SpaceApps/issues/49).
+- **Objetivo:** categorías para rankear "Mejores lugares" (global, interés científico, comunicación, luz) y renombrar la pestaña MAPA DE CALOR a ELEVACIÓN.
+- **Rama sugerida:** `feat/ranking-categorias`.
+- **Dependencias:** ninguna; los rasgos científicos quedan pendientes de validar por astronomía.
+- **Archivos afectados:** `web/src/data/site-traits.js`, `web/src/lib/ranking.js`, `web/src/ui/places.js`, `web/src/ui/provenance.js`, `web/index.html`, estilos, i18n, `web/tests/ranking.test.js`.
+- **Criterios de aceptación:** selector accesible; comunicación y luz con métricas del motor; ciencia con rasgos citados y aviso de validación pendiente; pestaña renombrada en ES/EN; pruebas.
+- **Fuera de alcance:** modificar `sites.js` o crear métricas científicas nuevas.
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente

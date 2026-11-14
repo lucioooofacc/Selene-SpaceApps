@@ -36,8 +36,9 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~El relieve del panorama quedaba demasiado alto y el equipo fuera de lugar respecto de la ilustración.~~ Resuelto 2026-11-13: 12 px por grado, horizonte en y = 400 y escenografía en las posiciones del Figma.
 - [x] ~~La imagen de la pestaña POLO SUR estaba mal ubicada.~~ Resuelto 2026-11-13: posición (136, 176) del Figma.
 - [x] ~~El calendario cortaba la columna del domingo.~~ Resuelto 2026-11-13.
-- [ ] En el panel de la izquierda, del top 5 lugares, tiene que haber categorias para rankear los sitios. Por ejemplo: Interes cientifico, comunicacion terrestre, luz solar aprovechable.
-- [ ] Cambiar titulo de Mapa de Calor, a algo relacionado a que el mapa muestra elevacion del terreno
+- [x] ~~En el panel de la izquierda, del top 5 lugares, tiene que haber categorias para rankear los sitios. Por ejemplo: Interes cientifico, comunicacion terrestre, luz solar aprovechable.~~ Categorías Global, Ciencia, Comunicación y Luz. Resuelto 2026-11-14 (rama `feat/ranking-categorias`, #49, DEC-029).
+- [ ] Validar los rasgos de interés científico de `web/src/data/site-traits.js` (y sumar rasgos de IM-1 si corresponde). — Teo, Facu, Lucio · DEC-029
+- [x] ~~Cambiar titulo de Mapa de Calor, a algo relacionado a que el mapa muestra elevacion del terreno~~ Ahora se llama ELEVACIÓN / ELEVATION. Resuelto 2026-11-14 (rama `feat/ranking-categorias`, #49, DEC-029).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 

@@ -28,6 +28,10 @@ export default {
   },
   places: {
     title: "Mejores lugares para alunizar",
+    categoryLabel: "Ordenar los lugares por",
+    category: { overall: "Global", science: "Ciencia", communication: "Comunicación", light: "Luz" },
+    noTraits: "Sin rasgos científicos documentados todavía",
+    scienceNote: "Interés científico: cuenta rasgos con fuente citada por sitio. Pendiente de validar por astronomía; no es una métrica científica.",
     link: "Ver comparación detallada",
     coords: "Latitud: {lat}° · Longitud: {lon}°",
     comm: "Cobertura de comunicación en la misión",
@@ -38,7 +42,7 @@ export default {
   map: {
     tabsLabel: "Vista del mapa",
     global: "GLOBAL",
-    heat: "MAPA DE CALOR",
+    heat: "ELEVACIÓN",
     polar: "POLO SUR",
     observed: "Punto observado",
     addSite: "Agregar coordenada como sitio",
@@ -258,6 +262,7 @@ export default {
     close: "Cerrar datos y fuentes",
     title: "Datos y fuentes",
     siteTitle: "Procedencia de {name}",
+    traitsTitle: "Interés científico (pendiente de validar)",
     provenance: "Procedencia del sitio",
     dataTitle: "Calidad de los datos",
     noProvenance: "Punto elegido en el mapa: no tiene procedencia verificada.",
@@ -289,5 +294,15 @@ export default {
       thresholds: "Criterio del equipo, ajustable",
     },
     footer: "Las referencias DEC-xxx están en docs/DECISIONES.md del repositorio.",
+  },
+  traits: {
+    waterIce: "Hielo de agua detectado (LCROSS)",
+    permanentShadow: "Dentro de una región en sombra permanente",
+    permanentShadowNearby: "Junto a un cráter con fondo en sombra permanente",
+    artemisRegion: "Región candidata de Artemis III",
+    southPoleInSitu: "Primeras mediciones in situ cerca del polo sur (azufre)",
+    mantleMaterial: "Posible material del manto lunar",
+    farSide: "Cara oculta, cuenca Polo Sur–Aitken",
+    samplesReturned: "Muestras traídas a la Tierra",
   },
 };

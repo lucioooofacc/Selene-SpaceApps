@@ -13,6 +13,7 @@
  * Solo presenta: no calcula nada.
  */
 import { t } from "../i18n/index.js";
+import { TRAIT_SOURCES, traitsFor } from "../data/site-traits.js";
 
 const SOURCE_LABELS = [
   ["nssdc.gsfc.nasa.gov", "NASA NSSDCA"],
@@ -53,6 +54,22 @@ export function provenanceHtml(site) {
       <dt>${t("quality.sources")}</dt><dd>${links(provenance.urls) || "—"}</dd>
       <dt>${t("quality.confirmed")}</dt><dd>${provenance.confirmedOn ?? "—"}</dd>
     </dl>`;
+}
+
+/** Rasgos de interés científico del sitio, con su cita (pendientes de validar, DEC-029). */
+export function traitsHtml(site) {
+  const traits = site ? traitsFor(site.id) : [];
+  if (!traits.length) return `<p class="prov-none">${t("places.noTraits")}</p>`;
+  return `
+    <ul class="traits">
+      ${traits
+        .map((tr) => {
+          const src = TRAIT_SOURCES[tr.source];
+          return `<li><strong>${t(`traits.${tr.key}`)}</strong><small><a href="${src.url}" target="_blank" rel="noopener noreferrer">${src.citation}</a></small></li>`;
+        })
+        .join("")}
+    </ul>
+    <p class="settings-hint">${t("places.scienceNote")}</p>`;
 }
 
 /** Filas de calidad de los datos de la página para el escenario dado. */
@@ -106,6 +123,10 @@ export function initQualityDialog(getContext) {
         <fieldset>
           <legend>${t("quality.siteTitle", { name: site?.name ?? t("map.observed") })}</legend>
           ${provenanceHtml(site)}
+        </fieldset>
+        <fieldset>
+          <legend>${t("quality.traitsTitle")}</legend>
+          ${traitsHtml(site)}
         </fieldset>
         <fieldset>
           <legend>${t("quality.dataTitle")}</legend>
