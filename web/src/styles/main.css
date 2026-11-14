@@ -2125,3 +2125,32 @@ button {
 .map-credit {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.6);
 }
+
+/* Recorrido del Sol y la Tierra en el panorama (DEC-056) */
+.pano-orbit {
+  fill: none;
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+  stroke-linecap: round;
+}
+
+.pano-orbit-sun {
+  stroke: rgba(232, 173, 91, 0.6);
+}
+
+.pano-orbit-earth {
+  stroke: rgba(92, 198, 216, 0.65);
+}
+
+.pano-orbit-day-sun {
+  fill: rgba(232, 173, 91, 0.85);
+}
+
+.pano-orbit-day-earth {
+  fill: rgba(92, 198, 216, 0.85);
+}
+
+.pano-orbit-behind {
+  opacity: 0.28;
+}
+

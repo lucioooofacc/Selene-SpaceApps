@@ -176,6 +176,7 @@ export default {
     horizonLola: "horizonte LOLA",
     lolaPreview: "Línea punteada dorada: relieve LOLA del sitio con sus coordenadas originales (referencia; con las coordenadas editadas el cálculo usa otro horizonte)",
     lolaMarks: "Tramos marcados: baja confianza LOLA (rojo) o fuera de cobertura (gris)",
+    orbits: "Líneas punteadas: recorrido del Sol (dorado) y de la Tierra (celeste) en el período (más tenue donde pasa detrás del relieve); un punto por día",
     missionTime: "Tiempo de misión",
     back: "Retroceder una hora",
     forward: "Avanzar una hora",

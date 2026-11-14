@@ -777,3 +777,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/ui/panorama.js` (`scenery()`, `stars()`, `noiseDataUrl()`, `bandPath()`, nuevas definiciones SVG y la Tierra en un `clipPath`). La textura es un patrón PNG de ruido generado una vez (más barato de pintar al animar que un filtro `feTurbulence`). Medido en el navegador de pruebas: 1,1 ms de JavaScript por actualización de la escena y sin pérdida de cuadros frente a `main` al reproducir.
 - **Alternativas descartadas:** usar la imagen del Figma de fondo (el relieve dejaría de ser el del sitio); filtros SVG de turbulencia (caros de repintar en cada cuadro).
 - **Estado:** vigente.
+
+## DEC-056 — Recorrido del Sol y la Tierra en el panorama
+
+- **Contexto / problema:** pedido de Lucio: mostrar en la ilustración del panorama la órbita de los cuerpos celestes. El panorama mostraba solo la posición del instante elegido.
+- **Decisión:** dibujar el **recorrido aparente** del Sol (dorado) y de la Tierra (celeste) en el cielo del sitio durante todo el período elegido, como líneas punteadas con un punto por día (00:00 UTC desde el inicio). Es la trayectoria en azimut y elevación vista desde el sitio, no la órbita en el espacio: es lo que sirve para planificar (cuándo y por dónde pasan, y cuándo los tapa el relieve).
+  - Los recorridos salen de las mismas posiciones del escenario (JPL Horizons o el modelo, DEC-033); no se calcula nada nuevo.
+  - Se dibujan detrás del relieve (el horizonte tapa los tramos ocultos) y, encima, una copia tenue, para que se lea la órbita completa y se vea qué parte pasa detrás de las montañas.
+  - Lo que se ve tiene sentido físico: cerca del polo el Sol da una vuelta completa de azimut por mes lunar, rasante, y la Tierra casi no se mueve (solo sube y baja por la libración).
+- **Solución aplicada:** `web/src/ui/panorama.js` (`orbitPath()`, `orbitDays()`; ~900 puntos por recorrido; se recalcula solo al cambiar el escenario), estilos en `main.css`, nota en la leyenda (`sim.orbits`, ES/EN).
+- **Alternativas descartadas:** dibujar solo el tramo ya recorrido hasta el instante (hay que recalcular en cada cuadro y se pierde la vista del período completo); un diagrama orbital en el espacio (no responde a la pregunta del sitio).
+- **Estado:** vigente.
