@@ -175,6 +175,7 @@ export default {
     horizonLola: "LOLA horizon",
     lolaPreview: "Dashed gold line: LOLA relief of the site at its original coordinates (reference; with edited coordinates the calculation uses another horizon)",
     lolaMarks: "Marked stretches: low LOLA confidence (red) or out of coverage (gray)",
+    orbits: "Dotted lines: path of the Sun (gold) and the Earth (cyan) over the period (fainter where it passes behind the terrain); one dot per day",
     missionTime: "Mission time",
     back: "Go back one hour",
     forward: "Go forward one hour",

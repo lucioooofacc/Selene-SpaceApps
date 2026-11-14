@@ -162,6 +162,37 @@ let built = false;
 let lastHorizon = null;
 let reliefNotes = []; // notas del relieve (cambian con el horizonte)
 let lastNotesKey = "";
+let lastOrbitScenario = null;
+const DAY_MS = 86_400_000;
+
+/**
+ * Recorrido de un cuerpo en el período (DEC-056): azimut y elevación del
+ * escenario (las mismas posiciones que el resto de la página), sin calcular
+ * nada nuevo. Se corta cuando el cuerpo cruza el borde del panorama (360°).
+ */
+function orbitPath(azs, els, n, step) {
+  let d = "";
+  let prevX = null;
+  for (let i = 0; i < n; i += step) {
+    const x = azX(azs[i]);
+    const y = elY(els[i]);
+    d += `${prevX === null || Math.abs(x - prevX) > W / 2 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)} `;
+    prevX = x;
+  }
+  return d;
+}
+
+/** Un punto por día (00:00 UTC desde el inicio) sobre cada recorrido. */
+function orbitDays(scenario, n) {
+  const s = scenario.series;
+  const perDay = Math.round(DAY_MS / (s.times[1] - s.times[0]));
+  let out = "";
+  for (let i = perDay; i < n; i += perDay) {
+    out += `<circle class="pano-orbit-day-sun" cx="${azX(s.sunAz[i]).toFixed(1)}" cy="${elY(s.sunEl[i]).toFixed(1)}" r="2"/>`;
+    out += `<circle class="pano-orbit-day-earth" cx="${azX(s.earthAz[i]).toFixed(1)}" cy="${elY(s.earthEl[i]).toFixed(1)}" r="2"/>`;
+  }
+  return out;
+}
 
 function build() {
   $("panorama-svg").innerHTML = `
@@ -270,6 +301,12 @@ function build() {
     <!-- Horizonte matemático (0°) y puntos cardinales para leer el relieve -->
     <line x1="0" y1="${HORIZON_Y}" x2="${W}" y2="${HORIZON_Y}" class="pano-zero"/>
     <text class="pano-scale" x="10" y="${HORIZON_Y - 6}">0°</text>
+    <!-- Recorrido del Sol y la Tierra en el período (DEC-056); el relieve tapa los tramos ocultos -->
+    <g id="pano-orbits">
+      <path id="orbit-sun" class="pano-orbit pano-orbit-sun"/>
+      <path id="orbit-earth" class="pano-orbit pano-orbit-earth"/>
+      <g id="orbit-days"></g>
+    </g>
     <g id="pano-sun">
       <circle r="30" fill="url(#sun-halo)"/>
       <circle r="14" fill="url(#sun-core)"/>
@@ -300,6 +337,11 @@ function build() {
     </g>
     <rect id="ridge-light-rect" width="${W}" height="${H}" fill="url(#ridge-light)" clip-path="url(#ridge-clip)"/>
     <path id="pano-crest" fill="none" stroke="rgba(190,202,224,0.42)" stroke-width="1.2"/>
+    <!-- Tramos del recorrido detrás del relieve: la misma línea, tenue, por encima (DEC-056) -->
+    <g class="pano-orbit-behind">
+      <use href="#orbit-sun"/>
+      <use href="#orbit-earth"/>
+    </g>
     <!-- Horizonte LOLA real como vista previa mientras el cálculo usa el sintético (UI-14) -->
     <path id="pano-lola" class="pano-lola" fill="none"/>
     <g id="pano-quality"></g>
@@ -421,8 +463,17 @@ export function renderPanorama(scenario, sample, { full = false } = {}) {
       t("sim.relief", { source: t(source), exag: VERTICAL_EXAGGERATION.toFixed(1).replace(".", t("units.decimal")) }),
       lola.mode === "preview" ? t("sim.lolaPreview") : "",
       marks ? t("sim.lolaMarks") : "",
+      t("sim.orbits"),
     ];
     reliefNotes = notes.filter(Boolean);
+  }
+  if (scenario !== lastOrbitScenario || full) {
+    const n = scenario.windowSteps;
+    const step = Math.max(1, Math.round(n / 900)); // ~900 puntos por recorrido
+    $("orbit-sun").setAttribute("d", orbitPath(scenario.series.sunAz, scenario.series.sunEl, n, step));
+    $("orbit-earth").setAttribute("d", orbitPath(scenario.series.earthAz, scenario.series.earthEl, n, step));
+    $("orbit-days").innerHTML = orbitDays(scenario, n);
+    lastOrbitScenario = scenario;
   }
   // Origen del Sol y la Tierra (UI-02, DEC-041) delante de la línea del relieve.
   const eph = scenario.ephemeris;
