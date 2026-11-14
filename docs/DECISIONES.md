@@ -736,3 +736,12 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/ui/heat-layer.js` (`colorize()` con interpolación bilineal; clave persistente `heat2|…` para no reutilizar imágenes viejas; mezcla del borde en `heatLayerTexture()`), `main.css` (sin `image-rendering: pixelated`), texto `map.layerCredit.real` (ES/EN).
 - **Alternativas descartadas:** suavizar con el escalado del navegador (interpola colores: aparecen tonos intermedios sin dato); interpolación bicúbica (puede sobrepasar el rango 0–100 % entre celdas).
 - **Estado:** vigente. Reemplaza el "un píxel por celda, sin suavizar" de DEC-040 y DEC-050.
+
+## DEC-052 — Sin referencias internas en la interfaz; "Datos y fuentes" a pantalla completa
+
+- **Contexto / problema:** bloc de notas de UI 3 de Lucio. (1) El proyecto lo evalúa un jurado externo, pero la interfaz mostraba referencias al trabajo interno: "(DEC-xxx)" en cada fila de calidad (también en la comparación y el informe), "Confirmado por astronomía", "pendiente de validar por astronomía", el pie del modal que remitía a `docs/DECISIONES.md` y los DEC del pie del informe. (2) "Datos y fuentes" era una columna angosta que obligaba a desplazarse mucho.
+- **Decisión y solución aplicada:**
+  - Las filas de calidad dejan de mostrar su referencia (`web/src/ui/provenance.js`, `qualityHtml()`); se quita la fila "Confirmado por astronomía" de la procedencia y la clave `quality.confirmed`. Textos reescritos en ES/EN sin referencias internas: interés científico "según la bibliografía citada" y "es una guía, no una métrica científica"; umbrales "definidos por el equipo"; pie del modal con las fuentes (Horizons, LOLA, LROC y publicaciones); pie del informe sin DEC. La documentación interna (`docs/`, comentarios del código) conserva las referencias.
+  - "Datos y fuentes" ocupa casi toda la ventana y reparte los bloques en tres columnas (procedencia e interés científico; efemérides y horizonte LOLA; calidad de los datos), con texto más compacto y etiquetas que se parten antes que los valores (`web/src/styles/settings.css`). Medido: entra sin desplazarse incluso en una ventana de 930 × 893 px; si la ventana es muy baja, se desplaza solo la grilla.
+- **Alternativas descartadas:** pestañas dentro del modal (esconden información y suman clics); quitar contenido del modal (es la procedencia de los datos que se pide mostrar).
+- **Estado:** vigente.

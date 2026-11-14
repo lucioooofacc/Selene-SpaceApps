@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (mapa suavizado, rama `design/mapa-suavizado`).
+Última actualización: 2026-11-15 (bloc de notas de UI 3, rama `fix/textos-jurado`).
 
 ---
 
@@ -64,6 +64,13 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~"Mejores fechas": viabilidad más llamativa, con rojos y verdes. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~El mapa de calor calculado se ve pixelado. — Lucio~~ Resuelto 2026-11-14 (rama `design/mapa-suavizado`, DEC-051): interpolación bilineal de los valores entre celdas, en 2D y 3D.
 - [ ] Extender el mapa de calor calculado a toda la superficie lunar. Decisión de Lucio (14/11): esperar al horizonte LOLA global de TERRAIN-03 en lugar de usar un horizonte sin relieve o un DEM global de baja resolución. — Lucio, Facundo · TERRAIN-03 #71, DEC-051
+
+## Bloc de notas de UI 3 (Lucio, 14–15/11/2026)
+
+- [x] ~~"Datos y fuentes" a pantalla completa, como una ventana de escritorio, sin desplazamiento. — Lucio~~ Resuelto 2026-11-15 (rama `fix/textos-jurado`, DEC-052).
+- [x] ~~Quitar de la interfaz las referencias al trabajo interno del equipo (DEC-xxx, "confirmado por astronomía", "pendiente de validar"): el jurado es externo. — Lucio~~ Resuelto 2026-11-15 (rama `fix/textos-jurado`, DEC-052).
+- [ ] Que la caja del mapa no corte la Luna 3D al acercar, sin aislar lo que hay alrededor. — Lucio
+- [ ] Comparación: vista 3D con los dos sitios ubicados. — Lucio
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
