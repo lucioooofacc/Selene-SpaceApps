@@ -8,7 +8,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### ASTRO-01 — Integrar efemérides reales
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#6](https://github.com/lucioooofacc/Selene-SpaceApps/issues/6).
 - **Objetivo:** sustituir las posiciones periódicas por series verificables del Sol y la Tierra.
 - **Rama sugerida:** `data/efemerides-horizons`.
 - **Dependencias:** definición de marco y contrato; acceso a Horizons; DATA-01.
@@ -18,7 +18,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### TERRAIN-01 — Obtener y procesar datos LOLA
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#7](https://github.com/lucioooofacc/Selene-SpaceApps/issues/7).
 - **Objetivo:** seleccionar y preparar un producto topográfico oficial para los sitios de demostración.
 - **Rama sugerida:** `data/lola-dem`.
 - **Dependencias:** DATA-01; selección de producto, datum y resolución.
@@ -28,7 +28,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### TERRAIN-02 — Calcular horizonte topográfico real
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#8](https://github.com/lucioooofacc/Selene-SpaceApps/issues/8).
 - **Objetivo:** producir `horizon(azimuth) -> elevation` desde el DEM y la curvatura lunar.
 - **Rama sugerida:** `feat/horizonte-lola`.
 - **Dependencias:** TERRAIN-01; marco/datum acordados.
@@ -38,7 +38,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### DATA-01 — Validar coordenadas de sitios
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#9](https://github.com/lucioooofacc/Selene-SpaceApps/issues/9).
 - **Objetivo:** verificar coordenadas y procedencia de todos los sitios curados.
 - **Rama sugerida:** `data/validar-sitios`.
 - **Dependencias:** fuente oficial o cartográfica elegida; revisión de astronomía.
@@ -48,7 +48,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### TEST-01 — Pruebas científicas
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#10](https://github.com/lucioooofacc/Selene-SpaceApps/issues/10).
 - **Objetivo:** ampliar las pruebas matemáticas y crear validaciones separadas contra fuentes reales.
 - **Rama sugerida:** `test/modelos-cientificos`.
 - **Dependencias:** ASTRO-01, TERRAIN-02 para validaciones reales.
@@ -58,7 +58,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### CORE-01 — Integrar los modelos reales
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#11](https://github.com/lucioooofacc/Selene-SpaceApps/issues/11).
 - **Objetivo:** combinar efemérides y horizonte reales en escenarios sin romper la UI.
 - **Rama sugerida:** `feat/integracion-modelos-reales`.
 - **Dependencias:** ASTRO-01, TERRAIN-02, TEST-01.
@@ -68,7 +68,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### CORE-02 — Unificar criterios de visibilidad
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#12](https://github.com/lucioooofacc/Selene-SpaceApps/issues/12).
 - **Objetivo:** usar una única definición documentada de visibilidad en escenario, muestra y mapa de calor.
 - **Rama sugerida:** `fix/criterios-visibilidad`.
 - **Dependencias:** acuerdo científico sobre disco parcial y horizonte.
@@ -78,7 +78,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### UI-01 — Identificar fuentes y calidad de datos
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#13](https://github.com/lucioooofacc/Selene-SpaceApps/issues/13).
 - **Objetivo:** mostrar si un resultado es aproximado, sintético, real, incompleto o no disponible.
 - **Rama sugerida:** `feat/calidad-datos-ui`.
 - **Dependencias:** contrato de metadatos de CORE-01.
@@ -88,7 +88,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### DEPLOY-01 — Despliegue y validación final
 
-- **Prioridad:** P0 · **Issue:** sin crear.
+- **Prioridad:** P0 · **Issue:** [#14](https://github.com/lucioooofacc/Selene-SpaceApps/issues/14).
 - **Objetivo:** publicar una versión reproducible y comprobar la entrega.
 - **Rama sugerida:** `chore/despliegue-final`.
 - **Dependencias:** tareas P0 aceptadas; textos y atribuciones cerrados.
@@ -100,7 +100,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### UI-02 — Adaptar visualizaciones a modelos reales
 
-- **Prioridad:** P1 · **Issue:** sin crear.
+- **Prioridad:** P1 · **Issue:** [#15](https://github.com/lucioooofacc/Selene-SpaceApps/issues/15).
 - **Objetivo:** representar resolución, huecos y cambios asíncronos sin perder legibilidad.
 - **Rama sugerida:** `design/visualizaciones-datos-reales`.
 - **Dependencias:** CORE-01, UI-01.
@@ -110,7 +110,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### MAP-01 — Adaptar el mapa de calor
 
-- **Prioridad:** P1 · **Issue:** sin crear.
+- **Prioridad:** P1 · **Issue:** [#16](https://github.com/lucioooofacc/Selene-SpaceApps/issues/16).
 - **Objetivo:** calcular el mapa con fuentes y criterios unificados sin bloquear la interfaz.
 - **Rama sugerida:** `feat/mapa-calor-real`.
 - **Dependencias:** CORE-01, CORE-02, TERRAIN-01.
@@ -120,7 +120,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### I18N-01 — Revisar traducciones
 
-- **Prioridad:** P1 · **Issue:** sin crear.
+- **Prioridad:** P1 · **Issue:** [#17](https://github.com/lucioooofacc/Selene-SpaceApps/issues/17).
 - **Objetivo:** revisar equivalencia y claridad científica ES/EN.
 - **Rama sugerida:** `i18n/revision-cientifica`.
 - **Dependencias:** textos finales de UI-01/UI-02.
@@ -132,7 +132,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### PERF-01 — Worker y caché persistente
 
-- **Prioridad:** P2 · **Issue:** sin crear.
+- **Prioridad:** P2 · **Issue:** [#18](https://github.com/lucioooofacc/Selene-SpaceApps/issues/18).
 - **Objetivo:** aislar cálculos intensivos y reutilizar resultados entre sesiones.
 - **Rama sugerida:** `perf/worker-cache`.
 - **Dependencias:** CORE-01 y esquema estable de versión.
@@ -142,7 +142,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 
 ### SCIENCE-02 — Refinar cruces temporales
 
-- **Prioridad:** P2 · **Issue:** sin crear.
+- **Prioridad:** P2 · **Issue:** [#19](https://github.com/lucioooofacc/Selene-SpaceApps/issues/19).
 - **Objetivo:** interpolar o buscar con mayor precisión amaneceres, ocasos y Earthset.
 - **Rama sugerida:** `feat/refinar-ventanas`.
 - **Dependencias:** CORE-02 y fuentes reales estables.
