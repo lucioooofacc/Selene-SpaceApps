@@ -1,5 +1,5 @@
 /**
- * Luna en 3D para las pestañas GLOBAL y POLO SUR (UI-07, DEC-020).
+ * Luna en 3D para las pestañas GLOBAL y POLO SUR (UI-07, DEC-021).
  *
  * - Esfera con la textura de color LROC y el relieve LOLA (desplazamiento con
  *   escala vertical exagerada, solo ilustrativa) del CGI Moon Kit de NASA SVS.

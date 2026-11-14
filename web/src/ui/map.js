@@ -1,7 +1,7 @@
 /**
  * Mapa con las tres pestañas del Figma: GLOBAL / MAPA DE CALOR / POLO SUR.
  *  - GLOBAL y POLO SUR: Luna en 3D (moon3d.js) o, con el selector 3D/2D,
- *    imágenes 2D del mosaico LROC de NASA SVS (DEC-020):
+ *    imágenes 2D del mosaico LROC de NASA SVS (DEC-021):
  *      · Global 2D: mapa equirectangular (longitud -180..180, latitud 90..-90).
  *      · Polo sur 2D: reproyección azimutal equidistante hasta POLAR_EDGE_LAT
  *        (polar2d.js), 0° arriba.

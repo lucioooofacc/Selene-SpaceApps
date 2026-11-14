@@ -137,7 +137,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 
 - **Contexto / problema:** para ubicar los sitios en "MAPA DE CALOR" y "POLO SUR" hay que saber qué latitud cubre cada imagen. El Figma no lo indica.
 - **Decisión:** suponer una proyección azimutal equidistante centrada en el polo sur, con 0° de longitud arriba y borde en −60° (`POLAR_EDGE_LAT` en `web/src/ui/map.js`).
-- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio) para MAPA DE CALOR. GLOBAL y POLO SUR ya no usan las imágenes del Figma (DEC-020): sus vistas 2D salen del CGI Moon Kit, con la misma proyección por construcción. Falta confirmar el origen y la licencia de la imagen del mapa de calor. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
+- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio) para MAPA DE CALOR. GLOBAL y POLO SUR ya no usan las imágenes del Figma (DEC-021): sus vistas 2D salen del CGI Moon Kit, con la misma proyección por construcción. Falta confirmar el origen y la licencia de la imagen del mapa de calor. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
 
 ## DEC-017 — Cómo se interpretó cada elemento del Figma
 
@@ -150,7 +150,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Menú "Opcion 3/4/5", botón de configuración y "Ver comparacion detallada":** se replican tal cual, pero todavía no tienen destino, porque el diseño no define esas pantallas. El globo cambia el idioma ES/EN.
 - **Franja de 8 px entre encabezado y cuerpo ("Vista 7"):** sin datos de color (se agotó el límite del plan gratuito del MCP de Figma), se usó el color de fondo.
 - **Datos aproximados:** para no agregar elementos visibles, el aviso de modelo aproximado quedó como tooltip del título "Parametros de la misión".
-- **Estado:** vigente, salvo los destinos del menú, la ortografía y las imágenes de GLOBAL/POLO SUR, que pasan a DEC-019.
+- **Estado:** vigente, salvo los destinos del menú, la ortografía y las imágenes de GLOBAL/POLO SUR, que pasan a DEC-020.
 
 ---
 
@@ -161,7 +161,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** se quitaron las líneas `Co-Authored-By` de todos los commits de `main`, `feat/web-v1` y `design/figma-exacto` (sin tocar el contenido de los archivos). Se subieron las tres ramas al repo nuevo, que pasa a ser `origin`; el anterior se borró el 2026-11-14. `CLAUDE.md` se mantiene porque Claude Code lo usa para cargar las reglas de `AGENTS.md`. Los PR #1 y #2 se guardaron en `docs/prs/` y se recrearon en el repo nuevo sin atribuciones.
 - **Estado:** vigente.
 
-## DEC-019 — Destinos del menú, ortografía y vistas del mapa (decisiones del equipo)
+## DEC-020 — Destinos del menú, ortografía y vistas del mapa (decisiones del equipo)
 
 - **Contexto / problema:** DEC-017 dejó pendientes de definir varios elementos del Figma sin pantalla de destino y la ortografía heredada del archivo.
 - **Decisión** (equipo, 14/11/2026, anotada en `PENDIENTES.md`):
@@ -180,9 +180,9 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** comparación como vista con hash dentro de la misma página (la página aparte es más simple y no necesita router); calcular el horizonte LOLA desde el frontend (duplicaría TERRAIN-01/02).
 - **Estado:** vigente. **Pendiente:** destino del botón de configuración.
 
-## DEC-020 — Luna 3D con three.js y vistas 2D del CGI Moon Kit
+## DEC-021 — Luna 3D con three.js y vistas 2D del CGI Moon Kit
 
-- **Contexto / problema:** el equipo pidió reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D con fuentes NASA, con opción de alternar a 2D (DEC-019, UI-07). Las imágenes del Figma tenían origen, licencia y proyección sin confirmar (DEC-016).
+- **Contexto / problema:** el equipo pidió reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D con fuentes NASA, con opción de alternar a 2D (DEC-020, UI-07). Las imágenes del Figma tenían origen, licencia y proyección sin confirmar (DEC-016).
 - **Decisión:** usar three.js como dependencia (aprobada por el equipo el 14/11/2026) y las texturas del CGI Moon Kit de NASA SVS (color LROC WAC y relieve LOLA). Detalles de la fuente en `docs/DATA_SOURCES.md`.
 - **Solución aplicada:**
   - `three@0.186.1` con versión exacta en `web/package.json` (la última con más de dos semanas publicada; la 0.187 tenía dos). Se carga con `import()` diferido: el chunk (~187 KB gzip) solo se descarga al abrir GLOBAL o POLO SUR en 3D.

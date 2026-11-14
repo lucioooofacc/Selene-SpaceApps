@@ -128,7 +128,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** mismas claves; revisión de Lucio/Cata; terminología y advertencias equivalentes; sin texto visible incrustado en JS/HTML.
 - **Fuera de alcance:** nuevos idiomas.
 
-## Frontend — Pendientes del diseño (DEC-019)
+## Frontend — Pendientes del diseño (DEC-020)
 
 Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dependen de CORE-01.
 

@@ -1,5 +1,5 @@
 /**
- * Página de comparación detallada entre dos sitios (UI-05, DEC-019).
+ * Página de comparación detallada entre dos sitios (UI-05, DEC-020).
  * Solo muestra: las métricas salen de computeScenario y de lib/compare.js.
  *
  *  - Encabezado de cada sitio: coordenadas, agencia y viabilidad (DEC-007).

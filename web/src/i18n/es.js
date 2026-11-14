@@ -1,5 +1,5 @@
 /**
- * Textos en español del Figma SELENE, con la ortografía corregida (DEC-019).
+ * Textos en español del Figma SELENE, con la ortografía corregida (DEC-020).
  * Responsables de redacción: Alfonso y Cata. Si agregás una clave acá,
  * agregala también en en.js.
  */

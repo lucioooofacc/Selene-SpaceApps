@@ -13,8 +13,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 ## Diseño (réplica del Figma)
 
 - [x] ~~Leer el color de la franja de 8 px entre el encabezado y el cuerpo (frame "Vista 7").~~ Se mantiene el color de fondo: el MCP de Figma necesita la URL del archivo en figma.com y el repo solo tiene el `.fig` local. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
-- [x] ~~Reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (fuentes NASA), con opción de alternar entre 3D y vistas 2D.~~ three.js + CGI Moon Kit de NASA SVS. Resuelto 2026-11-14 (rama `feat/luna-3d`, #25, DEC-020).
-- [ ] Mejorar el detalle del polo sur en 2D (textura de 8k o mosaico polar de LROC) si el equipo lo necesita. — Desarrollo web, DEC-020
+- [x] ~~Reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (fuentes NASA), con opción de alternar entre 3D y vistas 2D.~~ three.js + CGI Moon Kit de NASA SVS. Resuelto 2026-11-14 (rama `feat/luna-3d`, #25, DEC-021).
+- [ ] Mejorar el detalle del polo sur en 2D (textura de 8k o mosaico polar de LROC) si el equipo lo necesita. — Desarrollo web, DEC-021
 - [x] ~~"Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios elegidos con métricas técnicas.~~ `compare.html`. Resuelto 2026-11-14 (rama `feat/comparacion-sitios`, #23).
 - [ ] Al volver de la comparación a la misión se pierde la selección (sitio y fechas), porque la página de misión no lee la URL. — Desarrollo web, UI-05
 - [x] ~~"Opción 3" pasa a ser el informe imprimible de la misión planificada.~~ "Informe" en el menú. Resuelto 2026-11-14 (rama `feat/informe-imprimible`, #24).
@@ -23,7 +23,7 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~Corregir las faltas de ortografía heredadas del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion", "Mision", "Opcion").~~ Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [x] ~~"Mejores lugares": confirmado el subtítulo "Latitud · Longitud".~~ La web ya lo usaba. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [x] ~~Panorama: acercar la iluminación de las dunas y el resplandor a la ilustración del Figma, y que el relieve represente fielmente el horizonte del punto (montañoso, plano, con cráteres).~~ La cresta es el horizonte del motor sin decoración, con escala y fuente indicadas. Resuelto 2026-11-14 (rama `design/panorama-relieve`, #26).
-- [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-019
+- [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
 - [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Equipo
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
@@ -37,7 +37,7 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 ## Datos y astronomía (Teo, Facu, Lucio)
 
 - [ ] Verificar las coordenadas de los 7 sitios con LROC Quickmap o Moon Trek. — DEC-006
-- [ ] Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-020). — DEC-016
+- [ ] Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021). — DEC-016
 - [ ] Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS). — DEC-016
 - [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005

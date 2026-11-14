@@ -1,6 +1,6 @@
 /**
  * Vista 2D del polo sur generada desde el mosaico LROC equirectangular
- * (UI-07, DEC-020). Se reproyecta una sola vez en el navegador a una
+ * (UI-07, DEC-021). Se reproyecta una sola vez en el navegador a una
  * proyección azimutal equidistante centrada en el polo sur, con 0° de
  * longitud arriba y borde en `edgeLat`: la misma que usa map.js para ubicar
  * los marcadores, así que la imagen y los sitios coinciden por construcción.

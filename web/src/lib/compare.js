@@ -1,5 +1,5 @@
 /**
- * Comparación de dos escenarios (UI-05, DEC-019).
+ * Comparación de dos escenarios (UI-05, DEC-020).
  *
  * Solo reordena y resume lo que ya calcula `computeScenario`: no agrega
  * fórmulas científicas nuevas. Para cada métrica indica qué sitio tiene el

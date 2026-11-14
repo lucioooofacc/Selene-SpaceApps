@@ -1,5 +1,5 @@
 /**
- * Informe imprimible de la misión planificada (UI-06, DEC-019).
+ * Informe imprimible de la misión planificada (UI-06, DEC-020).
  * "Informe" en el menú arma el informe con el escenario actual y abre el
  * diálogo de impresión del navegador (desde ahí también se guarda en PDF).
  * En pantalla el informe está oculto; los estilos de report.css lo muestran

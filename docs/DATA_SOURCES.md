@@ -5,7 +5,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 ## NASA SVS — CGI Moon Kit (imagen del mapa, integrado)
 
 - **URL oficial:** https://svs.gsfc.nasa.gov/4720/ (NASA Scientific Visualization Studio).
-- **Finalidad:** textura y relieve de la Luna 3D y de las vistas 2D de GLOBAL y POLO SUR (UI-07, DEC-020). **Solo presentación:** no alimenta ningún cálculo de `src/lib/`.
+- **Finalidad:** textura y relieve de la Luna 3D y de las vistas 2D de GLOBAL y POLO SUR (UI-07, DEC-021). **Solo presentación:** no alimenta ningún cálculo de `src/lib/`.
 - **Archivos usados** (descargados el 14/11/2026):
   - `lroc_color_poles_4k.tif` (4096×2048, color LROC WAC, equirectangular centrado en 0° de longitud; SHA-256 `918649a7f8ed2f1329b2cd95bb0d25483befdcb60ae1a66db681a637cc21344f`). Se convirtió a `web/public/nasa/lroc_color_4k.jpg` (JPEG calidad 85) y a `lroc_color_1k.jpg` (vista previa de 1024×512).
   - `ldem_3_8bit.jpg` (1024×512, relieve LOLA en 8 bits; SHA-256 `6d93f887e7d8bedfe35ab89ba785e5e3ca12381bd092a5e6abe2c707dda8bb98`), copiado tal cual a `web/public/nasa/`.
