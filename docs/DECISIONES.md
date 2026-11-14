@@ -57,7 +57,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 
 - **Contexto / problema:** el desafío sugiere sitios Apollo, CLPS, Artemis y de otros países.
 - **Solución aplicada:** `web/src/data/sites.js`: Shackleton, Malapert, Cabeus, IM-1 Odysseus, Chandrayaan-3, Chang'e 4 y Apollo 11.
-- **Estado:** **pendiente de validar.** Las coordenadas son aproximadas (Shackleton, Malapert y Cabeus vienen del Figma) y las tiene que verificar el equipo de astronomía (Teo, Facu, Lucio) con LROC Quickmap o Moon Trek.
+- **Estado:** coordenadas **reemplazadas por DEC-019** (14/11/2026). Se mantiene la selección de los 7 sitios. Las coordenadas originales eran aproximadas (Shackleton, Malapert y Cabeus venían del Figma).
 
 ## DEC-007 — Criterios de viabilidad
 
@@ -160,3 +160,47 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Decisión:** prohibirlos (regla 5 de `AGENTS.md`, que en la integración absorbió la regla 6 de esta rama) y migrar el proyecto al repositorio `lucioooofacc/Selene-SpaceApps`.
 - **Solución aplicada:** se quitaron las líneas `Co-Authored-By` de todos los commits de `main`, `feat/web-v1` y `design/figma-exacto` (sin tocar el contenido de los archivos). Se subieron las tres ramas al repo nuevo, que pasa a ser `origin`; el anterior se borró el 2026-11-14. `CLAUDE.md` se mantiene porque Claude Code lo usa para cargar las reglas de `AGENTS.md`. Los PR #1 y #2 se guardaron en `docs/prs/` y se recrearon en el repo nuevo sin atribuciones.
 - **Estado:** vigente.
+
+---
+
+## DEC-019 — Coordenadas de sitios normalizadas a MOON_ME/DE421 (DATA-01)
+
+- **Contexto / problema:** las coordenadas de `sites.js` eran aproximadas (DEC-006), sin marco declarado ni procedencia. ASTRO-01 y TERRAIN-01 dependen de saber exactamente qué punto y en qué marco está cada sitio.
+- **Decisión:** usar una referencia común para todos los sitios curados: **MOON_ME / DE421** (la convención "Mean-Earth/polar axis of DE421" de LRO/LOLA), latitud **planetocéntrica**, longitud **este positiva en `[-180°, 180°)`**, esfera de referencia de **1737,4 km**. Facu (astronomía) confirmó el 14/11/2026 la identidad del punto y el valor de cada sitio, y se cotejaron con fuentes oficiales:
+
+  | id | Punto | Tipo | Lat (°) | Lon E (°) | Fuente del valor | Marco declarado | Exactitud (fuente) | Confianza |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | `shackleton` | Shackleton Rim R04 | punto de estudio | -89.7668 | -171.87 | NASA Lunar Surface Data Book Rev A, tabla A2-2 | no (inferido de DEM LOLA) | 5–10 m → 10 | alta |
+  | `malapert` | Malapert Massif R23 | punto de estudio | -85.9948 | -0.23578 | NASA Lunar Surface Data Book Rev A, tabla A2-2 | no (inferido de DEM LOLA) | 5–10 m → 10 | alta |
+  | `cabeus` | LCROSS Centaur impact site | impacto | -84.6796 | -48.7093 | Marshall et al. (2012) + NSSDCA | sí (Mean Earth; NSSDCA: DE421) | 1σ 115 m lat × 44 m lon → 115 | alta |
+  | `im1` | IM-1 Odysseus (LRA) | módulo | -80.1277 | 1.4357 | NASA PGDA LRA (NSSDCA: -80.13, 1.44) | no | no declarada | alta |
+  | `chandrayaan3` | Chandrayaan-3 Vikram (LRA) | módulo | -69.3735 | 32.3199 | NASA PGDA LRA (NSSDCA: -69.3741, 32.32) | no | no declarada | alta |
+  | `change4` | Chang'e 4 | módulo | -45.4561 | 177.5885 | NSSDCA (CNSA da otro valor, ver abajo) | sí (DE421 mean Earth) | no declarada | alta |
+  | `apollo11` | Apollo 11 LM (etapa de descenso) | módulo | 0.67416 | 23.47314 | NSSDCA | sí (DE421 mean Earth) | no declarada | alta |
+
+- **Fuentes oficiales (verificadas el 14/11/2026):**
+  - NASA NSSDCA, tabla de impactos y naves en la Luna (convención DE421 mean Earth/polar rotation axis, Williams et al. 2008): https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html
+  - NASA Lunar Surface Data Book Rev A (ACD-50044), tabla A2-2, R04 y R23: https://ntrs.nasa.gov/api/citations/20230007818/downloads/ACD-50044%20Lunar%20Surface%20Data%20Book%20Rev%20A.pdf?attachment=true
+  - Marshall et al. (2012), *Locating the LCROSS Impact Craters*, Space Sci. Rev. 167:71–92: https://ntrs.nasa.gov/api/citations/20140005563/downloads/20140005563.pdf
+  - NASA PGDA, *NASA GSFC Miniature Laser Retroreflector Arrays* (Cremons, 2025, doi:10.60903/GSFC-miniLRAs), LRA de IM-1 y Chandrayaan-3: https://pgda.gsfc.nasa.gov/products/101
+  - CNSA, nota del 26/09/2019 sobre la localización del aterrizaje de Chang'e 4: https://www.cnsa.gov.cn/n6758823/n6758838/c6807583/content.html
+  - LOLA RDR SIS (marco Mean-Earth/polar axis of DE421, planetocéntrico, 1737,4 km): https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/document/rdrsis.htm
+  - USGS Gazetteer, contexto de los accidentes (el centro del accidente **no** es el punto del sitio): Shackleton https://planetarynames.wr.usgs.gov/Feature/5450 · Cabeus https://planetarynames.wr.usgs.gov/Feature/953 · Malapert https://planetarynames.wr.usgs.gov/Feature/3603
+- **Solución aplicada:**
+  - `web/src/lib/coordinates.js` (nuevo): `SITE_REFERENCE` (marco, efemérides, convenciones, radio; cita LOLA SIS), `normalizeLongitude()` (los valores ya en rango se devuelven sin tocar para no introducir error de redondeo), `assertLatitude()` (valida sin recortar), `decimalPlaces()` y `quantizationMeters()` (resolución de representación de la cifra).
+  - `web/src/data/sites.js`: coordenadas nuevas, normalizadas y validadas al cargar (`defineSite`). `SOURCE_URLS` reúne las URLs verificadas. Cada sitio agrega `point` (`name`, `type`: `lander` | `impact` | `study-point`), `provenance` (`confirmedBy`, `confirmedOn`, `reference`, `sourceFrameVerified`, `frameNote`, `urls`, `featureUrls`), `confidence` (`level`, `reason`) y `precision` (`accuracyM`, `accuracyBasis`). Se conservan `id`, `name`, `agency`, `relief` y `elevationKm`, así que la interfaz no cambia.
+  - `web/tests/sites.test.js` (nuevo): referencia común, normalización (bordes ±180°, envoltura, no finitos), latitud, valores confirmados exactos, metadatos obligatorios, URLs solo de la lista verificada, sin referencias candidatas, exactitud tomada de la fuente, sitios con marco declarado, ids estables y resolución de la cifra.
+- **Precisión de representación vs. exactitud de la fuente:** son dos cosas distintas y se guardan por separado.
+  - *Resolución de representación*: lo que permite expresar la cifra publicada. Con 4–5 decimales es ≤ 3,03 m (1e-4° ≈ 3,03 m sobre 1737,4 km). Se calcula con `quantizationMeters()` y **no** se guarda en `accuracyM`.
+  - *Exactitud de la fuente* (`precision.accuracyM`): solo se carga cuando la fuente la declara explícitamente, con la cita en `accuracyBasis`. Si la da por eje o como rango se toma el valor más desfavorable (Cabeus: 115 m; R04/R23: 10 m). Si no la declara, queda `null` (IM-1, Chandrayaan-3, Chang'e 4, Apollo 11).
+  - NSSDCA dice que "la precisión del conocimiento de la ubicación se refleja en la precisión de las coordenadas" (0,001° ≈ 30 m). Es una indicación general de la tabla, no una exactitud por sitio, así que **no** se convierte en `accuracyM`: se registra como nota en `accuracyBasis`.
+  - Ejemplo de por qué no coinciden: Cabeus tiene 4 decimales (≈ 3 m de resolución) y 115 m de incertidumbre 1σ.
+- **Supuestos (a verificar por Teo, Facu, Lucio):**
+  - **No se aplicó ninguna transformación de marco.** `sourceFrameVerified: true` solo cuando una fuente del valor declara Mean Earth (Cabeus, Chang'e 4, Apollo 11). En R04/R23 el marco se infiere: el Data Book no lo declara en la tabla, pero dice que las coordenadas salen de DEM LOLA de PGDA, que usan Mean Earth/DE421. En IM-1 y Chandrayaan-3, PGDA no declara el marco; NSSDCA (DE421 mean Earth) da valores coherentes (IM-1 redondeado; Chandrayaan-3 a ≈ 18 m).
+  - IM-1 y Chandrayaan-3: el valor es la posición del retrorreflector láser (LRA) montado en el módulo, no el centro del módulo. Se considera equivalente a la escala de la aplicación. El LRA de IM-1 tuvo un despliegue fuera de lo nominal y no está verificado con LOLA; el de Chandrayaan-3 sí lo está.
+  - **Chang'e 4, discrepancia entre fuentes:** CNSA informa 177,5991° E, 45,4446° S (Nature Communications, *Descent trajectory reconstruction and landing site positioning of Chang'E-4 on the lunar farside*, con cartografía de Chang'e-2), a ≈ 415 m del valor de NSSDCA. Se usa NSSDCA porque declara el marco común. No se mezclan ni se promedian.
+  - La latitud es planetocéntrica y el radio de 1737,4 km es la esfera de referencia; no es un datum vertical ni la altura real del punto.
+  - **Confianza:** "alta" en los 7 sitios: valores que coinciden con una fuente oficial; las salvedades (marco inferido o no declarado, discrepancia de CNSA) quedan en `confidence.reason` y `frameNote`.
+  - `relief` y `elevationKm` siguen siendo parámetros sintéticos (DEC-005). Con el modelo actual, la luz anual de Shackleton pasa de ~96,2 % (−89,9°, 0°) a ~96,3 % (R04). DEC-005 sigue valiendo.
+- **Alternativas descartadas:** convertir los valores entre marcos sin conocer el de origen (se agregaría un error en lugar de quitarlo); deducir la exactitud de la cantidad de decimales (confunde representación con exactitud); usar el valor de CNSA para Chang'e 4 (otra referencia cartográfica); usar el centro USGS del cráter como punto del sitio; citar referencias escritas de memoria sin verificarlas; recortar latitudes fuera de rango en lugar de rechazarlas (ocultaría errores de datos).
+- **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3.
