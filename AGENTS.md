@@ -62,6 +62,16 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Todo dato aproximado o simulado tiene que estar marcado como tal en la interfaz y en `docs/DECISIONES.md`.
 - Dirigir la consulta a las personas responsables (ver roles).
 
+### 5. Mantener `PENDIENTES.md` al día
+
+`PENDIENTES.md` (en la raíz) es la lista de todo lo que falta aplicar. En cada tarea:
+
+- **Antes de empezar:** leerlo para no duplicar trabajo y ver si la tarea ya estaba anotada.
+- **Agregar:** todo lo que se detecte y no se resuelva en el momento (errores, dudas, datos a validar, ideas aprobadas) se anota como `- [ ]` en la sección que corresponda, con responsable y referencia (DEC-XXX, PR o archivo).
+- **Tachar:** al resolver un punto, marcarlo `- [x]`, tachar el texto con `~~texto~~` y agregar la fecha y la rama, el commit o el PR. **No se borran** los puntos resueltos.
+- **Descartar:** si se decide no hacerlo, tacharlo y agregar "descartado: motivo".
+- **Actualizar** la línea "Última actualización" y commitear `PENDIENTES.md` junto con el cambio que lo modifica.
+
 ## Roles del equipo (a quién consultar)
 
 | Área | Responsables |

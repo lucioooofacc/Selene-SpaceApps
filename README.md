@@ -10,6 +10,7 @@ Herramienta web para comparar sitios y fechas de alunizaje, con foco en el polo 
 | --- | --- |
 | `web/` | Aplicación web (Vite + JavaScript) |
 | `docs/DECISIONES.md` | Registro de decisiones técnicas, de diseño y de datos |
+| `PENDIENTES.md` | Lista viva de lo que falta aplicar (se agrega y se tacha) |
 | `AGENTS.md` | Reglas obligatorias para agentes de IA y para el equipo |
 | `desafio.md` | Enunciado del desafío de la NASA |
 | `planificacion-web/` | Instrucciones del proyecto web y diseño en Figma (`SELENE.fig`) |
