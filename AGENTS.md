@@ -58,7 +58,7 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 
 ### 4. Consultar al equipo ante dudas
 
-- Si un pedido es ambiguo, si la información es vaga o escasa, o si un cambio no está claro: **detenerse y preguntar antes de implementar**. No inventar datos científicos ni presentarlos como reales.
+- Resolver decisiones menores y reversibles siguiendo el código, las convenciones y las decisiones vigentes. Si una ambigüedad puede cambiar arquitectura, contratos, modelos científicos, alcance o trabajo de otra persona: **detenerse y preguntar antes de implementar**.
 - Todo dato aproximado o simulado tiene que estar marcado como tal en la interfaz y en `docs/DECISIONES.md`.
 - Dirigir la consulta a las personas responsables (ver roles).
 
@@ -69,6 +69,42 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Los commits deben respetar la identidad de Git del usuario responsable.
 - No modificar la configuración de autoría de Git.
 - Verificar que los mensajes de commit no incluyan atribuciones automáticas a agentes de IA.
+- Esta regla no elimina obligaciones de declarar el uso de IA que establezca la hackathon.
+
+### 6. Documentación y contexto
+
+- Toda tarea comienza leyendo este archivo y las instrucciones `AGENTS.md` más cercanas a los archivos afectados.
+- Consultar `docs/ARCHITECTURE.md` para cambios de arquitectura, estado, contratos o integración; `docs/SCIENCE.md` para cálculos, unidades o interpretación; `docs/DATA_SOURCES.md` para fuentes externas; y `docs/TASKS.md` para alcance y dependencias del backlog.
+- Leer la decisión relevante en `docs/DECISIONES.md` antes de modificar una convención existente.
+- Para cambios menores, cargar solo los documentos y módulos necesarios; no es obligatorio releer contexto irrelevante.
+- Mantener referencias y documentación sincronizadas con el comportamiento real. No documentar como implementada una propuesta futura.
+
+### 7. Autonomía y alcance
+
+- Los agentes pueden tomar decisiones menores, reversibles y coherentes con patrones existentes, y deben informarlas al finalizar.
+- Consultar al equipo antes de cambiar arquitectura, contratos públicos, dependencias, modelos o supuestos científicos, alcance de la tarea, o interfaces compartidas con trabajo concurrente.
+- No inventar datos científicos ni completar vacíos con supuestos presentados como hechos.
+- No ampliar una tarea por conveniencia. Registrar mejoras separables como pendientes.
+
+### 8. Trabajo concurrente
+
+- Una tarea por rama o worktree. Usar el prefijo correspondiente y evitar compartir una rama entre tareas independientes.
+- Modificar únicamente archivos dentro del alcance asignado. No sobrescribir, reformatear ni reorganizar cambios de terceros.
+- No cambiar de rama si existen cambios ajenos sin guardar; usar un worktree o consultar al responsable.
+- No ejecutar comandos destructivos ni resolver conflictos eliminando trabajo de otras personas.
+- Consultar antes de modificar contratos compartidos y comunicar cuanto antes bloqueos, dependencias o archivos en disputa.
+- Antes de publicar, actualizar la rama de forma segura y revisar el diff completo para detectar cambios accidentales.
+
+### 9. Finalización de tareas
+
+Al entregar, informar:
+
+- qué se implementó y qué quedó fuera;
+- archivos modificados;
+- pruebas y validaciones ejecutadas, con sus resultados;
+- limitaciones y riesgos conocidos;
+- supuestos introducidos;
+- pendientes, dependencias y bloqueos.
 
 ## Roles del equipo (a quién consultar)
 
@@ -84,12 +120,12 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 ## Convenciones técnicas de la web (`web/`)
 
 - Stack: **Vite + JavaScript puro (ES modules)**, sin framework. Ver `docs/DECISIONES.md` (DEC-001).
-- Comandos: `cd web && npm install && npm run dev` (desarrollo) · `npm run build` (producción en `web/dist`).
+- Comandos: `cd web && npm install && npm run dev` (desarrollo) · `npm test` (pruebas) · `npm run build` (producción en `web/dist`).
 - Todo texto visible va en `web/src/i18n/es.js` y `web/src/i18n/en.js`; no escribir texto directamente en el HTML/JS. Si se agrega una clave en un idioma, también se agrega en el otro.
 - Diseño: usar los tokens de `web/src/styles/tokens.css`. Escala de espaciado 4 · 8 · 12 · 16 · 24 · 32 · 48 px; radios 8 · 12 · 16 px. No usar medidas "raras" (ej. 17px, 23px).
 - Los cálculos astronómicos viven solo en `web/src/lib/`. La interfaz (`web/src/ui/`) no calcula, solo muestra.
 - Accesibilidad: controles operables con teclado, `aria-label` en controles sin texto y respeto de `prefers-reduced-motion`.
-- Antes de abrir un PR: `npm run build` sin errores y revisar la web en escritorio (≥ 1200 px). La v1 no es responsive (DEC-010).
+- Antes de abrir un PR: `npm test` y `npm run build` sin errores, y revisar la web en escritorio (≥ 1200 px). La v1 no es responsive (DEC-010).
 
 ## Qué NO hacer
 

@@ -82,3 +82,19 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Decisión:** la v1 se diseña solo para escritorio.
 - **Solución aplicada:** se quitaron las media queries de tablet y celular de `main.css`; `body` tiene `min-width: 1200px` (por debajo aparece scroll horizontal). Se mantienen `prefers-reduced-motion` y los estados hover solo para mouse.
 - **Estado:** vigente (decisión del equipo).
+
+## DEC-011 — Documentación técnica por responsabilidad
+
+- **Contexto / problema:** durante la hackathon trabajarán varias personas y agentes en paralelo. El contexto científico, los contratos, las fuentes y el backlog estaban repartidos entre código, decisiones y conversaciones, lo que aumenta el riesgo de duplicar trabajo o presentar aproximaciones como datos reales.
+- **Decisión:** separar la documentación estable por responsabilidad: arquitectura y contratos (`ARCHITECTURE.md`), convenciones y limitaciones científicas (`SCIENCE.md`), fuentes (`DATA_SOURCES.md`) y backlog (`TASKS.md`). Agregar instrucciones locales para `src/lib/` y `src/ui/`, cargando solo el contexto relevante para cada tarea.
+- **Solución aplicada:** nuevos documentos en `docs/`, archivos `AGENTS.md` específicos en el motor y la interfaz, y reglas generales de autonomía, concurrencia, contexto y entrega en el `AGENTS.md` raíz. `CLAUDE.md` se mantiene como punto de entrada que importa las reglas generales.
+- **Alternativas descartadas:** concentrar todo en `AGENTS.md` (difícil de consultar y mantener); exigir leer todos los documentos en cada cambio menor (ralentiza tareas simples); documentar propuestas futuras como implementadas (confunde el estado real).
+- **Estado:** vigente.
+
+## DEC-012 — Pruebas nativas para invariantes del modelo v1
+
+- **Contexto / problema:** los modelos aproximados y sintéticos no tenían una red mínima de seguridad para detectar cambios accidentales, y añadir un framework de pruebas aumentaría dependencias y preparación.
+- **Decisión:** usar `node:test` y `node:assert` para probar contratos matemáticos y comportamiento existente, manteniendo separadas las futuras validaciones contra datos científicos reales.
+- **Solución aplicada:** comando `npm test` y suites en `web/tests/` para normalización/rangos astronómicos, geometría conocida, determinismo y continuidad del horizonte, ventanas, métricas y mapas de calor. `web/tests/fixtures/` exige procedencia para futuros casos NASA.
+- **Alternativas descartadas:** incorporar un framework externo (innecesario para la cobertura inicial); usar valores NASA sin consulta reproducible (no verificable); cambiar fórmulas existentes para satisfacer pruebas nuevas (ocultaría posibles errores científicos).
+- **Estado:** vigente para la infraestructura inicial. Pendiente ampliar validaciones cuando se integren Horizons y LOLA.

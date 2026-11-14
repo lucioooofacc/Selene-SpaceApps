@@ -1,0 +1,104 @@
+# Modelo científico y convenciones
+
+SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios en parte **pendientes de validar**. No usa aún efemérides JPL Horizons ni topografía LOLA.
+
+## Convenciones y unidades
+
+- Coordenadas selenográficas en grados decimales: latitud positiva al norte y negativa al sur; longitud este positiva, normalmente expresada en `[-180°, 180°)`.
+- Azimut local en grados desde el norte lunar y en sentido horario: este `90°`, sur `180°`, oeste `270°`.
+- Elevación en grados sobre el horizonte matemático: `0°` es el plano tangente local. La visibilidad usa además el perfil topográfico.
+- Distancias de terreno en kilómetros. El radio lunar usado por `terrain.js` es `1737,4 km`.
+- Instantes como milisegundos Unix y fechas mostradas en UTC. Los campos `datetime-local` se interpretan deliberadamente como componentes UTC en `format.js`.
+- Duraciones de análisis en días y minutos; el muestreo científico actual es cada 10 minutos.
+- Potencia relativa y calidad de enlace son magnitudes adimensionales entre 0 y 1. No son watts ni una garantía de desempeño.
+
+## Sistemas de referencia
+
+El modelo usa una esfera lunar y coordenadas selenográficas simplificadas. No declara actualmente un marco IAU o SPICE específico, el datum vertical de las coordenadas ni una realización cartográfica. Esto es aceptable solo para el prototipo aproximado y debe resolverse antes de mezclar datos de distintas fuentes.
+
+Una integración real deberá fijar y registrar, como mínimo: marco lunar, convención de longitud, datum/radio de referencia, escala temporal, correcciones de luz/aberración y transformación entre el producto topográfico y el observador de Horizons o SPICE.
+
+## Modelo astronómico implementado
+
+`astro.js` usa como época una luna nueva el 6 de enero de 2000 a las 18:14 UTC.
+
+- El punto subsolar recorre 360° durante un mes sinódico de `29,530589 d` y su latitud oscila con amplitud `1,54°` y período `346,62 d`.
+- El punto subterrestre representa libración mediante senos independientes: amplitud `7,9°` en longitud con período `27,55455 d`, y `6,68°` en latitud con período `27,212221 d`.
+- `skyPosition()` proyecta el vector del punto subyacente sobre ejes locales arriba/este/norte. En el polo exacto limita la latitud a `±89,99°` para evitar una singularidad de azimut.
+- La fase visible de la Tierra es el complemento periódico de la fase lunar y se expresa como fracción `[0,1]`.
+
+Estas expresiones generan movimiento coherente para la interfaz, pero no son efemérides de navegación, no incluyen todos los términos orbitales ni sustituyen Horizons/SPICE.
+
+## Horizonte sintético y curvatura
+
+`terrain.js` no consulta un DEM. Construye un perfil determinista sumando seis ondas con fases y amplitudes derivadas de ruido suave dependiente de latitud y longitud. Los sitios curados pueden aportar `relief`; los sitios personalizados usan `estimateRelief()`.
+
+La altura local opcional de un sitio reduce el horizonte mediante:
+
+`dip = acos(R / (R + h))`
+
+donde `R = 1737,4 km` y `h` está en km. La función de horizonte devuelve elevación en grados para cualquier azimut y, por defecto, interpola una tabla precalculada cada grado con continuidad circular entre 359° y 0°.
+
+El término de curvatura representa la depresión geométrica de un observador elevado sobre una esfera. No modela el perfil real, pendientes locales, datum del DEM ni oclusiones a distancia derivadas de LOLA.
+
+## Visibilidad, radios angulares y fracción parcial
+
+Para cada cuerpo se calcula el margen `elevación - horizonte(azimut)`.
+
+- Sol: radio angular fijo `0,27°`. La fracción aparente se aproxima linealmente como `clamp((margen + radio) / (2 × radio))`. Se marca visible si esa fracción supera `0,5`, equivalente al centro por encima del horizonte. Esta interpolación no es el área exacta de un disco ocultado.
+- Tierra: radio angular fijo `0,95°`. Se marca visible si el margen es mayor que `-0,95°`, por lo que cualquier porción por encima del horizonte cuenta como visible.
+
+La visibilidad geométrica de la Tierra **no garantiza comunicación**. No incorpora enlace de radio, potencia, ganancia, orientación de antena, banda, ruido, propagación, ocultaciones por infraestructura ni disponibilidad de estaciones terrestres.
+
+## Muestreo y ventanas operativas
+
+`computeScenario()` muestrea a intervalos de 10 minutos. La cantidad de pasos de la ventana se redondea y se agregan 32 días de anticipación para buscar el próximo cambio de visibilidad mostrado en la UI.
+
+Las ventanas son secuencias contiguas de banderas de visibilidad. Sus límites quedan cuantizados al paso de 10 minutos; no se resuelve el cruce exacto del horizonte. Los minutos acumulados también se calculan contando pasos, no integrando una fracción continua.
+
+`sampleAt()` interpola elevaciones, azimuts y métricas entre muestras. Las banderas instantáneas y los acumulados permanecen discretos según el índice inferior.
+
+## Potencia solar relativa
+
+La potencia usa la fracción solar aproximada multiplicada por un factor de orientación:
+
+- latitudes con `|lat| >= 60°`: panel idealizado vertical, factor `cos(elevación)`;
+- resto: panel idealizado horizontal, factor `max(0, sin(elevación))`.
+
+El promedio del escenario es una razón conceptual `[0,1]`. **No es potencia eléctrica real**: no incluye irradiancia variable, área, eficiencia, temperatura, orientación/seguimiento real, pérdidas, sombras del vehículo, degradación ni almacenamiento.
+
+## Calidad de enlace y viabilidad
+
+La calidad de enlace es una heurística que aumenta con el margen terrestre sobre el horizonte. La comunicación resumida es el porcentaje de muestras con alguna parte de la Tierra visible.
+
+La viabilidad asigna 0, 1 o 2 puntos por criterio:
+
+| Criterio | Medio | Alto |
+| --- | ---: | ---: |
+| Iluminación | `>= 35 %` | `>= 65 %` |
+| Potencia relativa media | `>= 0,15` | `>= 0,35` |
+| Visibilidad terrestre | `>= 20 %` | `>= 50 %` |
+
+Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos definidos por el equipo, no criterios certificados de misión.
+
+## Limitaciones conocidas
+
+- Efemérides periódicas aproximadas y radios angulares constantes.
+- Horizonte sintético calibrado conceptualmente, no topografía medida.
+- Coordenadas y parámetros de sitios pendientes de validación según `DEC-006`.
+- Marco lunar y datum aún no formalizados.
+- Resolución temporal fija de 10 minutos y cruces sin refinamiento.
+- Ausencia de incertidumbre, metadatos de calidad y cobertura.
+- El mapa de calor usa menos muestras que el análisis principal y prueba el centro del cuerpo, por lo que no comparte exactamente todos los criterios de visibilidad de `computeScenario()`.
+- Las métricas de comunicación y potencia son indicadores geométricos, no subsistemas de ingeniería.
+
+## Sustitución por datos reales
+
+1. Definir explícitamente marcos, escalas temporales, unidades y convenciones comunes.
+2. Validar sitios y procedencia antes de analizarlos.
+3. Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.
+4. Elegir un producto LOLA adecuado y calcular perfiles de horizonte con curvatura y datum documentados.
+5. Mantener los contratos de azimut/elevación/horizonte o versionar el cambio.
+6. Comparar contra casos controlados y datos externos sin convertir valores de referencia no verificados en “verdad NASA”.
+7. Mostrar en la UI fuente, modelo, resolución, fecha de obtención, cobertura y advertencias.
+
