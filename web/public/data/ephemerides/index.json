@@ -1,0 +1,73 @@
+{
+  "schema": "selene-ephemeris-index/v1",
+  "range": {
+    "startMs": 1793491200000,
+    "stopMs": 1830297600000,
+    "stepMinutes": 60
+  },
+  "sites": [
+    {
+      "id": "shackleton",
+      "file": "shackleton.json",
+      "bytes": 296852,
+      "observer": {
+        "altitudeKm": 0.7727,
+        "altitudeBasis": "measured-datum"
+      }
+    },
+    {
+      "id": "malapert",
+      "file": "malapert.json",
+      "bytes": 287910,
+      "observer": {
+        "altitudeKm": 4.7882,
+        "altitudeBasis": "measured-datum"
+      }
+    },
+    {
+      "id": "cabeus",
+      "file": "cabeus.json",
+      "bytes": 289891,
+      "observer": {
+        "altitudeKm": -3.8289,
+        "altitudeBasis": "measured-datum"
+      }
+    },
+    {
+      "id": "im1",
+      "file": "im1.json",
+      "bytes": 293924,
+      "observer": {
+        "altitudeKm": 2.5783,
+        "altitudeBasis": "measured-datum"
+      }
+    },
+    {
+      "id": "chandrayaan3",
+      "file": "chandrayaan3.json",
+      "bytes": 315213,
+      "observer": {
+        "altitudeKm": 0.5317,
+        "altitudeBasis": "measured-datum"
+      }
+    },
+    {
+      "id": "change4",
+      "file": "change4.json",
+      "bytes": 326949,
+      "observer": {
+        "altitudeKm": 0,
+        "altitudeBasis": "assumed-zero-reference-sphere"
+      }
+    },
+    {
+      "id": "apollo11",
+      "file": "apollo11.json",
+      "bytes": 315986,
+      "observer": {
+        "altitudeKm": 0,
+        "altitudeBasis": "assumed-zero-reference-sphere"
+      }
+    }
+  ]
+}
