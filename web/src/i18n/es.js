@@ -323,6 +323,22 @@ export default {
     reset: "Restablecer",
     done: "Listo",
   },
+  periodCard: {
+    title: "Resumen del período",
+    viability: "{level} · {points}/{max} pts",
+    night: "Noche más larga",
+    light: "Luz continua más larga",
+    blackout: "Corte de comunicación más largo",
+    both: "Sol y Tierra a la vez",
+    sources: "Ver datos y fuentes",
+    hint: {
+      viability: "Viabilidad del sitio en las fechas elegidas: luz, potencia y comunicación suman de 0 a 6 puntos (umbrales del equipo, DEC-007).",
+      night: "Tiempo seguido más largo sin Sol en el período: cuánto tienen que aguantar las baterías.",
+      light: "Tiempo seguido más largo con Sol en el período.",
+      blackout: "Tiempo seguido más largo sin la Tierra a la vista: sin enlace directo hace falta un satélite de relevo.",
+      both: "Porcentaje del período con el Sol y la Tierra visibles al mismo tiempo: energía y enlace directo a la vez.",
+    },
+  },
   dataNote: {
     text: "{eph} · {horizon}. Los umbrales de viabilidad son un criterio del equipo.",
     eph: {

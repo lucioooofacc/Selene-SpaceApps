@@ -322,6 +322,22 @@ export default {
     reset: "Reset",
     done: "Done",
   },
+  periodCard: {
+    title: "Period summary",
+    viability: "{level} · {points}/{max} pts",
+    night: "Longest night",
+    light: "Longest continuous light",
+    blackout: "Longest communication gap",
+    both: "Sun and Earth at once",
+    sources: "See data and sources",
+    hint: {
+      viability: "Site viability over the chosen dates: light, power and communication add up to 0–6 points (team thresholds, DEC-007).",
+      night: "Longest stretch without the Sun in the period: how long the batteries must last.",
+      light: "Longest stretch with the Sun in the period.",
+      blackout: "Longest stretch without the Earth in view: without a direct link a relay satellite is needed.",
+      both: "Share of the period with the Sun and the Earth visible at the same time: power and direct link at once.",
+    },
+  },
   dataNote: {
     text: "{eph} · {horizon}. Viability thresholds are a team criterion.",
     eph: {

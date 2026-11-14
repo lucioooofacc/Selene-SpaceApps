@@ -28,4 +28,11 @@ test("windowStats resume solo la ventana y mide las rachas", () => {
   assert.equal(st.longestNightMin, 10);
   assert.equal(st.longestBlackoutMin, 30);
   assert.equal(st.earth.elevation.mean, 5);
+  assert.equal(st.bothFraction, 0); // Sol 0,1,1,0 y Tierra 1,0,0,0: nunca a la vez
+
+});
+
+test("windowStats: fracción con Sol y Tierra a la vez", () => {
+  const st = windowStats(scenario([1, 1, 1, 1, 1], [1, 1, 0, 1, 1], [1, 0, 0, 1, 1]), 10);
+  assert.equal(st.bothFraction, 0.5); // muestras 0 y 3 de las 4 de la ventana
 });

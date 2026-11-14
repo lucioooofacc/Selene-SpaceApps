@@ -9,6 +9,8 @@
  *   el horizonte y un promedio de azimuts no significa nada.
  * - Rachas: noche más larga (sin Sol), luz continua más larga y corte de
  *   comunicación más largo, en minutos.
+ * - Simultaneidad: fracción del período con el Sol y la Tierra visibles a la
+ *   vez (energía y enlace al mismo tiempo, DEC-045).
  */
 
 /** Promedio, mínimo y máximo de los primeros n valores. */
@@ -48,7 +50,10 @@ export function windowStats(scenario, stepMinutes) {
     relief: summarize(hz, n).mean,
     visibleFraction: summarize(vis, n).mean,
   });
+  let both = 0;
+  for (let i = 0; i < n; i++) both += s.sunVis[i] && s.earthVis[i] ? 1 : 0;
   return {
+    bothFraction: both / n,
     sun: body(s.sunEl, s.sunHz, s.sunVis),
     earth: body(s.earthEl, s.earthHz, s.earthVis),
     longestNightMin: longestRun(s.sunVis, n, 0) * stepMinutes,

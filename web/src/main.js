@@ -20,7 +20,7 @@ import { applySettings, getSettings, initSettings } from "./ui/settings.js";
 import { initQualityDialog } from "./ui/provenance.js";
 import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
 import { refreshCalendar } from "./ui/calendar.js";
-import { renderInsight, renderStatus } from "./ui/status.js";
+import { initPeriodSummary, renderInsight, renderPeriodSummary, renderStatus } from "./ui/status.js";
 import { renderPanorama } from "./ui/panorama.js";
 import { initTimeline, renderCoverage, renderPlayback, renderTicks, renderTime } from "./ui/timeline.js";
 
@@ -57,6 +57,7 @@ function renderInstant(state, { force = false } = {}) {
     renderCriteria(scenario, sample);
     renderStatus(sample);
     renderInsight(scenario, sample);
+    renderPeriodSummary(scenario);
     renderPlaces(state);
     updateCompareLinks(state, rankedSites(state));
     lastPanelsAt = now;
@@ -130,6 +131,7 @@ function init() {
   initMap();
   initParams();
   initTimeline();
+  initPeriodSummary();
   // Efemérides JPL Horizons (DEC-033): al llegar, se recalcula con datos reales.
   loadSiteEphemerides().then(renderAll);
 
