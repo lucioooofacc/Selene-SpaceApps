@@ -379,3 +379,33 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** un puntaje científico ponderado (inventaría pesos); dejar la categoría deshabilitada hasta que astronomía defina criterios.
 - **Estado:** vigente. **Pendiente:** validación de los rasgos por Teo, Facu y Lucio, y rasgos para IM-1 si corresponde.
 
+## DEC-030 — Horizonte topográfico LOLA precalculado por sitio (TERRAIN-02)
+
+- **Contexto / problema:** TERRAIN-02 (P0, #8) pide `horizon(azimuth) -> elevation` desde el DEM LOLA (DEC-025) y la curvatura lunar, con continuidad 0°/360° y cobertura/ausencias visibles. El raster pesa ~345 MiB y no puede descargarse ni recorrerse en el navegador.
+- **Decisión:**
+  - El horizonte se **precalcula fuera del navegador** para los sitios curados cubiertos y se versiona como tabla chica (~65 KB): `web/src/data/terrain/lola-horizons.js`. En el navegador solo se interpola.
+  - Parámetros acordados con Facundo (14/11/2026): **D_max = 300 km**, observador a **2 m** sobre el terreno, **720 azimuts (0,5°)**, paso del rayo 120 m (medio píxel), sin distancia mínima.
+  - **Curvatura exacta:** el terreno a distancia angular `δ = d/R` y radio `r = R + h` se ve desde el observador de radio `r₀ = R + h₀ + 2 m` con elevación `atan2(r·cos δ − r₀, r·sin δ)` (R = 1737,4 km). Los rayos siguen círculos máximos desde el sitio; las alturas se interpolan bilinealmente en la grilla estereográfica nativa. El horizonte es el máximo de esa elevación a lo largo del rayo.
+  - **Calidad propagada por azimut:** distancia del punto que define el horizonte; baja confianza si ese punto usa algún píxel con `count = 0` (el valor del DEM se usa igual, no se pone a cero); distancia alcanzada por el rayo. Si el rayo sale de la cobertura (−60° o borde de la grilla) se corta ahí, sin extrapolar, y el horizonte de ese azimut es una **cota inferior**.
+  - Sitios fuera de cobertura (Chang'e 4, Apollo 11) no tienen horizonte LOLA: `createLolaHorizon()` devuelve `null` y la tabla los lista como excluidos.
+- **Solución aplicada:**
+  - `web/src/lib/horizon-lola.js` (puro): `destination`, `elevationAngleDeg`, `createRasterSampler`, `computeHorizonProfile`, `summarizeProfile` y `createLolaHorizon(siteId)`. La función devuelta cumple el contrato `horizon(azimuth) -> elevation` (grados, interpolación lineal circular) y expone `horizon.source = "lola"` (propuesta de Lucio en #8, ya leída por `ui/panorama.js`), `horizon.meta` (producto, MD5, algoritmo, parámetros, resumen) y `horizon.detail(az)`.
+  - `web/scripts/build-lola-horizons.mjs` (`npm run data:lola:horizons`): verifica tamaño y MD5 de los rasters, los carga enteros y escribe la tabla de forma determinista (sin fecha). `--svg` genera la comparación visual `docs/img/horizonte-lola.svg` (LOLA vs. sintético v1, marcas de `count = 0` y truncamiento).
+  - Algoritmo versionado como `selene-lola-horizon/v1`; la tabla guarda algoritmo, parámetros y MD5 del producto.
+  - Pruebas: `web/tests/horizon-lola.test.js` (grillas sintéticas en memoria: esfera lisa = depresión `acos(R/(R+h))`, anillo de altura conocida, montaña en un solo rumbo, `count = 0`, truncamiento, observador fuera de cobertura, determinismo, continuidad 0°/360°) y `web/tests/horizon-lola.table.test.js` (procedencia, forma, rangos, cobertura y, si están los rasters en `LOLA_RAW_DIR`, reproducción exacta de la tabla).
+  - **No se tocó** `terrain.js`, `analysis.js` ni la UI: la integración es de CORE-01 (#11).
+- **Resultados (producto real, 14/11/2026):**
+
+  | Sitio | Suelo (m) | Horizonte mín / medio / máx (°) | `count = 0` | Truncado |
+  | --- | --- | --- | --- | --- |
+  | Shackleton R04 | 770,7 | 0,065 / 12,309 / 31,744 | 0 % | 0 % |
+  | Malapert R23 | 4786,2 | −4,618 / 0,656 / 4,605 | 0 % | 0 % |
+  | Cabeus (LCROSS) | −3830,9 | 1,072 / 6,054 / 11,316 | 0 % | 0 % |
+  | IM-1 | 2576,3 | −0,216 / 5,024 / 11,078 | 0,1 % | 0 % |
+  | Chandrayaan-3 | 529,7 | 0,383 / 1,335 / 2,455 | 4,0 % | 12,4 % (rayos al norte, borde −60°) |
+
+  Comparación visual en `docs/img/horizonte-lola.svg`.
+- **Hallazgo a validar por astronomía (Teo, Facu, Lucio) — Shackleton R04:** con la coordenada de DEC-019 (−89,7668°, −171,87°) el DEM ubica el punto sobre la **pared interior** del cráter: la cresta (≈ 1730 m) está a ~2 km hacia el este (azimut 90–110°) y el terreno baja hacia el fondo al oeste-suroeste. Por eso el horizonte llega a ~31° entre 30° y 150° de azimut. No es un artefacto del píxel: ignorando el primer kilómetro el máximo sigue en ~31° (media 12,1°). La orientación del DEM está verificada (DEC-025). El marco de R04 figura como inferido (`sourceFrameVerified: false`); una diferencia MOON_PA/MOON_ME (~0,9 km) no alcanza por sí sola a explicar 2 km. Cuando CORE-01 integre este horizonte, la iluminación de Shackleton bajará respecto del ~90 % del modelo sintético (DEC-005). No se cambió la coordenada (corresponde a DATA-01).
+- **Supuestos:** alturas sobre la esfera de 1737,4 km (sin geoide); 240 m/píxel limita el detalle a menos de ~0,5 km; la interpolación bilineal suaviza bordes en ±1 píxel; observador a 2 m (mástil o antena típica, no un vehículo concreto). Más allá de ~250 km la curvatura hace que el relieve lunar (≲ 10 km) no pueda levantar el horizonte de sitios bajos; 300 km da margen para horizontes negativos en cimas.
+- **Alternativas descartadas:** calcular en el navegador (raster de ~345 MiB); versionar recortes de ±300 km (~25 MB por sitio); aproximar la curvatura con `d²/2R` (la fórmula exacta cuesta lo mismo); modificar `createHorizon()` (cambio de contrato y de resultados que corresponde a CORE-01); horizonte para sitios personalizados (requiere el raster en tiempo de ejecución: pendiente, PERF-01/CORE-01).
+- **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores.

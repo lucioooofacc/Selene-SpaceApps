@@ -66,6 +66,18 @@ donde `R = 1737,4 km` y `h` está en km. La función de horizonte devuelve eleva
 
 El término de curvatura representa la depresión geométrica de un observador elevado sobre una esfera. No modela el perfil real, pendientes locales, datum del DEM ni oclusiones a distancia derivadas de LOLA.
 
+## Horizonte topográfico LOLA (TERRAIN-02)
+
+`lib/horizon-lola.js` calcula el horizonte real desde `LDEM_60S_240M_FLOAT` (DEC-025, DEC-030). Por cada azimut (cada 0,5°, desde el norte en sentido horario) recorre un círculo máximo desde el sitio, cada 120 m hasta 300 km, interpola la altura bilinealmente y toma el máximo de
+
+`e(δ) = atan2(r·cos δ − r₀, r·sin δ)`
+
+con `δ = d / R`, `r = R + h(d)` y `r₀ = R + h₀ + 2 m` (observador a 2 m sobre el suelo, `R = 1737,4 km`). La curvatura entra sin aproximar; sobre una esfera lisa el resultado es `−acos(R / r₀)`, la misma depresión del modelo sintético.
+
+- El cálculo se hace fuera del navegador (`scripts/build-lola-horizons.mjs`); la web interpola la tabla `data/terrain/lola-horizons.js` con continuidad 0°/360°.
+- Calidad por azimut: distancia del punto que define el horizonte, baja confianza si usa píxeles con `count = 0` y distancia alcanzada. Si el rayo sale de la cobertura (−60°) el valor es una cota inferior.
+- Solo existe para los sitios curados al sur de −60°. `analysis.js` todavía usa el horizonte sintético; el cambio es de CORE-01.
+
 ## Datos de elevación LOLA (TERRAIN-01)
 
 Producto: `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M`, data set `LRO-L-LOLA-4-GDR-V1.0`, DOI 10.17189/1520642 (DEC-025). `lib/terrain-data.js` es puro y todavía no lo usa `analysis.js`.
