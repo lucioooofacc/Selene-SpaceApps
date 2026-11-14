@@ -16,6 +16,7 @@
 import { coord, dateUTC, deg, missionTime, timeUTC } from "../lib/format.js";
 import { t } from "../i18n/index.js";
 import { getSite } from "../state.js";
+import { lolaForScenario } from "./lola.js";
 
 const $ = (id) => document.getElementById(id);
 const W = 1240;
@@ -160,6 +161,9 @@ function build() {
     <path id="pano-ridge" fill="url(#dune-far)"/>
     <rect id="ridge-light-rect" width="${W}" height="${H}" fill="url(#ridge-light)" clip-path="url(#ridge-clip)"/>
     <path id="pano-crest" fill="none" stroke="rgba(190,202,224,0.42)" stroke-width="1.2"/>
+    <!-- Horizonte LOLA real como vista previa mientras el cálculo usa el sintético (UI-14) -->
+    <path id="pano-lola" class="pano-lola" fill="none"/>
+    <g id="pano-quality"></g>
     <g id="pano-ticks"></g>
     ${scenery()}`;
   built = true;
@@ -173,6 +177,31 @@ function crestPoints(horizon) {
     pts.push(`${x} ${(HORIZON_Y - horizon(az) * PX_PER_DEG).toFixed(1)}`);
   }
   return pts;
+}
+
+/**
+ * Tramos del horizonte LOLA con baja confianza (count = 0) o truncados por la
+ * cobertura (cota inferior), dibujados sobre la curva que corresponda.
+ */
+function qualityMarks(horizon) {
+  if (!horizon.detail) return "";
+  let out = "";
+  let run = null;
+  const flush = () => {
+    if (run && run.pts.length > 1) out += `<path class="pano-q pano-q-${run.kind}" d="M${run.pts.join(" L")}"/>`;
+    run = null;
+  };
+  for (let x = 0; x <= W; x += 2) {
+    const az = earthAz0 + (x / W - EARTH_X) * 360;
+    const d = horizon.detail(az);
+    const kind = d.truncated ? "trunc" : d.lowConfidence ? "low" : null;
+    if (kind !== run?.kind) flush();
+    if (!kind) continue;
+    run ??= { kind, pts: [] };
+    run.pts.push(`${x} ${(HORIZON_Y - horizon(az) * PX_PER_DEG).toFixed(1)}`);
+  }
+  flush();
+  return out;
 }
 
 /** Puntos cardinales sobre el panorama (el eje X es el azimut). */
@@ -216,11 +245,17 @@ export function renderPanorama(scenario, sample, { full = false } = {}) {
     $("pano-crest").setAttribute("d", `M${pts.join(" L")}`);
     $("pano-ticks").innerHTML = compassTicks();
     lastHorizon = scenario.horizon;
+    const lola = lolaForScenario(scenario);
+    $("pano-lola").setAttribute("d", lola.mode === "preview" ? `M${crestPoints(lola.horizon).join(" L")}` : "");
+    const marks = lola.horizon ? qualityMarks(lola.horizon) : "";
+    $("pano-quality").innerHTML = marks;
     const source = scenario.horizon.source === "lola" ? "sim.horizonLola" : "sim.horizonSynthetic";
-    $("pano-relief").textContent = t("sim.relief", {
-      source: t(source),
-      exag: VERTICAL_EXAGGERATION.toFixed(1).replace(".", t("units.decimal")),
-    });
+    const notes = [
+      t("sim.relief", { source: t(source), exag: VERTICAL_EXAGGERATION.toFixed(1).replace(".", t("units.decimal")) }),
+      lola.mode === "preview" ? t("sim.lolaPreview") : "",
+      marks ? t("sim.lolaMarks") : "",
+    ];
+    $("pano-relief").innerHTML = notes.filter(Boolean).join("<br />");
   }
 
   const { sun, earth } = sample;

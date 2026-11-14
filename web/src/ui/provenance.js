@@ -14,6 +14,7 @@
  */
 import { t } from "../i18n/index.js";
 import { TRAIT_SOURCES, traitsFor } from "../data/site-traits.js";
+import { lolaForScenario } from "./lola.js";
 
 const SOURCE_LABELS = [
   ["nssdc.gsfc.nasa.gov", "NASA NSSDCA"],
@@ -72,13 +73,37 @@ export function traitsHtml(site) {
     <p class="settings-hint">${t("places.scienceNote")}</p>`;
 }
 
+/** Resumen del horizonte LOLA del sitio (TERRAIN-02, DEC-030), o por qué no hay. */
+export function lolaHtml(scenario) {
+  const { horizon, mode } = lolaForScenario(scenario);
+  if (!horizon) return `<p class="prov-none">${qualityTag("none")} ${t("quality.lola.none")}</p>`;
+  const { observer, summary, product } = horizon.meta;
+  const deg = (v) => `${v.toFixed(1)}°`;
+  const pct = (v) => `${(v * 100).toFixed(1)} %`;
+  return `
+    <dl class="prov">
+      <dt>${t("quality.lola.status")}</dt><dd>${t(mode === "active" ? "quality.lola.active" : "quality.lola.preview")}</dd>
+      <dt>${t("quality.lola.ground")}</dt><dd>${Math.round(observer.groundHeightM)} m</dd>
+      <dt>${t("quality.lola.range")}</dt><dd>${deg(summary.minDeg)} / ${deg(summary.meanDeg)} / ${deg(summary.maxDeg)}</dd>
+      <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction)}</dd>
+      <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction)}</dd>
+      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a></dd>
+    </dl>`;
+}
+
 /** Filas de calidad de los datos de la página para el escenario dado. */
 export function qualityRows(site, scenario) {
-  const horizonReal = scenario?.horizon?.source === "lola";
+  const lola = lolaForScenario(scenario);
+  const horizonRow =
+    lola.mode === "active"
+      ? { key: "horizon", hint: "horizonActive", kind: "real", ref: "DEC-030" }
+      : lola.mode === "preview"
+        ? { key: "horizon", hint: "horizonPreview", kind: "synthetic", ref: "DEC-005 · DEC-030" }
+        : { key: "horizon", kind: "synthetic", ref: "DEC-005" };
   return [
     { key: "coords", kind: site?.provenance ? "real" : "none", ref: "DEC-019" },
     { key: "ephemeris", kind: "approx", ref: "DEC-004" },
-    { key: "horizon", kind: horizonReal ? "real" : "synthetic", ref: horizonReal ? "TERRAIN-02" : "DEC-005" },
+    horizonRow,
     { key: "imagery", kind: "real", ref: "DEC-021 · DEC-026" },
     { key: "thresholds", kind: "approx", ref: "DEC-007" },
   ];
@@ -89,10 +114,10 @@ export function qualityHtml(site, scenario) {
     <ul class="quality">
       ${qualityRows(site, scenario)
         .map(
-          ({ key, kind, ref }) => `
+          ({ key, hint, kind, ref }) => `
         <li>
           ${qualityTag(kind)}
-          <span><strong>${t(`quality.row.${key}`)}</strong><small>${t(`quality.rowHint.${key}`)} (${ref})</small></span>
+          <span><strong>${t(`quality.row.${key}`)}</strong><small>${t(`quality.rowHint.${hint ?? key}`)} (${ref})</small></span>
         </li>`,
         )
         .join("")}
@@ -123,6 +148,10 @@ export function initQualityDialog(getContext) {
         <fieldset>
           <legend>${t("quality.siteTitle", { name: site?.name ?? t("map.observed") })}</legend>
           ${provenanceHtml(site)}
+        </fieldset>
+        <fieldset>
+          <legend>${t("quality.lola.title")}</legend>
+          ${lolaHtml(scenario)}
         </fieldset>
         <fieldset>
           <legend>${t("quality.traitsTitle")}</legend>

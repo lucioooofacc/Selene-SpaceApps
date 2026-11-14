@@ -29,6 +29,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~El mapa de calor (imagen del Figma) no cambia con la paleta para daltonismo; revisarlo cuando se haga MAP-01. — Desarrollo web, DEC-023~~ Ahora es elevación LOLA coloreada en el navegador, con paleta estándar o cividis y vista 3D física. Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42, DEC-026).
 - [ ] Regenerar el mapa de elevación desde el producto polar `LDEM_60S_240M` (TERRAIN-01, #39, ya integrado; DEC-025), si el equipo lo prefiere. — Facundo, Desarrollo web · DEC-026
 - [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
+- [x] ~~Mostrar en la interfaz los datos reales disponibles (horizonte LOLA de TERRAIN-02).~~ Vista previa en el panorama, la comparación y "Datos y fuentes", con marcas de calidad. Resuelto 2026-11-14 (rama `feat/horizonte-lola-ui`, #52, DEC-031).
+- [ ] CORE-01: conectar el horizonte LOLA (y las efemérides Horizons cuando haya series) en `analysis.js`; la interfaz ya pasa de "vista previa" a "en uso" sola. — Facundo · #11, DEC-031
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
 - [x] ~~Las tarjetas de "Mejores lugares" se rompían con valores largos ("890 Min", "-46.2°").~~ Resuelto 2026-11-13: columnas de 66 px y minutos en horas desde 100 min.

@@ -252,6 +252,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** selector accesible; comunicación y luz con métricas del motor; ciencia con rasgos citados y aviso de validación pendiente; pestaña renombrada en ES/EN; pruebas.
 - **Fuera de alcance:** modificar `sites.js` o crear métricas científicas nuevas.
 
+### UI-14 — Mostrar el horizonte LOLA real en la interfaz
+
+- **Prioridad:** P1 · **Issue:** [#52](https://github.com/lucioooofacc/Selene-SpaceApps/issues/52).
+- **Objetivo:** vista previa del horizonte LOLA (TERRAIN-02) en el panorama y la comparación mientras el cálculo usa el sintético, resumen en "Datos y fuentes" y marcas de baja confianza y truncamiento cuando CORE-01 lo conecte.
+- **Rama sugerida:** `feat/horizonte-lola-ui`.
+- **Dependencias:** TERRAIN-02 (#8, PR #50).
+- **Archivos afectados:** `web/src/ui/lola.js`, `panorama.js`, `provenance.js`, `compare.js`, estilos, i18n, `web/tests/lola-ui.test.js`.
+- **Criterios de aceptación:** vista previa marcada como tal; resumen LOLA; marcas por azimut; sitios sin cobertura indicados; ES/EN.
+- **Fuera de alcance:** conectar el horizonte en `analysis.js` (CORE-01).
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente

@@ -14,6 +14,7 @@ import { compareScenarios } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
 import { t } from "../i18n/index.js";
 import { provenanceHtml, qualityHtml } from "./provenance.js";
+import { lolaForScenario } from "./lola.js";
 
 const $ = (id) => document.getElementById(id);
 const COLORS = { a: "var(--gold)", b: "var(--earth)" };
@@ -128,8 +129,16 @@ function horizonChart(scA, scB) {
   const sample = (h) => Array.from({ length: 361 }, (_, az) => h(az));
   const ha = sample(scA.horizon);
   const hb = sample(scB.horizon);
-  const lo = Math.floor(Math.min(0, ...ha, ...hb));
-  const hi = Math.ceil(Math.max(1, ...ha, ...hb));
+  // Horizonte LOLA real como vista previa (punteado) mientras el cálculo usa el sintético (UI-14).
+  const preview = (sc) => {
+    const lola = lolaForScenario(sc);
+    return lola.mode === "preview" ? sample(lola.horizon) : null;
+  };
+  const la = preview(scA);
+  const lb = preview(scB);
+  const all = [...ha, ...hb, ...(la ?? []), ...(lb ?? [])];
+  const lo = Math.floor(Math.min(0, ...all));
+  const hi = Math.ceil(Math.max(1, ...all));
   const x = (az) => PAD.l + (az / 360) * (W - PAD.l - PAD.r);
   const y = (el) => PAD.t + ((hi - el) / (hi - lo)) * (H - PAD.t - PAD.b);
   const line = (arr) => arr.map((el, az) => `${az ? "L" : "M"}${x(az).toFixed(1)} ${y(el).toFixed(1)}`).join(" ");
@@ -149,6 +158,8 @@ function horizonChart(scA, scB) {
     <line x1="${PAD.l}" y1="${y(0)}" x2="${W - PAD.r}" y2="${y(0)}" class="cmp-zero"/>
     <path d="${line(ha)}" fill="none" stroke="${COLORS.a}" stroke-width="2.5"/>
     <path d="${line(hb)}" fill="none" stroke="${COLORS.b}" stroke-width="2.5"/>
+    ${la ? `<path d="${line(la)}" fill="none" stroke="${COLORS.a}" stroke-width="2" stroke-dasharray="6 5"/>` : ""}
+    ${lb ? `<path d="${line(lb)}" fill="none" stroke="${COLORS.b}" stroke-width="2" stroke-dasharray="6 5"/>` : ""}
   </svg>`;
 }
 
@@ -198,9 +209,9 @@ export function renderComparison({ a, b, scA, scB }) {
   $("cmp-metrics").innerHTML = metricsTable(cmp, names);
   $("cmp-windows").innerHTML = windowsChart(scA, scB, names);
   $("cmp-horizon").innerHTML = horizonChart(scA, scB);
-  $("cmp-horizon-legend").innerHTML = ["a", "b"]
-    .map((slot) => `<span><i style="background:${COLORS[slot]}"></i>${names[slot]}</span>`)
-    .join("");
+  $("cmp-horizon-legend").innerHTML =
+    ["a", "b"].map((slot) => `<span><i style="background:${COLORS[slot]}"></i>${names[slot]}</span>`).join("") +
+    ([scA, scB].some((sc) => lolaForScenario(sc).mode === "preview") ? `<span class="cmp-legend-dash">${t("compare.lolaPreview")}</span>` : "");
   $("cmp-criteria").innerHTML = criteriaTable(scA, scB, names);
   $("cmp-quality").innerHTML = qualityHtml(a, scA);
 }
