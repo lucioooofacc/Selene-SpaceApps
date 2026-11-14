@@ -83,7 +83,8 @@ export function renderInsight(scenario, sample) {
   };
   const nearPeak = sun.visible && sun.elevation >= scenario.summary.peakSun - 0.3;
   let text = nearPeak ? t("insight.peak", vars) : t(`insight.${key}`, vars);
-  if (Math.abs(scenario.site.lat) >= 75 && sun.visible) text += ` ${t("insight.polar", vars)}`;
+  // La aclaración polar ya está incluida en el texto de máxima luz.
+  if (Math.abs(scenario.site.lat) >= 75 && sun.visible && !nearPeak) text += ` ${t("insight.polar", vars)}`;
 
   $("insight").innerHTML = `
     <span class="insight-orb ${sun.visible ? "" : "night"}" aria-hidden="true"></span>

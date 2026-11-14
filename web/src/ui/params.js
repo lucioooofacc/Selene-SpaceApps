@@ -13,6 +13,9 @@ const $ = (id) => document.getElementById(id);
 /** Chips del Figma (los demás sitios están en el desplegable). */
 const CHIP_SITES = ["shackleton", "malapert", "cabeus", "apollo11"];
 
+/** Tamaño de cada ícono en su proporción original (ver places.js). */
+const PARAM_ICON_SIZE = { bulb: [14, 14], sun: [16, 16], antenna: [18, 12], earth: [18, 18] };
+
 const SEGMENTS_BY_LEVEL = { high: 3, mid: 2, low: 1 };
 const PERCENT_BY_SEGMENTS = { 1: "33%", 2: "66%", 3: "100%" };
 
@@ -27,7 +30,7 @@ function criterionCard({ icon, name, value, segments }) {
   const cls = ok ? "ok" : "ko";
   return `
     <article class="criterion">
-      <span class="icon-box"><img src="./figma/param-${icon}.svg" alt="" width="16" height="16" /></span>
+      <span class="icon-box"><img src="./figma/param-${icon}.svg" alt="" width="${PARAM_ICON_SIZE[icon][0]}" height="${PARAM_ICON_SIZE[icon][1]}" /></span>
       <p class="criterion-name">${name}</p>
       <p class="criterion-value">${value}</p>
       <span class="verdict ${cls}">

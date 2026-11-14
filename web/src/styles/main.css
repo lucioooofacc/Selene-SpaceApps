@@ -210,10 +210,11 @@ button {
 
 .place-stats {
   position: absolute;
-  left: 258px;
+  left: 254px;
   top: 6px;
   display: grid;
-  grid-template-columns: 34px 52px 34px 84px;
+  /* 254 + 218 = 472 px: entra en la tarjeta de 476 px aun con "-46.2°" */
+  grid-template-columns: 34px 66px 34px 66px;
   grid-auto-rows: 34px;
   column-gap: 6px;
   row-gap: 4px;
@@ -221,10 +222,16 @@ button {
 }
 
 .place-stats .value {
-  font-size: 22px;
+  overflow: hidden;
+  font-size: 20px;
   font-weight: 700;
   text-align: center;
   white-space: nowrap;
+}
+
+.icon-box img {
+  display: block;
+  max-width: none;
 }
 
 .icon-box {
@@ -394,6 +401,10 @@ button {
   line-height: 15px;
   white-space: nowrap;
   text-align: center;
+}
+
+.pin-label.is-hidden {
+  visibility: hidden;
 }
 
 .pin-label span {

@@ -3,7 +3,8 @@
  * cielo azul noche sin atmósfera, dunas en capas, matriz solar, módulo y antena.
  * El Sol y la Tierra se ubican con el modelo: X = azimut (360° en todo el
  * ancho, la Tierra queda a la derecha como en el diseño), Y = elevación
- * (20 px por grado, horizonte en y = 360).
+ * (12 px por grado, horizonte en y = 400: con +6.4° el Sol queda a la altura
+ * de la ilustración del Figma).
  * La primera capa de dunas es el horizonte del relieve: tapa al Sol o a la
  * Tierra cuando están detrás de una cresta.
  */
@@ -14,8 +15,8 @@ import { getSite } from "../state.js";
 const $ = (id) => document.getElementById(id);
 const W = 1240;
 const H = 544;
-const HORIZON_Y = 360;
-const PX_PER_DEG = 20;
+const HORIZON_Y = 400;
+const PX_PER_DEG = 12;
 const EARTH_X = 0.83; // posición horizontal de la Tierra (fracción del ancho), como en el Figma
 
 let earthAz0 = 0;
@@ -23,7 +24,7 @@ const azX = (az) => {
   const f = (((az - earthAz0) / 360 + EARTH_X) % 1 + 1) % 1;
   return f * W;
 };
-const elY = (el) => HORIZON_Y - Math.min(el, 17) * PX_PER_DEG;
+const elY = (el) => HORIZON_Y - Math.min(el, 30) * PX_PER_DEG;
 
 function stars() {
   let seed = 11;
@@ -31,50 +32,50 @@ function stars() {
   let out = "";
   for (let i = 0; i < 180; i++) {
     const x = rand() * W;
-    const y = rand() * (HORIZON_Y - 20);
+    const y = rand() * (HORIZON_Y - 60);
     out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rand() < 0.85 ? 0.8 : 1.3}" fill="#dfe6f2" opacity="${(0.25 + rand() * 0.6).toFixed(2)}"/>`;
   }
   return out;
 }
 
 function scenery() {
+  // Posiciones tomadas de la ilustración del Figma (1242 × 546 → 1240 × 544).
   const panel = (x) => `
     <g transform="translate(${x} 0)">
-      <line x1="24" y1="408" x2="24" y2="458" stroke="#4a5260" stroke-width="2"/>
-      <path class="pano-panel" d="M0 388 L52 380 L52 414 L0 420 Z"/>
-      <path d="M0 399 L52 391 M0 409 L52 402 M17 386 L17 418 M35 383 L35 416" stroke="rgba(255,255,255,0.1)"/>
+      <line x1="24" y1="472" x2="24" y2="506" stroke="#4a5260" stroke-width="2"/>
+      <path class="pano-panel" d="M0 446 L48 440 L48 470 L0 474 Z"/>
+      <path d="M0 455 L48 449 M0 465 L48 459 M16 444 L16 473 M32 442 L32 471" stroke="rgba(255,255,255,0.12)"/>
     </g>`;
   const rock = (x, y, s) =>
-    `<path d="M${x} ${y} l${6 * s} ${-10 * s} l${8 * s} ${2 * s} l${4 * s} ${8 * s} Z" fill="#3a3e45"/>`;
+    `<path d="M${x} ${y} l${5 * s} ${-9 * s} l${7 * s} ${2 * s} l${4 * s} ${7 * s} Z" fill="#3a3e45"/>`;
   return `
     <!-- Dunas cercanas (decorativas) -->
-    <path d="M0 404 C 180 384, 330 410, 520 396 S 860 380, 1040 398 S 1180 392, ${W} 386 L ${W} ${H} L 0 ${H} Z" fill="url(#dune-near)" stroke="rgba(160,175,200,0.18)"/>
+    <path d="M0 444 C 180 428, 330 452, 520 440 S 860 426, 1040 442 S 1180 436, ${W} 430 L ${W} ${H} L 0 ${H} Z" fill="url(#dune-near)" stroke="rgba(160,175,200,0.16)"/>
     <!-- Suelo -->
-    <path d="M0 424 C 300 418, 900 420, ${W} 416 L ${W} ${H} L 0 ${H} Z" fill="url(#ground)"/>
-    <ellipse cx="120" cy="468" rx="66" ry="7" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
-    <ellipse cx="520" cy="494" rx="96" ry="10" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
-    <ellipse cx="780" cy="458" rx="44" ry="5" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
-    <ellipse cx="1090" cy="486" rx="74" ry="8" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
-    <ellipse cx="370" cy="522" rx="120" ry="12" fill="#141619" stroke="rgba(255,255,255,0.04)"/>
-    ${rock(56, 456, 1)}${rock(418, 448, 0.8)}${rock(712, 516, 1.1)}${rock(930, 446, 0.9)}${rock(1150, 520, 1.2)}
+    <path d="M0 474 C 300 470, 900 472, ${W} 468 L ${W} ${H} L 0 ${H} Z" fill="url(#ground)"/>
+    <ellipse cx="170" cy="514" rx="56" ry="6" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
+    <ellipse cx="520" cy="536" rx="90" ry="9" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
+    <ellipse cx="744" cy="506" rx="38" ry="5" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
+    <ellipse cx="1012" cy="530" rx="70" ry="8" fill="#17191d" stroke="rgba(255,255,255,0.05)"/>
+    ${rock(118, 504, 1)}${rock(432, 500, 0.8)}${rock(686, 540, 1.1)}${rock(928, 498, 0.9)}${rock(1150, 540, 1.2)}
     <!-- Matriz solar -->
     <g id="pano-panels">${panel(234)}${panel(286)}${panel(338)}</g>
-    <text class="pano-label" x="308" y="490" text-anchor="middle" data-i18n="sim.panels"></text>
+    <text class="pano-label" x="308" y="530" text-anchor="middle" data-i18n="sim.panels"></text>
     <!-- Módulo -->
     <g>
-      <line x1="610" y1="452" x2="610" y2="434" stroke="#8b96a3" stroke-width="1.5"/>
-      <path d="M602 468 l-10 14 M634 468 l10 14" stroke="#8b96a3" stroke-width="1.5"/>
-      <rect x="598" y="452" width="40" height="18" rx="2" fill="#8a6a35"/>
-      <rect x="598" y="452" width="40" height="5" rx="1" fill="#b48d4a"/>
-      <circle cx="618" cy="462" r="2" fill="#5cc6d8"/>
+      <line x1="596" y1="504" x2="596" y2="488" stroke="#8b96a3" stroke-width="1.5"/>
+      <path d="M592 520 l-8 12 M620 520 l8 12" stroke="#8b96a3" stroke-width="1.5"/>
+      <rect x="588" y="504" width="36" height="18" rx="2" fill="#7c5e2e"/>
+      <rect x="588" y="504" width="36" height="5" rx="1" fill="#a9843f"/>
+      <circle cx="606" cy="514" r="2" fill="#5cc6d8"/>
     </g>
-    <text class="pano-label" x="618" y="500" text-anchor="middle" data-i18n="sim.lander"></text>
+    <text class="pano-label" x="606" y="542" text-anchor="middle" data-i18n="sim.lander"></text>
     <!-- Antena -->
     <g>
-      <line x1="858" y1="470" x2="858" y2="350" stroke="#9aa4b1" stroke-width="2"/>
-      <ellipse cx="860" cy="346" rx="14" ry="6" transform="rotate(-28 860 346)" fill="#c9d3df" stroke="#7d8896"/>
+      <line x1="842" y1="512" x2="842" y2="448" stroke="#9aa4b1" stroke-width="2"/>
+      <ellipse cx="844" cy="444" rx="13" ry="5" transform="rotate(-28 844 444)" fill="#c9d3df" stroke="#7d8896"/>
     </g>
-    <text class="pano-label" x="858" y="490" text-anchor="middle" data-i18n="sim.antenna"></text>`;
+    <text class="pano-label" x="842" y="534" text-anchor="middle" data-i18n="sim.antenna"></text>`;
 }
 
 let built = false;
@@ -89,8 +90,8 @@ function build() {
         <stop offset="1" stop-color="#151d2c"/>
       </linearGradient>
       <radialGradient id="sun-glow">
-        <stop offset="0" stop-color="#f3a660" stop-opacity="0.5"/>
-        <stop offset="0.4" stop-color="#b9703e" stop-opacity="0.22"/>
+        <stop offset="0" stop-color="#f3a660" stop-opacity="0.55"/>
+        <stop offset="0.45" stop-color="#b9703e" stop-opacity="0.26"/>
         <stop offset="1" stop-color="#7a4a2a" stop-opacity="0"/>
       </radialGradient>
       <radialGradient id="sun-core" cx="0.4" cy="0.4">
@@ -122,7 +123,7 @@ function build() {
     </defs>
     <rect width="${W}" height="${H}" fill="url(#sky)"/>
     <g>${stars()}</g>
-    <circle id="pano-glow" r="200" fill="url(#sun-glow)"/>
+    <circle id="pano-glow" r="280" fill="url(#sun-glow)"/>
     <g id="pano-sun">
       <circle r="14" fill="url(#sun-core)"/>
       <text class="pano-body-label" y="-24" text-anchor="middle" data-i18n="sim.sun"></text>

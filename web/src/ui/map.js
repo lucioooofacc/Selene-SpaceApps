@@ -51,6 +51,31 @@ function pinMarkup({ x, y, label, sub, id, current }) {
     </${tag}>`;
 }
 
+/**
+ * Evita que las etiquetas se pisen cerca del polo: se muestra primero la del
+ * sitio elegido y se ocultan las que chocan con una ya visible (el nombre
+ * sigue disponible como tooltip del marcador).
+ */
+function declutterLabels() {
+  const pins = [...document.querySelectorAll("#map-pins .pin")];
+  pins.sort((a, b) => (b.getAttribute("aria-current") === "true") - (a.getAttribute("aria-current") === "true"));
+  const overlaps = (r, k) => r.left < k.right && r.right > k.left && r.top < k.bottom && r.bottom > k.top;
+  // Los círculos de los marcadores también son obstáculos para las etiquetas.
+  const circles = pins.map((pin) => ({ pin, rect: pin.querySelector("img").getBoundingClientRect() }));
+  const kept = [];
+  for (const pin of pins) {
+    const label = pin.querySelector(".pin-label");
+    label.classList.remove("is-hidden");
+    const r = label.getBoundingClientRect();
+    const current = pin.getAttribute("aria-current") === "true"; // la del sitio elegido siempre se ve
+    const hits =
+      !current && (kept.some((k) => overlaps(r, k)) || circles.some((c) => c.pin !== pin && overlaps(r, c.rect)));
+    if (hits) label.classList.add("is-hidden");
+    else kept.push(r);
+    pin.title = label.textContent.trim();
+  }
+}
+
 /** Mueve la línea dorada debajo de la pestaña activa. */
 export function placeAccent() {
   const active = document.querySelector('.map-tabs [aria-selected="true"]');
@@ -118,6 +143,8 @@ export function renderMap(state) {
           current: true,
         })
       : "");
+
+  declutterLabels();
 
   $("map-lat").textContent = state.lat.toFixed(2);
   $("map-lon").textContent = state.lon.toFixed(2);

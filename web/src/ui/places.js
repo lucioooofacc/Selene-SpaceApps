@@ -14,9 +14,12 @@ const MAX_PLACES = 5;
 /** "-22.1°" (sin signo + para positivos, como en el Figma). */
 export const elev = (v) => `${v.toFixed(1)}°`;
 
-/** "400 Min"; desde 1000 minutos pasa a horas: "33 h". */
+/**
+ * "40 Min" como en el Figma; desde 100 minutos pasa a horas ("15 h") para que
+ * el valor entre en la tarjeta sin romperla.
+ */
 export function minutesLabel(min) {
-  return min >= 1000 ? `${Math.round(min / 60)} h` : `${Math.round(min)} Min`;
+  return min >= 100 ? `${Math.round(min / 60)} h` : `${Math.round(min)} Min`;
 }
 
 let cacheKey = "";
@@ -38,7 +41,12 @@ function rank(state) {
   return ranked;
 }
 
-const icon = (name, size) => `<img src="./figma/place-${name}.svg" alt="" width="${size}" height="${size}" />`;
+/** Íconos con su proporción original (los SVG del Figma se deforman si se fuerzan a cuadrado). */
+const ICON_SIZE = { antenna: [24, 16], sun: [24, 24], earth: [26, 26], bulb: [20, 20] };
+const icon = (name) => {
+  const [w, h] = ICON_SIZE[name];
+  return `<img src="./figma/place-${name}.svg" alt="" width="${w}" height="${h}" />`;
+};
 
 export function initPlaces() {
   $("places-list").addEventListener("click", (event) => {
@@ -64,13 +72,13 @@ export function renderPlaces(state) {
         <p class="place-name">${site.name}</p>
         <p class="place-sub">${t("places.coords", { lat: site.lat.toFixed(2), lon: site.lon.toFixed(2) })}</p>
         <div class="place-stats">
-          <span class="icon-box" title="${t("places.comm")}">${icon("antenna", 26)}</span>
+          <span class="icon-box" title="${t("places.comm")}">${icon("antenna")}</span>
           <span class="value">${Math.round(s.communication)}%</span>
-          <span class="icon-box" title="${t("places.sun")}">${icon("sun", 23)}</span>
+          <span class="icon-box" title="${t("places.sun")}">${icon("sun")}</span>
           <span class="value">${elev(now.sun.elevation)}</span>
-          <span class="icon-box" title="${t("places.earth")}">${icon("earth", 27)}</span>
+          <span class="icon-box" title="${t("places.earth")}">${icon("earth")}</span>
           <span class="value">${elev(now.earth.elevation)}</span>
-          <span class="icon-box" title="${t("places.light")}">${icon("bulb", 20)}</span>
+          <span class="icon-box" title="${t("places.light")}">${icon("bulb")}</span>
           <span class="value">${minutesLabel(s.sunMinutes)}</span>
         </div>
         <span class="place-line" aria-hidden="true"></span>
