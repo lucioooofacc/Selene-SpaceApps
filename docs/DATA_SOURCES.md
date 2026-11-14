@@ -2,6 +2,25 @@
 
 Las fuentes de esta tabla todavía no están integradas. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
 
+## Coordenadas de sitios curados (`web/src/data/sites.js`)
+
+- **Finalidad:** fijar punto, marco y procedencia de los 7 sitios curados (DATA-01, DEC-019).
+- **Referencia común:** MOON_ME / DE421; latitud planetocéntrica; longitud este positiva en `[-180°, 180°)`; esfera de 1737,4 km; grados decimales. Definida en `SITE_REFERENCE` (`web/src/lib/coordinates.js`).
+- **Origen de los valores:** confirmados por el equipo de astronomía (Facu) el 14/11/2026, junto con la identidad de cada punto, y cotejados con fuentes oficiales (detalle por sitio en DEC-019):
+  - NASA NSSDCA, tabla de impactos y naves (DE421 mean Earth): https://nssdc.gsfc.nasa.gov/planetary/lunar/lunar_artifact_impacts.html — Apollo 11, Chang'e 4, Cabeus; referencia cruzada de IM-1 y Chandrayaan-3.
+  - NASA Lunar Surface Data Book Rev A (ACD-50044), tabla A2-2: https://ntrs.nasa.gov/api/citations/20230007818/downloads/ACD-50044%20Lunar%20Surface%20Data%20Book%20Rev%20A.pdf?attachment=true — Shackleton Rim R04 y Malapert Massif R23.
+  - Marshall et al. (2012), *Locating the LCROSS Impact Craters*: https://ntrs.nasa.gov/api/citations/20140005563/downloads/20140005563.pdf — impacto del Centaur en Cabeus.
+  - NASA PGDA, mini-LRA de GSFC: https://pgda.gsfc.nasa.gov/products/101 — IM-1 y Chandrayaan-3.
+  - CNSA, Chang'e 4: https://www.cnsa.gov.cn/n6758823/n6758838/c6807583/content.html — valor en otra referencia (≈ 415 m del de NSSDCA); no se usa.
+  - LOLA RDR SIS, definición del marco: https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/document/rdrsis.htm
+  - USGS Gazetteer (contexto del accidente, no el punto): Shackleton https://planetarynames.wr.usgs.gov/Feature/5450 · Cabeus https://planetarynames.wr.usgs.gov/Feature/953 · Malapert https://planetarynames.wr.usgs.gov/Feature/3603
+- **Metadatos por sitio:** `point.type` (`lander` | `impact` | `study-point`), `provenance` (quién confirmó, fecha, referencia, `sourceFrameVerified`, `frameNote`, `urls`, `featureUrls`), `confidence` (`alta` | `media` | `baja` y motivo) y `precision` (`accuracyM`, `accuracyBasis`).
+- **Transformaciones:** ninguna. El marco lo declara la fuente en Cabeus, Chang'e 4 y Apollo 11; en R04/R23 se infiere (DEM LOLA) y en IM-1/Chandrayaan-3 PGDA no lo declara.
+- **Precisión:** se separa la resolución de representación de la cifra (≤ 3,03 m, `quantizationMeters()`) de la exactitud declarada por la fuente (`accuracyM`): 10 m en R04/R23 (Data Book: 5–10 m), 115 m en Cabeus (1σ), `null` donde la fuente no la declara.
+- **Herramientas de verificación:** LROC QuickMap y NASA Moon Trek (ver abajo). Para el marco MOON_ME/DE421, ver NAIF SPICE (kernels lunares PCK/FK).
+- **Estado:** integrado con procedencia parcial; pendiente de validar por astronomía (Teo, Facu, Lucio).
+- **Módulos responsables:** `web/src/data/sites.js` (datos) y `web/src/lib/coordinates.js` (normalización); pruebas en `web/tests/sites.test.js`.
+
 ## NASA JPL Horizons
 
 - **URL oficial:** https://ssd.jpl.nasa.gov/horizons/ · API: https://ssd-api.jpl.nasa.gov/doc/horizons.html
@@ -50,7 +69,7 @@ Las fuentes de esta tabla todavía no están integradas. Antes de implementar un
 - **Cobertura:** depende de las capas LROC y de terceros seleccionadas.
 - **Referencia:** depende de cada capa; registrar proyección, datum y metadatos mostrados.
 - **Limitaciones:** herramienta interactiva, no contrato estable de API para el motor; la calidad/cobertura cambia por capa.
-- **Estado:** no integrado; herramienta de verificación para `sites.js` y productos derivados.
+- **Estado:** no integrado; herramienta de verificación para `sites.js` (pendiente usarla para cerrar DEC-019) y productos derivados.
 - **Módulos responsables:** validación de datos y documentación, no cálculo en tiempo de ejecución.
 - **Atribución/licencia:** acreditar LROC/ASU y las capas/productos utilizados; requisitos exactos pendientes de verificar por capa.
 

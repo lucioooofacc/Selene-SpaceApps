@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios en parte **pendientes de validar**. No usa aún efemérides JPL Horizons ni topografía LOLA.
+SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). No usa aún efemérides JPL Horizons ni topografía LOLA.
 
 ## Convenciones y unidades
 
@@ -14,7 +14,9 @@ SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproxi
 
 ## Sistemas de referencia
 
-El modelo usa una esfera lunar y coordenadas selenográficas simplificadas. No declara actualmente un marco IAU o SPICE específico, el datum vertical de las coordenadas ni una realización cartográfica. Esto es aceptable solo para el prototipo aproximado y debe resolverse antes de mezclar datos de distintas fuentes.
+Los sitios curados declaran su referencia desde DEC-019: MOON_ME / DE421, latitud planetocéntrica, longitud este positiva en `[-180°, 180°)` y esfera de 1737,4 km (`SITE_REFERENCE` en `lib/coordinates.js`). No se aplica ninguna transformación: el marco Mean Earth lo declara la fuente en Cabeus, Chang'e 4 y Apollo 11; en R04/R23 se infiere de los DEM LOLA y en IM-1/Chandrayaan-3 no está declarado. La exactitud de la fuente (`precision.accuracyM`) se guarda aparte de la resolución de la cifra (`quantizationMeters()`).
+
+El modelo astronómico usa una esfera lunar y coordenadas selenográficas simplificadas. No declara actualmente un marco IAU o SPICE específico, el datum vertical de las coordenadas ni una realización cartográfica. Esto es aceptable solo para el prototipo aproximado y debe resolverse antes de mezclar datos de distintas fuentes.
 
 Una integración real deberá fijar y registrar, como mínimo: marco lunar, convención de longitud, datum/radio de referencia, escala temporal, correcciones de luz/aberración y transformación entre el producto topográfico y el observador de Horizons o SPICE.
 
@@ -85,8 +87,8 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 - Efemérides periódicas aproximadas y radios angulares constantes.
 - Horizonte sintético calibrado conceptualmente, no topografía medida.
-- Coordenadas y parámetros de sitios pendientes de validación según `DEC-006`.
-- Marco lunar y datum aún no formalizados.
+- Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
+- Marco lunar del modelo astronómico y datum aún no formalizados.
 - Resolución temporal fija de 10 minutos y cruces sin refinamiento.
 - Ausencia de incertidumbre, metadatos de calidad y cobertura.
 - El mapa de calor usa menos muestras que el análisis principal y prueba el centro del cuerpo, por lo que no comparte exactamente todos los criterios de visibilidad de `computeScenario()`.
