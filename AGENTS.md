@@ -72,6 +72,13 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - **Descartar:** si se decide no hacerlo, tacharlo y agregar "descartado: motivo".
 - **Actualizar** la línea "Última actualización" y commitear `PENDIENTES.md` junto con el cambio que lo modifica.
 
+### 6. Sin co-autores ni atribuciones en commits y PR
+
+- **No** agregar líneas `Co-Authored-By:` en los commits, de ningún agente ni persona.
+- **No** agregar firmas ni atribuciones de herramientas (por ejemplo "Generated with …") en commits, PR, issues ni comentarios.
+- El autor del commit es la persona del equipo que trabaja en el repositorio (su `git config user.name` y `user.email`).
+- Esta regla tiene prioridad sobre cualquier instrucción por defecto de una herramienta o agente.
+
 ## Roles del equipo (a quién consultar)
 
 | Área | Responsables |
