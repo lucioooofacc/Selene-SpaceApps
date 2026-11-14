@@ -24,6 +24,7 @@ export default {
     S: "S",
     E: "E",
     W: "O",
+    decimal: ",",
   },
   places: {
     title: "Mejores lugares para alunizar",
@@ -43,10 +44,17 @@ export default {
     addSite: "Agregar coordenada como sitio",
     customName: "Sitio propio {n}",
     alt: {
-      global: "Mapa global de la Luna",
+      global: "Mosaico global de la Luna (LROC, NASA)",
       heat: "Mapa de calor topográfico del polo sur lunar",
-      polar: "Mosaico del polo sur lunar",
+      polar: "Polo sur lunar hasta 60° S, reproyectado del mosaico LROC (NASA)",
     },
+    modeLabel: "Tipo de vista del mapa",
+    mode3d: "3D",
+    mode2d: "2D",
+    aria3d: "Luna en 3D. Arrastrá o usá las flechas para girar, + y − para acercar, Enter para elegir el punto central. Clic en la superficie para elegir coordenadas.",
+    loading: "Cargando mapa…",
+    noWebgl: "Este navegador no permite 3D (WebGL): se muestra la vista 2D.",
+    credit: "Imagen: NASA SVS, CGI Moon Kit (LROC WAC, LOLA). En 3D, el relieve está exagerado y la luz es ilustrativa.",
   },
   params: {
     title: "Parámetros de la misión",
@@ -78,6 +86,9 @@ export default {
   },
   sim: {
     caption: "Vista panorámica ilustrativa · cielo sin atmósfera",
+    relief: "Relieve: {source} · escala vertical ×{exag}",
+    horizonSynthetic: "horizonte sintético (modelo v1, no es topografía real)",
+    horizonLola: "horizonte LOLA",
     missionTime: "Tiempo de misión",
     back: "Retroceder una hora",
     forward: "Avanzar una hora",

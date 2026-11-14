@@ -23,6 +23,7 @@ export default {
     S: "S",
     E: "E",
     W: "W",
+    decimal: ".",
   },
   places: {
     title: "Best places to land",
@@ -42,10 +43,17 @@ export default {
     addSite: "Add coordinate as site",
     customName: "Custom site {n}",
     alt: {
-      global: "Global map of the Moon",
+      global: "Global mosaic of the Moon (LROC, NASA)",
       heat: "Topographic heat map of the lunar south pole",
-      polar: "Mosaic of the lunar south pole",
+      polar: "Lunar south pole down to 60° S, reprojected from the LROC mosaic (NASA)",
     },
+    modeLabel: "Map view type",
+    mode3d: "3D",
+    mode2d: "2D",
+    aria3d: "3D Moon. Drag or use the arrow keys to rotate, + and − to zoom, Enter to pick the center point. Click the surface to pick coordinates.",
+    loading: "Loading map…",
+    noWebgl: "This browser does not support 3D (WebGL): showing the 2D view.",
+    credit: "Imagery: NASA SVS, CGI Moon Kit (LROC WAC, LOLA). In 3D, relief is exaggerated and lighting is illustrative.",
   },
   params: {
     title: "Mission parameters",
@@ -77,6 +85,9 @@ export default {
   },
   sim: {
     caption: "Illustrative panoramic view · sky without atmosphere",
+    relief: "Relief: {source} · vertical scale ×{exag}",
+    horizonSynthetic: "synthetic horizon (v1 model, not real topography)",
+    horizonLola: "LOLA horizon",
     missionTime: "Mission time",
     back: "Go back one hour",
     forward: "Go forward one hour",
