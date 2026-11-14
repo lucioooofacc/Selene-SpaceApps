@@ -19,4 +19,9 @@ Estas reglas complementan `AGENTS.md` en la raíz. Ante conflicto, prevalecen la
 - La UI muestra resultados del motor; no debe implementar fórmulas, umbrales científicos ni conversiones de referencia.
 - Evitar cálculos costosos, red o reconstrucciones completas dentro de animaciones. Respetar el renderizado incremental coordinado por `main.js`.
 - Validar en escritorio de al menos 1200 px y revisar ambos idiomas, teclado, estados vacíos y movimiento reducido.
+- Colores de estado (favorable / intermedio / desfavorable): usar los tokens `--green`/`--red` o agregar la variante para daltonismo en `src/styles/settings.css` (`:root[data-palette="cvd"]`). Si una imagen o SVG tiene un color de estado fijo, darle una alternativa en ese modo (DEC-023).
+- `three` se importa solo dentro de `moon3d.js` y con `import()` diferido; no importarlo desde otros módulos para no agrandar el bundle inicial (DEC-021).
+- Las imágenes derivadas de `public/nasa/` se regeneran con los scripts de `web/scripts/` y se documentan en `docs/DATA_SOURCES.md`; no editarlas a mano.
+- Una página nueva necesita su entrada en `vite.config.js` (`build.rollupOptions.input`) y el mismo encabezado, configuración y escalado que las existentes.
+- Lo que entra a `main` se publica en https://selene-space-apps.vercel.app: revisar el build de producción (`npm run build` + `npx vite preview`) antes de integrar.
 

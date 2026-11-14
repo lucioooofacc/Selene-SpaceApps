@@ -350,8 +350,36 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** `ldem_4` (polo borroso, ~120 px de radio); esperar al producto PDS de TERRAIN-01 (DEC-025: pesado, prepara recortes por sitio y en ese momento no estaba integrado); colorear offline (no permitiría cambiar la paleta).
 - **Estado:** vigente. Reemplaza el uso de la imagen del Figma de DEC-016 en MAPA DE CALOR. **Pendiente:** regenerar el mapa desde `LDEM_60S_240M` (TERRAIN-01, DEC-025, ya integrado), si el equipo lo prefiere.
 
+## DEC-027 — La selección de la misión vive en la URL (UI-12)
 
-## DEC-029 — Horizonte topográfico LOLA precalculado por sitio (TERRAIN-02)
+- **Contexto / problema:** al volver de la comparación a la misión se perdían el sitio y las fechas, e "Informe" desde la comparación imprimía la misión por defecto. Con el sitio publicado (https://selene-space-apps.vercel.app) también conviene poder compartir un enlace con un sitio elegido.
+- **Decisión:** la página de misión lee y escribe `index.html?site=<sitio>&start=AAAA-MM-DD&days=N`, con el mismo formato de sitio que la comparación (id curado o `pt:lat,lon`). Las fechas solo se escriben si el usuario las eligió.
+- **Solución aplicada:** `src/ui/links.js` suma `missionQuery`, `missionUrl` y `parseMissionQuery`, y comparte con la comparación la validación de fechas: día UTC real (descarta, por ejemplo, 2026-02-31) y de 1 a 30 días. `main.js` aplica la URL antes del primer dibujo, la normaliza (lo inválido se reemplaza por la selección real) y la actualiza con `history.replaceState` cuando cambian el sitio o las fechas. En `compare.html`, "Misión", "Volver a la misión" e "Informe" llevan el sitio A y las fechas. Pruebas en `tests/links.test.js`.
+- **Alternativas descartadas:** `sessionStorage` (no sirve para compartir enlaces); guardar también el instante de la línea de tiempo y la pestaña del mapa (más ruido en la URL; se puede sumar después).
+- **Estado:** vigente.
+
+## DEC-028 — Procedencia de los sitios y calidad de los datos en la interfaz (UI-01 parcial)
+
+- **Contexto / problema:** UI-01 (#13) pide mostrar si cada resultado es real, aproximado o sintético, y su fuente. DATA-01 cargó procedencia, confianza y exactitud por sitio (DEC-019), y quedó anotado "decidir si la interfaz muestra la procedencia y la confianza". El contrato de metadatos de CORE-01 todavía no existe.
+- **Decisión** (pedido del equipo, 14/11/2026): mostrar ya lo que existe, sin esperar a CORE-01.
+  - **Procedencia del sitio:** solo campos traducibles (tipo de punto, confianza, exactitud declarada, marco declarado o inferido, fuentes oficiales con enlace y fecha de confirmación). Las notas en prosa de `sites.js` están solo en español y no se muestran. Un punto elegido en el mapa figura como "Sin fuente".
+  - **Calidad de los datos:** coordenadas (real si hay procedencia), Sol y Tierra (aproximado, DEC-004), horizonte (sintético, DEC-005; pasa a real si la función declara `source === "lola"`), imágenes del mapa (real, DEC-021/026) y umbrales (aproximado, DEC-007).
+- **Solución aplicada:** `web/src/ui/provenance.js` arma los dos bloques. Se muestran en un modal "Datos y fuentes" (botón "i" en el panel de parámetros de la misión), en la comparación (procedencia plegable por sitio y panel de calidad) y en el informe imprimible. Las etiquetas usan los tokens de color, así que siguen la paleta para daltonismo. Textos en `quality.*` (ES/EN). El pie del informe dejó de decir que los sitios están "pendientes de validar".
+- **Alternativas descartadas:** mostrar las notas en prosa (rompería el bilingüismo); esperar al contrato de CORE-01 (dejaba sin mostrar datos que ya están).
+- **Estado:** vigente. **Pendiente (resto de UI-01, depende de CORE-01):** fuente, fecha y cobertura de efemérides y horizonte reales; estados de carga, error y faltante; píxeles LOLA con `count = 0` como interpolados (DEC-025).
+
+## DEC-029 — Categorías del ranking de sitios y pestaña ELEVACIÓN (UI-13)
+
+- **Contexto / problema:** el equipo pidió (`PENDIENTES.md`) categorías para rankear "Mejores lugares" (interés científico, comunicación terrestre, luz solar aprovechable) y cambiar el título "MAPA DE CALOR", porque la pestaña muestra elevación (DEC-026).
+- **Decisión:**
+  - Cuatro categorías: **Global** (orden anterior: puntos de viabilidad, después iluminación), **Ciencia**, **Comunicación** (% del tiempo con la Tierra visible, después la altura máxima de la Tierra) y **Luz** (potencia solar relativa promedio, después los minutos con Sol). Las tres últimas ordenan resultados que el motor ya calcula.
+  - **Interés científico** no existe como dato. Se cuenta cuántos **rasgos con fuente citada** tiene cada sitio (decisión del equipo). Cabeus: hielo de agua y región en sombra permanente (Colaprete et al. 2010). Shackleton: junto a un cráter con fondo en sombra permanente (Zuber et al. 2012; ese trabajo no confirma hielo, así que no se le asigna). Malapert: región candidata de Artemis III (NASA, 28/10/2024). Chandrayaan-3: primeras mediciones in situ cerca del polo sur, con azufre (ISRO 2023). Chang'e 4: posible material del manto y cara oculta en la cuenca SPA (Li et al. 2019). Apollo 11: muestras traídas a la Tierra (NASA JSC). IM-1: sin rasgos cargados. **Pendiente de validar por astronomía; no es una métrica científica** (se aclara en la interfaz).
+  - La pestaña pasa a **ELEVACIÓN / ELEVATION**. El identificador interno sigue siendo `heat` (estado, CSS) para no tocar código ajeno; solo cambia el texto visible.
+- **Solución aplicada:** `web/src/data/site-traits.js` (rasgos y citas, separado de `sites.js` para no modificar el contrato de DATA-01); `web/src/lib/ranking.js` (`rankEntries`, puro, con desempate por nombre); `places.js` con selector tipo radiogroup (clic y flechas) y estado `placesCategory`. En "Ciencia", el subtítulo de cada tarjeta muestra los rasgos (máximo dos líneas, con el texto completo como tooltip). El modal "Datos y fuentes" suma "Interés científico" con las citas. Pruebas en `tests/ranking.test.js`.
+- **Alternativas descartadas:** un puntaje científico ponderado (inventaría pesos); dejar la categoría deshabilitada hasta que astronomía defina criterios.
+- **Estado:** vigente. **Pendiente:** validación de los rasgos por Teo, Facu y Lucio, y rasgos para IM-1 si corresponde.
+
+## DEC-030 — Horizonte topográfico LOLA precalculado por sitio (TERRAIN-02)
 
 - **Contexto / problema:** TERRAIN-02 (P0, #8) pide `horizon(azimuth) -> elevation` desde el DEM LOLA (DEC-025) y la curvatura lunar, con continuidad 0°/360° y cobertura/ausencias visibles. El raster pesa ~345 MiB y no puede descargarse ni recorrerse en el navegador.
 - **Decisión:**

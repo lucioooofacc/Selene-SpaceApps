@@ -13,6 +13,7 @@ import { DAY_MS } from "../lib/astro.js";
 import { compareScenarios } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
 import { t } from "../i18n/index.js";
+import { provenanceHtml, qualityHtml } from "./provenance.js";
 
 const $ = (id) => document.getElementById(id);
 const COLORS = { a: "var(--gold)", b: "var(--earth)" };
@@ -36,6 +37,10 @@ function siteHeader(slot, site, scenario) {
         <strong>${t(`compare.level.${v.overall}`)}</strong>
         <em>${t("compare.points", { points: v.points, max: v.maxPoints })}</em>
       </div>
+      <details class="cmp-prov">
+        <summary>${t("quality.provenance")}</summary>
+        ${provenanceHtml(site)}
+      </details>
     </article>`;
 }
 
@@ -197,4 +202,5 @@ export function renderComparison({ a, b, scA, scB }) {
     .map((slot) => `<span><i style="background:${COLORS[slot]}"></i>${names[slot]}</span>`)
     .join("");
   $("cmp-criteria").innerHTML = criteriaTable(scA, scB, names);
+  $("cmp-quality").innerHTML = qualityHtml(a, scA);
 }

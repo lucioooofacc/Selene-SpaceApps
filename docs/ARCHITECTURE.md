@@ -1,6 +1,6 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025) y el horizonte LOLA de los sitios curados está precalculado (`lib/horizon-lola.js`, DEC-029), pero `analysis.js` todavía usa el horizonte sintético.
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025) y el horizonte LOLA de los sitios curados está precalculado (`lib/horizon-lola.js`, DEC-030), pero `analysis.js` todavía usa el horizonte sintético.
 
 ## Vista general
 
@@ -20,6 +20,10 @@ flowchart LR
   D[data/sites.js] --> M
   D --> UI
   R --> DOM[index.html]
+  CMP[compare.js · ui/compare] --> A
+  CMP --> DOM2[compare.html]
+  SET[ui/settings] -->|data-* en html| DOM
+  SET --> DOM2
 ```
 
 ## Responsabilidades
@@ -31,6 +35,8 @@ flowchart LR
 | `src/lib/astro.js` | Modelo periódico aproximado del punto subsolar y subterrestre; transforma posiciones selenográficas en azimut/elevación local y calcula la fase terrestre. |
 | `src/lib/terrain.js` | Genera un horizonte sintético determinista, estima relieve para sitios no curados y calcula la depresión geométrica por altura. |
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
+| `src/lib/ranking.js` | Orden de "Mejores lugares" por categoría (global, interés científico, comunicación, luz) sobre resultados de `computeScenario`; sin fórmulas nuevas (DEC-029). |
+| `src/data/site-traits.js` | Rasgos de interés científico por sitio con cita (pendientes de validar por astronomía); separado de `sites.js` (DEC-029). |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
 | `src/lib/horizons.js` | Adaptador puro de JPL Horizons (DEC-024): valida peticiones, arma la consulta y la clave de caché, interpreta y valida tablas `OBSERVER` y produce series normalizadas con fuente, marco, unidades y cobertura. Sin red ni DOM; todavía no lo consume `analysis.js`. |
@@ -38,7 +44,7 @@ flowchart LR
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
 | `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-025). |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
-| `src/lib/horizon-lola.js` | Horizonte topográfico desde el DEM LOLA: rayos sobre círculos máximos con curvatura exacta, calidad (`count = 0`, truncamiento) y `createLolaHorizon(siteId)` → `horizon(az)` con `source = "lola"`. Puro; todavía no lo consume `analysis.js` (DEC-029). |
+| `src/lib/horizon-lola.js` | Horizonte topográfico desde el DEM LOLA: rayos sobre círculos máximos con curvatura exacta, calidad (`count = 0`, truncamiento) y `createLolaHorizon(siteId)` → `horizon(az)` con `source = "lola"`. Puro; todavía no lo consume `analysis.js` (DEC-030). |
 | `src/data/terrain/lola-horizons.js` | Tabla generada del horizonte LOLA de los sitios cubiertos (720 azimuts), con producto, MD5, algoritmo y parámetros. |
 | `scripts/build-lola-horizons.mjs` | Carga los rasters LOLA verificados, calcula la tabla de horizonte y, con `--svg`, la comparación visual con el horizonte sintético. |
 | `src/data/terrain/lola-ldem-60s-240m.js` | Manifiesto del producto LOLA seleccionado: DOI, versión, URLs oficiales, bytes, MD5, grilla y proyección. Sin muestras. |
@@ -46,7 +52,7 @@ flowchart LR
 | `scripts/prepare-lola.mjs` | Lee DEM float32 + conteos int16 por ventanas y escribe un recorte JSON por sitio cubierto en `web/data/derived/` (no versionado). |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
 | `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
-| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D (GLOBAL y POLO SUR), selección de coordenadas y alta de sitios. MAPA DE CALOR sigue con la imagen del Figma. |
+| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D en las tres, selección de coordenadas y alta de sitios. MAPA DE CALOR muestra elevación LOLA con leyenda (DEC-026). |
 | `src/ui/moon3d.js` | Luna 3D con three.js (carga diferida): textura LROC y relieve LOLA del CGI Moon Kit, render a demanda, giro con arrastre o teclado, clic → coordenadas, y marcadores HTML proyectados. |
 | `src/ui/elevation.js` | Colorea en el navegador los PNG de elevación LOLA (tinte hipsométrico × sombreado) con la paleta estándar o cividis, para MAPA DE CALOR en 2D y 3D (DEC-026). Los PNG los genera `web/scripts/build-lola-maps.mjs`. |
 | `src/ui/polar2d.js` | Reproyecta en el navegador el mosaico LROC equirectangular a la vista polar 2D (azimutal equidistante hasta −60°, 0° arriba). |
@@ -55,7 +61,8 @@ flowchart LR
 | `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. La cresta es `scenario.horizon(az)` sin recortes, con 0°, puntos cardinales, exageración vertical y fuente del horizonte indicadas (UI-08). |
 | `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
 | `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
-| `src/ui/links.js` | Codifica y lee la selección de la comparación en la URL (`compare.html?a=&b=&start=&days=`) y actualiza los enlaces "Comparar" y "Ver comparación detallada". |
+| `src/ui/links.js` | Codifica y lee la selección en la URL: comparación (`compare.html?a=&b=&start=&days=`) y misión (`index.html?site=&start=&days=`, UI-12). Actualiza los enlaces entre páginas para que conserven sitio y fechas. |
+| `src/ui/provenance.js` | Procedencia de los sitios (metadatos de DEC-019 traducibles) y calidad de cada dato (real / aproximado / sintético) para el modal "Datos y fuentes" de la misión, la comparación y el informe (DEC-028). |
 | `src/ui/settings.js` | Modal de configuración (engranaje) compartido por las dos páginas: idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa; aplica `data-*` en `<html>` y recuerda las opciones en el navegador (DEC-023). |
 | `src/ui/report.js` | Informe imprimible de la misión ("Informe" en el menú, o `index.html#informe`): arma el informe con el escenario vigente y abre la impresión del navegador; `styles/report.css` lo muestra solo al imprimir. |
 | `src/compare.js` | Entrada de `compare.html`: lee la URL, calcula y cachea los dos escenarios y reutiliza el calendario sobre `state.js`. |
@@ -71,7 +78,7 @@ flowchart LR
 6. Durante la reproducción se actualizan panorama y línea de tiempo en cada cuadro; los paneles textuales se limitan aproximadamente a ocho actualizaciones por segundo.
 7. Los cambios de mapa, reproducción o idioma actualizan únicamente sus consumidores principales.
 
-`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` sigue en `lib/analysis.js` (cubierto por las pruebas), pero la interfaz actual no lo usa: la pestaña MAPA DE CALOR muestra la imagen del Figma (DEC-014, DEC-016).
+`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` sigue en `lib/analysis.js` (cubierto por las pruebas), pero la interfaz actual no lo usa: la pestaña MAPA DE CALOR muestra la elevación LOLA precomputada (DEC-026). Un modo de iluminación calculada queda para MAP-01.
 
 ## Contratos públicos
 
@@ -150,8 +157,8 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 - `horizons.js` depende solo de `coordinates.js`. No hace red: la red vive en `scripts/fetch-horizons.mjs`, que se ejecuta con Node antes de la demo.
 - `main.js` es el único coordinador entre análisis y renderizado.
 - Los módulos `ui/` pueden leer/escribir estado, formatear e internacionalizar, pero no deben implementar fórmulas científicas.
-- `map.js` es la excepción de coordinación que invoca el cálculo público del mapa de calor; el cálculo permanece en `lib/analysis.js`.
-- No existen dependencias de ejecución aparte del navegador; Vite es dependencia de desarrollo.
+- `map.js` no calcula: muestra imágenes (LROC y elevación LOLA precomputada) y delega la vista 3D en `moon3d.js`.
+- La única dependencia de ejecución es `three` (DEC-021), cargada con `import()` diferido solo al abrir una vista 3D; Vite es dependencia de desarrollo.
 
 ## Evolución hacia datos reales
 
@@ -201,4 +208,8 @@ flowchart LR
 - Mover cálculo intensivo a un Web Worker; enviar estructuras serializables o buffers transferibles.
 - No hacer peticiones de red desde `requestAnimationFrame`, `sampleAt()`, bucles temporales ni celdas del mapa de calor.
 - Tratar ausencia parcial de datos como tal y propagarla hasta la UI; no interpolar fuera de cobertura sin una política documentada.
+
+## Despliegue
+
+El sitio público es https://selene-space-apps.vercel.app (Vercel, desde `main`). Vercel usa `web` como directorio raíz, el preset de Vite, `npm run build` y la carpeta `dist`. El build es estático: no hay servidor ni llamadas a APIs externas en tiempo de ejecución (Horizons y LOLA se adquieren con scripts fuera del navegador). Cada integración a `main` actualiza el sitio, así que `main` tiene que quedar siempre funcionando (`AGENTS.md`, regla 1).
 

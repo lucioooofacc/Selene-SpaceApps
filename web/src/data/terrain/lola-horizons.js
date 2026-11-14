@@ -1,5 +1,5 @@
 /**
- * Horizonte topográfico LOLA de los sitios curados (TERRAIN-02, DEC-029).
+ * Horizonte topográfico LOLA de los sitios curados (TERRAIN-02, DEC-030).
  *
  * ARCHIVO GENERADO por `web/scripts/build-lola-horizons.mjs`; no editar a mano.
  * Fuente: NASA PDS LRO-L-LOLA-4-GDR-V1.0 (DOI 10.17189/1520642),

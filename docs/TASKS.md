@@ -111,7 +111,7 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 ### MAP-01 — Adaptar el mapa de calor
 
 - **Prioridad:** P1 · **Issue:** [#16](https://github.com/lucioooofacc/Selene-SpaceApps/issues/16).
-- **Objetivo:** calcular el mapa con fuentes y criterios unificados sin bloquear la interfaz.
+- **Objetivo:** calcular el mapa con fuentes y criterios unificados sin bloquear la interfaz. Hoy la pestaña MAPA DE CALOR muestra elevación LOLA (UI-11, DEC-026); MAP-01 agrega el modo de iluminación calculada, sin quitar la elevación.
 - **Rama sugerida:** `feat/mapa-calor-real`.
 - **Dependencias:** CORE-01, CORE-02, TERRAIN-01.
 - **Archivos afectados:** `analysis.js`, `ui/map.js`, worker/caché y pruebas.
@@ -221,6 +221,36 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Archivos afectados:** `web/scripts/build-lola-maps.mjs`, `web/public/nasa/`, `web/src/data/lola-maps.js`, `web/src/ui/elevation.js`, `map.js`, `moon3d.js`, `settings.js`, `index.html`, estilos, i18n.
 - **Criterios de aceptación:** datos citados y procedimiento reproducible; leyenda en km; paletas estándar y para daltonismo; 2D con la proyección de los marcadores; vista 3D física; ES/EN; sin presentarlo como mapa de iluminación.
 - **Fuera de alcance:** mapa de iluminación (MAP-01); horizonte topográfico (TERRAIN-02).
+
+### DOC-01 — Sincronizar documentación con la interfaz y registrar el despliegue
+
+- **Prioridad:** P1 · **Issue:** [#44](https://github.com/lucioooofacc/Selene-SpaceApps/issues/44).
+- **Objetivo:** alinear `ARCHITECTURE.md`, `TASKS.md`, `web/src/ui/AGENTS.md` y el README con la interfaz actual y documentar el sitio publicado en Vercel.
+- **Rama sugerida:** `docs/sincronizar-despliegue`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `README.md`, `docs/ARCHITECTURE.md`, `docs/TASKS.md`, `web/src/ui/AGENTS.md`, `PENDIENTES.md`.
+- **Criterios de aceptación:** sin menciones desactualizadas; URL y configuración de Vercel documentadas; reglas de UI al día.
+- **Fuera de alcance:** validación final de la entrega (DEPLOY-01).
+
+### UI-12 — Guardar la selección de la misión en la URL
+
+- **Prioridad:** P1 · **Issue:** [#46](https://github.com/lucioooofacc/Selene-SpaceApps/issues/46).
+- **Objetivo:** que la misión lea y escriba sitio y fechas en la URL, para volver desde la comparación sin perder la selección, imprimir el informe de los sitios comparados y compartir enlaces.
+- **Rama sugerida:** `feat/url-estado`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `web/src/ui/links.js`, `web/src/main.js`, `web/src/compare.js`, `web/compare.html`, `web/tests/links.test.js`.
+- **Criterios de aceptación:** la misión restaura y actualiza la URL; los enlaces desde la comparación conservan el sitio A y las fechas; lo inválido se ignora; pruebas del parseo.
+- **Fuera de alcance:** guardar el instante de la línea de tiempo o la pestaña del mapa.
+
+### UI-13 — Categorías para rankear sitios y pestaña ELEVACIÓN
+
+- **Prioridad:** P1 · **Issue:** [#49](https://github.com/lucioooofacc/Selene-SpaceApps/issues/49).
+- **Objetivo:** categorías para rankear "Mejores lugares" (global, interés científico, comunicación, luz) y renombrar la pestaña MAPA DE CALOR a ELEVACIÓN.
+- **Rama sugerida:** `feat/ranking-categorias`.
+- **Dependencias:** ninguna; los rasgos científicos quedan pendientes de validar por astronomía.
+- **Archivos afectados:** `web/src/data/site-traits.js`, `web/src/lib/ranking.js`, `web/src/ui/places.js`, `web/src/ui/provenance.js`, `web/index.html`, estilos, i18n, `web/tests/ranking.test.js`.
+- **Criterios de aceptación:** selector accesible; comunicación y luz con métricas del motor; ciencia con rasgos citados y aviso de validación pendiente; pestaña renombrada en ES/EN; pruebas.
+- **Fuera de alcance:** modificar `sites.js` o crear métricas científicas nuevas.
 
 ## P2 — Opcionales
 

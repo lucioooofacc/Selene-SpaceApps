@@ -1,5 +1,5 @@
 /**
- * Pruebas matemáticas del horizonte LOLA (TERRAIN-02, DEC-029) sobre grillas
+ * Pruebas matemáticas del horizonte LOLA (TERRAIN-02, DEC-030) sobre grillas
  * SINTÉTICAS en memoria (no son datos LOLA): plano esférico, anillo de altura
  * conocida, montaña en un solo rumbo, count = 0, truncamiento por cobertura,
  * continuidad 0°/360° y determinismo. La tabla real se valida en

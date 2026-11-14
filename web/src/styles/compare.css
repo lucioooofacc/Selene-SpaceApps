@@ -377,3 +377,44 @@
 .cmp-lane-bg {
   fill: var(--field);
 }
+
+/* Procedencia y calidad de datos (UI-01 parcial) */
+.cmp-prov {
+  margin-top: 14px;
+}
+
+.cmp-prov summary,
+.cmp-quality-panel summary {
+  cursor: pointer;
+  color: var(--gold);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cmp-prov .prov,
+.cmp-prov .prov-none {
+  margin-top: 10px;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+.cmp-quality-panel .quality {
+  margin-top: 14px;
+}
+
+.cmp-quality-panel .quality li {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.cmp-quality-panel .quality small {
+  font-size: 16px;
+}
+
+
+/* La página se escala con zoom: las etiquetas de calidad necesitan más tamaño que en el modal */
+.cmp-quality-panel .q-tag,
+.cmp-prov .q-tag {
+  width: 150px;
+  font-size: 15px;
+}

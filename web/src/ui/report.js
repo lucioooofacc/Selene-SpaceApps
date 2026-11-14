@@ -11,6 +11,7 @@ import { scenarioMetrics } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
 import { getLang, t } from "../i18n/index.js";
 import { getSite } from "../state.js";
+import { provenanceHtml, qualityHtml } from "./provenance.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_WINDOWS = 12; // filas por tabla de ventanas para no pasar de dos hojas
@@ -99,6 +100,17 @@ export function renderReport(scenario) {
     <section>
       <h2>${t("compare.metricsTitle")}</h2>
       <table class="rep-metrics">${metrics}</table>
+    </section>
+
+    <section class="rep-grid rep-grid-2 rep-quality">
+      <div>
+        <h2>${t("quality.provenance")}</h2>
+        ${provenanceHtml(site)}
+      </div>
+      <div>
+        <h2>${t("quality.dataTitle")}</h2>
+        ${qualityHtml(site, scenario)}
+      </div>
     </section>
 
     <section class="rep-grid rep-grid-2">

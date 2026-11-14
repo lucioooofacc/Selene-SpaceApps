@@ -3,6 +3,9 @@
  * la ventana por la URL, para que se pueda compartir o recargar sin perder la
  * selección:
  *   compare.html?a=<sitio>&b=<sitio>&start=AAAA-MM-DD&days=N
+ * La página de misión guarda su selección del mismo modo (UI-12):
+ *   index.html?site=<sitio>&start=AAAA-MM-DD&days=N
+ * (las fechas solo si el usuario las eligió).
  * Un sitio es el id de un sitio curado o "pt:lat,lon" para un punto del mapa.
  */
 import { SITES } from "../data/sites.js";
@@ -39,17 +42,47 @@ export function compareUrl({ a, b, startMs, windowDays }) {
   return `./compare.html?${q}`;
 }
 
+/** Fechas de la URL: { startMs, windowDays } válidos o null (día UTC exacto, 1 a 30 días). */
+function parseWindow(q) {
+  const raw = q.get("start");
+  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(raw ?? "") ? Date.parse(`${raw}T00:00:00Z`) : NaN;
+  const start = Number.isFinite(parsed) && isoDay(parsed) === raw ? parsed : NaN; // descarta 2026-02-31
+  const days = Number(q.get("days"));
+  const okDays = Number.isInteger(days) && days >= 1 && days <= 30;
+  return Number.isFinite(start) && okDays ? { startMs: start, windowDays: days } : null;
+}
+
 /** Lee la selección de la URL de la página de comparación (con valores por defecto). */
 export function parseCompareQuery(search, defaults) {
   const q = new URLSearchParams(search);
-  const start = Date.parse(`${q.get("start")}T00:00:00Z`);
-  const days = Math.round(Number(q.get("days")));
+  const window = parseWindow(q);
   return {
     a: parseSiteParam(q.get("a")) ?? defaults.a,
     b: parseSiteParam(q.get("b")) ?? defaults.b,
-    startMs: Number.isFinite(start) ? start : defaults.startMs,
-    windowDays: days >= 1 && days <= 30 ? days : defaults.windowDays,
+    startMs: window?.startMs ?? defaults.startMs,
+    windowDays: window?.windowDays ?? defaults.windowDays,
   };
+}
+
+/** Selección de la misión → query string ("?site=…&start=…&days=…"). */
+export function missionQuery({ site, startMs, windowDays, dateChosen }) {
+  const q = new URLSearchParams({ site: siteParam(site) });
+  if (dateChosen) {
+    q.set("start", isoDay(startMs));
+    q.set("days", String(windowDays));
+  }
+  return `?${q}`;
+}
+
+export function missionUrl(selection, hash = "") {
+  return `./index.html${missionQuery(selection)}${hash}`;
+}
+
+/** Lee la selección de la misión: { site|null, startMs|null, windowDays|null }. Lo inválido se ignora. */
+export function parseMissionQuery(search) {
+  const q = new URLSearchParams(search);
+  const window = parseWindow(q);
+  return { site: parseSiteParam(q.get("site")), startMs: window?.startMs ?? null, windowDays: window?.windowDays ?? null };
 }
 
 /** Sitio activo en la página de misión (curado, propio o punto observado). */

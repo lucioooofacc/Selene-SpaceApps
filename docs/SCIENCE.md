@@ -68,7 +68,7 @@ El término de curvatura representa la depresión geométrica de un observador e
 
 ## Horizonte topográfico LOLA (TERRAIN-02)
 
-`lib/horizon-lola.js` calcula el horizonte real desde `LDEM_60S_240M_FLOAT` (DEC-025, DEC-029). Por cada azimut (cada 0,5°, desde el norte en sentido horario) recorre un círculo máximo desde el sitio, cada 120 m hasta 300 km, interpola la altura bilinealmente y toma el máximo de
+`lib/horizon-lola.js` calcula el horizonte real desde `LDEM_60S_240M_FLOAT` (DEC-025, DEC-030). Por cada azimut (cada 0,5°, desde el norte en sentido horario) recorre un círculo máximo desde el sitio, cada 120 m hasta 300 km, interpola la altura bilinealmente y toma el máximo de
 
 `e(δ) = atan2(r·cos δ − r₀, r·sin δ)`
 

@@ -22,6 +22,7 @@ const state = {
   playing: false,
   speed: 1, // horas simuladas por segundo real
   mapView: "heat", // "global" | "heat" | "polar"
+  placesCategory: "overall", // ranking de "Mejores lugares": overall | science | communication | light (UI-13)
   mapMode: "3d", // GLOBAL y POLO SUR: "3d" (modelo) | "2d" (imagen NASA), DEC-021
   customSites: [], // sitios agregados con el botón "+"
 };

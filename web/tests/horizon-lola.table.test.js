@@ -1,6 +1,6 @@
 /**
  * Validación de la tabla versionada `src/data/terrain/lola-horizons.js`
- * (TERRAIN-02, DEC-029): procedencia, forma, rangos, unidades y cobertura.
+ * (TERRAIN-02, DEC-030): procedencia, forma, rangos, unidades y cobertura.
  * La prueba final, opcional, la regenera desde los rasters LOLA reales si
  * están en LOLA_RAW_DIR (por defecto web/data/raw) y exige que coincida.
  */

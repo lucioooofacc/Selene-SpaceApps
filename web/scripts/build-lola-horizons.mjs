@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Calcula el horizonte topográfico de los sitios curados desde el DEM LOLA
- * polar sur (TERRAIN-02, DEC-029) y escribe la tabla versionada
+ * polar sur (TERRAIN-02, DEC-030) y escribe la tabla versionada
  * `src/data/terrain/lola-horizons.js`.
  *
  * Entradas: `ldem_60s_240m_float.img` y `ldec_60s_240m.img` verificados
@@ -110,7 +110,7 @@ export function buildTable({ dem, counts, sites = SITES, grid = LOLA_GRID, param
 export function renderModule(table) {
   const lines = [
     "/**",
-    " * Horizonte topográfico LOLA de los sitios curados (TERRAIN-02, DEC-029).",
+    " * Horizonte topográfico LOLA de los sitios curados (TERRAIN-02, DEC-030).",
     " *",
     " * ARCHIVO GENERADO por `web/scripts/build-lola-horizons.mjs`; no editar a mano.",
     " * Fuente: NASA PDS LRO-L-LOLA-4-GDR-V1.0 (DOI 10.17189/1520642),",

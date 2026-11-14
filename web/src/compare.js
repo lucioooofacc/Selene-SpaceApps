@@ -13,7 +13,7 @@ import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
 import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js";
 import { renderComparison } from "./ui/compare.js";
 import { applySettings, initSettings } from "./ui/settings.js";
-import { compareUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
+import { compareUrl, missionUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
 
 const DESIGN_WIDTH = 1992;
 const $ = (id) => document.getElementById(id);
@@ -66,6 +66,10 @@ function render() {
   });
   // La URL refleja la selección para poder compartirla o recargarla.
   history.replaceState(null, "", compareUrl({ ...selection, startMs, windowDays }));
+  // Volver a la misión (o imprimir su informe) con el sitio A y las mismas fechas (UI-12).
+  document.querySelectorAll("[data-mission-link]").forEach((link) => {
+    link.href = missionUrl({ site: selection.a, startMs, windowDays, dateChosen: true }, link.dataset.missionLink);
+  });
 }
 
 function fitStage() {

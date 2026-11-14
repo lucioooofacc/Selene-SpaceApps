@@ -1,5 +1,5 @@
 /**
- * Horizonte topográfico real desde el DEM LOLA polar sur (TERRAIN-02, DEC-029).
+ * Horizonte topográfico real desde el DEM LOLA polar sur (TERRAIN-02, DEC-030).
  *
  * Módulo puro: sin DOM, red ni archivos. Tiene dos partes:
  *
@@ -35,7 +35,7 @@ const DEG = Math.PI / 180;
 /** Versión del algoritmo. Cambiarla si cambia cualquier resultado. */
 export const HORIZON_ALGORITHM = "selene-lola-horizon/v1";
 
-/** Parámetros acordados para TERRAIN-02 (DEC-029). */
+/** Parámetros acordados para TERRAIN-02 (DEC-030). */
 export const HORIZON_PARAMS = Object.freeze({
   maxDistanceKm: 300,
   stepKm: 0.12, // medio píxel de 240 m

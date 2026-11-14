@@ -10,12 +10,13 @@ import "./styles/main.css";
 import "./styles/report.css";
 import { computeScenario, sampleAt } from "./lib/analysis.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
-import { getSite, getState, setState, subscribe } from "./state.js";
+import { CUSTOM_ID, getSite, getState, setState, subscribe } from "./state.js";
 import { initMap, placeAccent, renderMap } from "./ui/map.js";
 import { initPlaces, rankedSites, renderPlaces } from "./ui/places.js";
-import { updateCompareLinks } from "./ui/links.js";
+import { currentSite, missionQuery, parseMissionQuery, updateCompareLinks } from "./ui/links.js";
 import { initReport } from "./ui/report.js";
 import { applySettings, getSettings, initSettings } from "./ui/settings.js";
+import { initQualityDialog } from "./ui/provenance.js";
 import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
 import { refreshCalendar } from "./ui/calendar.js";
 import { renderInsight, renderStatus } from "./ui/status.js";
@@ -76,6 +77,7 @@ const SCENARIO_KEYS = ["siteId", "lat", "lon", "startMs", "windowDays", "customS
 subscribe((state, changed) => {
   const has = (...keys) => keys.some((k) => changed.has(k));
   if (has(...SCENARIO_KEYS, "dateChosen")) {
+    syncUrl(state);
     ensureScenario(state);
     renderParamsFields(state);
     renderMap(state);
@@ -84,9 +86,28 @@ subscribe((state, changed) => {
     return;
   }
   if (has("mapView", "mapMode")) renderMap(state);
+  if (has("placesCategory")) {
+    renderPlaces(state);
+    updateCompareLinks(state, rankedSites(state));
+  }
   if (has("playing", "speed")) renderPlayback(state);
   if (has("timeMs", "playing")) renderInstant(state, { force: changed.has("playing") });
 });
+
+/** La URL refleja el sitio y las fechas para compartir el enlace o volver desde la comparación (UI-12). */
+function syncUrl(state) {
+  const site = currentSite(state);
+  if (site) history.replaceState(null, "", `${location.pathname}${missionQuery({ site, ...state })}${location.hash}`);
+}
+
+/** Selección inicial desde la URL (sitio y fechas); lo inválido se ignora. */
+function stateFromUrl() {
+  const { site, startMs, windowDays } = parseMissionQuery(location.search);
+  const patch = {};
+  if (site) Object.assign(patch, { siteId: site.custom ? CUSTOM_ID : site.id, lat: site.lat, lon: site.lon });
+  if (startMs != null) Object.assign(patch, { startMs, windowDays, timeMs: startMs, dateChosen: true });
+  return patch;
+}
 
 /** El diseño mide 1992 px de ancho; se escala para ocupar el ancho de la ventana. */
 function fitStage() {
@@ -96,7 +117,8 @@ function fitStage() {
 
 function init() {
   applySettings();
-  setState({ mapMode: getSettings().mapMode });
+  setState({ mapMode: getSettings().mapMode, ...stateFromUrl() });
+  if (location.search) syncUrl(getState()); // reemplaza parámetros inválidos por la selección real
   setLang(initialLang());
   fitStage();
   initPlaces();
@@ -118,6 +140,7 @@ function init() {
 
   renderAll();
   initReport(() => scenario);
+  initQualityDialog(() => ({ site: getSite(getState().siteId), scenario }));
   initSettings({ onLanguage: renderAll, onMapMode: (mapMode) => setState({ mapMode }) });
 }
 
