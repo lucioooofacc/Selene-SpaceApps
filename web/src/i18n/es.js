@@ -64,7 +64,7 @@ export default {
   map: {
     tabsLabel: "Vista del mapa",
     global: "GLOBAL",
-    heat: "ELEVACIÓN",
+    heat: "MAPA DE CALOR",
     polar: "POLO SUR",
     observed: "Punto observado",
     addSite: "Agregar coordenada como sitio",
