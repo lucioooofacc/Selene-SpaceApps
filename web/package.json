@@ -13,7 +13,8 @@
     "data:lola:verify": "node scripts/download-lola.mjs --verify",
     "data:lola:prepare": "node scripts/prepare-lola.mjs",
     "data:lola:horizons": "node scripts/build-lola-horizons.mjs",
-    "data:ephemerides": "node scripts/build-ephemerides.mjs"
+    "data:ephemerides": "node scripts/build-ephemerides.mjs",
+    "data:lola:reduced": "node scripts/build-lola-polar-reduced.mjs"
   },
   "devDependencies": {
     "vite": "^8.3.8"
