@@ -89,6 +89,7 @@ export function buildSiteEphemeris(site, sun, earth) {
         azimuth: "milésimas de grado desde el norte, sentido horario (aparente, sin aire)",
         elevation: "milésimas de grado sobre el plano tangente local (sin topografía)",
         earthIllum: "centésimas de % del disco terrestre iluminado",
+        radius: "diezmilésimas de grado (mitad del diámetro angular de Horizons)",
       },
       assumptions: [...new Set([...sun.assumptions, ...earth.assumptions])],
     },
@@ -99,6 +100,8 @@ export function buildSiteEphemeris(site, sun, earth) {
       earthAz: earth.samples.azimuthDeg.map((v) => int(v, 1000)),
       earthEl: earth.samples.elevationDeg.map((v) => int(v, 1000)),
       earthIllum: earth.samples.illuminatedPct.map((v) => int(v, 100)),
+      sunRadius: sun.samples.angularDiameterArcsec.map((v) => int(v / 7200, 10000)),
+      earthRadius: earth.samples.angularDiameterArcsec.map((v) => int(v / 7200, 10000)),
     },
   };
   decodeEphemeris(out); // misma validación que en el navegador

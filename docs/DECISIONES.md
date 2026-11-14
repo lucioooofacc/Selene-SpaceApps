@@ -524,3 +524,21 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Efecto:** Shackleton pasa de 10,9 % a **62,2 %** de luz y de 0 % a **46,5 %** de comunicación (media de 13 ventanas de 30 días), con 100 % de luz en el verano austral (nov–ene).
 - **Alternativas descartadas:** mantener R04 explicándolo (el sitio quedaba como un mal lugar por un artefacto de la tabla); la cresta calculada (no oficial); LM1 Shackleton Rim B (más bajo y con menos luz).
 - **Estado:** vigente. Reemplaza el punto de Shackleton de DEC-019 y resuelve el hallazgo de DEC-030. Los valores históricos de R04 en DEC-030, DEC-032 y DEC-033 se dejan como estaban.
+
+## DEC-036 — Política única de visibilidad del Sol y la Tierra (CORE-02)
+
+- **Contexto / problema:** el escenario consideraba visible el Sol con medio disco y la Tierra con cualquier parte, mientras que el mapa de calor usaba el centro para los dos. Los radios eran fijos (0,27° y 0,95°) y la fracción del Sol se aproximaba linealmente. Con datos reales (Horizons < 0,002°, LOLA) el criterio del disco pasó a ser la mayor diferencia posible en los números: Shackleton (R01) va de 56 % a 65 % de luz y Cabeus de 6 % a 21 % de comunicación según la regla elegida.
+- **Decisión (Facundo, 14/11/2026, a propuesta del análisis):**
+  - **Sol visible** si asoma al menos la mitad del disco (centro sobre el horizonte).
+  - **Potencia** proporcional a la fracción del disco que asoma, con el área exacta del segmento circular.
+  - **Tierra visible** (comunicación) si asoma cualquier parte del disco: una antena puede enlazar con poca Tierra a la vista.
+  - **Radios** de JPL Horizons en cada instante; radios medios solo con el modelo aproximado.
+  - **La misma regla** en escenario, muestra instantánea y mapa de calor.
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: `VISIBILITY_POLICY`, `discFraction(margin, radius)`, `sunVisible(margin)`, `earthVisible(margin, radius)`; `computeScenario()` las usa con el radio de cada muestra; `computePolarHeatmap()` también (antes probaba el centro de la Tierra); `scenario.visibility` expone la política.
+  - Efemérides `selene-ephemeris/v2`: agregan `sunRadius` y `earthRadius` (diezmilésimas de grado, mitad del diámetro angular de Horizons) a cada archivo (~410 KiB por sitio); `positionsAt()` y el traslado a otros puntos (DEC-034) los devuelven.
+  - Pruebas en `web/tests/visibility.test.js`: área exacta (valores conocidos, simetría, monotonía), umbrales, radios de Horizons por muestra, radios medios sin Horizons y concordancia celda a celda entre el mapa de calor y la misma cuenta del escenario.
+- **Corrección a la propuesta:** se había dicho que el radio real de la Tierra rondaba 0,90°. Medido en todo el rango de Horizons va de 0,899° a 1,025°, con media 0,951°: el 0,95° fijo era la media correcta y se conserva como valor del modelo aproximado. El Sol va de 0,261° a 0,272° (media 0,267°).
+- **Efecto:** con la regla elegida los resultados casi no cambian (media anual: Shackleton 62,2 % de luz y 46,5 % de comunicación; Cabeus 21,6 % → 21,7 % de comunicación). Se gana coherencia entre pantallas, radios medidos y una regla documentada y probada.
+- **Alternativas descartadas:** Sol con cualquier parte (sobrestima la energía útil con un borde de Sol); Sol solo con disco entero (subestima, el panel ya recibe energía antes); Tierra por el centro (subestima el enlace); seguir con radios fijos (error de hasta ±8 % en la Tierra).
+- **Estado:** vigente. La visibilidad geométrica de la Tierra sigue sin ser un presupuesto de enlace (fuera de alcance). El mapa de calor usa la regla, pero sigue con el modelo aproximado y el horizonte sintético (MAP-01).

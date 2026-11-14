@@ -37,9 +37,42 @@ function panelFactor(lat, elevationDeg) {
   return Math.abs(lat) >= 60 ? Math.cos(e) : Math.max(0, Math.sin(e));
 }
 
+// ---------------------------------------------------------------------------
+// Política de visibilidad única (CORE-02, DEC-036). La usan el escenario, la
+// muestra instantánea (`sampleAt`, que lee las mismas series) y el mapa de
+// calor. `margin` es la elevación del centro del disco menos la del horizonte
+// en ese azimut (grados); el horizonte se toma localmente recto a la escala
+// del disco. `radius` es el radio angular del disco (grados): el de JPL
+// Horizons en cada instante, o el medio de astro.js con el modelo aproximado.
+// ---------------------------------------------------------------------------
+
+export const VISIBILITY_POLICY = Object.freeze({
+  sun: "half-disc", // visible si asoma al menos la mitad del disco
+  earth: "any-part", // visible si asoma cualquier parte del disco
+  power: "visible-disc-fraction", // potencia ∝ fracción del disco que asoma
+});
+
+/** Fracción visible (0 a 1) de un disco cortado por un horizonte recto: área exacta del segmento circular. */
+export function discFraction(margin, radius) {
+  if (margin >= radius) return 1;
+  if (margin <= -radius) return 0;
+  const d = margin / radius;
+  return 1 - (Math.acos(d) - d * Math.sqrt(1 - d * d)) / Math.PI;
+}
+
+/** Sol visible: asoma al menos la mitad del disco (centro sobre el horizonte). */
+export function sunVisible(margin) {
+  return margin > 0;
+}
+
+/** Tierra visible para comunicación: asoma cualquier parte del disco. */
+export function earthVisible(margin, radius = EARTH_RADIUS) {
+  return margin > -radius;
+}
+
 /** Calidad de enlace: crece con el margen de la Tierra sobre el horizonte (0 a 1). */
-function linkQuality(margin) {
-  if (margin <= -EARTH_RADIUS) return 0;
+function linkQuality(margin, radius = EARTH_RADIUS) {
+  if (!earthVisible(margin, radius)) return 0;
   return clamp01(0.04 + margin / 12);
 }
 
@@ -149,6 +182,8 @@ export function computeScenario(site, startMs, windowDays) {
   for (let i = 0; i < total; i++) {
     const t = startMs + i * STEP_MS;
     const { sun, earth, phase, real } = positions.at(t);
+    const sunRadius = sun.radius ?? SUN_RADIUS;
+    const earthRadius = earth.radius ?? EARTH_RADIUS;
     if (real) {
       realTotal++;
       if (i < windowSteps) realWindow++;
@@ -158,7 +193,7 @@ export function computeScenario(site, startMs, windowDays) {
     const earthHz = horizon(earth.azimuth);
     const sunMargin = sun.elevation - sunHz;
     const earthMargin = earth.elevation - earthHz;
-    const sunFraction = clamp01((sunMargin + SUN_RADIUS) / (2 * SUN_RADIUS));
+    const sunFraction = discFraction(sunMargin, sunRadius);
 
     s.times[i] = t;
     s.sunEl[i] = sun.elevation;
@@ -167,10 +202,10 @@ export function computeScenario(site, startMs, windowDays) {
     s.earthEl[i] = earth.elevation;
     s.earthAz[i] = earth.azimuth;
     s.earthHz[i] = earthHz;
-    s.sunVis[i] = sunFraction > 0.5 ? 1 : 0;
-    s.earthVis[i] = earthMargin > -EARTH_RADIUS ? 1 : 0;
+    s.sunVis[i] = sunVisible(sunMargin) ? 1 : 0;
+    s.earthVis[i] = earthVisible(earthMargin, earthRadius) ? 1 : 0;
     s.power[i] = sunFraction * panelFactor(site.lat, sun.elevation);
-    s.link[i] = linkQuality(earthMargin);
+    s.link[i] = linkQuality(earthMargin, earthRadius);
   }
 
   // Resumen solo dentro de la ventana elegida.
@@ -209,6 +244,7 @@ export function computeScenario(site, startMs, windowDays) {
     windowSteps,
     series: s,
     horizon,
+    visibility: VISIBILITY_POLICY,
     ephemeris: {
       // "horizons": toda la ventana con JPL Horizons; "approximate": nada;
       // "mixed": parte de la ventana fuera de la cobertura de las series.
@@ -335,7 +371,9 @@ export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minL
       let hits = 0;
       for (let k = 0; k < samples; k++) {
         const pos = mode === "earth" ? earthPosition(site, earthSub[k]) : sunPosition(site, sunSub[k]);
-        if (pos.elevation > horizon(pos.azimuth)) hits++;
+        const margin = pos.elevation - horizon(pos.azimuth);
+        // Misma política que el escenario (CORE-02, DEC-036).
+        if (mode === "earth" ? earthVisible(margin, EARTH_RADIUS) : sunVisible(margin)) hits++;
       }
       values[y * size + x] = hits / samples;
     }
