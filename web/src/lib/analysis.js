@@ -77,18 +77,53 @@ function linkQuality(margin, radius = EARTH_RADIUS) {
   return clamp01(0.04 + margin / 12);
 }
 
-function computeWindows(flags, start, end, times) {
+/**
+ * Ventanas continuas con flags[i] = 1. Los bordes que caen dentro del período
+ * usan el instante refinado del cruce (SCIENCE-02, DEC-048) si está en
+ * `cross` (índice de la primera muestra con el estado nuevo → instante); el
+ * inicio y el fin del período quedan como están.
+ */
+function computeWindows(flags, start, end, times, cross = new Map()) {
   const windows = [];
   let open = -1;
   for (let i = start; i < end; i++) {
     if (flags[i] && open < 0) open = i;
     if (!flags[i] && open >= 0) {
-      windows.push({ start: times[open], end: times[i] });
+      windows.push({ start: open > start ? (cross.get(open) ?? times[open]) : times[open], end: cross.get(i) ?? times[i] });
       open = -1;
     }
   }
-  if (open >= 0) windows.push({ start: times[open], end: times[end - 1] + STEP_MS });
+  if (open >= 0) windows.push({ start: open > start ? (cross.get(open) ?? times[open]) : times[open], end: times[end - 1] + STEP_MS });
   return windows;
+}
+
+/** Tolerancia del refinamiento de cruces (SCIENCE-02, DEC-048). */
+export const CROSSING_TOLERANCE_MS = 5_000;
+
+/**
+ * Instante del cruce entre dos muestras (t0 con estado `before`, t1 con el
+ * contrario) por bisección sobre `visibleAt(t)`, que evalúa posiciones y
+ * horizonte en el instante exacto. Supone un solo cruce en el intervalo (el
+ * mismo supuesto que el muestreo de 10 min).
+ */
+function refineCrossing(t0, t1, before, visibleAt) {
+  let lo = t0;
+  let hi = t1;
+  while (hi - lo > CROSSING_TOLERANCE_MS) {
+    const mid = (lo + hi) / 2;
+    if (visibleAt(mid) === before) lo = mid;
+    else hi = mid;
+  }
+  return Math.round((lo + hi) / 2);
+}
+
+/** Cruces refinados de toda la serie: índice j (primera muestra con estado nuevo) → instante. */
+function refineAll(flags, times, visibleAt) {
+  const out = new Map();
+  for (let j = 1; j < flags.length; j++) {
+    if (flags[j] !== flags[j - 1]) out.set(j, refineCrossing(times[j - 1], times[j], Boolean(flags[j - 1]), visibleAt));
+  }
+  return out;
 }
 
 function level(value, { high, mid }) {
@@ -226,8 +261,19 @@ export function computeScenario(site, startMs, windowDays) {
   const illumination = (100 * sunSteps) / windowSteps;
   const power = powerSum / windowSteps;
   const communication = (100 * earthSteps) / windowSteps;
-  const lightWindows = computeWindows(s.sunVis, 0, windowSteps, s.times);
-  const linkWindows = computeWindows(s.earthVis, 0, windowSteps, s.times);
+  // Cruces refinados (SCIENCE-02, DEC-048): mismas posiciones y horizonte que las muestras.
+  s.sunCross = refineAll(s.sunVis, s.times, (t) => {
+    const p = positions.at(t).sun;
+    return sunVisible(p.elevation - horizon(p.azimuth));
+  });
+  s.earthCross = refineAll(s.earthVis, s.times, (t) => {
+    const p = positions.at(t).earth;
+    return earthVisible(p.elevation - horizon(p.azimuth), p.radius ?? EARTH_RADIUS);
+  });
+  // Los porcentajes y minutos del resumen siguen contando muestras (no cambian el ranking);
+  // los bordes de las ventanas usan los cruces refinados.
+  const lightWindows = computeWindows(s.sunVis, 0, windowSteps, s.times, s.sunCross);
+  const linkWindows = computeWindows(s.earthVis, 0, windowSteps, s.times, s.earthCross);
 
   const criteria = {
     illumination: { value: illumination, level: level(illumination, THRESHOLDS.illumination) },
@@ -273,13 +319,28 @@ export function computeScenario(site, startMs, windowDays) {
   };
 }
 
-/** Busca el próximo cambio de visibilidad a partir del índice i. */
-function nextChange(flags, times, i) {
+/** Próximo cambio de visibilidad desde el índice i: instante refinado (DEC-048) e índice de la muestra. */
+function nextChange(flags, times, i, cross) {
   const current = flags[i];
   for (let j = i + 1; j < flags.length; j++) {
-    if (flags[j] !== current) return { visible: Boolean(current), at: times[j] };
+    if (flags[j] !== current) return { visible: Boolean(current), at: cross?.get(j) ?? times[j], index: j };
   }
-  return { visible: Boolean(current), at: null };
+  return { visible: Boolean(current), at: null, index: -1 };
+}
+
+/**
+ * Estado instantáneo de un cuerpo en `ms`: si el cruce refinado ya pasó
+ * dentro del intervalo de 10 min, el estado es el nuevo y "próximo cambio"
+ * es el siguiente.
+ */
+function bodyState(flags, times, i, cross, ms) {
+  let next = nextChange(flags, times, i, cross);
+  let visible = Boolean(flags[i]);
+  if (next.at !== null && next.at <= ms) {
+    visible = !visible;
+    next = nextChange(flags, times, next.index, cross);
+  }
+  return { visible, next: { visible: next.visible, at: next.at } };
 }
 
 /** Estado instantáneo en el momento `ms` (interpolado entre muestras). */
@@ -303,6 +364,9 @@ export function sampleAt(scenario, ms) {
   const sunHz = scenario.horizon(sunAz);
   const earthHz = scenario.horizon(earthAz);
 
+  const sunState = bodyState(s.sunVis, s.times, i, s.sunCross, ms);
+  const earthState = bodyState(s.earthVis, s.times, i, s.earthCross, ms);
+
   // Luz y enlace acumulados desde el inicio hasta este instante.
   let sunSteps = 0;
   let earthSteps = 0;
@@ -319,19 +383,19 @@ export function sampleAt(scenario, ms) {
       azimuth: sunAz,
       horizon: sunHz,
       margin: sunEl - sunHz,
-      visible: Boolean(s.sunVis[i]),
+      visible: sunState.visible,
       power: lerp(s.power),
-      next: nextChange(s.sunVis, s.times, i),
+      next: sunState.next,
     },
     earth: {
       elevation: earthEl,
       azimuth: earthAz,
       horizon: earthHz,
       margin: earthEl - earthHz,
-      visible: Boolean(s.earthVis[i]),
+      visible: earthState.visible,
       link: lerp(s.link),
       phase: lerp(s.earthPhase),
-      next: nextChange(s.earthVis, s.times, i),
+      next: earthState.next,
     },
     accumulated: {
       sunMinutes: sunSteps * STEP_MINUTES,

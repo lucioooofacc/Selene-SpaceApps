@@ -693,3 +693,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Resultados medidos** (navegador, Shackleton, 10 días): con capa Viabilidad y Mejores fechas pedidas a la vez, el hilo principal no se detuvo más de 37 ms (antes 0,4–1 s). Las 5 fechas del worker coinciden con las calculadas en la página. Al recargar, las dos salen de la caché persistente al instante.
 - **Alternativas descartadas:** IndexedDB (más código para resultados que pesan unos KB); compartir el registro de datos con `SharedArrayBuffer` (exige cabeceras COOP/COEP que el despliegue no tiene); guardar las series completas (varios MB).
 - **Estado:** vigente.
+
+## DEC-048 — Cruces refinados de amaneceres, ocasos y de la Tierra (SCIENCE-02)
+
+- **Contexto / problema:** SCIENCE-02 (#19). Las ventanas de luz y de enlace y los "próximo amanecer/ocaso" caían siempre en la muestra de 10 min siguiente al cruce real (hasta 10 min tarde).
+- **Decisión:** refinar cada cruce por **bisección** entre las dos muestras que lo encierran, evaluando en instantes intermedios las mismas posiciones del escenario (JPL Horizons interpolado o el modelo, DEC-033) y el mismo horizonte, con la política de visibilidad de DEC-036 (Sol: medio disco; Tierra: cualquier parte del disco, con su radio). Tolerancia de **5 s**. Supone un solo cruce por intervalo de 10 min (el mismo supuesto del muestreo).
+  - Se refinan los bordes de las ventanas dentro del período (el inicio y el fin del período quedan igual) y el estado instantáneo: si el cruce ya pasó dentro del intervalo, el cuerpo cambia de estado y "próximo cambio" apunta al siguiente.
+  - **No cambian** los porcentajes, minutos acumulados ni puntos de viabilidad (siguen contando muestras): el ranking, los mapas y los números de la tabla de la etapa 2 quedan iguales. La suma de las ventanas puede diferir de los minutos con Sol en menos de 10 min por cruce.
+- **Solución aplicada:** `web/src/lib/analysis.js` (`refineCrossing()`, `refineAll()`, `CROSSING_TOLERANCE_MS`; `series.sunCross` y `series.earthCross`; `computeWindows()` y `nextChange()`/`bodyState()` los usan). Pruebas en `web/tests/crossings.test.js`. Fila nueva en `docs/VALIDACION.md`.
+- **Resultados medidos:** 46 cruces en 7 sitios × 30 días (desde 01/01/2027): los bordes se adelantan en promedio 4,5 min (máximo 9,7 min) respecto de la muestra, lo esperable para un error uniforme de hasta un paso. Costo extra despreciable (~7 evaluaciones por cruce).
+- **Alternativas descartadas:** interpolación lineal del margen entre muestras (ignora cambios del perfil del horizonte entre las dos direcciones); bajar el paso a 1 min en todo el escenario (10 veces más cálculo para mejorar solo los bordes).
+- **Estado:** vigente. La exactitud real de los instantes la limitan la interpolación horaria de Horizons y la resolución del horizonte, no la tolerancia de 5 s.

@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (PERF-01, rama `perf/worker-cache`).
+Última actualización: 2026-11-14 (SCIENCE-02, rama `feat/refinar-ventanas`).
 
 ---
 
@@ -99,6 +99,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~TEST-01: separar validaciones contra fuentes reales, formalizar controles físicos, justificar tolerancias y agregar CI.~~ Resuelto 2026-11-14 (rama `test/modelos-cientificos`, #10, DEC-037, `docs/VALIDACION.md`).
 - [ ] Horizonte LOLA real para Chang'e 4 y Apollo 11 (hoy sintético: quedan fuera de `LDEM_60S_240M`). Detectado en la auditoría de datos del 14/11/2026. — Sin asignar · TERRAIN-03 #71, DEC-005
 - [ ] Quitar `relief` y `elevationKm` de los sitios curados cuando TERRAIN-03 esté integrada. — Sin asignar · DATA-03 #72, DEC-005
+- [x] ~~SCIENCE-02: refinar los instantes de amaneceres, ocasos y salidas y puestas de la Tierra (antes redondeados al paso de 10 min). — #19~~ Resuelto 2026-11-14 (rama `feat/refinar-ventanas`, DEC-048).
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01
 - [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).
 - [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025
