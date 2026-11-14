@@ -6,6 +6,9 @@ dist/
 # Caché local de efemérides Horizons (web/scripts/fetch-horizons.mjs, DEC-024)
 .cache/
 
+# Producto LOLA descargado y recortes derivados (se regeneran con web/scripts/)
+web/data/
+
 # Sistema / editores
 .DS_Store
 Thumbs.db
