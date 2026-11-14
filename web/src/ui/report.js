@@ -1,5 +1,6 @@
 /**
- * Informe imprimible de la misión planificada (UI-06, DEC-020).
+ * Informe imprimible de la misión planificada (UI-06, DEC-020; solo texto,
+ * DEC-044).
  * "Informe" en el menú arma el informe con el escenario actual y abre el
  * diálogo de impresión del navegador (desde ahí también se guarda en PDF).
  * En pantalla el informe está oculto; los estilos de report.css lo muestran
@@ -12,9 +13,11 @@ import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
 import { getLang, t } from "../i18n/index.js";
 import { getSite } from "../state.js";
 import { dataNote, provenanceHtml, qualityHtml } from "./provenance.js";
+import { STEP_MINUTES } from "../lib/analysis.js";
+import { windowStats } from "../lib/stats.js";
 
 const $ = (id) => document.getElementById(id);
-const MAX_WINDOWS = 12; // filas por tabla de ventanas para no pasar de dos hojas
+const MAX_WINDOWS = 12; // renglones por lista de ventanas para no pasar de dos hojas
 
 function formatValue(kind, value) {
   if (kind === "percent") return pct(value);
@@ -25,29 +28,27 @@ function formatValue(kind, value) {
 
 const stamp = (ms) => `${dateUTC(ms)} ${timeUTC(ms)}`;
 
-function windowsTable(windows, titleKey) {
-  const rows = windows
+/** Ventanas como lista de renglones: "1 dic 2026 00:00 → 3 dic 2026 14:20 (2 d 14 h)". */
+function windowsList(windows, titleKey) {
+  const items = windows
     .slice(0, MAX_WINDOWS)
-    .map(
-      (w, i) =>
-        `<tr><td>${i + 1}</td><td>${stamp(w.start)}</td><td>${stamp(w.end)}</td><td>${duration((w.end - w.start) / 60_000)}</td></tr>`,
-    )
+    .map((w) => `<li>${stamp(w.start)} → ${stamp(w.end)} (${duration((w.end - w.start) / 60_000)})</li>`)
     .join("");
-  const more = windows.length > MAX_WINDOWS ? `<p class="rep-small">${t("report.more", { n: windows.length - MAX_WINDOWS })}</p>` : "";
+  const more = windows.length > MAX_WINDOWS ? `<p>${t("report.more", { n: windows.length - MAX_WINDOWS })}</p>` : "";
   return `
     <h3>${t(titleKey)}</h3>
-    ${
-      windows.length
-        ? `<table><thead><tr><th>#</th><th>${t("report.start")}</th><th>${t("report.end")}</th><th>${t("report.length")}</th></tr></thead><tbody>${rows}</tbody></table>${more}`
-        : `<p class="rep-small">${t("report.none")}</p>`
-    }`;
+    ${windows.length ? `<ol>${items}</ol>${more}` : `<p>${t("report.none")}</p>`}`;
 }
 
-/** Arma el informe con el escenario actual. */
+/**
+ * Arma el informe con el escenario actual (DEC-044): documento de texto
+ * corrido, sin cajas ni bordes, pensado para imprimir.
+ */
 export function renderReport(scenario) {
   const site = getSite(scenario.site.id);
   const name = site ? site.name : t("map.observed");
   const v = scenario.viability;
+  const st = windowStats(scenario, STEP_MINUTES);
   const generated = new Intl.DateTimeFormat(getLang() === "es" ? "es-UY" : "en-US", {
     dateStyle: "long",
     timeStyle: "short",
@@ -55,67 +56,66 @@ export function renderReport(scenario) {
   }).format(Date.now());
 
   const metrics = scenarioMetrics(scenario)
-    .map((m) => `<tr><th>${t(`compare.metric.${m.key}`)}<small>${t(`compare.metricHint.${m.key}`)}</small></th><td>${formatValue(m.kind, m.value)}</td></tr>`)
+    .map((m) => `<li><strong>${t(`compare.metric.${m.key}`)}:</strong> ${formatValue(m.kind, m.value)}. <span class="rep-note">${t(`compare.metricHint.${m.key}`)}</span></li>`)
     .join("");
   const criteria = Object.entries(v.criteria)
-    .map(([key, c]) => `<tr><th>${t(`compare.criterion.${key}`)}</th><td>${t(`compare.level.${c.level}`)}</td></tr>`)
-    .join("");
+    .map(([key, c]) => `${t(`compare.criterion.${key}`)}: ${t(`compare.level.${c.level}`).toLowerCase()}`)
+    .join("; ");
+  const avg = (key, body) =>
+    `<li><strong>${t(`params.${key}`)}:</strong> ${t("report.avgLine", {
+      mean: deg(body.elevation.mean),
+      min: deg(body.elevation.min),
+      max: deg(body.elevation.max),
+      pct: Math.round(body.visibleFraction * 100),
+    })}</li>`;
 
   $("report").innerHTML = `
     <header class="rep-head">
-      <div>
-        <p class="rep-brand">SELENE</p>
-        <h1>${t("report.title")}</h1>
-      </div>
-      <p class="rep-small">${t("report.generated", { date: generated })}</p>
+      <p class="rep-brand">SELENE</p>
+      <h1>${t("report.title")}</h1>
+      <p class="rep-note">${t("report.generated", { date: generated })}</p>
     </header>
 
-    <p class="rep-warning">${dataNote(scenario)}</p>
+    <p class="rep-data"><em>${dataNote(scenario)}</em></p>
 
-    <section class="rep-grid">
-      <div>
-        <h2>${t("report.siteTitle")}</h2>
-        <dl>
-          <dt>${t("params.site")}</dt><dd>${name}</dd>
-          <dt>${t("params.lat")}</dt><dd>${coord(scenario.site.lat, "lat")}</dd>
-          <dt>${t("params.lon")}</dt><dd>${coord(scenario.site.lon, "lon")}</dd>
-          ${site?.agency ? `<dt>${t("report.agency")}</dt><dd>${site.agency}</dd>` : ""}
-        </dl>
-      </div>
-      <div>
-        <h2>${t("report.periodTitle")}</h2>
-        <dl>
-          <dt>${t("report.start")}</dt><dd>${dateUTC(scenario.startMs)} 00:00 UTC</dd>
-          <dt>${t("report.end")}</dt><dd>${dateUTC(scenario.endMs - DAY_MS)} 24:00 UTC</dd>
-          <dt>${t("report.days")}</dt><dd>${scenario.windowDays}</dd>
-        </dl>
-      </div>
-      <div class="rep-verdict rep-${v.overall}">
-        <h2>${t("compare.viability")}</h2>
-        <p><strong>${t(`compare.level.${v.overall}`)}</strong> · ${t("compare.points", { points: v.points, max: v.maxPoints })}</p>
-        <table>${criteria}</table>
-      </div>
+    <section>
+      <h2>1. ${t("report.siteTitle")} · ${t("report.periodTitle")}</h2>
+      <p>
+        <strong>${name}</strong>${site?.agency ? ` (${site.agency})` : ""}, ${t("params.lat").toLowerCase()} ${coord(scenario.site.lat, "lat")},
+        ${t("params.lon").toLowerCase()} ${coord(scenario.site.lon, "lon")}.
+        ${t("report.periodLine", { start: dateUTC(scenario.startMs), end: dateUTC(scenario.endMs - DAY_MS), days: scenario.windowDays })}
+      </p>
     </section>
 
     <section>
-      <h2>${t("compare.metricsTitle")}</h2>
-      <table class="rep-metrics">${metrics}</table>
+      <h2>2. ${t("compare.viability")}</h2>
+      <p><strong>${t(`compare.level.${v.overall}`)}</strong> (${t("compare.points", { points: v.points, max: v.maxPoints })}). ${criteria}.</p>
     </section>
 
-    <section class="rep-grid rep-grid-2 rep-quality">
-      <div>
-        <h2>${t("quality.provenance")}</h2>
-        ${provenanceHtml(site)}
-      </div>
-      <div>
-        <h2>${t("quality.dataTitle")}</h2>
-        ${qualityHtml(site, scenario)}
-      </div>
+    <section>
+      <h2>3. ${t("compare.metricsTitle")}</h2>
+      <ul>${metrics}</ul>
     </section>
 
-    <section class="rep-grid rep-grid-2">
-      <div>${windowsTable(scenario.summary.lightWindows, "report.lightWindows")}</div>
-      <div>${windowsTable(scenario.summary.linkWindows, "report.linkWindows")}</div>
+    <section>
+      <h2>4. ${t("params.avgTitle")}</h2>
+      <ul>
+        ${avg("sun", st.sun)}
+        ${avg("earth", st.earth)}
+        <li>${t("report.runs", { night: duration(st.longestNightMin), light: duration(st.longestLightMin), blackout: duration(st.longestBlackoutMin) })}</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>5. ${t("report.windowsTitle")}</h2>
+      ${windowsList(scenario.summary.lightWindows, "report.lightWindows")}
+      ${windowsList(scenario.summary.linkWindows, "report.linkWindows")}
+    </section>
+
+    <section>
+      <h2>6. ${t("quality.provenance")} · ${t("quality.dataTitle")}</h2>
+      ${provenanceHtml(site)}
+      ${qualityHtml(site, scenario)}
     </section>
 
     <footer class="rep-foot">

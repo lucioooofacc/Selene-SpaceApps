@@ -1,7 +1,8 @@
 /*
- * Informe imprimible (UI-06). Oculto en pantalla; al imprimir se oculta la
- * interfaz y se muestra el informe en A4, en blanco y negro con acentos
- * suaves para que se lea bien impreso.
+ * Informe imprimible (UI-06; solo texto, DEC-044). Oculto en pantalla; al
+ * imprimir se oculta la interfaz y se muestra el informe en A4 como un
+ * documento de texto corrido: títulos numerados, párrafos y listas. Sin
+ * cajas, fondos, bordes ni esquinas redondeadas.
  */
 
 .report {
@@ -10,220 +11,151 @@
 
 @page {
   size: A4;
-  margin: 16mm 14mm;
+  margin: 18mm 16mm;
 }
 
 @media print {
   html,
   body {
     background: #fff !important;
-    color: #111 !important;
+    color: #000 !important;
   }
 
-  .stage {
+  .stage,
+  .toast {
     display: none !important;
   }
 
   .report {
     display: block;
-    font-family: var(--font);
-    font-size: 10.5pt;
-    line-height: 1.4;
-    color: #111;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11pt;
+    line-height: 1.45;
+    color: #000;
+  }
+
+  .report * {
+    background: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #000 !important;
   }
 
   .report h1 {
-    margin: 0;
-    font-family: var(--font-title);
-    font-size: 20pt;
+    margin: 0 0 2pt;
+    font-size: 18pt;
+    font-weight: 700;
   }
 
   .report h2 {
-    margin: 0 0 6px;
-    font-size: 12pt;
-    border-bottom: 1px solid #bbb;
-    padding-bottom: 2px;
+    margin: 14pt 0 4pt;
+    font-size: 12.5pt;
+    font-weight: 700;
+    break-after: avoid;
   }
 
   .report h3 {
-    margin: 0 0 4px;
+    margin: 8pt 0 2pt;
     font-size: 11pt;
+    font-weight: 700;
+    font-style: italic;
+    break-after: avoid;
   }
 
-  .report section {
-    margin-top: 14px;
+  .report p {
+    margin: 0 0 4pt;
+  }
+
+  .report ul,
+  .report ol {
+    margin: 0 0 4pt;
+    padding-left: 16pt;
+  }
+
+  .report li {
+    margin-bottom: 2pt;
     break-inside: avoid;
-  }
-
-  .rep-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    border-bottom: 2px solid #8a7550;
-    padding-bottom: 6px;
   }
 
   .rep-brand {
     margin: 0;
-    font-weight: 700;
-    font-style: italic;
-    letter-spacing: 0.08em;
-    color: #8a7550;
-  }
-
-  .rep-small {
-    margin: 4px 0 0;
-    color: #555;
     font-size: 9pt;
+    letter-spacing: 0.2em;
   }
 
-  .rep-warning {
-    margin: 10px 0 0;
-    padding: 6px 10px;
-    border-left: 3px solid #8a7550;
-    background: #f5f1e8;
+  .rep-note {
     font-size: 9.5pt;
   }
 
-  .rep-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+  .rep-data {
+    margin-top: 8pt !important;
   }
 
-  .rep-grid-2 {
-    grid-template-columns: 1fr 1fr;
+  .report a {
+    text-decoration: none;
   }
 
-  .report dl {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 2px 10px;
-    margin: 0;
-  }
-
-  .report dt {
-    color: #555;
-  }
-
-  .report dd {
-    margin: 0;
-    font-weight: 700;
-  }
-
-  .report table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 9.5pt;
-  }
-
-  .report th,
-  .report td {
-    padding: 3px 6px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    vertical-align: top;
-  }
-
-  .report thead th {
-    color: #555;
-    font-weight: 700;
-  }
-
-  .rep-metrics tbody th,
-  .rep-metrics th {
-    font-weight: 400;
-    width: 70%;
-  }
-
-  .rep-metrics small {
-    display: block;
-    color: #666;
-    font-size: 8.5pt;
-  }
-
-  .rep-metrics td {
-    font-family: var(--font-mono);
-    font-weight: 600;
-  }
-
-  .rep-verdict p {
-    margin: 0 0 6px;
-  }
-
-  .rep-high strong {
-    color: #2f6b45;
-  }
-
-  .rep-mid strong {
-    color: #8a6a1f;
-  }
-
-  .rep-low strong {
-    color: #9b3436;
-  }
-
+  /* Procedencia (provenance.js): "Rótulo: valor" en renglones */
   .report .prov {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 2px 10px;
-    margin: 0;
-    font-size: 9.5pt;
+    gap: 1pt 10pt;
+    margin: 0 0 6pt;
   }
 
-  .report .prov dt {
-    color: #555;
+  .report .prov dt::after {
+    content: ":";
   }
 
   .report .prov dd {
     margin: 0;
   }
 
-  .report .prov a {
-    color: #111;
-    text-decoration: none;
-  }
-
+  /* Calidad de los datos: "[Real] Coordenadas del sitio — explicación" */
   .report .quality {
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 9.5pt;
   }
 
   .report .quality li {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 4px;
+    display: block;
+    margin-bottom: 3pt;
   }
 
-  .report .quality small {
-    display: block;
-    color: #555;
+  .report .quality li * {
+    display: inline !important;
+  }
+
+  .report .quality small::before {
+    content: " — ";
   }
 
   .report .q-tag {
-    flex: none;
-    min-width: 70px;
-    padding: 0 6px;
-    border: 1px solid #888;
-    border-radius: 8px;
-    font-size: 8pt;
+    display: inline;
+    width: auto;
+    padding: 0;
+    font-size: inherit;
     font-weight: 700;
-    text-align: center;
-    color: #111;
-    background: none;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .report .q-tag::before {
+    content: "[";
+  }
+
+  .report .q-tag::after {
+    content: "] ";
   }
 
   .rep-foot {
-    margin-top: 16px;
-    padding-top: 6px;
-    border-top: 1px solid #bbb;
-    color: #555;
-    font-size: 8.5pt;
+    margin-top: 16pt;
+    font-size: 9pt;
   }
 
   .rep-foot p {
-    margin: 2px 0;
+    margin: 0 0 3pt;
   }
 }

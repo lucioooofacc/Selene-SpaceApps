@@ -294,6 +294,10 @@ export default {
     lightWindows: "Ventanas de luz (Sol visible)",
     linkWindows: "Ventanas de enlace (Tierra visible)",
     none: "Sin ventanas en el período.",
+    periodLine: "Período analizado: del {start} 00:00 al {end} 24:00 UTC ({days} días).",
+    windowsTitle: "Ventanas de luz y de enlace",
+    avgLine: "elevación media {mean} (mín {min}, máx {max}); visible el {pct} % del período.",
+    runs: "Noche más larga: {night}. Luz continua más larga: {light}. Corte de comunicación más largo: {blackout}.",
     more: "… y {n} ventanas más.",
     sources:
       "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (DEC-033; fuera de ese rango, modelo aproximado, DEC-004). Horizonte: relieve LOLA en los sitios polares (DEC-030, DEC-034) y sintético en el resto (DEC-005). Coordenadas de sitios con fuente oficial (DEC-019). Umbrales de viabilidad: criterio del equipo (DEC-007).",
