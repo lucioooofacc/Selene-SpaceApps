@@ -13,7 +13,7 @@ import { DAY_MS } from "../lib/astro.js";
 import { compareScenarios } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
 import { t } from "../i18n/index.js";
-import { provenanceHtml, qualityHtml } from "./provenance.js";
+import { dataNote, provenanceHtml, qualityHtml } from "./provenance.js";
 import { lolaForScenario } from "./lola.js";
 
 const $ = (id) => document.getElementById(id);
@@ -214,4 +214,11 @@ export function renderComparison({ a, b, scA, scB }) {
     ([scA, scB].some((sc) => lolaForScenario(sc).mode === "preview") ? `<span class="cmp-legend-dash">${t("compare.lolaPreview")}</span>` : "");
   $("cmp-criteria").innerHTML = criteriaTable(scA, scB, names);
   $("cmp-quality").innerHTML = qualityHtml(a, scA);
+  // Origen de los datos de cada sitio (UI-02): pueden diferir (curado vs. punto propio).
+  $("cmp-note").innerHTML = [
+    ["a", scA],
+    ["b", scB],
+  ]
+    .map(([slot, sc]) => `<strong>${names[slot]}:</strong> ${dataNote(sc)}`)
+    .join("<br />");
 }

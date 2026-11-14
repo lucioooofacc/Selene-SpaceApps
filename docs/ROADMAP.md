@@ -95,8 +95,8 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 | Tarea | Estado | Depende de |
 | --- | --- | --- |
 | UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ✅ (PR #67, DEC-039) | — |
-| UI-02 (#15): resolución, huecos y cambios asíncronos | ⏳ | CORE-01, UI-01 |
-| MAP-01 (#16): modo de iluminación calculada en el mapa | 🔄 motor integrado (PR #66, DEC-038); interfaz en revisión (rama `feat/mapa-calor-ui`, DEC-040) | — |
+| UI-02 (#15): resolución, huecos y cambios asíncronos | 🔄 en revisión (rama `design/visualizaciones-datos-reales`, DEC-041) | — |
+| MAP-01 (#16): modo de iluminación calculada en el mapa | ✅ motor (PR #66, DEC-038) e interfaz (PR #68, DEC-040) | — |
 | I18N-01 (#17): revisión de traducciones ES/EN | ⏳ | Textos finales de UI-01/UI-02 |
 
 ## Etapa 5 — Entrega ⏳ (equipo, antes del 15/11 23:59)

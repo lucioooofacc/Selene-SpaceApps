@@ -88,7 +88,7 @@ export default {
   },
   params: {
     title: "Parámetros de la misión",
-    modelNote: "Valores calculados con un modelo aproximado (versión 1).",
+    dataHint: "Valores calculados para el período elegido. El botón «i» muestra la procedencia y la calidad de cada dato.",
     site: "Sitio de alunizaje",
     custom: "Sitio personalizado (Mapa)",
     lat: "Latitud",
@@ -122,6 +122,17 @@ export default {
     title: "Comportamiento de los cuerpos celestes durante el plazo de la misión",
   },
   sim: {
+    bodies: {
+      real: "Sol y Tierra: JPL Horizons",
+      derived: "Sol y Tierra: JPL Horizons (trasladadas)",
+      mixed: "Sol y Tierra: JPL Horizons y modelo aproximado",
+      approx: "Sol y Tierra: modelo aproximado",
+    },
+    coverage: {
+      mixed: "Tramo marcado: fuera de las efemérides de JPL Horizons (nov 2026 – dic 2027); ahí el Sol y la Tierra salen del modelo aproximado.",
+      approx: "Todo el período usa el modelo aproximado del Sol y la Tierra (fuera de las efemérides de JPL Horizons o sin serie para este punto).",
+      loading: "Cargando las efemérides de JPL Horizons: mientras tanto, el Sol y la Tierra salen del modelo aproximado.",
+    },
     caption: "Vista panorámica ilustrativa · cielo sin atmósfera",
     relief: "Relieve: {source} · escala vertical ×{exag}",
     horizonSynthetic: "horizonte sintético (modelo v1, no es topografía real)",
@@ -201,8 +212,6 @@ export default {
     slot: { a: "Sitio A", b: "Sitio B" },
     point: "Punto ({lat}° · {lon}°)",
     period: "Del {start} al {end} · {days} días (UTC)",
-    modelNote:
-      "Valores calculados con el modelo aproximado v1: posiciones del Sol y la Tierra periódicas (DEC-004) y horizonte sintético (DEC-005). Sirven para comparar sitios entre sí, no como valores reales de misión.",
     viability: "Viabilidad",
     points: "{points}/{max} puntos",
     level: { high: "Alta", mid: "Media", low: "Baja" },
@@ -293,6 +302,22 @@ export default {
     map2d: "Mapa 2D",
     reset: "Restablecer",
     done: "Listo",
+  },
+  dataNote: {
+    text: "{eph} · {horizon}. Los umbrales de viabilidad son un criterio del equipo.",
+    eph: {
+      real: "Sol y Tierra: efemérides de NASA/JPL Horizons",
+      derived: "Sol y Tierra: JPL Horizons trasladadas desde el sitio curado más cercano",
+      mixed: "Sol y Tierra: JPL Horizons en el {pct} % del período y modelo aproximado en el resto",
+      loading: "Sol y Tierra: modelo aproximado mientras se cargan las efemérides de JPL Horizons",
+      error: "Sol y Tierra: modelo aproximado (no se pudieron cargar las efemérides de JPL Horizons)",
+      approx: "Sol y Tierra: modelo aproximado (período fuera de las efemérides de JPL Horizons, nov 2026 – dic 2027)",
+    },
+    horizon: {
+      lola: "horizonte: relieve LOLA real",
+      reduced: "horizonte: relieve LOLA a menor resolución (aproximado)",
+      synthetic: "horizonte: perfil sintético (no es topografía real)",
+    },
   },
   quality: {
     open: "Datos y fuentes",

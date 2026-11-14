@@ -6,6 +6,8 @@ import { DAY_MS } from "../lib/astro.js";
 import { dateUTC, fromInputValue, missionTime, timeUTC, toInputValue } from "../lib/format.js";
 import { t } from "../i18n/index.js";
 import { getState, setState } from "../state.js";
+import { approxSegments } from "./provenance.js";
+import { dataStatus } from "./data-status.js";
 
 const $ = (id) => document.getElementById(id);
 const HOUR = 3_600_000;
@@ -74,6 +76,24 @@ export function renderTicks(windowDays) {
         : `${t("units.dayShort")} ${Number.isInteger(h / 24) ? h / 24 : (h / 24).toFixed(1)}`;
     return `<span>${label}</span>`;
   }).join("");
+}
+
+/**
+ * Marca sobre el deslizador los tramos del período en los que el Sol y la
+ * Tierra salen del modelo aproximado (UI-02, DEC-041), con una nota que dice
+ * por qué. Si todo el período tiene datos de JPL Horizons, no se muestra nada.
+ */
+export function renderCoverage(scenario) {
+  const segments = approxSegments(scenario);
+  $("scrub-coverage").innerHTML = segments
+    .map(([a, b]) => `<i style="left:${(a * 100).toFixed(2)}%;width:${((b - a) * 100).toFixed(2)}%"></i>`)
+    .join("");
+  const note = $("scrub-coverage-note");
+  note.hidden = !segments.length;
+  if (!segments.length) return;
+  const loading = scenario.ephemeris?.source === "approximate" && dataStatus().ephemerides.state === "loading";
+  const key = loading ? "loading" : scenario.ephemeris?.source === "mixed" ? "mixed" : "approx";
+  note.textContent = t(`sim.coverage.${key}`);
 }
 
 /** Lo que depende del instante actual (corre en cada cuadro). */

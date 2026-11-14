@@ -11,7 +11,7 @@ import { scenarioMetrics } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
 import { getLang, t } from "../i18n/index.js";
 import { getSite } from "../state.js";
-import { provenanceHtml, qualityHtml } from "./provenance.js";
+import { dataNote, provenanceHtml, qualityHtml } from "./provenance.js";
 
 const $ = (id) => document.getElementById(id);
 const MAX_WINDOWS = 12; // filas por tabla de ventanas para no pasar de dos hojas
@@ -70,7 +70,7 @@ export function renderReport(scenario) {
       <p class="rep-small">${t("report.generated", { date: generated })}</p>
     </header>
 
-    <p class="rep-warning">${t("compare.modelNote")}</p>
+    <p class="rep-warning">${dataNote(scenario)}</p>
 
     <section class="rep-grid">
       <div>
