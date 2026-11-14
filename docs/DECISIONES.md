@@ -137,7 +137,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 
 - **Contexto / problema:** para ubicar los sitios en "MAPA DE CALOR" y "POLO SUR" hay que saber qué latitud cubre cada imagen. El Figma no lo indica.
 - **Decisión:** suponer una proyección azimutal equidistante centrada en el polo sur, con 0° de longitud arriba y borde en −60° (`POLAR_EDGE_LAT` en `web/src/ui/map.js`).
-- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio). También hay que confirmar el origen y la licencia de las tres imágenes. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
+- **Estado:** **pendiente de validar** por astronomía (Teo, Facu, Lucio) para MAPA DE CALOR. GLOBAL y POLO SUR ya no usan las imágenes del Figma (DEC-020): sus vistas 2D salen del CGI Moon Kit, con la misma proyección por construcción. Falta confirmar el origen y la licencia de la imagen del mapa de calor. Los sitios fuera de la imagen (como Apollo 11) no se marcan en las vistas polares; en el Figma aparecía marcado a modo de ejemplo.
 
 ## DEC-017 — Cómo se interpretó cada elemento del Figma
 
@@ -178,3 +178,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **UI-03 (#21):** `es.js` corrige "Misión", "Parámetros", "Duración de misión", "Disponibilidad de comunicación" y "Ver comparación detallada". La clave `nav.option3` pasa a `nav.report` ("Informe" / "Report") y se quitan `option4` y `option5` de `index.html` y de los dos idiomas. La franja de 8 px mantiene el color de fondo: el MCP de Figma necesita la URL del archivo en figma.com, y en el repo solo está el `.fig` local.
 - **Alternativas descartadas:** comparación como vista con hash dentro de la misma página (la página aparte es más simple y no necesita router); calcular el horizonte LOLA desde el frontend (duplicaría TERRAIN-01/02).
 - **Estado:** vigente. **Pendiente:** destino del botón de configuración.
+
+## DEC-020 — Luna 3D con three.js y vistas 2D del CGI Moon Kit
+
+- **Contexto / problema:** el equipo pidió reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D con fuentes NASA, con opción de alternar a 2D (DEC-019, UI-07). Las imágenes del Figma tenían origen, licencia y proyección sin confirmar (DEC-016).
+- **Decisión:** usar three.js como dependencia (aprobada por el equipo el 14/11/2026) y las texturas del CGI Moon Kit de NASA SVS (color LROC WAC y relieve LOLA). Detalles de la fuente en `docs/DATA_SOURCES.md`.
+- **Solución aplicada:**
+  - `three@0.186.1` con versión exacta en `web/package.json` (la última con más de dos semanas publicada; la 0.187 tenía dos). Se carga con `import()` diferido: el chunk (~187 KB gzip) solo se descarga al abrir GLOBAL o POLO SUR en 3D.
+  - `src/ui/moon3d.js`: esfera de 384×192 segmentos con `displacementMap`/`bumpMap` LOLA y escala vertical exagerada (`RELIEF_SCALE = 0.03` del radio, contra ~0,012 real). Luz ilustrativa (ambiente + luz rasante que acompaña a la cámara). Render a demanda, sin rotación automática. Arrastrar o flechas = girar; rueda o +/− = acercar; Enter = elegir el centro; clic = elegir coordenadas (raycast sobre la esfera base). Los marcadores son los mismos elementos HTML de `map.js`: se proyectan desde `data-lat`/`data-lon` y se ocultan del lado de atrás.
+  - Convención: lon 0 → +X, lon 90° E → −Z, norte → +Y (coincide con las UV de `SphereGeometry` y la textura centrada en 0°). GLOBAL arranca en (0°, 0°); POLO SUR, en el polo con 0° de longitud arriba, igual que la vista 2D.
+  - Vistas 2D: GLOBAL usa el mosaico equirectangular; POLO SUR se reproyecta en el navegador (`src/ui/polar2d.js`) a azimutal equidistante hasta `POLAR_EDGE_LAT = −60°`. Imagen y marcadores usan la misma fórmula, así que coinciden por construcción.
+  - Selector 3D/2D (`state.mapMode`, por defecto "3d"), crédito de la fuente bajo el mapa y estado "Cargando mapa…". Sin WebGL, se vuelve a 2D con un aviso.
+  - MAPA DE CALOR no cambia (imagen del Figma) hasta MAP-01.
+- **Alternativas descartadas:** renderer propio sin dependencias (más tiempo y menos calidad); imágenes polares de LROC ya proyectadas (otra descarga, con un borde y una orientación que habría que hacer coincidir con `map.js`); textura de 2k (el polo sur se veía borroso en 2D).
+- **Estado:** vigente. La imagen 2D del polo sur pierde detalle cerca de −90° porque sale de un mosaico de 4096 px (~11 px por grado); si hace falta más detalle, usar la de 8k o un mosaico polar de LROC.

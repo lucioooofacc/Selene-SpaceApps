@@ -59,10 +59,17 @@
               <img class="map-tabs-full" src="./figma/title-line-full.svg" alt="" width="460" height="3" />
               <img class="map-tabs-accent" id="map-tabs-accent" src="./figma/title-line-accent.svg" alt="" width="208" height="3" />
             </div>
+            <div class="map-mode" id="map-mode" role="group" data-i18n-attr="aria-label:map.modeLabel" hidden>
+              <button type="button" data-map-mode="3d" aria-pressed="true" data-i18n="map.mode3d"></button>
+              <button type="button" data-map-mode="2d" aria-pressed="false" data-i18n="map.mode2d"></button>
+            </div>
             <div class="map-area" id="map-area">
               <img class="map-image" id="map-image" src="./figma/moon-heatmap.png" alt="" />
               <div class="map-pins" id="map-pins"></div>
+              <p class="map-status map-status-loading" data-i18n="map.loading"></p>
+              <p class="map-status map-status-error" data-i18n="map.noWebgl"></p>
             </div>
+            <p class="map-credit" id="map-credit" data-i18n="map.credit" hidden></p>
 
             <div class="map-add">
               <button type="button" class="map-add-button" id="add-site" data-i18n-attr="aria-label:map.addSite">

@@ -82,7 +82,7 @@ subscribe((state, changed) => {
     renderInstant(state, { force: true });
     return;
   }
-  if (has("mapView")) renderMap(state);
+  if (has("mapView", "mapMode")) renderMap(state);
   if (has("playing", "speed")) renderPlayback(state);
   if (has("timeMs", "playing")) renderInstant(state, { force: changed.has("playing") });
 });
