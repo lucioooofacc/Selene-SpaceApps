@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (bloc de notas de UI 3, rama `fix/textos-jurado`).
+Última actualización: 2026-11-15 (Luna 3D sin caja, rama `design/mapa-3d-sin-caja`).
 
 ---
 
@@ -69,7 +69,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 
 - [x] ~~"Datos y fuentes" a pantalla completa, como una ventana de escritorio, sin desplazamiento. — Lucio~~ Resuelto 2026-11-15 (rama `fix/textos-jurado`, DEC-052).
 - [x] ~~Quitar de la interfaz las referencias al trabajo interno del equipo (DEC-xxx, "confirmado por astronomía", "pendiente de validar"): el jurado es externo. — Lucio~~ Resuelto 2026-11-15 (rama `fix/textos-jurado`, DEC-052).
-- [ ] Que la caja del mapa no corte la Luna 3D al acercar, sin aislar lo que hay alrededor. — Lucio
+- [x] ~~Que la caja del mapa no corte la Luna 3D al acercar, sin aislar lo que hay alrededor. — Lucio~~ Resuelto 2026-11-15 (rama `design/mapa-3d-sin-caja`, DEC-053).
 - [ ] Comparación: vista 3D con los dos sitios ubicados. — Lucio
 
 ## Datos y astronomía (Teo, Facu, Lucio)

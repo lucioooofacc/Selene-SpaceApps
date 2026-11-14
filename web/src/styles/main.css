@@ -731,12 +731,31 @@ button {
 }
 
 /* ---------- Luna 3D / 2D en GLOBAL y POLO SUR (UI-07, DEC-021) ---------- */
+/*
+ * En 3D el lienzo ocupa toda la tarjeta del mapa (DEC-053): la Luna puede
+ * crecer hasta el borde redondeado de la tarjeta sin un recorte cuadrado en
+ * el medio. Los controles de la tarjeta quedan por encima (z-index).
+ */
 .map-area[data-mode="3d"] {
-  left: 124px;
-  top: 120px;
-  width: 600px;
-  height: 600px;
+  left: 0;
+  top: 0;
+  width: 848px;
+  height: 848px;
+  z-index: 1;
+  border-radius: var(--r-lg);
+  overflow: hidden;
   cursor: grab;
+}
+
+.map-tabs,
+.map-tabs-line,
+.map-mode,
+.heat-layers,
+.map-credit,
+.map-legend,
+.map-add,
+.map-coords {
+  z-index: 2;
 }
 
 .map-area[data-mode="3d"]:active {
@@ -2098,3 +2117,11 @@ button {
   outline-offset: 2px;
 }
 
+
+/* Textos sobre la Luna 3D (DEC-053): sombra para que se lean sobre relieve claro */
+.map-tabs button,
+.map-tabs-sep,
+.map-legend span,
+.map-credit {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 8px rgba(0, 0, 0, 0.6);
+}

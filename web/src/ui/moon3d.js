@@ -19,13 +19,16 @@ const TEXTURES = {
 };
 const RELIEF_SCALE = 0.03; // exageración vertical ilustrativa (relieve real ≈ 0,012 del radio)
 const DEG = Math.PI / 180;
-const DIST = { min: 2.1, max: 4.6 }; // con FOV 30°, la esfera entera entra desde ~3,9
+// Con FOV 30° y el lienzo de toda la tarjeta (848 px, DEC-053): la Luna mide
+// ~610 px a 5,3 (entre las pestañas y la caja de coordenadas) y llena la
+// tarjeta a ~2,9; al máximo se ve entera y chica.
+const DIST = { min: 2.1, max: 6.5 };
 
 /** Vistas iniciales de cada pestaña: centro de la vista y distancia de la cámara. */
 const VIEWS = {
-  global: { lat: 0, lon: 0, dist: 4.3 },
-  polar: { lat: -90, lon: 0, dist: 4.0 },
-  heat: { lat: -90, lon: 0, dist: 4.0 }, // mapa físico (elevación LOLA), centrado en el polo sur
+  global: { lat: 0, lon: 0, dist: 5.3 },
+  polar: { lat: -90, lon: 0, dist: 5.25 },
+  heat: { lat: -90, lon: 0, dist: 5.25 }, // mapa físico (elevación LOLA), centrado en el polo sur
   heatCalc: { lat: -90, lon: 0, dist: 2.1 }, // capas calculadas hasta −80° (DEC-050): más cerca para que el casquete llene la vista
 };
 

@@ -745,3 +745,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - "Datos y fuentes" ocupa casi toda la ventana y reparte los bloques en tres columnas (procedencia e interés científico; efemérides y horizonte LOLA; calidad de los datos), con texto más compacto y etiquetas que se parten antes que los valores (`web/src/styles/settings.css`). Medido: entra sin desplazarse incluso en una ventana de 930 × 893 px; si la ventana es muy baja, se desplaza solo la grilla.
 - **Alternativas descartadas:** pestañas dentro del modal (esconden información y suman clics); quitar contenido del modal (es la procedencia de los datos que se pide mostrar).
 - **Estado:** vigente.
+
+## DEC-053 — Luna 3D en toda la tarjeta del mapa, sin recorte cuadrado
+
+- **Contexto / problema:** bloc de notas de UI 3: en 3D la Luna vivía en un cuadrado de 600 px en el centro de la tarjeta del mapa; al acercar se cortaba en ese cuadrado y quedaba "cuadrada". Se pidió que no la corte la caja y que lo que hay alrededor (pestañas, selectores, leyenda, coordenadas, "+", crédito) no se pierda ni quede aislado.
+- **Decisión:** en 3D el lienzo de la Luna ocupa **toda la tarjeta** (848 × 848, con sus esquinas redondeadas y fondo transparente); los controles quedan por encima (`z-index`) y los textos que caen sobre la Luna llevan una sombra para leerse sobre relieve claro. Las distancias iniciales de cámara se recalcularon para el lienzo más grande: la Luna arranca algo más grande que antes (~610 px de diámetro, entre las pestañas y la caja de coordenadas), se puede acercar hasta llenar la tarjeta y alejar hasta verla entera (máximo 6,5). En 2D no cambia nada.
+- **Solución aplicada:** `web/src/styles/main.css` (`.map-area[data-mode="3d"]` con el tamaño de la tarjeta, `z-index` de los controles, sombra de texto), `web/src/ui/moon3d.js` (`DIST` y `VIEWS`).
+- **Alternativas descartadas:** agrandar el cuadrado del centro (el corte seguía, solo más afuera); una máscara circular en el centro (la Luna seguiría cortada al acercar, ahora en círculo).
+- **Estado:** vigente.
