@@ -52,6 +52,10 @@ export default {
     polar: "POLO SUR",
     observed: "Punto observado",
     addSite: "Agregar coordenada como sitio",
+    addName: "Nombre del sitio",
+    addCancel: "Cancelar",
+    addConfirm: "Agregar",
+    addDone: "Sitio «{name}» agregado: ya está en el selector de sitios.",
     customName: "Sitio propio {n}",
     alt: {
       global: "Mosaico global de la Luna (LROC, NASA)",

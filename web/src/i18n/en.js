@@ -51,6 +51,10 @@ export default {
     polar: "SOUTH POLE",
     observed: "Observed point",
     addSite: "Add coordinate as site",
+    addName: "Site name",
+    addCancel: "Cancel",
+    addConfirm: "Add",
+    addDone: "Site “{name}” added: it is now in the site selector.",
     customName: "Custom site {n}",
     alt: {
       global: "Global mosaic of the Moon (LROC, NASA)",
