@@ -46,6 +46,7 @@ flowchart LR
 | `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
 | `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
 | `src/ui/links.js` | Codifica y lee la selección de la comparación en la URL (`compare.html?a=&b=&start=&days=`) y actualiza los enlaces "Comparar" y "Ver comparación detallada". |
+| `src/ui/settings.js` | Modal de configuración (engranaje) compartido por las dos páginas: idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa; aplica `data-*` en `<html>` y recuerda las opciones en el navegador (DEC-023). |
 | `src/ui/report.js` | Informe imprimible de la misión ("Informe" en el menú, o `index.html#informe`): arma el informe con el escenario vigente y abre la impresión del navegador; `styles/report.css` lo muestra solo al imprimir. |
 | `src/compare.js` | Entrada de `compare.html`: lee la URL, calcula y cachea los dos escenarios y reutiliza el calendario sobre `state.js`. |
 | `src/ui/compare.js` | Dibuja la comparación: encabezados con viabilidad, tabla de métricas, ventanas de luz/enlace, perfil del horizonte y criterios. |

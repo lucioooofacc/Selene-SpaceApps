@@ -1,0 +1,240 @@
+/*
+ * Configuración (UI-10, DEC-023): variantes de color y movimiento que el
+ * modal aplica con atributos en <html>, más los estilos del propio modal.
+ */
+
+/* ---------- Paleta apta para daltonismo (Okabe e Ito: azul / naranja) ---------- */
+:root[data-palette="cvd"] {
+  --green: #56b4e9;
+  --green-bg: #13222d;
+  --green-border: #2b5670;
+  --red: #e69f00;
+  --red-bg: #2a2213;
+}
+
+:root[data-palette="cvd"] .status-tag.good {
+  color: #56b4e9;
+  border-color: rgba(86, 180, 233, 0.4);
+  background: rgba(86, 180, 233, 0.1);
+}
+
+:root[data-palette="cvd"] .status-tag.warn {
+  color: #f0e442;
+  border-color: rgba(240, 228, 66, 0.4);
+  background: rgba(240, 228, 66, 0.08);
+}
+
+:root[data-palette="cvd"] .status-tag.bad {
+  color: #e69f00;
+  border-color: rgba(230, 159, 0, 0.45);
+  background: rgba(230, 159, 0, 0.1);
+}
+
+/* El punto de VIABLE/INVIABLE es un SVG del Figma con color fijo: se dibuja con CSS */
+:root[data-palette="cvd"] .verdict img {
+  display: none;
+}
+
+:root[data-palette="cvd"] .verdict::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+:root[data-palette="cvd"] .cmp-level-low {
+  border-color: #6b4b12;
+}
+
+/* ---------- Alto contraste ---------- */
+:root[data-contrast="high"] {
+  --text: #ffffff;
+  --muted: #9aa0ab;
+  --muted-2: #c3c8d1;
+  --border: #59606b;
+  --border-field: #5c636e;
+  --border-card: #4a515c;
+  --border-icon: #4a515c;
+  --seg-off: #6a6e75;
+}
+
+/* ---------- Reducir movimiento ---------- */
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  transition-duration: 0ms !important;
+  animation-duration: 0ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---------- Modal ---------- */
+.settings {
+  width: 520px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 1px solid var(--border-field);
+  border-radius: 16px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: var(--font);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.settings::backdrop {
+  background: rgba(2, 4, 8, 0.7);
+}
+
+.settings-form {
+  display: grid;
+  gap: 16px;
+  padding: 20px 24px 24px;
+}
+
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-head h2 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.settings-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  background: var(--field);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.settings fieldset {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--r-md);
+  display: grid;
+  gap: 10px;
+}
+
+.settings legend {
+  padding: 0 6px;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.settings-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.settings-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  background: var(--field);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.settings-choice:has(input:checked) {
+  border-color: var(--gold);
+}
+
+.settings input {
+  accent-color: var(--gold);
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex: none;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.settings-toggle input {
+  margin-top: 2px;
+}
+
+.settings-toggle strong {
+  display: block;
+  font-size: 15px;
+}
+
+.settings-toggle small,
+.settings-hint {
+  display: block;
+  margin: 0;
+  color: var(--muted-2);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.settings-swatches {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-swatches span {
+  width: 48px;
+  height: 8px;
+  border-radius: var(--r-pill);
+}
+
+.sw-good {
+  background: var(--green);
+}
+
+.sw-bad {
+  background: var(--red);
+}
+
+.settings-swatches em {
+  color: var(--muted-2);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.settings-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-reset,
+.settings-done {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--r-md);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.settings-reset {
+  border: 1px solid var(--border-field);
+  background: var(--field);
+}
+
+.settings-done {
+  border: 0;
+  background: var(--sun);
+  color: #1a1206;
+}
