@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14.
+Última actualización: 2026-11-14 (14:30).
 
 ---
 
@@ -51,11 +51,11 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Confirmar las referencias marcadas como "candidata (no verificada)" en `sites.js` (LCROSS, Chang'e 4, Apollo 11) y citar la publicación LROC de IM-1 y Chandrayaan-3. — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): se quitaron las candidatas; LCROSS cita Marshall et al. (2012), Chang'e 4 y Apollo 11 citan NSSDCA, IM-1 y Chandrayaan-3 citan PGDA (LRA).
 - [x] ~~Citar el catálogo que define los puntos Shackleton Rim R04 y Malapert Massif R23. — Facu · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): NASA Lunar Surface Data Book Rev A, tabla A2-2.
 - [x] ~~Verificar el marco de cada fuente original (¿MOON_ME o MOON_PA?) y, si alguna está en PA, convertirla con SPICE; luego poner `sourceFrameVerified: true`. — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): Mean Earth declarado en Cabeus, Chang'e 4 y Apollo 11 (`true`). Lo que queda, en el punto siguiente.
-- [ ] Confirmar el marco de R04/R23 (inferido de DEM LOLA; el Data Book no lo declara en la tabla) y de IM-1/Chandrayaan-3 (PGDA no lo declara). — Teo, Facu, Lucio · DEC-019
+- [ ] Confirmar el marco de R01/R23 (R01 reemplazó a R04, DEC-035; inferido de DEM LOLA; el Data Book no lo declara en la tabla) y de IM-1/Chandrayaan-3 (PGDA no lo declara). — Teo, Facu, Lucio · DEC-019
 - [ ] Chang'e 4: decidir si se documenta en la interfaz la discrepancia de ≈ 415 m entre NSSDCA (usado) y CNSA (177,5991° E, 45,4446° S). — Teo, Facu, Lucio · DEC-019
 - [x] ~~Cargar la exactitud declarada por cada fuente en `precision.accuracyM` (hoy `null`). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): 10 m en R04/R23 y 115 m (1σ) en Cabeus, con `accuracyBasis`. Las demás fuentes no la declaran (`null`).
 - [x] ~~Decidir si la interfaz muestra la procedencia y la confianza de cada sitio (requiere claves nuevas en `es.js`/`en.js` y consultar el diseño). — Desarrollo web · DEC-019, DEC-014~~ Se muestra en el modal "Datos y fuentes", la comparación y el informe. Resuelto 2026-11-14 (rama `feat/calidad-datos-ui`, #13 parcial, DEC-028).
-- [ ] Resto de UI-01: fuente, fecha y cobertura de efemérides y horizonte reales, y estados de carga/error/faltante, cuando exista el contrato de metadatos de CORE-01. — Desarrollo web, Facundo · DEC-028, #13
+- [x] ~~Resto de UI-01: fuente, fecha y cobertura de efemérides y horizonte reales, y estados de carga/error/faltante, cuando exista el contrato de metadatos de CORE-01. — Desarrollo web~~ descartado: duplicado del punto de UI-01 de Lucio (#13, DEC-033), que sigue abierto. 2026-11-14 (rama `docs/actualizar-roadmap`)., Facundo · DEC-028, #13
 - [x] ~~Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021).~~ Ya no se usa la imagen del Figma: MAPA DE CALOR muestra elevación LOLA (DEC-026). Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42).
 - [x] ~~Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS).~~ Ya no se usa la imagen del Figma: MAPA DE CALOR muestra elevación LOLA (DEC-026). Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42).
 - [x] ~~Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004 · Avance 2026-11-14 (rama `data/efemerides-horizons`, ASTRO-01 #6, DEC-024): adaptador, adquisición, caché y fixtures listos; falta consumirlos en `analysis.js` (CORE-01 #11).~~ Hecho para los 7 sitios curados entre el 01/11/2026 y el 01/01/2028; fuera de ese rango, en sitios propios y en el mapa de calor sigue el modelo aproximado. Resuelto 2026-11-14 (rama `feat/efemerides-horizons-calculo`, DEC-033).
@@ -74,9 +74,9 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Datos reales para los puntos elegidos en el mapa.~~ Sol y Tierra trasladados desde Horizons y horizonte LOLA reducido (480/960 m) al sur de −75°. Resuelto 2026-11-14 (rama `feat/datos-reales-puntos-propios`, #59, DEC-034).
 - [ ] Validar si el horizonte LOLA reducido de los puntos propios se muestra como "aproximado" (criterio actual: error medio 0,02–0,77° frente al de 240 m) o como "real". — Teo, Facu, Lucio · DEC-034
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01
-- [ ] Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01
+- [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).
 - [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025
-- [ ] Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025
+- [x] ~~Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025~~ El panorama marca los tramos de baja confianza y los truncados, y "Datos y fuentes" indica la falta de cobertura. Resuelto 2026-11-14 (PR #53, DEC-031).
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
 ## Textos y traducción
