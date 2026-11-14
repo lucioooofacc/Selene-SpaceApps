@@ -19,7 +19,7 @@ import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { polarImage } from "./polar2d.js";
 import { LOLA_MAPS, elevationCanvas, elevationUrl, paletteGradient } from "./elevation.js";
-import { HEAT_MIN_LAT, cachedHeatLayer, computeHeatLayer } from "./heat-layer.js";
+import { HEAT_MIN_LAT, cachedHeatLayer, heatLayerAsync } from "./heat-layer.js";
 import { ensureHeatAtlas } from "./ephemerides.js";
 import { dataStatus, onDataStatus } from "./data-status.js";
 import { toast } from "./toast.js";
@@ -271,8 +271,8 @@ function renderLegend(view, is3d, state) {
 let heatPending = null; // clave del cálculo programado
 
 /**
- * Imagen de la capa calculada. Si no está en caché, muestra "Calculando…" y la
- * calcula en el próximo turno (bloquea 0,2–1 s el hilo principal; PERF-01).
+ * Imagen de la capa calculada. Si no está en caché, muestra "Cargando mapa…"
+ * y la calcula en el worker (PERF-01, DEC-047; en la página si no hay worker).
  */
 function calcImage(state) {
   const p = palette();
@@ -283,14 +283,12 @@ function calcImage(state) {
   if (heatPending !== key) {
     heatPending = key;
     $("map-area").dataset.loading = "true";
-    setTimeout(() => {
+    heatLayerAsync(heatLayer, startMs, windowDays, p).finally(() => {
+      if (heatPending !== key) return; // ya se pidió otra capa o período
       heatPending = null;
-      const now = getState();
       delete $("map-area").dataset.loading;
-      if (!calcLayer(now)) return;
-      computeHeatLayer(now.heatLayer, now.startMs, now.windowDays, palette());
-      renderMap(now);
-    }, 30);
+      if (calcLayer(getState())) renderMap(getState());
+    });
   }
   return null;
 }
