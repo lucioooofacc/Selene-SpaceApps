@@ -350,3 +350,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** `ldem_4` (polo borroso, ~120 px de radio); esperar al producto PDS de TERRAIN-01 (DEC-025: pesado, prepara recortes por sitio y en ese momento no estaba integrado); colorear offline (no permitiría cambiar la paleta).
 - **Estado:** vigente. Reemplaza el uso de la imagen del Figma de DEC-016 en MAPA DE CALOR. **Pendiente:** regenerar el mapa desde `LDEM_60S_240M` (TERRAIN-01, DEC-025, ya integrado), si el equipo lo prefiere.
 
+## DEC-027 — La selección de la misión vive en la URL (UI-12)
+
+- **Contexto / problema:** al volver de la comparación a la misión se perdían el sitio y las fechas, e "Informe" desde la comparación imprimía la misión por defecto. Con el sitio publicado (https://selene-space-apps.vercel.app) también conviene poder compartir un enlace con un sitio elegido.
+- **Decisión:** la página de misión lee y escribe `index.html?site=<sitio>&start=AAAA-MM-DD&days=N`, con el mismo formato de sitio que la comparación (id curado o `pt:lat,lon`). Las fechas solo se escriben si el usuario las eligió.
+- **Solución aplicada:** `src/ui/links.js` suma `missionQuery`, `missionUrl` y `parseMissionQuery`, y comparte con la comparación la validación de fechas: día UTC real (descarta, por ejemplo, 2026-02-31) y de 1 a 30 días. `main.js` aplica la URL antes del primer dibujo, la normaliza (lo inválido se reemplaza por la selección real) y la actualiza con `history.replaceState` cuando cambian el sitio o las fechas. En `compare.html`, "Misión", "Volver a la misión" e "Informe" llevan el sitio A y las fechas. Pruebas en `tests/links.test.js`.
+- **Alternativas descartadas:** `sessionStorage` (no sirve para compartir enlaces); guardar también el instante de la línea de tiempo y la pestaña del mapa (más ruido en la URL; se puede sumar después).
+- **Estado:** vigente.
+
