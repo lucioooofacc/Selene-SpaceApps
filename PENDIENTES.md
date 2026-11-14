@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (calendario por encima, rama `fix/calendario-encima`).
+Última actualización: 2026-11-14 (horizonte LOLA de Chang'e 4 y Apollo 11, rama `feat/horizonte-lola-global`).
 
 ---
 
@@ -63,7 +63,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~El nombre del sitio personalizado no aparece en la comparación. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~"Mejores fechas": viabilidad más llamativa, con rojos y verdes. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~El mapa de calor calculado se ve pixelado. — Lucio~~ Resuelto 2026-11-14 (rama `design/mapa-suavizado`, DEC-051): interpolación bilineal de los valores entre celdas, en 2D y 3D.
-- [ ] Extender el mapa de calor calculado a toda la superficie lunar. Decisión de Lucio (14/11): esperar al horizonte LOLA global de TERRAIN-03 en lugar de usar un horizonte sin relieve o un DEM global de baja resolución. — Lucio, Facundo · TERRAIN-03 #71, DEC-051
+- [ ] Extender el mapa de calor calculado a toda la superficie lunar. Decisión de Lucio (14/11): esperar al horizonte LOLA global de TERRAIN-03 en lugar de usar un horizonte sin relieve o un DEM global de baja resolución. — Lucio, Facundo · TERRAIN-03 #71, DEC-051. **Nota (14/11, DEC-061):** TERRAIN-03 se resolvió con ventanas de `LDEM_128` solo alrededor de Chang'e 4 y Apollo 11; no hay todavía un atlas de horizontes global. Haría falta recorrer `LDEM_128` entero (o `LDEM_64`) para armarlo; decidir si se hace.
 
 ## Bloc de notas de UI 3 (Lucio, 14–15/11/2026)
 
@@ -122,7 +122,9 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Datos reales para los puntos elegidos en el mapa.~~ Sol y Tierra trasladados desde Horizons y horizonte LOLA reducido (480/960 m) al sur de −75°. Resuelto 2026-11-14 (rama `feat/datos-reales-puntos-propios`, #59, DEC-034).
 - [ ] Validar si el horizonte LOLA reducido de los puntos propios se muestra como "aproximado" (criterio actual: error medio 0,02–0,77° frente al de 240 m) o como "real". — Teo, Facu, Lucio · DEC-034
 - [x] ~~TEST-01: separar validaciones contra fuentes reales, formalizar controles físicos, justificar tolerancias y agregar CI.~~ Resuelto 2026-11-14 (rama `test/modelos-cientificos`, #10, DEC-037, `docs/VALIDACION.md`).
-- [ ] Horizonte LOLA real para Chang'e 4 y Apollo 11 (hoy sintético: quedan fuera de `LDEM_60S_240M`). Detectado en la auditoría de datos del 14/11/2026. — Sin asignar · TERRAIN-03 #71, DEC-005
+- [x] ~~Horizonte LOLA real para Chang'e 4 y Apollo 11 (hoy sintético: quedan fuera de `LDEM_60S_240M`). Detectado en la auditoría de datos del 14/11/2026. — Sin asignar · TERRAIN-03 #71, DEC-005~~ Resuelto 2026-11-14 (rama `feat/horizonte-lola-global`, TERRAIN-03 #71, DEC-061): horizonte desde `LDEM_128` V3.0 con el algoritmo de DEC-030 y efemérides con la altura LOLA medida.
+- [ ] Validar los horizontes LOLA de Chang'e 4 y Apollo 11 (DEC-061) y el posible artefacto de borde de banda de `LDEM_128` en −45° (Chang'e 4 está a ~14 km; no se ve escalón en la ventana). — Teo, Facu, Lucio · DEC-061
+- [ ] En Windows con `core.autocrlf=true`, los fixtures `web/tests/fixtures/horizons/*.raw.json` se convierten a CRLF y fallan 2 pruebas de hash de `horizons-fixture.test.js` (en la CI pasan). Propuesta: `.gitattributes` con `*.json -text` o al menos `web/tests/fixtures/** -text`. — Desarrollo web · detectado 2026-11-14
 - [ ] Quitar `relief` y `elevationKm` de los sitios curados cuando TERRAIN-03 esté integrada. — Sin asignar · DATA-03 #72, DEC-005
 - [x] ~~SCIENCE-02: refinar los instantes de amaneceres, ocasos y salidas y puestas de la Tierra (antes redondeados al paso de 10 min). — #19~~ Resuelto 2026-11-14 (rama `feat/refinar-ventanas`, DEC-048).
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01

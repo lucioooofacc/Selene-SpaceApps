@@ -68,6 +68,14 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **DEM reducido para la web (DEC-034):** `web/scripts/build-lola-polar-reduced.mjs` promedia bloques de 2×2 (480 m, hasta −80°) y 4×4 (960 m, hasta −75°) y escribe `web/public/data/terrain/lola-polar-480m.*` y `lola-polar-960m.*` (~7,4 MiB, ~4,4 MB comprimido; alturas int16 en m y % de `count = 0`). Es un derivado: el producto de referencia sigue siendo `LDEM_60S_240M`.
 - **Atlas del mapa de calor (DEC-038):** `web/scripts/build-heat-atlas.mjs` calcula el horizonte del centro de cada celda de 96 × 96 hasta −80° desde `LDEM_60S_240M` y escribe `web/public/data/terrain/heat-atlas-96.*` (1,3 MiB). Es un derivado.
 - **Estado:** producto seleccionado, descargado y verificado (2026-11-14). Recortes reales no versionados. El horizonte de los cinco sitios cubiertos está precalculado y versionado (TERRAIN-02, DEC-030) y `analysis.js` lo usa para esos sitios (CORE-01 parte A, DEC-032).
+
+### Producto global para Chang'e 4 y Apollo 11 (TERRAIN-03, DEC-061)
+
+- **Directorio:** https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/
+- **Producto:** mismo data set y DOI. DEM `LDEM_128` **V3.0** y conteos `LDEC_128`, con sus etiquetas `.lbl` y `.xml`. Bytes y MD5 en DEC-061 y en `web/src/data/terrain/lola-ldem-128.js` (PDS no publica el MD5 de las imágenes: es el calculado por el equipo y comprobado en dos descargas).
+- **Formato:** cilíndrica simple, 128 píxeles/grado (236,901 m/píxel en el ecuador), 23 040 × 46 080, int16 little-endian; altura = DN × 0,5 m sobre la esfera de 1737,4 km; mismo marco "Mean Earth/Polar Axis of DE421". Cobertura global.
+- **Pipeline:** `web/scripts/extract-lola-global.mjs` (`npm run data:lola:global`) recorre las dos imágenes (~2 GiB cada una) en streaming, verifica tamaño y MD5 y guarda solo ventanas de ±10° alrededor de Chang'e 4, Apollo 11 y Chandrayaan-3 (esta última solo para validar) en `web/data/derived/lola-128/` (~220 MB, no versionado) → `build-lola-horizons.mjs` → `lola-horizons.js`.
+- **Limitaciones:** cerca del ecuador muchos píxeles son interpolados (`count = 0` en 65–74 % de los azimuts de esos dos sitios); la etiqueta advierte posibles artefactos en los bordes de las bandas de 45° de latitud con que se generó.
 - **Módulos responsables:** `web/scripts/*-lola.mjs`, `web/src/lib/terrain-data.js`, `web/src/data/terrain/`; `web/src/lib/horizon-lola.js` y `web/scripts/build-lola-horizons.mjs` (horizonte, DEC-030).
 - **Atribución/licencia:** cita oficial del data set (DataCite, consultada el 15/11/2026): *Neumann, G. A. (2011). LRO Moon Laser Altimeter 4 GDR V1.0 [Dataset]. NASA Planetary Data System. https://doi.org/10.17189/1520642*. Los datos del PDS son de NASA y de uso público; se cita el data set en el informe imprimible y en este documento.
 
@@ -80,7 +88,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Cobertura:** la de cada misión, instrumento y release; no existe una cobertura única del nodo.
 - **Referencia:** declarada en etiquetas y documentación de cada producto.
 - **Limitaciones:** catálogo amplio, versiones/releases y archivos de gran tamaño; exige seleccionar el producto correcto.
-- **Estado:** fuente del producto LOLA seleccionado (`LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M`, DEC-025); se descarga con `web/scripts/download-lola.mjs`.
+- **Estado:** fuente del producto LOLA seleccionado (`LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M`, DEC-025); se descarga con `web/scripts/download-lola.mjs`. También de `LDEM_128` V3.0 + `LDEC_128` (DEC-061), con `web/scripts/extract-lola-global.mjs`.
 - **Módulos responsables:** pipeline de adquisición y catálogo de metadatos.
 - **Atribución/licencia:** usar la cita/DOI del producto y acreditar a productores y archivo según la guía PDS. Verificar restricciones excepcionales en cada producto.
 
