@@ -385,3 +385,63 @@
   color: var(--muted-2);
 }
 
+/* "Datos y fuentes" casi a pantalla completa, como una ventana de escritorio (DEC-052) */
+.quality-dialog {
+  width: min(1440px, calc(100vw - 48px));
+  height: calc(100vh - 48px);
+  max-height: none;
+}
+
+.quality-dialog .settings-form {
+  box-sizing: border-box;
+  height: 100%;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+  min-height: 0;
+  overflow: auto; /* solo si la ventana es muy baja */
+}
+
+.quality-col {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+.quality-col .prov {
+  overflow-wrap: anywhere;
+}
+
+
+/* Más compacto dentro de las columnas para que entre sin desplazarse */
+.quality-dialog fieldset {
+  padding: 12px 14px;
+  gap: 8px;
+}
+
+.quality-col .prov {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); /* las etiquetas se parten, no los valores */
+  gap: 4px 12px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.quality-col .quality li {
+  gap: 10px;
+}
+
+.quality-col .q-tag {
+  width: 96px;
+  font-size: 11px;
+}
+
+.quality-col .quality small {
+  font-size: 12px;
+  line-height: 16px;
+}

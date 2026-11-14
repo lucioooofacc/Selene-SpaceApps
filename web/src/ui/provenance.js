@@ -64,7 +64,6 @@ export function provenanceHtml(site) {
       <dt>${t("quality.accuracy")}</dt><dd>${accuracy}</dd>
       <dt>${t("quality.frame")}</dt><dd>MOON_ME / DE421 · ${t(provenance.sourceFrameVerified ? "quality.frameDeclared" : "quality.frameInferred")}</dd>
       <dt>${t("quality.sources")}</dt><dd>${links(provenance.urls) || "—"}</dd>
-      <dt>${t("quality.confirmed")}</dt><dd>${provenance.confirmedOn ?? "—"}</dd>
     </dl>`;
 }
 
@@ -247,10 +246,11 @@ export function qualityHtml(site, scenario) {
     <ul class="quality">
       ${qualityRows(site, scenario)
         .map(
-          ({ key, hint, kind, ref }) => `
+          // Las referencias internas (ref, DEC-xxx) no se muestran: el sitio lo evalúa un jurado externo.
+          ({ key, hint, kind }) => `
         <li>
           ${qualityTag(kind)}
-          <span><strong>${t(`quality.row.${key}`)}</strong><small>${t(`quality.rowHint.${hint ?? key}`)} (${ref})</small></span>
+          <span><strong>${t(`quality.row.${key}`)}</strong><small>${t(`quality.rowHint.${hint ?? key}`)}</small></span>
         </li>`,
         )
         .join("")}
@@ -258,8 +258,10 @@ export function qualityHtml(site, scenario) {
 }
 
 /**
- * Botón "Datos y fuentes" de la misión: abre un modal con la procedencia del
- * sitio activo y la calidad de cada dato.
+ * Botón "Datos y fuentes" de la misión: abre un modal casi a pantalla
+ * completa (DEC-052), con los bloques en tres columnas para no tener que
+ * desplazarse: procedencia e interés científico; efemérides y horizonte;
+ * calidad de cada dato.
  * @param {() => {site: object|null, scenario: object}} getContext
  */
 export function initQualityDialog(getContext) {
@@ -278,26 +280,34 @@ export function initQualityDialog(getContext) {
           <h2 id="quality-title">${t("quality.title")}</h2>
           <button type="submit" class="settings-close" aria-label="${t("quality.close")}">×</button>
         </header>
-        <fieldset>
-          <legend>${t("quality.siteTitle", { name: site?.name ?? t("map.observed") })}</legend>
-          ${provenanceHtml(site)}
-        </fieldset>
-        <fieldset>
-          <legend>${t("quality.eph.title")}</legend>
-          ${ephemerisHtml(scenario)}
-        </fieldset>
-        <fieldset>
-          <legend>${t("quality.lola.title")}</legend>
-          ${lolaHtml(scenario)}
-        </fieldset>
-        <fieldset>
-          <legend>${t("quality.traitsTitle")}</legend>
-          ${traitsHtml(site)}
-        </fieldset>
-        <fieldset>
-          <legend>${t("quality.dataTitle")}</legend>
-          ${qualityHtml(site, scenario)}
-        </fieldset>
+        <div class="quality-grid">
+          <div class="quality-col">
+            <fieldset>
+              <legend>${t("quality.siteTitle", { name: site?.name ?? t("map.observed") })}</legend>
+              ${provenanceHtml(site)}
+            </fieldset>
+            <fieldset>
+              <legend>${t("quality.traitsTitle")}</legend>
+              ${traitsHtml(site)}
+            </fieldset>
+          </div>
+          <div class="quality-col">
+            <fieldset>
+              <legend>${t("quality.eph.title")}</legend>
+              ${ephemerisHtml(scenario)}
+            </fieldset>
+            <fieldset>
+              <legend>${t("quality.lola.title")}</legend>
+              ${lolaHtml(scenario)}
+            </fieldset>
+          </div>
+          <div class="quality-col">
+            <fieldset>
+              <legend>${t("quality.dataTitle")}</legend>
+              ${qualityHtml(site, scenario)}
+            </fieldset>
+          </div>
+        </div>
         <footer class="settings-foot">
           <span class="settings-hint">${t("quality.footer")}</span>
           <button type="submit" class="settings-done">${t("settings.done")}</button>
