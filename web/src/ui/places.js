@@ -6,7 +6,8 @@
  * Cada tarjeta muestra, como en el Figma: cobertura de enlace, altura del Sol,
  * altura de la Tierra y luz acumulada.
  */
-import { computeScenario, realDataVersion, sampleAt } from "../lib/analysis.js";
+import { computeScenario, needsPolarDem, realDataVersion, sampleAt } from "../lib/analysis.js";
+import { loadedData, persist, persisted, runInWorker } from "./compute.js";
 import { rankEntries } from "../lib/ranking.js";
 import { traitsFor } from "../data/site-traits.js";
 import { getLang, t } from "../i18n/index.js";
@@ -58,6 +59,7 @@ function rank(state) {
 let datesKey = "";
 let datesResult = undefined; // undefined: sin calcular; null: sin serie de Horizons
 let datesPending = "";
+const DATE_CATEGORIES = ["overall", "communication", "light"];
 
 /** Sitio vigente como lo arma main.js (con su relieve si las coordenadas no cambiaron). */
 function currentSiteFor(state) {
@@ -73,32 +75,56 @@ function currentSiteFor(state) {
 /** Categoría efectiva en modo fechas: "Ciencia" no aplica (depende del sitio, no de la fecha). */
 const dateCategory = (category) => (category === "science" ? "overall" : category);
 
+/** Ordena las candidatas y se queda con 5 períodos distintos por categoría. */
+function picksFrom(items, windowDays) {
+  // El "nombre" es la fecha ISO: a igualdad, gana la más temprana.
+  const entries = items.map((it) => ({ site: { name: new Date(it.startMs).toISOString() }, startMs: it.startMs, scenario: it.scenario, traits: 0 }));
+  const picks = {};
+  for (const c of DATE_CATEGORIES) {
+    picks[c] = pickDistinct(rankEntries(entries, c), windowDays, MAX_PLACES).map(({ startMs, scenario }) => ({ startMs, scenario }));
+  }
+  return picks;
+}
+
+/** Cálculo de las candidatas: en el worker (PERF-01, DEC-047) o, si no hay, en la página. */
+async function computeDates(site, windowDays) {
+  const job = runInWorker("dates", { site, windowDays });
+  if (job) {
+    try {
+      return await job;
+    } catch (error) {
+      console.warn(`Worker de fechas no disponible (cálculo en la página): ${error.message}`);
+    }
+  }
+  return dateScenarios(site, windowDays);
+}
+
 /**
- * Candidatas de fecha para el sitio y la duración vigentes. El cálculo
- * (0,4–1 s) se hace una vez por sitio, duración y versión de datos, en el
- * próximo turno para que antes se vea "Calculando…".
+ * Las 5 mejores fechas por categoría para el sitio y la duración vigentes.
+ * Se calculan una vez por sitio, duración y versión de datos, sin bloquear la
+ * página; con todos los datos reales cargados quedan en la caché persistente.
  */
 function dateEntries(state) {
   const key = `${state.siteId}|${state.lat}|${state.lon}|${state.windowDays}|${realDataVersion()}`;
   if (key === datesKey) return datesResult;
+  const data = loadedData();
+  const site = currentSiteFor(state);
+  const pk = data.ephemerides && (!needsPolarDem(site) || data.polarDem) ? `dates|${state.siteId}|${state.lat}|${state.lon}|${state.windowDays}` : null;
+  const stored = pk && persisted(pk);
+  if (stored) {
+    datesKey = key;
+    return (datesResult = stored);
+  }
   if (datesPending !== key) {
     datesPending = key;
-    setTimeout(() => {
-      const res = dateScenarios(currentSiteFor(state), state.windowDays);
-      datesResult = res && {
-        coverage: res.coverage,
-        entries: res.items.map(({ startMs, scenario }) => ({
-          // El "nombre" es la fecha ISO: a igualdad, gana la más temprana.
-          site: { id: String(startMs), name: new Date(startMs).toISOString() },
-          startMs,
-          scenario,
-          traits: 0,
-        })),
-      };
+    computeDates(site, state.windowDays).then((res) => {
+      if (datesPending !== key) return; // se pidió otro sitio o duración
+      datesResult = res && { coverage: res.coverage, picks: picksFrom(res.items, state.windowDays) };
       datesKey = key;
       datesPending = "";
+      if (pk && datesResult) persist(pk, datesResult);
       renderPlaces(getState());
-    }, 30);
+    });
   }
   return undefined;
 }
@@ -111,7 +137,7 @@ function renderDates(state) {
     $("places-hint").textContent = "";
     return;
   }
-  if (result === null || !result.entries.length) {
+  if (result === null || !result.picks[category].length) {
     $("places-list").innerHTML = `<li class="places-empty">${t("places.dates.none")}</li>`;
     $("places-hint").textContent = "";
     return;
@@ -121,8 +147,7 @@ function renderDates(state) {
     from: dateUTC(result.coverage.startMs),
     to: dateUTC(result.coverage.stopMs),
   });
-  // Ordena todas y se queda con 5 que no se superpongan (opciones distintas).
-  $("places-list").innerHTML = pickDistinct(rankEntries(result.entries, category), state.windowDays, MAX_PLACES)
+  $("places-list").innerHTML = result.picks[category]
     .map(({ startMs, scenario }) => {
       const s = scenario.summary;
       const v = scenario.viability;
