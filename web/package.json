@@ -9,6 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test",
+    "test:unit": "node --test \"tests/*.test.js\"",
+    "test:validation": "node --test \"tests/validacion/*.test.js\"",
     "data:lola:download": "node scripts/download-lola.mjs",
     "data:lola:verify": "node scripts/download-lola.mjs --verify",
     "data:lola:prepare": "node scripts/prepare-lola.mjs",

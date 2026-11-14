@@ -9,11 +9,11 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-import { LOLA_HORIZONS } from "../src/data/terrain/lola-horizons.js";
-import { LOLA_PRODUCT } from "../src/data/terrain/lola-ldem-60s-240m.js";
-import { SITES } from "../src/data/sites.js";
-import { HORIZON_ALGORITHM, HORIZON_PARAMS, createLolaHorizon, lolaHorizonCoverage } from "../src/lib/horizon-lola.js";
-import { isCovered } from "../src/lib/terrain-data.js";
+import { LOLA_HORIZONS } from "../../src/data/terrain/lola-horizons.js";
+import { LOLA_PRODUCT } from "../../src/data/terrain/lola-ldem-60s-240m.js";
+import { SITES } from "../../src/data/sites.js";
+import { HORIZON_ALGORITHM, HORIZON_PARAMS, createLolaHorizon, lolaHorizonCoverage } from "../../src/lib/horizon-lola.js";
+import { isCovered } from "../../src/lib/terrain-data.js";
 
 const T = LOLA_HORIZONS;
 const N = 360 / HORIZON_PARAMS.azimuthStepDeg;
@@ -64,13 +64,13 @@ test("tabla: Chandrayaan-3 (−69,4°) tiene rayos al norte truncados por el bor
 });
 
 // Prueba opcional con el producto real. No descarga nada.
-const rawDir = process.env.LOLA_RAW_DIR ?? resolve(import.meta.dirname, "../data/raw");
+const rawDir = process.env.LOLA_RAW_DIR ?? resolve(import.meta.dirname, "../../data/raw");
 const demPath = join(rawDir, LOLA_PRODUCT.dem.image.name);
 const countsPath = join(rawDir, LOLA_PRODUCT.counts.image.name);
 const hasReal = existsSync(demPath) && existsSync(countsPath);
 
 test("producto real: la tabla versionada se reproduce exactamente", { skip: !hasReal && "sin rasters reales" }, async () => {
-  const { buildTable, readRaster } = await import("../scripts/build-lola-horizons.mjs");
+  const { buildTable, readRaster } = await import("../../scripts/build-lola-horizons.mjs");
   const table = buildTable({ dem: readRaster(demPath, "float32"), counts: readRaster(countsPath, "int16") });
   assert.deepEqual(JSON.parse(JSON.stringify(table)), JSON.parse(JSON.stringify(T)));
 });

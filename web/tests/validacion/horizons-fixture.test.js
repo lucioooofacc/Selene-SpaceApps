@@ -8,13 +8,13 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
-import { ALTITUDE_BASIS, HORIZONS_PROFILE, cacheKey, normalizeHorizons, buildQueryUrl } from "../src/lib/horizons.js";
-import { SITES } from "../src/data/sites.js";
+import { ALTITUDE_BASIS, HORIZONS_PROFILE, cacheKey, normalizeHorizons, buildQueryUrl } from "../../src/lib/horizons.js";
+import { SITES } from "../../src/data/sites.js";
 
 /** Punto de los fixtures: Shackleton Rim R04 (DEC-019), antes de DEC-035. */
 const R04 = Object.freeze({ lat: -89.7668, lon: -171.87 });
 
-const DIR = new URL("./fixtures/horizons/", import.meta.url);
+const DIR = new URL("../fixtures/horizons/", import.meta.url);
 const read = (name) => readFile(new URL(name, DIR), "utf8");
 const manifest = JSON.parse(await read("manifest.json"));
 
