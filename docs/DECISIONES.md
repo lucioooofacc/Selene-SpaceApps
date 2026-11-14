@@ -764,3 +764,16 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos:** distancia sobre la esfera de referencia, sin relieve (es la distancia geodésica, no un recorrido transitable). Si los sitios fueran antípodas, el arco no está definido y no se dibuja.
 - **Alternativas descartadas:** un mapa 2D con los dos puntos (ya existe en la misión; se pidió 3D); mover la cámara automáticamente para encuadrar ambos sitios (se pidió la vista normal).
 - **Estado:** vigente.
+
+## DEC-055 — Panorama con más detalle, fiel a la ilustración del Figma
+
+- **Contexto / problema:** pedido de Lucio: dibujar con más exactitud la ilustración del panorama ("Comportamiento de los cuerpos celestes"), con más calidad en el terreno y detalle en la Tierra. La referencia es la imagen del frame "image 22" del Figma (1242 × 546): relieve en capas con luces suaves, suelo de regolito con cráteres de borde claro, piedras facetadas, paneles con celdas, módulo dorado y una Tierra con continentes.
+- **Decisión:** mejorar la ilustración **sin cambiar lo que se calcula**:
+  - La silueta del relieve sigue siendo exactamente el horizonte del escenario (LOLA o sintético, UI-08). Dentro de ella se agregan dos **bandas de profundidad** que siguen la cresta (bajada y suavizada) y una textura de grano fino; todo se recorta con la silueta, así que no se inventa relieve.
+  - **Suelo delantero:** degradado más profundo, textura de regolito, luz del Sol centrada en su azimut (solo si es visible), cráteres con cuenco, pared en sombra y borde iluminado, piedras con cara iluminada y cara en sombra con su sombra, y ~90 guijarros con perspectiva.
+  - **Tierra:** océanos, continentes y nubes estilizados con casquete polar y halo de atmósfera; la sombra sigue siendo la **fase real** (Horizons). Radio 11 px, como en el Figma.
+  - **Sol:** halo interno además del resplandor. **Estrellas:** algunas brillantes con halo.
+  - **Equipos** (mismas posiciones del Figma): paneles con marco, celdas, reflejo, patas y sombra; módulo con lámina dorada, cubierta, patas con platos y antena; antena con trípode, plato con interior y alimentador.
+- **Solución aplicada:** `web/src/ui/panorama.js` (`scenery()`, `stars()`, `noiseDataUrl()`, `bandPath()`, nuevas definiciones SVG y la Tierra en un `clipPath`). La textura es un patrón PNG de ruido generado una vez (más barato de pintar al animar que un filtro `feTurbulence`). Medido en el navegador de pruebas: 1,1 ms de JavaScript por actualización de la escena y sin pérdida de cuadros frente a `main` al reproducir.
+- **Alternativas descartadas:** usar la imagen del Figma de fondo (el relieve dejaría de ser el del sitio); filtros SVG de turbulencia (caros de repintar en cada cuadro).
+- **Estado:** vigente.
