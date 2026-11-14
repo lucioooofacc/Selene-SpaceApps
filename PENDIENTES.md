@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (mejores fechas, rama `feat/mejores-fechas`).
+Última actualización: 2026-11-14 (PERF-01, rama `perf/worker-cache`).
 
 ---
 
@@ -53,7 +53,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Hover y respuestas visibles a las acciones del usuario. — Lucio~~ Resuelto 2026-11-14 (ramas `feat/menu-agregar-sitio` y `feat/resumen-periodo`, DEC-043 y DEC-045): aviso al agregar un sitio, hover y foco visible en todos los controles.
 - [x] ~~Sacar a la vista datos importantes que hoy están escondidos. — Lucio~~ Resuelto 2026-11-14 (DEC-042 y DEC-045): viabilidad global y rachas en el resumen del período, criterio de orden del ranking a la vista y acceso con texto a "Datos y fuentes". Si el equipo detecta otros datos escondidos, anotarlos acá.
 - [x] ~~"Mejores fechas para alunizar" en un punto dado, como "Mejores lugares". — Lucio~~ Resuelto 2026-11-14 (rama `feat/mejores-fechas`, DEC-046).
-- [ ] "Mejores fechas" bloquea 0,4–1 s la primera vez por sitio y duración; mover a un worker junto con el mapa. — Desarrollo web · PERF-01 #18, DEC-046
+- [x] ~~"Mejores fechas" bloquea 0,4–1 s la primera vez por sitio y duración; mover a un worker junto con el mapa. — Desarrollo web · PERF-01 #18, DEC-046~~ Resuelto 2026-11-14 (rama `perf/worker-cache`, PERF-01 #18, DEC-047): worker de cálculo y caché persistente.
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
@@ -89,7 +89,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~UI-02: avisos de "modelo aproximado v1" desactualizados (informe, comparación, tooltip de Parámetros) y sin marca de los tramos aproximados en la línea de tiempo. — Lucio · #15~~ Resuelto 2026-11-14 (rama `design/visualizaciones-datos-reales`, DEC-041).
 - [x] ~~Textos que contradecían el estado actual ("modelo v1", "SINTÉTICO hasta CORE-01", "el cálculo todavía usa el sintético", pie del informe con "reemplazos previstos"). — Desarrollo web · DEPLOY-01 #14~~ Resuelto 2026-11-14 (rama `fix/textos-datos-reales`): corregidos en ES y EN; falta la revisión de estilo de Alfonso y Cata (I18N-01).
 - [ ] Revisar los textos nuevos `dataNote.*`, `sim.bodies.*`, `sim.coverage.*` y `params.dataHint` en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-041
-- [ ] El cálculo de una capa del mapa bloquea 0,2–1 s el hilo principal la primera vez por período; mover a un worker si molesta. — Desarrollo web · PERF-01 #18, DEC-040
+- [x] ~~El cálculo de una capa del mapa bloquea 0,2–1 s el hilo principal la primera vez por período; mover a un worker si molesta. — Desarrollo web · PERF-01 #18, DEC-040~~ Resuelto 2026-11-14 (rama `perf/worker-cache`, PERF-01 #18, DEC-047): worker de cálculo y caché persistente.
 - [ ] La capa elegida del mapa no se guarda en la URL ni en la configuración (vuelve a Elevación al recargar). — Desarrollo web · DEC-040
 - [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
 - [x] ~~TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-025, TERRAIN-02 #8~~ El horizonte usa rayos de 300 km sobre el raster completo fuera del navegador y se versiona solo la tabla de horizonte (~65 KB); los recortes no se versionan. Resuelto 2026-11-14 (rama `feat/horizonte-lola`, DEC-030).

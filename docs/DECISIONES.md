@@ -681,3 +681,15 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** paso de un día entre candidatas; el cálculo (0,4–1 s, medido 0,4–0,7 s en Node) corre en el hilo principal la primera vez (PERF-01).
 - **Alternativas descartadas:** ponerlo dentro del calendario (queda escondido en un desplegable); ordenar también fuera de la cobertura con el modelo aproximado (mezclaría datos reales y aproximados en un mismo ranking).
 - **Estado:** vigente.
+
+## DEC-047 — Worker de cálculo y caché persistente (PERF-01)
+
+- **Contexto / problema:** PERF-01 (#18) pide no bloquear la interfaz con los cálculos intensivos y reutilizar resultados entre sesiones. Las capas del mapa de calor (DEC-040) y "Mejores fechas" (DEC-046) bloqueaban 0,2–1 s el hilo principal la primera vez.
+- **Decisión:**
+  - Un **worker de módulo** corre `computePolarHeatmap()` y `dateScenarios()` con los mismos módulos de `lib/`. El registro de datos de la página no se comparte, así que el worker baja los mismos archivos (servidos desde la caché del navegador) según lo que la página ya tiene cargado (efemérides, atlas, DEM reducido): así los resultados coinciden. Si el worker no se puede crear o falla, se calcula en la página como antes.
+  - El worker devuelve lo mínimo: la grilla del mapa (transferida, sin copia) y, para las fechas, solo los campos del resumen que usan el ranking y las tarjetas.
+  - **Caché persistente** en `localStorage` (`selene-cache-v1`): solo resultados calculados con todos los datos reales necesarios (mapa real con efemérides y atlas; fechas con efemérides y, si el punto lo necesita, el DEM reducido). Se guardan la imagen de la capa y las 5 fechas elegidas por categoría, no las series. Se invalida con cada build (`__SELENE_BUILD__`, definido en `vite.config.js`), máximo 40 entradas (se borran las más viejas) y, si la cuota se llena o el almacenamiento está bloqueado, se vacía y se sigue sin caché.
+- **Solución aplicada:** `web/src/workers/compute.worker.js` (nuevo), `web/src/ui/compute.js` (nuevo: `runInWorker()`, `loadedData()`, `persisted()`, `persist()`), `web/src/ui/heat-layer.js` (`heatLayerAsync()`, `cachedHeatLayer()` mira también la caché persistente), `web/src/ui/map.js`, `web/src/ui/places.js`, `web/vite.config.js` (`define` y `worker.format`).
+- **Resultados medidos** (navegador, Shackleton, 10 días): con capa Viabilidad y Mejores fechas pedidas a la vez, el hilo principal no se detuvo más de 37 ms (antes 0,4–1 s). Las 5 fechas del worker coinciden con las calculadas en la página. Al recargar, las dos salen de la caché persistente al instante.
+- **Alternativas descartadas:** IndexedDB (más código para resultados que pesan unos KB); compartir el registro de datos con `SharedArrayBuffer` (exige cabeceras COOP/COEP que el despliegue no tiene); guardar las series completas (varios MB).
+- **Estado:** vigente.

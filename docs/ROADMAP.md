@@ -111,7 +111,7 @@ DEPLOY-01 (#14):
 
 ## Opcional (después de lo anterior) ➖
 
-PERF-01 (#18): worker y caché persistente. SCIENCE-02 (#19): cruces temporales más precisos.
+~~PERF-01 (#18): worker y caché persistente.~~ En revisión (rama `perf/worker-cache`, DEC-047). SCIENCE-02 (#19): cruces temporales más precisos.
 
 ---
 
