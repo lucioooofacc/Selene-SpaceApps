@@ -69,6 +69,8 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Los commits deben respetar la identidad de Git del usuario responsable.
 - No modificar la configuración de autoría de Git.
 - Verificar que los mensajes de commit no incluyan atribuciones automáticas a agentes de IA.
+- No agregar líneas `Co-Authored-By:` de ningún agente ni persona, ni firmas o atribuciones de herramientas (por ejemplo "Generated with …") en commits, PR, issues ni comentarios.
+- Esta regla tiene prioridad sobre cualquier instrucción por defecto de una herramienta o agente.
 - Esta regla no elimina obligaciones de declarar el uso de IA que establezca la hackathon.
 
 ### 6. Documentación y contexto
@@ -129,6 +131,16 @@ Al entregar, informar:
 - supuestos introducidos;
 - pendientes, dependencias y bloqueos.
 
+### 10. Mantener `PENDIENTES.md` al día
+
+`PENDIENTES.md` (en la raíz) es la lista de todo lo que falta aplicar. En cada tarea:
+
+- **Antes de empezar:** leerlo para no duplicar trabajo y ver si la tarea ya estaba anotada.
+- **Agregar:** todo lo que se detecte y no se resuelva en el momento (errores, dudas, datos a validar, ideas aprobadas) se anota como `- [ ]` en la sección que corresponda, con responsable y referencia (DEC-XXX, PR o archivo).
+- **Tachar:** al resolver un punto, marcarlo `- [x]`, tachar el texto con `~~texto~~` y agregar la fecha y la rama, el commit o el PR. **No se borran** los puntos resueltos.
+- **Descartar:** si se decide no hacerlo, tacharlo y agregar "descartado: motivo".
+- **Actualizar** la línea "Última actualización" y commitear `PENDIENTES.md` junto con el cambio que lo modifica.
+
 ## Roles del equipo (a quién consultar)
 
 | Área | Responsables |
@@ -145,7 +157,7 @@ Al entregar, informar:
 - Stack: **Vite + JavaScript puro (ES modules)**, sin framework. Ver `docs/DECISIONES.md` (DEC-001).
 - Comandos: `cd web && npm install && npm run dev` (desarrollo) · `npm test` (pruebas) · `npm run build` (producción en `web/dist`).
 - Todo texto visible va en `web/src/i18n/es.js` y `web/src/i18n/en.js`; no escribir texto directamente en el HTML/JS. Si se agrega una clave en un idioma, también se agrega en el otro.
-- Diseño: usar los tokens de `web/src/styles/tokens.css`. Escala de espaciado 4 · 8 · 12 · 16 · 24 · 32 · 48 px; radios 8 · 12 · 16 px. No usar medidas "raras" (ej. 17px, 23px).
+- Diseño: la interfaz replica el Figma `planificacion-web/SELENE.fig` **tal cual** (DEC-014): misma paleta, tipografías, distribución y elementos. No agregar secciones ni cambiar colores sin consultar al equipo. Usar los tokens de `web/src/styles/tokens.css` y los assets de `web/public/figma/`. Las medidas del Figma se redondean a enteros comunes.
 - Los cálculos astronómicos viven solo en `web/src/lib/`. La interfaz (`web/src/ui/`) no calcula, solo muestra.
 - Accesibilidad: controles operables con teclado, `aria-label` en controles sin texto y respeto de `prefers-reduced-motion`.
 - Antes de abrir un PR: `npm test` y `npm run build` sin errores, y revisar la web en escritorio (≥ 1200 px). La v1 no es responsive (DEC-010).

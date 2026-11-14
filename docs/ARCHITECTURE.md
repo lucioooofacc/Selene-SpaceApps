@@ -8,7 +8,7 @@ SELENE es una aplicación de una sola página construida con Vite y JavaScript E
 
 ```mermaid
 flowchart LR
-  U[Controles de usuario] --> UI[ui/setup · map · timeline · compare]
+  U[Controles de usuario] --> UI[ui/places · map · params · calendar · timeline]
   UI -->|setState| S[state.js]
   S -->|suscripción + claves cambiadas| M[main.js]
   M -->|sitio + inicio + ventana| A[lib/analysis.js]
@@ -34,13 +34,13 @@ flowchart LR
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
 | `src/data/sites.js` | Catálogo de sitios curados con coordenadas y parámetros sintéticos pendientes de validación. |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
-| `src/ui/setup.js` | Entradas de sitio, coordenadas, fecha y ventana; traduce eventos a cambios de estado. |
-| `src/ui/map.js` | Mapa polar/global, selección espacial y cálculo diferido del mapa de calor. |
-| `src/ui/panels.js` | Métricas instantáneas, estado, viabilidad e interpretación textual. |
-| `src/ui/panorama.js` | Panorama SVG del horizonte, Sol, Tierra, fase y equipo. |
-| `src/ui/timeline.js` | Reproducción, desplazamiento temporal y barras de ventanas operativas. |
-| `src/ui/compare.js` | Captura y comparación de hasta cuatro escenarios. |
-| `src/ui/icons.js` | SVG reutilizables. |
+| `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
+| `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR (imágenes del Figma), selección de coordenadas y alta de sitios. |
+| `src/ui/params.js` | "Parámetros de la misión": sitio, coordenadas, duración y tarjetas de "Ventana de análisis". |
+| `src/ui/calendar.js` | Selector de rango de fechas de "Duración de misión (UTC)". |
+| `src/ui/panorama.js` | Panorama del sitio (ilustración del Figma) con Sol y Tierra ubicados por el modelo. |
+| `src/ui/timeline.js` | Línea de tiempo de la misión: reproducción, velocidad y deslizador. |
+| `src/ui/status.js` | Tarjetas "Energía solar" y "Comunicación" y "Lectura del momento". |
 
 ## Estado, cálculo y renderizado
 
@@ -50,9 +50,9 @@ flowchart LR
 4. El escenario precalcula la ventana seleccionada y 32 días adicionales para localizar el siguiente cambio de visibilidad.
 5. `sampleAt()` interpola el instante actual. Los azimuts usan interpolación circular para no saltar entre 359° y 0°.
 6. Durante la reproducción se actualizan panorama y línea de tiempo en cada cuadro; los paneles textuales se limitan aproximadamente a ocho actualizaciones por segundo.
-7. Los cambios de mapa, reproducción, comparación o idioma actualizan únicamente sus consumidores principales.
+7. Los cambios de mapa, reproducción o idioma actualizan únicamente sus consumidores principales.
 
-`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` se difiere con `setTimeout`, pero también ejecuta cálculo síncrono en el hilo principal.
+`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` sigue en `lib/analysis.js` (cubierto por las pruebas), pero la interfaz actual no lo usa: la pestaña MAPA DE CALOR muestra la imagen del Figma (DEC-014, DEC-016).
 
 ## Contratos públicos
 

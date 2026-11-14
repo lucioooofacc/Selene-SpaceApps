@@ -10,8 +10,7 @@
  *
  * `elevationKm`: altura aproximada del punto sobre su entorno; baja el horizonte
  * (ver horizonDip en lib/terrain.js).
- *
- * `noteKey`: clave de i18n con la descripción corta del sitio.
+
  */
 export const SITES = [
   {
@@ -22,7 +21,6 @@ export const SITES = [
     relief: 0.7,
     elevationKm: 1,
     agency: "NASA · Artemis",
-    noteKey: "sites.shackleton",
   },
   {
     id: "malapert",
@@ -32,7 +30,6 @@ export const SITES = [
     relief: 1.2,
     elevationKm: 0.6,
     agency: "NASA · Artemis",
-    noteKey: "sites.malapert",
   },
   {
     id: "cabeus",
@@ -41,7 +38,6 @@ export const SITES = [
     lon: -41.8,
     relief: 5,
     agency: "NASA · LCROSS",
-    noteKey: "sites.cabeus",
   },
   {
     id: "im1",
@@ -50,7 +46,6 @@ export const SITES = [
     lon: 1.44,
     relief: 0.7,
     agency: "Intuitive Machines · CLPS",
-    noteKey: "sites.im1",
   },
   {
     id: "chandrayaan3",
@@ -59,7 +54,6 @@ export const SITES = [
     lon: 32.32,
     relief: 1.2,
     agency: "ISRO · India",
-    noteKey: "sites.chandrayaan3",
   },
   {
     id: "change4",
@@ -68,7 +62,6 @@ export const SITES = [
     lon: 177.6,
     relief: 1,
     agency: "CNSA · China",
-    noteKey: "sites.change4",
   },
   {
     id: "apollo11",
@@ -77,7 +70,6 @@ export const SITES = [
     lon: 23.47,
     relief: 0.5,
     agency: "NASA · Apollo",
-    noteKey: "sites.apollo11",
   },
 ];
 
