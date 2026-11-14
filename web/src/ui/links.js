@@ -4,7 +4,8 @@
  * selección:
  *   compare.html?a=<sitio>&b=<sitio>&start=AAAA-MM-DD&days=N
  * La página de misión guarda su selección del mismo modo (UI-12):
- *   index.html?site=<sitio>&start=AAAA-MM-DD&days=N
+ *   index.html?site=<sitio>&start=AAAA-MM-DD&days=N[&layer=<capa>]
+ * ("layer": capa calculada de la pestaña ELEVACIÓN, DEC-057).
  * (las fechas solo si el usuario las eligió).
  * Un sitio es el id de un sitio curado o "pt:lat,lon" para un punto del mapa;
  * un sitio propio con nombre agrega "~Nombre" (DEC-049): "pt:lat,lon~Nombre".
@@ -73,13 +74,17 @@ export function parseCompareQuery(search, defaults) {
   };
 }
 
-/** Selección de la misión → query string ("?site=…&start=…&days=…"). */
-export function missionQuery({ site, startMs, windowDays, dateChosen }) {
+/** Capas calculadas que viajan en la URL (la elevación es la de siempre y no se escribe). */
+const URL_LAYERS = ["sun", "earth", "both", "viability"];
+
+/** Selección de la misión → query string ("?site=…&start=…&days=…&layer=…"). */
+export function missionQuery({ site, startMs, windowDays, dateChosen, heatLayer }) {
   const q = new URLSearchParams({ site: siteParam(site) });
   if (dateChosen) {
     q.set("start", isoDay(startMs));
     q.set("days", String(windowDays));
   }
+  if (URL_LAYERS.includes(heatLayer)) q.set("layer", heatLayer);
   return `?${q}`;
 }
 
@@ -87,11 +92,12 @@ export function missionUrl(selection, hash = "") {
   return `./index.html${missionQuery(selection)}${hash}`;
 }
 
-/** Lee la selección de la misión: { site|null, startMs|null, windowDays|null }. Lo inválido se ignora. */
+/** Lee la selección de la misión: { site|null, startMs|null, windowDays|null, layer|null }. Lo inválido se ignora. */
 export function parseMissionQuery(search) {
   const q = new URLSearchParams(search);
   const window = parseWindow(q);
-  return { site: parseSiteParam(q.get("site")), startMs: window?.startMs ?? null, windowDays: window?.windowDays ?? null };
+  const layer = URL_LAYERS.includes(q.get("layer")) ? q.get("layer") : null;
+  return { site: parseSiteParam(q.get("site")), startMs: window?.startMs ?? null, windowDays: window?.windowDays ?? null, layer };
 }
 
 /** Sitio activo en la página de misión (curado, propio o punto observado). */
