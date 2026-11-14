@@ -1,6 +1,17 @@
 # Catálogo de fuentes científicas
 
-Las fuentes de esta tabla todavía no están integradas. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
+Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo el CGI Moon Kit, que se usa solo como imagen del mapa. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
+
+## NASA SVS — CGI Moon Kit (imagen del mapa, integrado)
+
+- **URL oficial:** https://svs.gsfc.nasa.gov/4720/ (NASA Scientific Visualization Studio).
+- **Finalidad:** textura y relieve de la Luna 3D y de las vistas 2D de GLOBAL y POLO SUR (UI-07, DEC-020). **Solo presentación:** no alimenta ningún cálculo de `src/lib/`.
+- **Archivos usados** (descargados el 14/11/2026):
+  - `lroc_color_poles_4k.tif` (4096×2048, color LROC WAC, equirectangular centrado en 0° de longitud; SHA-256 `918649a7f8ed2f1329b2cd95bb0d25483befdcb60ae1a66db681a637cc21344f`). Se convirtió a `web/public/nasa/lroc_color_4k.jpg` (JPEG calidad 85) y a `lroc_color_1k.jpg` (vista previa de 1024×512).
+  - `ldem_3_8bit.jpg` (1024×512, relieve LOLA en 8 bits; SHA-256 `6d93f887e7d8bedfe35ab89ba785e5e3ca12381bd092a5e6abe2c707dda8bb98`), copiado tal cual a `web/public/nasa/`.
+- **Orientación verificada:** el cráter Tycho cae en (−43°, −11°) con lon = x·360 − 180 y lat = 90 − y·180, la misma proyección que `map.js`.
+- **Limitaciones:** en 3D el relieve se exagera (`RELIEF_SCALE` en `moon3d.js`) y la luz es ilustrativa, no solar. El mosaico de color tiene poco contraste cerca de los polos. La conversión de unidades del `ldem_3_8bit` (gris → km) no se usa ni se verificó: el relieve 3D es solo visual.
+- **Atribución/licencia:** NASA's Scientific Visualization Studio, CGI Moon Kit (Ernie Wright), con datos de LRO/LROC WAC y LOLA. Material de NASA, en general de dominio público; se acredita en la interfaz ("Imagen: NASA SVS…").
 
 ## NASA JPL Horizons
 

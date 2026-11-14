@@ -1,13 +1,17 @@
 /**
  * Mapa con las tres pestañas del Figma: GLOBAL / MAPA DE CALOR / POLO SUR.
- *  - Global: mapa equirectangular (longitud -180..180, latitud 90..-90).
- *  - Mapa de calor y Polo sur: imágenes polares centradas en el polo sur,
- *    proyección azimutal equidistante hasta POLAR_EDGE_LAT, 0° arriba.
+ *  - GLOBAL y POLO SUR: Luna en 3D (moon3d.js) o, con el selector 3D/2D,
+ *    imágenes 2D del mosaico LROC de NASA SVS (DEC-020):
+ *      · Global 2D: mapa equirectangular (longitud -180..180, latitud 90..-90).
+ *      · Polo sur 2D: reproyección azimutal equidistante hasta POLAR_EDGE_LAT
+ *        (polar2d.js), 0° arriba.
+ *  - MAPA DE CALOR: imagen del Figma (hasta MAP-01), misma proyección polar.
  * Clic en el mapa = elegir coordenadas ("Punto observado").
  * Botón "+" = agregar el punto observado como sitio.
  */
 import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
+import { polarImage } from "./polar2d.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -17,11 +21,15 @@ const $ = (id) => document.getElementById(id);
  */
 const POLAR_EDGE_LAT = -60;
 
-const IMAGES = {
-  global: "./figma/moon-global.png",
-  heat: "./figma/moon-heatmap.png",
-  polar: "./figma/moon-south-pole-gray.png",
-};
+const NASA_COLOR = "./nasa/lroc_color_4k.jpg";
+const HEAT_IMAGE = "./figma/moon-heatmap.png";
+
+let moon3d = null; // vista 3D (se crea la primera vez que se usa)
+let moon3dLoading = null;
+let moon3dView = null;
+let polarUrl = null; // imagen polar 2D reproyectada
+
+const uses3d = (state) => state.mapView !== "heat" && state.mapMode === "3d";
 
 /** lat/lon → posición relativa (0..1) dentro de la imagen, o null si queda afuera. */
 function project(view, lat, lon) {
@@ -41,11 +49,12 @@ function unproject(view, x, y) {
   return { lat: -90 + r * (90 + POLAR_EDGE_LAT), lon: (Math.atan2(dx, -dy) * 180) / Math.PI };
 }
 
-function pinMarkup({ x, y, label, sub, id, current }) {
+function pinMarkup({ x, y, lat, lon, label, sub, id, current }) {
   const tag = id ? "button" : "div";
   const attrs = id ? `type="button" data-site="${id}" aria-label="${label}"` : "";
+  // data-lat/lon: en 3D, moon3d.js reubica el marcador proyectando estas coordenadas.
   return `
-    <${tag} class="pin" ${attrs} ${current ? 'aria-current="true"' : ""} style="left:${(x * 100).toFixed(3)}%;top:${(y * 100).toFixed(3)}%">
+    <${tag} class="pin" ${attrs} data-lat="${lat}" data-lon="${lon}" ${current ? 'aria-current="true"' : ""} style="left:${(x * 100).toFixed(3)}%;top:${(y * 100).toFixed(3)}%">
       <span class="pin-label">${label}${sub ? `<span>${sub}</span>` : ""}</span>
       <img src="./figma/${id ? "pin-site" : "pin-observed"}.svg" alt="" width="32" height="32" />
     </${tag}>`;
@@ -57,7 +66,7 @@ function pinMarkup({ x, y, label, sub, id, current }) {
  * sigue disponible como tooltip del marcador).
  */
 function declutterLabels() {
-  const pins = [...document.querySelectorAll("#map-pins .pin")];
+  const pins = [...document.querySelectorAll("#map-pins .pin:not([hidden])")];
   pins.sort((a, b) => (b.getAttribute("aria-current") === "true") - (a.getAttribute("aria-current") === "true"));
   const overlaps = (r, k) => r.left < k.right && r.right > k.left && r.top < k.bottom && r.bottom > k.top;
   // Los círculos de los marcadores también son obstáculos para las etiquetas.
@@ -103,6 +112,9 @@ export function initMap() {
   document.querySelectorAll("[data-map-view]").forEach((tab) =>
     tab.addEventListener("click", () => setState({ mapView: tab.dataset.mapView })),
   );
+  document.querySelectorAll("[data-map-mode]").forEach((button) =>
+    button.addEventListener("click", () => setState({ mapMode: button.dataset.mapMode })),
+  );
 
   $("add-site").addEventListener("click", () => {
     const { lat, lon, customSites, siteId } = getState();
@@ -113,12 +125,86 @@ export function initMap() {
   });
 }
 
+/** Al girar la Luna, las etiquetas se reordenan cuando el movimiento se detiene. */
+let declutterTimer = 0;
+function declutterSoon() {
+  clearTimeout(declutterTimer);
+  declutterTimer = setTimeout(declutterLabels, 120);
+}
+
+/** Crea la vista 3D la primera vez (three.js se carga recién ahí). */
+function ensureMoon3d() {
+  if (moon3d || moon3dLoading) return moon3dLoading;
+  const area = $("map-area");
+  area.dataset.loading = "true";
+  moon3dLoading = import("./moon3d.js")
+    .then(({ createMoon3D }) =>
+      createMoon3D(area, {
+        onPick: (lat, lon) => chooseCoordinates(lat, lon),
+        onMove: declutterSoon,
+        onReady: () => delete area.dataset.loading,
+      }),
+    )
+    .then((instance) => {
+      moon3d = instance;
+      renderMap(getState());
+    })
+    .catch(() => {
+      // Sin WebGL: se vuelve a la vista 2D y se avisa.
+      delete area.dataset.loading;
+      area.dataset.error = "true";
+      setState({ mapMode: "2d" });
+    });
+  return moon3dLoading;
+}
+
+/** Imagen 2D de cada pestaña. La polar se genera una vez desde el mosaico LROC. */
+function image2d(view) {
+  if (view === "heat") return HEAT_IMAGE;
+  if (view === "global") return NASA_COLOR;
+  if (polarUrl) return polarUrl;
+  $("map-area").dataset.loading = "true";
+  polarImage(NASA_COLOR, POLAR_EDGE_LAT).then((url) => {
+    polarUrl = url;
+    delete $("map-area").dataset.loading;
+    renderMap(getState());
+  });
+  return null;
+}
+
 export function renderMap(state) {
   const view = state.mapView;
-  $("map-area").dataset.view = view;
+  const area = $("map-area");
+  const is3d = uses3d(state);
+  area.dataset.view = view;
+  area.dataset.mode = is3d ? "3d" : "2d";
+  // En 3D el contenedor recibe el foco para girar con las flechas.
+  if (is3d) {
+    area.tabIndex = 0;
+    area.setAttribute("role", "application");
+    area.setAttribute("aria-label", t("map.aria3d"));
+  } else {
+    area.removeAttribute("tabindex");
+    area.removeAttribute("role");
+    area.removeAttribute("aria-label");
+  }
+  document.querySelectorAll("[data-map-mode]").forEach((button) =>
+    button.setAttribute("aria-pressed", String(button.dataset.mapMode === state.mapMode)),
+  );
+  $("map-mode").hidden = view === "heat";
+  $("map-credit").hidden = view === "heat";
+
   const img = $("map-image");
-  if (img.getAttribute("src") !== IMAGES[view]) img.setAttribute("src", IMAGES[view]);
-  img.alt = t(`map.alt.${view}`);
+  if (!is3d) {
+    const src = image2d(view);
+    if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
+    img.alt = t(`map.alt.${view}`);
+  } else if (moon3d) {
+    if (moon3dView !== view) moon3d.setView(view);
+    moon3dView = view;
+  } else {
+    ensureMoon3d();
+  }
 
   document.querySelectorAll("[data-map-view]").forEach((tab) =>
     tab.setAttribute("aria-selected", String(tab.dataset.mapView === view)),
@@ -128,11 +214,16 @@ export function renderMap(state) {
   const pins = allSites()
     .map((site) => {
       const p = project(view, site.lat, site.lon);
-      return p ? pinMarkup({ ...p, label: site.name, id: site.id, current: site.id === state.siteId }) : "";
+      // En 3D se marcan todos los sitios (los de atrás quedan ocultos al girar).
+      const at = p ?? (is3d ? { x: 0, y: 0 } : null);
+      return at
+        ? pinMarkup({ ...at, lat: site.lat, lon: site.lon, label: site.name, id: site.id, current: site.id === state.siteId })
+        : "";
     })
     .join("");
 
-  const observed = state.siteId === CUSTOM_ID ? project(view, state.lat, state.lon) : null;
+  const observedAt = state.siteId === CUSTOM_ID ? project(view, state.lat, state.lon) ?? (is3d ? { x: 0, y: 0 } : null) : null;
+  const observed = observedAt && { ...observedAt, lat: state.lat, lon: state.lon };
   $("map-pins").innerHTML =
     pins +
     (observed
@@ -144,7 +235,10 @@ export function renderMap(state) {
         })
       : "");
 
-  declutterLabels();
+  if (is3d && moon3d) moon3d.refreshPins();
+  // En 3D los marcadores se ubican en el próximo cuadro; recién ahí se ordenan las etiquetas.
+  if (is3d) requestAnimationFrame(() => requestAnimationFrame(declutterLabels));
+  else declutterLabels();
 
   $("map-lat").textContent = state.lat.toFixed(2);
   $("map-lon").textContent = state.lon.toFixed(2);

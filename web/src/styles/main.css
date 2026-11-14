@@ -489,6 +489,114 @@ button {
   line-height: 24px;
 }
 
+/* ---------- Luna 3D / 2D en GLOBAL y POLO SUR (UI-07, DEC-020) ---------- */
+.map-area[data-mode="3d"] {
+  left: 104px;
+  top: 120px;
+  width: 640px;
+  height: 640px;
+  cursor: grab;
+}
+
+.map-area[data-mode="3d"]:active {
+  cursor: grabbing;
+}
+
+.map-area[data-mode="3d"] .map-image {
+  display: none;
+}
+
+/* three.js pone display:block en línea en el canvas */
+.map-area:not([data-mode="3d"]) .moon3d-canvas {
+  display: none !important;
+}
+
+.moon3d-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.map-area[data-view="polar"][data-mode="2d"] .map-image {
+  border-radius: 50%;
+}
+
+.pin[hidden] {
+  display: none;
+}
+
+.map-status {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 6px 12px;
+  background: var(--field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  color: var(--muted-2);
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map-area[data-loading="true"] .map-status-loading,
+.map-area[data-error="true"][data-mode="2d"] .map-status-error {
+  display: block;
+}
+
+.map-area[data-error="true"] .map-status-error {
+  top: auto;
+  bottom: 8px;
+}
+
+.map-mode {
+  position: absolute;
+  right: 40px;
+  top: 128px;
+  display: grid;
+  gap: 6px;
+}
+
+.map-mode[hidden] {
+  display: none;
+}
+
+.map-mode button {
+  width: 52px;
+  height: 36px;
+  background: var(--field);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--muted-2);
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.map-mode button[aria-pressed="true"] {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.map-credit {
+  position: absolute;
+  right: 32px;
+  top: 800px;
+  width: 400px;
+  color: var(--muted-2);
+  font-size: 11px;
+  line-height: 14px;
+  text-align: right;
+}
+
+.map-credit[hidden] {
+  display: none;
+}
+
 /* ---------- Parámetros de la misión ---------- */
 .params {
   position: absolute;
@@ -987,7 +1095,7 @@ button {
   position: absolute;
   right: 20px;
   bottom: 24px;
-  width: 300px;
+  width: 440px;
   text-align: right;
   font-family: var(--font-mono);
   font-size: 10px;
@@ -995,6 +1103,23 @@ button {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #6f7885;
+}
+
+/* Escala del relieve en el panorama (UI-08) */
+.pano-zero {
+  stroke: rgba(200, 210, 230, 0.18);
+  stroke-dasharray: 4 6;
+}
+
+.pano-tick {
+  stroke: rgba(200, 210, 230, 0.35);
+}
+
+.pano-scale {
+  fill: rgba(200, 210, 230, 0.5);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
 }
 
 .pano-label {
