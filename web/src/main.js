@@ -3,42 +3,40 @@
  *
  * Flujo:
  *  1. Un control cambia el estado (setState).
- *  2. Si cambió el sitio, la fecha o la ventana, se recalcula el escenario.
+ *  2. Si cambió el sitio, la fecha o la duración, se recalcula el escenario.
  *  3. Se redibuja solo lo que depende de lo que cambió.
  */
 import "./styles/main.css";
 import { computeScenario, sampleAt } from "./lib/analysis.js";
-import { findSite } from "./data/sites.js";
-import { applyStaticTranslations, initialLang, setLang, getLang } from "./i18n/index.js";
-import { getState, subscribe } from "./state.js";
-import { initSetup, renderSetup } from "./ui/setup.js";
-import { initMap, renderMap } from "./ui/map.js";
-import { renderInsight, renderMetrics, renderStatus, renderViability } from "./ui/panels.js";
+import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
+import { getSite, getState, subscribe } from "./state.js";
+import { initMap, placeAccent, renderMap } from "./ui/map.js";
+import { initPlaces, renderPlaces } from "./ui/places.js";
+import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
+import { refreshCalendar } from "./ui/calendar.js";
+import { renderInsight, renderStatus } from "./ui/status.js";
 import { renderPanorama } from "./ui/panorama.js";
-import { initTimeline, renderPlayback, renderTime, renderWindows } from "./ui/timeline.js";
-import { initCompare, pinScenario, renderCompare } from "./ui/compare.js";
+import { initTimeline, renderPlayback, renderTicks, renderTime } from "./ui/timeline.js";
+
+const DESIGN_WIDTH = 1992;
 
 let scenario = null;
 let scenarioKey = "";
 let lastPanelsAt = 0;
 
-/** El escenario solo depende del sitio, la fecha de inicio y la ventana. */
+/** El escenario solo depende del sitio, la fecha de inicio y la duración. */
 function ensureScenario(state) {
   const key = `${state.siteId}|${state.lat}|${state.lon}|${state.startMs}|${state.windowDays}`;
-  if (key === scenarioKey) return false;
-  const curated = findSite(state.siteId);
-  const site = {
-    id: state.siteId,
-    lat: state.lat,
-    lon: state.lon,
-    // Si el usuario editó las coordenadas de un sitio curado, ya no aplican sus parámetros.
-    ...(curated && curated.lat === state.lat && curated.lon === state.lon
-      ? { relief: curated.relief, elevationKm: curated.elevationKm }
-      : {}),
-  };
+  if (key === scenarioKey) return;
+  const saved = getSite(state.siteId);
+  const site = { id: state.siteId, lat: state.lat, lon: state.lon };
+  // Si el usuario editó las coordenadas de un sitio curado, ya no aplican sus parámetros de relieve.
+  if (saved && saved.lat === state.lat && saved.lon === state.lon) {
+    site.relief = saved.relief;
+    site.elevationKm = saved.elevationKm;
+  }
   scenario = computeScenario(site, state.startMs, state.windowDays);
   scenarioKey = key;
-  return true;
 }
 
 function renderInstant(state, { force = false } = {}) {
@@ -48,9 +46,10 @@ function renderInstant(state, { force = false } = {}) {
   // Durante la reproducción, los paneles de texto se refrescan ~8 veces por segundo.
   const now = performance.now();
   if (force || !state.playing || now - lastPanelsAt > 120) {
-    renderMetrics(scenario, sample);
+    renderCriteria(scenario, sample);
     renderStatus(sample);
     renderInsight(scenario, sample);
+    renderPlaces(state);
     lastPanelsAt = now;
   }
 }
@@ -59,62 +58,58 @@ function renderAll() {
   const state = getState();
   ensureScenario(state);
   applyStaticTranslations();
-  document.querySelectorAll("[data-lang]").forEach((b) =>
-    b.setAttribute("aria-pressed", String(b.dataset.lang === getLang())),
-  );
-  renderSetup(state);
+  renderParamsFields(state);
   renderMap(state);
-  renderViability(scenario);
-  renderWindows(scenario);
+  renderTicks(state.windowDays);
   renderPlayback(state);
-  renderCompare(state);
+  refreshCalendar();
   renderInstant(state, { force: true });
 }
 
-const SCENARIO_KEYS = ["siteId", "lat", "lon", "startMs", "windowDays"];
+const SCENARIO_KEYS = ["siteId", "lat", "lon", "startMs", "windowDays", "customSites"];
 
 subscribe((state, changed) => {
   const has = (...keys) => keys.some((k) => changed.has(k));
-
-  if (has(...SCENARIO_KEYS)) {
+  if (has(...SCENARIO_KEYS, "dateChosen")) {
     ensureScenario(state);
-    renderSetup(state);
+    renderParamsFields(state);
     renderMap(state);
-    renderViability(scenario);
-    renderWindows(scenario);
+    renderTicks(state.windowDays);
     renderInstant(state, { force: true });
     return;
   }
-  if (has("mapView", "heatMode")) renderMap(state);
+  if (has("mapView")) renderMap(state);
   if (has("playing", "speed")) renderPlayback(state);
-  if (has("compare")) renderCompare(state);
   if (has("timeMs", "playing")) renderInstant(state, { force: changed.has("playing") });
 });
 
+/** El diseño mide 1992 px de ancho; se escala para ocupar el ancho de la ventana. */
+function fitStage() {
+  const zoom = document.documentElement.clientWidth / DESIGN_WIDTH;
+  document.getElementById("stage").style.zoom = String(zoom);
+}
+
 function init() {
   setLang(initialLang());
-  initSetup();
+  fitStage();
+  initPlaces();
   initMap();
+  initParams();
   initTimeline();
-  initCompare();
 
-  document.querySelectorAll("[data-lang]").forEach((button) =>
-    button.addEventListener("click", () => {
-      setLang(button.dataset.lang);
-      renderAll();
-    }),
-  );
-  document.getElementById("pin-scenario").addEventListener("click", () => {
-    ensureScenario(getState());
-    pinScenario(scenario);
+  document.getElementById("lang-toggle").addEventListener("click", () => {
+    setLang(getLang() === "es" ? "en" : "es");
+    renderAll();
   });
 
-  // Recalcula la posición del cursor del gráfico de ventanas si cambia el ancho.
-  window.addEventListener("resize", () => renderInstant(getState(), { force: true }));
+  window.addEventListener("resize", () => {
+    fitStage();
+    placeAccent();
+  });
+  // Cuando cargan las fuentes cambian los anchos de las pestañas del mapa.
+  document.fonts?.ready.then(placeAccent);
 
   renderAll();
-  // Primer escenario fijado para que el comparador no arranque vacío.
-  pinScenario(scenario);
 }
 
 init();
