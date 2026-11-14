@@ -19,7 +19,7 @@ import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { polarImage } from "./polar2d.js";
 import { LOLA_MAPS, elevationCanvas, elevationUrl, paletteGradient } from "./elevation.js";
-import { HEAT_MIN_LAT, cachedHeatLayer, heatLayerAsync } from "./heat-layer.js";
+import { HEAT_MIN_LAT, cachedHeatLayer, heatLayerAsync, heatLayerTexture } from "./heat-layer.js";
 import { ensureHeatAtlas } from "./ephemerides.js";
 import { dataStatus, onDataStatus } from "./data-status.js";
 import { toast } from "./toast.js";
@@ -333,7 +333,7 @@ export function renderMap(state) {
   const view = state.mapView;
   const area = $("map-area");
   const calc = calcLayer(state);
-  const is3d = uses3d(state) && !calc;
+  const is3d = uses3d(state);
   const edge = edgeFor(state);
   if (calc) ensureHeatAtlas(); // ~0,8 MB, una vez; al llegar cambia realDataVersion() y se recalcula
   area.dataset.view = view;
@@ -352,8 +352,8 @@ export function renderMap(state) {
   document.querySelectorAll("[data-map-mode]").forEach((button) =>
     button.setAttribute("aria-pressed", String(button.dataset.mapMode === state.mapMode)),
   );
-  // Las capas calculadas son solo 2D: el selector 3D/2D se oculta mientras se ven.
-  $("map-mode").hidden = calc;
+  // Las capas calculadas también se ven en 3D (DEC-050), sobre el casquete polar.
+  $("map-mode").hidden = false;
   $("heat-layers").hidden = view !== "heat";
   document.querySelectorAll("[data-heat-layer]").forEach((button) =>
     button.setAttribute("aria-pressed", String(button.dataset.heatLayer === state.heatLayer)),
@@ -366,9 +366,22 @@ export function renderMap(state) {
     if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
     img.alt = t(calc ? `map.layerAlt.${state.heatLayer}` : `map.alt.${view}`);
   } else if (moon3d) {
-    if (moon3dView !== view) moon3d.setView(view);
-    moon3dView = view;
-    if (view === "heat") {
+    const viewName = calc ? "heatCalc" : view;
+    if (moon3dView !== viewName) moon3d.setView(viewName);
+    moon3dView = viewName;
+    if (calc) {
+      // Capa calculada: textura con la grilla sobre el polo (se calcula si hace falta).
+      const result = calcImage(state);
+      if (result) {
+        const key = result.url;
+        heatLayerTexture(result).then((canvas) => {
+          const now = getState();
+          if (calcLayer(now) && uses3d(now) && cachedHeatLayer(now.heatLayer, now.startMs, now.windowDays, palette())?.url === key) {
+            moon3d.setSurface("physical", canvas);
+          }
+        });
+      }
+    } else if (view === "heat") {
       const p = palette();
       elevationCanvas("global", p).then((canvas) => {
         // Solo si el usuario sigue en MAPA DE CALOR 3D con la misma paleta.

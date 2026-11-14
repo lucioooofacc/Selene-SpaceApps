@@ -100,3 +100,93 @@ export async function heatLayerAsync(layer, startMs, windowDays, palette) {
   if (pk && result.source?.kind === "real") persist(pk, { url: result.url, source: result.source });
   return result;
 }
+
+// ---------------------------------------------------------------------------
+// Textura 3D de la capa (DEC-050)
+// ---------------------------------------------------------------------------
+
+const TEX_W = 4096;
+const TEX_H = 2048;
+let basePromise = null;
+const textures = new Map(); // url de la capa → Promise<canvas>
+
+/** Mosaico LROC equirectangular oscurecido: base fuera del casquete calculado. */
+function baseCanvas() {
+  basePromise ??= new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = TEX_W;
+      canvas.height = TEX_H;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, TEX_W, TEX_H);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.45)"; // la capa calculada resalta sobre el mosaico
+      ctx.fillRect(0, 0, TEX_W, TEX_H);
+      resolve(canvas);
+    };
+    img.onerror = () => reject(new Error("no se pudo cargar el mosaico LROC"));
+    img.src = "./nasa/lroc_color_4k.jpg";
+  });
+  return basePromise;
+}
+
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("no se pudo leer la capa"));
+    img.src = url;
+  });
+}
+
+/**
+ * Textura equirectangular (centrada en 0°, como la de moon3d.js) con la capa
+ * calculada pintada en el casquete polar hasta HEAT_MIN_LAT: cada píxel toma
+ * la celda de la grilla que le corresponde por la misma proyección polar
+ * (vecino más cercano, sin suavizar). Se cachea por imagen de la capa.
+ * @returns {Promise<HTMLCanvasElement>}
+ */
+export function heatLayerTexture(result) {
+  if (!textures.has(result.url)) {
+    textures.set(
+      result.url,
+      Promise.all([baseCanvas(), loadImage(result.url)]).then(([base, img]) => {
+        const size = img.naturalWidth;
+        const grid = document.createElement("canvas");
+        grid.width = grid.height = size;
+        const gctx = grid.getContext("2d", { willReadFrequently: true });
+        gctx.drawImage(img, 0, 0);
+        const cells = gctx.getImageData(0, 0, size, size).data;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = TEX_W;
+        canvas.height = TEX_H;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(base, 0, 0);
+        const y0 = Math.floor(((90 - HEAT_MIN_LAT) / 180) * TEX_H);
+        const cap = ctx.getImageData(0, y0, TEX_W, TEX_H - y0);
+        const out = cap.data;
+        const span = 90 + HEAT_MIN_LAT;
+        for (let y = y0; y < TEX_H; y++) {
+          const lat = 90 - ((y + 0.5) / TEX_H) * 180;
+          const r = (90 + lat) / span;
+          if (r > 1) continue;
+          for (let x = 0; x < TEX_W; x++) {
+            const lon = (((x + 0.5) / TEX_W) * 360 - 180) * (Math.PI / 180);
+            const gx = Math.min(size - 1, Math.floor((0.5 + 0.5 * r * Math.sin(lon)) * size));
+            const gy = Math.min(size - 1, Math.floor((0.5 - 0.5 * r * Math.cos(lon)) * size));
+            const c = (gy * size + gx) * 4;
+            if (cells[c + 3] === 0) continue; // fuera del disco calculado
+            const o = ((y - y0) * TEX_W + x) * 4;
+            out[o] = cells[c];
+            out[o + 1] = cells[c + 1];
+            out[o + 2] = cells[c + 2];
+          }
+        }
+        ctx.putImageData(cap, 0, y0);
+        return canvas;
+      }),
+    );
+  }
+  return textures.get(result.url);
+}
