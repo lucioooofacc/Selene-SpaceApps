@@ -704,3 +704,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Resultados medidos:** 46 cruces en 7 sitios × 30 días (desde 01/01/2027): los bordes se adelantan en promedio 4,5 min (máximo 9,7 min) respecto de la muestra, lo esperable para un error uniforme de hasta un paso. Costo extra despreciable (~7 evaluaciones por cruce).
 - **Alternativas descartadas:** interpolación lineal del margen entre muestras (ignora cambios del perfil del horizonte entre las dos direcciones); bajar el paso a 1 min en todo el escenario (10 veces más cálculo para mejorar solo los bordes).
 - **Estado:** vigente. La exactitud real de los instantes la limitan la interpolación horaria de Horizons y la resolución del horizonte, no la tolerancia de 5 s.
+
+## DEC-049 — Ajustes del bloc de notas de UI 2: ventana de análisis vacía, nombre en la URL, menú y viabilidad
+
+- **Contexto / problema:** segundo bloc de notas de UI de Lucio (14/11/2026, noche).
+- **Decisión y solución aplicada:**
+  - **Ventana de análisis sin selección:** hasta que se elijan un sitio (o punto) y las fechas, en lugar de las tarjetas con los valores del punto de ejemplo del Figma se muestra qué falta elegir. Nuevo indicador `siteChosen` en `web/src/state.js` (se activa al elegir un sitio de la lista o del selector, hacer clic en el mapa, editar coordenadas, agregar un sitio o llegar con un sitio en la URL); `web/src/ui/params.js` (`renderCriteria()`), `web/src/main.js`, textos `params.emptyWindow.*`.
+  - **Nombre del sitio propio en la URL:** el parámetro de un sitio propio con nombre pasa a `pt:lat,lon~Nombre` (`web/src/ui/links.js`: `siteParam()`, `parseSiteParam()`, `cleanLabel()`; nombre sin caracteres de HTML y hasta 40 caracteres). Así la comparación muestra el nombre, y la misión, al cargar esa URL, vuelve a poner el sitio en la lista con su nombre (también al recargar). Sin nombre, el formato es el de siempre. Prueba en `web/tests/links.test.js`.
+  - **Menú del "+":** el campo de texto tomaba el ancho mínimo del navegador y empujaba el contenido fuera del menú; ahora todo el menú usa `box-sizing: border-box` y `min-width: 0`.
+  - **Viabilidad en "Mejores fechas":** etiqueta de color en lugar de texto gris (verde alta, dorado media, rojo baja, con los tokens existentes).
+- **Alternativas descartadas:** ocultar también el "Resumen del período" sin selección (no se pidió y sigue siendo útil con el punto de ejemplo); guardar todos los sitios propios en `localStorage` (más allá de lo pedido; anotado en PENDIENTES).
+- **Estado:** vigente.
