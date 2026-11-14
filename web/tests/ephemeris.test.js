@@ -150,8 +150,17 @@ test("fuera del rango o sin datos: modelo aproximado, informado como tal", () =>
   assert.equal(nearEnd.ephemeris.source, "horizons");
   assert.equal(nearEnd.ephemeris.lookaheadComplete, false);
 
+  // Cabeus sin serie propia registrada: también se traslada desde Malapert.
+  const cabeus = computeScenario(site("cabeus"), Date.UTC(2026, 10, 14), 1).ephemeris;
+  assert.equal(cabeus.derived, true);
+  assert.equal(cabeus.meta.derivedFrom, "malapert");
+  // Un punto propio usa la serie trasladada (CORE-03, DEC-034), no la del sitio.
+  const own = computeScenario({ ...site("malapert"), custom: true }, Date.UTC(2026, 10, 14), 1).ephemeris;
+  assert.equal(own.source, "horizons");
+  assert.equal(own.derived, true);
+  // Sin ninguna serie registrada: modelo aproximado.
+  clearEphemerides();
   assert.equal(computeScenario(site("cabeus"), Date.UTC(2026, 10, 14), 1).ephemeris.source, "approximate");
-  assert.equal(computeScenario({ ...site("malapert"), custom: true }, Date.UTC(2026, 10, 14), 1).ephemeris.source, "approximate");
 });
 
 test("determinismo con Horizons", () => {

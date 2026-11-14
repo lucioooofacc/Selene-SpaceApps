@@ -11,7 +11,8 @@
 import { DAY_MS, EARTH_RADIUS, SUN_RADIUS, earthPhase, earthPosition, sunPosition } from "./astro.js";
 import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
-import { ephemerisFor, positionsAt } from "./ephemeris.js";
+import { derivedEphemerisFor, ephemerisFor, ephemerisVersion, positionsAt } from "./ephemeris.js";
+import { POLAR_DEM_COVERAGE_LATITUDE, polarDemVersion, polarHorizonFor } from "./polar-dem.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -65,19 +66,39 @@ function level(value, { high, mid }) {
 const LEVEL_POINTS = { high: 2, mid: 1, low: 0 };
 
 /**
- * Horizonte del escenario (CORE-01 parte A, DEC-032): el topográfico real de
- * LOLA (TERRAIN-02, DEC-030) para los sitios curados cubiertos y, si no hay
- * (sitios propios, Chang'e 4, Apollo 11), el sintético de `terrain.js`
- * (DEC-005). Solo se usa LOLA si el sitio no es propio y sus coordenadas son
- * exactamente las de la tabla, para no aplicar el horizonte de otro punto.
- * El LOLA trae `source = "lola"`; el sintético no trae `source`.
+ * Horizonte del escenario, en orden de preferencia:
+ * 1. LOLA de 240 m precalculado (TERRAIN-02, DEC-030/DEC-032), si el sitio es
+ *    curado y conserva sus coordenadas.
+ * 2. LOLA reducido (480/960 m) calculado al momento para puntos al sur de −75°,
+ *    si el DEM polar reducido ya está cargado (CORE-03, DEC-034;
+ *    `meta.reduced = true`).
+ * 3. El sintético de `terrain.js` (DEC-005), sin `source`.
  */
 export function scenarioHorizon(site) {
-  if (!site.custom && site.id) {
-    const lola = createLolaHorizon(site.id);
-    if (lola && lola.meta.lat === site.lat && lola.meta.lon === site.lon) return lola;
-  }
-  return createHorizon(site);
+  return curatedLolaHorizon(site) ?? polarHorizonFor(site) ?? createHorizon(site);
+}
+
+/** Horizonte LOLA de 240 m precalculado, solo para el sitio curado con sus coordenadas. */
+function curatedLolaHorizon(site) {
+  if (site.custom || !site.id) return null;
+  const lola = createLolaHorizon(site.id);
+  return lola && lola.meta.lat === site.lat && lola.meta.lon === site.lon ? lola : null;
+}
+
+/**
+ * ¿Este sitio usaría el DEM polar reducido si estuviera cargado? (CORE-03,
+ * DEC-034). Sirve para que la interfaz lo baje solo cuando hace falta.
+ */
+export function needsPolarDem(site) {
+  return Number.isFinite(site?.lat) && site.lat <= POLAR_DEM_COVERAGE_LATITUDE && !curatedLolaHorizon(site);
+}
+
+/**
+ * Versión de los datos reales cargados (efemérides y DEM polar). Cambia cuando
+ * llega algo nuevo: los cachés de escenarios la incluyen en su clave.
+ */
+export function realDataVersion() {
+  return `${ephemerisVersion()}.${polarDemVersion()}`;
 }
 
 /**
@@ -86,11 +107,16 @@ export function scenarioHorizon(site) {
  * no, el modelo aproximado de astro.js (DEC-004).
  */
 function makePositions(site) {
-  const eph = ephemerisFor(site);
+  const own = ephemerisFor(site);
+  // Puntos propios (o sitios con coordenadas editadas): serie trasladada (DEC-034).
+  const derived = own ? null : derivedEphemerisFor(site);
+  const eph = own ?? derived;
+  const at = own ? (t) => positionsAt(own, t) : derived ? (t) => derived.at(t) : () => null;
   return {
     eph,
+    derived: Boolean(derived),
     at(t) {
-      const p = eph ? positionsAt(eph, t) : null;
+      const p = at(t);
       if (p) return { sun: p.sun, earth: p.earth, phase: p.earth.phase, real: true };
       return { sun: sunPosition(site, t), earth: earthPosition(site, t), phase: earthPhase(t), real: false };
     },
@@ -190,6 +216,8 @@ export function computeScenario(site, startMs, windowDays) {
       windowFraction: realWindow / windowSteps,
       // Los días extra (próximo amanecer/ocaso) también pueden salir del rango.
       lookaheadComplete: realTotal === total,
+      // true si las posiciones se trasladaron desde la serie de otro sitio (DEC-034).
+      derived: positions.derived && realTotal > 0,
       // Procedencia de la serie, solo si se usó para alguna muestra.
       meta: realTotal > 0 ? positions.eph.meta : null,
     },
