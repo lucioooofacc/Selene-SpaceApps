@@ -2255,6 +2255,20 @@ button {
   }
 }
 
+/*
+ * backdrop-filter crea un contexto de apilamiento por caja: el calendario
+ * desplegable (dentro de los controles) quedaba debajo de las tarjetas que
+ * vienen después. Los contenedores con desplegables van por encima.
+ */
+.cmp-controls {
+  position: relative;
+  z-index: 20;
+}
+
+.params {
+  z-index: 2;
+}
+
 /* Contenedores grandes: desenfocan la Luna que tienen detrás */
 .places,
 .map-card,

@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (calendario y Luna de fondo, rama `design/calendario-luna-fondo`).
+Última actualización: 2026-11-15 (calendario por encima, rama `fix/calendario-encima`).
 
 ---
 
@@ -78,6 +78,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Validar los umbrales orientativos de pendiente del informe (verde < 5°, dorado 5–10°, rojo ≥ 10°) y los supuestos de la trayectoria (órbitas de 185 y 100 km, 1 día en órbita lunar). — Teo, Facu, Lucio · DEC-059
 - [x] ~~Calendario desplegable adaptado a la paleta de la web, con la misma estructura. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
 - [x] ~~Luna animada de fondo y tarjetas semitransparentes. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
+- [x] ~~En comparar e informe el calendario quedaba debajo de las tarjetas. — Lucio~~ Resuelto 2026-11-15 (rama `fix/calendario-encima`, DEC-060): los controles van en una capa por encima.
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
