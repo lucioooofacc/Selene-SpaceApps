@@ -92,6 +92,7 @@ subscribe((state, changed) => {
     return;
   }
   if (has("mapView", "mapMode", "heatLayer")) renderMap(state);
+  if (has("heatLayer")) syncUrl(state);
   if (has("placesCategory", "placesMode")) {
     renderPlaces(state);
     updateCompareLinks(state, rankedSites(state));
@@ -108,7 +109,7 @@ function syncUrl(state) {
 
 /** Selección inicial desde la URL (sitio y fechas); lo inválido se ignora. */
 function stateFromUrl() {
-  const { site, startMs, windowDays } = parseMissionQuery(location.search);
+  const { site, startMs, windowDays, layer } = parseMissionQuery(location.search);
   const patch = {};
   if (site?.label) {
     // Sitio propio con nombre (DEC-049): vuelve a la lista de sitios con ese nombre.
@@ -116,6 +117,8 @@ function stateFromUrl() {
     Object.assign(patch, { customSites: [saved], siteId: saved.id, lat: site.lat, lon: site.lon, siteChosen: true });
   } else if (site) Object.assign(patch, { siteId: site.custom ? CUSTOM_ID : site.id, lat: site.lat, lon: site.lon, siteChosen: true });
   if (startMs != null) Object.assign(patch, { startMs, windowDays, timeMs: startMs, dateChosen: true });
+  // Capa calculada del mapa (DEC-057): se abre en la pestaña ELEVACIÓN con esa capa.
+  if (layer) Object.assign(patch, { heatLayer: layer, mapView: "heat" });
   return patch;
 }
 

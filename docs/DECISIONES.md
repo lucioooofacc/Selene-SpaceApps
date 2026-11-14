@@ -788,3 +788,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/ui/panorama.js` (`orbitPath()`, `orbitDays()`; ~900 puntos por recorrido; se recalcula solo al cambiar el escenario), estilos en `main.css`, nota en la leyenda (`sim.orbits`, ES/EN).
 - **Alternativas descartadas:** dibujar solo el tramo ya recorrido hasta el instante (hay que recalcular en cada cuadro y se pierde la vista del período completo); un diagrama orbital en el espacio (no responde a la pregunta del sitio).
 - **Estado:** vigente.
+
+## DEC-057 — La capa calculada del mapa viaja en la URL
+
+- **Contexto / problema:** pendiente de DEC-040: la capa elegida en la pestaña ELEVACIÓN (Luz, Tierra, Sol + Tierra, Viabilidad) se perdía al recargar o al compartir el enlace.
+- **Decisión:** agregar `layer=<capa>` a la URL de la misión (como el sitio y las fechas, UI-12), solo para las capas calculadas; la elevación es la de siempre y no se escribe. Al abrir una URL con `layer`, la página arranca en ELEVACIÓN con esa capa. Un valor desconocido se ignora.
+- **Solución aplicada:** `web/src/ui/links.js` (`missionQuery()`, `parseMissionQuery()`), `web/src/main.js` (`stateFromUrl()` y actualización de la URL al cambiar de capa), prueba en `web/tests/links.test.js`.
+- **Alternativas descartadas:** guardarla en la configuración (`localStorage`): no se comparte con el enlace y cambiaría la vista inicial para todos los sitios.
+- **Estado:** vigente.

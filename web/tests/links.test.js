@@ -10,7 +10,7 @@ test("la selección de la misión va y vuelve por la URL", () => {
   const site = SITES[0];
   const q = missionQuery({ site, startMs: start, windowDays: 5, dateChosen: true });
   assert.equal(q, `?site=${site.id}&start=2026-11-14&days=5`);
-  assert.deepEqual(parseMissionQuery(q), { site, startMs: start, windowDays: 5 });
+  assert.deepEqual(parseMissionQuery(q), { site, startMs: start, windowDays: 5, layer: null });
 });
 
 test("sin fechas elegidas, la URL solo lleva el sitio", () => {
@@ -59,4 +59,14 @@ test("un sitio propio con nombre conserva el nombre en la URL, limpio", () => {
   // Sin nombre: como antes.
   assert.equal(toParam({ id: "custom", lat: -85, lon: 40 }), "pt:-85.00,40.00");
   assert.equal(parseSite("pt:-85,40").label, null);
+});
+
+// DEC-057: la capa calculada del mapa viaja en la URL.
+test("la capa calculada del mapa va y vuelve por la URL; la elevación no se escribe", () => {
+  const site = SITES[0];
+  const q = missionQuery({ site, startMs: Date.UTC(2027, 0, 5), windowDays: 10, dateChosen: true, heatLayer: "viability" });
+  assert.match(q, /layer=viability/);
+  assert.equal(parseMissionQuery(q).layer, "viability");
+  assert.doesNotMatch(missionQuery({ site, heatLayer: "elevation" }), /layer=/);
+  assert.equal(parseMissionQuery("?site=shackleton&layer=<x>").layer, null);
 });
