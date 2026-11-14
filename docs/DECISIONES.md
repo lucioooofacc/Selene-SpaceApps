@@ -447,4 +447,35 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **Control físico:** Cabeus es el sitio de impacto de LCROSS, elegido por estar en sombra permanente; con LOLA da 0 % de luz todo el año (el sintético le daba ~30 %).
   - **Shackleton:** la caída se debe a que R04 cae en la pared interior del cráter según el DEM (hallazgo de DEC-030, pendiente de astronomía). Si se corrige la coordenada, hay que regenerar la tabla (`npm run data:lola:horizons`).
 - **Alternativas descartadas:** elegir el horizonte por id sin comprobar coordenadas (un punto propio con id repetido recibiría el horizonte de otro lugar); calcular LOLA para sitios propios en el navegador (requiere el raster; pendiente PERF-01); esperar a la parte B para integrar ambos juntos (demoraba el dato real ya disponible).
-- **Estado:** vigente. Pendiente: parte B (efemérides Horizons) y revisión de Shackleton R04. Se adelanta a TEST-01 (#10), todavía sin hacer.
+- **Estado:** vigente. La parte B se completó en DEC-033. Pendiente: revisión de Shackleton R04. Se adelanta a TEST-01 (#10), todavía sin hacer.
+
+## DEC-033 — El cálculo usa efemérides JPL Horizons (CORE-01, parte B)
+
+- **Contexto / problema:** el Sol y la Tierra salían del modelo periódico aproximado (DEC-004). Comparado con Horizons para nov 2026 – dic 2027, ese modelo erra en promedio ~2° en la elevación del Sol en todos los sitios (máx. 3–4,7°) y hasta ~8,7° de media en la de la Tierra en Apollo 11. En el polo, donde el Sol no pasa de ~1,5°, ese error decide si hay luz. Además tenía las **estaciones lunares desfasadas**. El adaptador y la caché ya existían (ASTRO-01, DEC-024), pero el navegador no puede consultar la API.
+- **Decisión (rango y paso acordados con Facundo en #11):**
+  - Series de Horizons para los **7 sitios curados**, del **01/11/2026 00:00 UTC al 01/01/2028 00:00 UTC**, **paso 1 h** (10 225 filas por cuerpo), perfil `selene-observer-v1` (DEC-024), efemérides DE441.
+  - Altura del observador: **suelo LOLA + 2 m** en los 5 sitios polares (la misma que el horizonte, DEC-030; base `measured-datum`); **0 km supuesto** en Chang'e 4 y Apollo 11 (fuera de LOLA polar). A la distancia del Sol y la Tierra el efecto de la altura es < 0,001°.
+  - Entre horas, **interpolación lineal** (azimut por el camino corto). El cálculo sigue muestreando cada 10 min.
+  - **Fuera del rango**, o si el archivo no cargó, o en sitios propios: modelo aproximado, y el escenario lo informa.
+- **Solución aplicada:**
+  - `web/scripts/build-ephemerides.mjs` (`npm run data:ephemerides`): toma de la caché de `fetch-horizons.mjs` las consultas del Sol y la Tierra de cada sitio con ese rango y paso, verifica completitud, mismos instantes, mismo sitio y misma altura, y escribe `web/public/data/ephemerides/<id>.json` (`selene-ephemeris/v1`: ángulos en milésimas de grado, % iluminado de la Tierra en centésimas; ~280–320 KiB por sitio, ~120 KiB comprimido) más `index.json`. Cada archivo guarda URL de consulta, fecha de obtención, SHA-256 de la respuesta cruda, efemérides y supuestos. Determinista para la misma caché.
+  - `web/src/lib/ephemeris.js` (puro): decodificación y validación, `positionsAt(eph, ms)`, registro en memoria con `ephemerisVersion()`, `ephemerisFor(site)` (solo sitio curado, no propio, con coordenadas idénticas) y `loadEphemerides(ids, fetchJson)` (un archivo fallido no frena al resto).
+  - `web/src/lib/analysis.js`: `computeScenario()` toma cada muestra de Horizons si está cubierta y del modelo aproximado si no. Nueva serie `earthPhase` (fase de la Tierra de Horizons) que usa `sampleAt()`. **Contrato nuevo, aditivo:** `scenario.ephemeris = { source: "horizons" | "approximate" | "mixed", windowFraction, lookaheadComplete, meta }`, donde `meta` es la procedencia de la serie (solo si se usó). Es el contrato de metadatos que esperaba UI-01 (#13).
+  - Interfaz (mínimo): `web/src/ui/ephemerides.js` baja los 7 archivos en segundo plano una sola vez por página. `main.js`, `ui/places.js` y `compare.js` agregan `ephemerisVersion()` a sus claves de caché y vuelven a dibujar cuando llegan los datos: hasta entonces (≈ 1 s) se ve el modelo aproximado. No hay resultados obsoletos porque el cálculo es sincrónico y la clave incluye la versión de los datos.
+  - Pruebas en `web/tests/ephemeris.test.js`: decodificación, interpolación y cruce por 0°/360°, registro, fallos de carga, archivos versionados (rango, coordenadas, DE44x), **cruce con los fixtures crudos de ASTRO-01** (Shackleton 14–16/11/2026, diferencias < 0,002°), uso en `computeScenario`, casos fuera de rango, `mixed` en el borde y determinismo.
+- **Efecto medido** (horizonte LOLA en ambos casos; media de 13 ventanas de 30 días desde el 01/11/2026):
+
+  | Sitio | Luz aproximado → Horizons | Comunicación aproximado → Horizons |
+  | --- | --- | --- |
+  | Shackleton R04 | 8,2 % → 10,9 % | 25,3 % → **0,0 %** |
+  | Malapert R23 | 35,4 % → 42,7 % | 52,7 % → 50,6 % |
+  | Cabeus | 0,0 % → 0,0 % | 15,0 % → 21,6 % |
+  | IM-1 | 37,7 % → 38,6 % | 100 % → 100 % |
+  | Chandrayaan-3 | 47,0 % → 47,4 % | 100 % → 100 % |
+  | Chang'e 4 | 49,8 % → 50,0 % | 0 % → 0 % (cara oculta) |
+  | Apollo 11 | 49,2 % → 49,2 % | 100 % → 100 % |
+
+  Con Horizons, el polo sur tiene luz en nov 2026 – ene 2027 y oscuridad de feb a sep de 2027; el modelo aproximado invertía esas estaciones. Shackleton R04 queda sin Tierra visible porque la pared del cráter la tapa (hallazgo de DEC-030).
+- **Supuestos y límites:** sitios en MOON_ME/DE421 pasados sin transformar a MEAN_ME/DE441 (DEC-024, pendiente); radios angulares fijos de `astro.js` (0,27° Sol, 0,95° Tierra) aunque Horizons da el diámetro real (CORE-02); el mapa de calor (`computePolarHeatmap`) sigue con el modelo aproximado y el horizonte sintético (MAP-01); interpolación lineal horaria (el Sol se mueve ~0,5° por hora en azimut y mucho menos en elevación).
+- **Alternativas descartadas:** consultar Horizons desde el navegador (la API no lo permite y haría peticiones en cada cambio); meter las series en el bundle de JS (~2 MB extra en la carga inicial y en cada página); paso de 10 min (6× más pesado sin ganancia visible frente a la interpolación); volver `computeScenario()` asincrónico (cambiaba el contrato que usa toda la interfaz).
+- **Estado:** vigente. Reemplaza a DEC-004 dentro del rango y para los sitios curados. Pendiente: validar MOON_ME vs MEAN_ME, decidir los radios angulares (CORE-02) y extender el rango si el equipo lo necesita (correr `fetch-horizons.mjs` y `npm run data:ephemerides`).

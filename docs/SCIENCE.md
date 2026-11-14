@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con el horizonte **real de LOLA** en los sitios curados al sur de −60° (DEC-032) y un horizonte **sintético** en el resto, y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). La interfaz no usa aún efemérides JPL Horizons: desde DEC-024 existe un adaptador validado (`lib/horizons.js`) que se integrará en CORE-01 (parte B).
+SELENE v1 es una herramienta conceptual. Combina efemérides **reales de JPL Horizons** para los 7 sitios curados entre el 01/11/2026 y el 01/01/2028 (DEC-033), con el modelo **aproximado** fuera de ese rango y en sitios propios, el horizonte **real de LOLA** en los sitios curados al sur de −60° (DEC-032) y un horizonte **sintético** en el resto, y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019).
 
 ## Convenciones y unidades
 
@@ -35,7 +35,7 @@ Estas expresiones generan movimiento coherente para la interfaz, pero no son efe
 
 ## Efemérides JPL Horizons (adaptador, DEC-024)
 
-`lib/horizons.js` interpreta tablas `OBSERVER` de Horizons para el Sol (`10`) y la Tierra (`399`) vistos desde un sitio lunar. Todavía no lo consume `analysis.js`.
+`lib/horizons.js` interpreta tablas `OBSERVER` de Horizons para el Sol (`10`) y la Tierra (`399`) vistos desde un sitio lunar. Desde DEC-033 sus series (7 sitios, nov 2026 – dic 2027, paso 1 h) alimentan `analysis.js` a través de `lib/ephemeris.js`, con interpolación lineal entre horas; fuera de la cobertura se usa el modelo aproximado y `scenario.ephemeris.source` lo informa (`horizons`, `approximate` o `mixed`).
 
 | Campo de la serie | Unidad / convención |
 | --- | --- |
@@ -140,8 +140,8 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 ## Limitaciones conocidas
 
-- La interfaz usa todavía efemérides periódicas aproximadas y radios angulares constantes; el adaptador Horizons (DEC-024) existe pero no está integrado (CORE-01).
-- Las series Horizons asumen altura 0 km del observador mientras no haya altura datum por sitio.
+- Dentro del 01/11/2026 – 01/01/2028 y para los sitios curados se usan efemérides de Horizons (DEC-033); fuera de ese rango, en sitios propios y en el mapa de calor, el modelo periódico aproximado. Los radios angulares siguen constantes.
+- Altura del observador en las series Horizons: suelo LOLA + 2 m en los sitios polares; 0 km supuesto en Chang'e 4 y Apollo 11 (DEC-033).
 - Horizonte sintético calibrado conceptualmente, no topografía medida. El pipeline de elevación LOLA existe (DEC-025) pero el horizonte todavía no lo usa.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
 - Marco lunar del modelo astronómico y datum aún no formalizados.
@@ -154,7 +154,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 1. Definir explícitamente marcos, escalas temporales, unidades y convenciones comunes.
 2. Validar sitios y procedencia antes de analizarlos.
-3. ~~Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.~~ Adaptador, adquisición y caché listos (DEC-024); falta consumirlos en `analysis.js` (CORE-01).
+3. ~~Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.~~ Adaptador, adquisición y caché listos (DEC-024) y consumidos por `analysis.js` (DEC-033).
 4. Elegir un producto LOLA adecuado y calcular perfiles de horizonte con curvatura y datum documentados.
 5. Mantener los contratos de azimut/elevación/horizonte o versionar el cambio.
 6. Comparar contra casos controlados y datos externos sin convertir valores de referencia no verificados en “verdad NASA”.

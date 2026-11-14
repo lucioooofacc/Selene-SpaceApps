@@ -20,7 +20,7 @@ Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖
 | --- | --- | --- | --- |
 | 0 | Base: réplica del Figma, repo y despliegue | ✅ | Equipo |
 | 1 | Interfaz completa y pulida | ✅ | Lucio |
-| 2 | Datos reales en el motor | 🔄 parte B pendiente | Facundo |
+| 2 | Datos reales en el motor | ✅ (parte B en revisión) | Facundo |
 | 3 | Validación científica | ⏳ | Teo, Facu, Lucio |
 | 4 | Visualizaciones con los datos reales | ⏳ / ⛔ | Lucio (con Facundo) |
 | 5 | Entrega final | ⏳ | Equipo |
@@ -60,7 +60,7 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 | TERRAIN-01 (#7): producto LOLA polar | ✅ | `LDEM_60S_240M` V2.1 verificado (DEC-025) |
 | TERRAIN-02 (#8): horizonte LOLA | ✅ | Horizonte real de los 5 sitios polares (DEC-030) |
 | CORE-01 parte A (#11): horizonte LOLA en el cálculo | ✅ (PR #54) | Los resultados de los sitios polares ya usan el relieve real (DEC-032) |
-| **CORE-01 parte B (#11): efemérides Horizons en el cálculo** | 🔄 **en curso** | Series nov 2026–dic 2027, paso 1 h; fuera de ese rango, modelo aproximado marcado |
+| **CORE-01 parte B (#11): efemérides Horizons en el cálculo** | ✅ en revisión | Series de los 7 sitios, nov 2026–dic 2027, paso 1 h; fuera de ese rango, modelo aproximado; `scenario.ephemeris` informa el origen (DEC-033) |
 
 **Qué estamos viendo:** con el horizonte real, los resultados cambiaron mucho. Shackleton R04 bajó de ~96 % a ~9 % de luz y Cabeus quedó en 0 % (sombra permanente, el control esperado). La coordenada de Shackleton R04 cae en la pared interior del cráter según LOLA: **la tiene que revisar astronomía** (etapa 3) antes de presentar conclusiones sobre ese sitio.
 
@@ -78,7 +78,7 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 
 | Tarea | Estado | Depende de |
 | --- | --- | --- |
-| UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ⛔ bloqueada | CORE-01 parte B |
+| UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ⏳ desbloqueada al integrar la parte B | `scenario.ephemeris` (DEC-033) |
 | UI-02 (#15): resolución, huecos y cambios asíncronos | ⏳ | CORE-01, UI-01 |
 | MAP-01 (#16): modo de iluminación calculada en el mapa (hoy el horizonte de cada celda es sintético) | ⏳ | CORE-01, CORE-02 |
 | I18N-01 (#17): revisión de traducciones ES/EN | ⏳ | Textos finales de UI-01/UI-02 |
