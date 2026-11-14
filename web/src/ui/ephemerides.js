@@ -7,6 +7,8 @@
  * Si un archivo falla, ese sitio sigue con el modelo aproximado.
  */
 import { loadEphemerides } from "../lib/ephemeris.js";
+import { needsPolarDem } from "../lib/analysis.js";
+import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
 import { SITES } from "../data/sites.js";
 
 let loading = null;
@@ -27,4 +29,34 @@ export function loadSiteEphemerides() {
     return result;
   });
   return loading;
+}
+
+// ---------------------------------------------------------------------------
+// DEM LOLA polar reducido para puntos propios (CORE-03, DEC-034)
+// ---------------------------------------------------------------------------
+
+const POLAR_LEVELS = ["lola-polar-480m", "lola-polar-960m"];
+let polarLoading = null;
+
+async function fetchPolarLevel(name) {
+  const base = `${import.meta.env.BASE_URL}data/terrain/${name}`;
+  const [metaRes, binRes] = await Promise.all([fetch(`${base}.json`), fetch(`${base}.bin`)]);
+  if (!metaRes.ok || !binRes.ok) throw new Error(`HTTP ${metaRes.status}/${binRes.status}`);
+  return decodePolarDem(await binRes.arrayBuffer(), await metaRes.json());
+}
+
+/**
+ * Si alguno de los sitios usaría el DEM polar reducido, lo baja (una sola vez
+ * por página, ~4,4 MB comprimido) y llama a `onLoaded` al registrarlo. Si falla,
+ * esos puntos siguen con el horizonte sintético.
+ */
+export function ensurePolarTerrain(sites, onLoaded) {
+  if (polarLoading || !sites.some(needsPolarDem)) return;
+  polarLoading = Promise.all(POLAR_LEVELS.map(fetchPolarLevel)).then(
+    (levels) => {
+      registerPolarDem(levels);
+      onLoaded?.();
+    },
+    (error) => console.warn(`DEM LOLA reducido no disponible (horizonte sintético en puntos propios): ${error.message}`),
+  );
 }

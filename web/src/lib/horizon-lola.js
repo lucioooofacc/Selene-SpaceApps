@@ -200,24 +200,15 @@ export function summarizeProfile({ elevationDeg, lowConfidence, coverageKm }, ma
 }
 
 /**
- * Horizonte LOLA de un sitio curado: `horizon(azimuth) -> elevation` (grados),
- * con interpolación lineal circular entre muestras. Devuelve `null` si el
- * sitio no está en la tabla (fuera de cobertura o no calculado); quien lo use
- * decide qué mostrar en ese caso.
- *
- * Además de la función expone:
- * - `horizon.source = "lola"` (lo lee `ui/panorama.js`).
- * - `horizon.meta`: producto, algoritmo, parámetros y resumen de calidad.
- * - `horizon.detail(azimuth)`: datos de la muestra más cercana
- *   `{ azimuthDeg, elevationDeg, distanceKm, lowConfidence, coverageKm, truncated }`.
+ * Arma `horizon(azimuth) -> elevation` desde una entrada con la forma de la
+ * tabla (`elevationDeg`, `distanceKm`, `lowConfidence` 0/1, `coverageKm`,
+ * `observer`, `summary`, `lat`, `lon`). Interpolación lineal circular.
  */
-export function createLolaHorizon(siteId, table = LOLA_HORIZONS) {
-  const entry = table?.sites?.[siteId];
-  if (!entry) return null;
+function horizonFromEntry(entry, { siteId, product, algorithm, params, extra = {} }) {
   const values = Float64Array.from(entry.elevationDeg);
   const n = values.length;
   const step = 360 / n;
-  const { maxDistanceKm } = table.params;
+  const { maxDistanceKm } = params;
 
   const horizon = function horizon(azimuth) {
     const a = ((azimuth % 360) + 360) % 360;
@@ -233,11 +224,12 @@ export function createLolaHorizon(siteId, table = LOLA_HORIZONS) {
     siteId,
     lat: entry.lat,
     lon: entry.lon,
-    product: table.source,
-    algorithm: table.algorithm,
-    params: table.params,
+    product,
+    algorithm,
+    params,
     observer: entry.observer,
     summary: entry.summary,
+    ...extra,
   });
   horizon.detail = function detail(azimuth) {
     const a = ((azimuth % 360) + 360) % 360;
@@ -252,6 +244,50 @@ export function createLolaHorizon(siteId, table = LOLA_HORIZONS) {
     };
   };
   return horizon;
+}
+
+/**
+ * Horizonte LOLA de un sitio curado: `horizon(azimuth) -> elevation` (grados),
+ * con interpolación lineal circular entre muestras. Devuelve `null` si el
+ * sitio no está en la tabla (fuera de cobertura o no calculado); quien lo use
+ * decide qué mostrar en ese caso.
+ *
+ * Además de la función expone:
+ * - `horizon.source = "lola"` (lo lee `ui/panorama.js`).
+ * - `horizon.meta`: producto, algoritmo, parámetros y resumen de calidad.
+ * - `horizon.detail(azimuth)`: datos de la muestra más cercana
+ *   `{ azimuthDeg, elevationDeg, distanceKm, lowConfidence, coverageKm, truncated }`.
+ */
+export function createLolaHorizon(siteId, table = LOLA_HORIZONS) {
+  const entry = table?.sites?.[siteId];
+  if (!entry) return null;
+  return horizonFromEntry(entry, { siteId, product: table.source, algorithm: table.algorithm, params: table.params });
+}
+
+/**
+ * Horizonte desde un perfil recién calculado (`computeHorizonProfile`), con la
+ * misma interfaz que `createLolaHorizon`. Lo usa el horizonte de puntos
+ * propios sobre el DEM reducido (CORE-03, DEC-034); `extra` se agrega a `meta`
+ * (por ejemplo, la resolución).
+ */
+export function createProfileHorizon(profile, { siteId = null, product, extra = {} } = {}) {
+  const { maxDistanceKm } = profile.params;
+  const entry = {
+    lat: profile.observer.lat,
+    lon: profile.observer.lon,
+    observer: {
+      groundHeightM: profile.observer.groundHeightKm * 1000,
+      heightAboveGroundM: profile.params.observerHeightM,
+      lowConfidence: profile.observer.lowConfidence,
+    },
+    elevationDeg: profile.elevationDeg,
+    distanceKm: profile.distanceKm,
+    lowConfidence: profile.lowConfidence.map((b) => (b ? 1 : 0)),
+    coverageKm: profile.coverageKm,
+  };
+  if (entry.elevationDeg.some((e) => !Number.isFinite(e))) return null;
+  entry.summary = summarizeProfile(entry, maxDistanceKm);
+  return horizonFromEntry(entry, { siteId, product, algorithm: profile.algorithm, params: profile.params, extra });
 }
 
 /** Sitios con horizonte LOLA disponible y sitios excluidos (con motivo). */

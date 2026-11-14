@@ -65,6 +65,8 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 
 **Qué estamos viendo:** con el horizonte real, los resultados cambiaron mucho. Shackleton R04 bajó de ~96 % a ~9 % de luz y Cabeus quedó en 0 % (sombra permanente, el control esperado). La coordenada de Shackleton R04 cae en la pared interior del cráter según LOLA: **la tiene que revisar astronomía** (etapa 3) antes de presentar conclusiones sobre ese sitio.
 
+**CORE-03 (#59, DEC-034), en revisión:** los puntos elegidos en el mapa usan el Sol y la Tierra de Horizons (trasladados) y, al sur de −75°, un horizonte LOLA reducido (480/960 m) calculado en el navegador.
+
 ## Etapa 3 — Validación científica ⏳ (Teo, Facu, Lucio)
 
 Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Datos y astronomía":

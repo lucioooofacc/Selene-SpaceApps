@@ -8,11 +8,10 @@
  */
 import "./styles/main.css";
 import "./styles/report.css";
-import { computeScenario, sampleAt } from "./lib/analysis.js";
-import { ephemerisVersion } from "./lib/ephemeris.js";
-import { loadSiteEphemerides } from "./ui/ephemerides.js";
+import { computeScenario, realDataVersion, sampleAt } from "./lib/analysis.js";
+import { ensurePolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
-import { CUSTOM_ID, getSite, getState, setState, subscribe } from "./state.js";
+import { CUSTOM_ID, allSites, getSite, getState, setState, subscribe } from "./state.js";
 import { initMap, placeAccent, renderMap } from "./ui/map.js";
 import { initPlaces, rankedSites, renderPlaces } from "./ui/places.js";
 import { currentSite, missionQuery, parseMissionQuery, updateCompareLinks } from "./ui/links.js";
@@ -33,7 +32,7 @@ let lastPanelsAt = 0;
 
 /** El escenario solo depende del sitio, la fecha de inicio y la duración. */
 function ensureScenario(state) {
-  const key = `${state.siteId}|${state.lat}|${state.lon}|${state.startMs}|${state.windowDays}|${ephemerisVersion()}`;
+  const key = `${state.siteId}|${state.lat}|${state.lon}|${state.startMs}|${state.windowDays}|${realDataVersion()}`;
   if (key === scenarioKey) return;
   const saved = getSite(state.siteId);
   const site = { id: state.siteId, lat: state.lat, lon: state.lon };
@@ -44,6 +43,8 @@ function ensureScenario(state) {
   }
   scenario = computeScenario(site, state.startMs, state.windowDays);
   scenarioKey = key;
+  // Puntos propios al sur de −75°: horizonte LOLA reducido al llegar el DEM (DEC-034).
+  ensurePolarTerrain([site, ...allSites()], renderAll);
 }
 
 function renderInstant(state, { force = false } = {}) {

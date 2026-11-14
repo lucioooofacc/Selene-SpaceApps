@@ -1,0 +1,36 @@
+{
+  "schema": "selene-lola-polar-reduced/v1",
+  "file": "lola-polar-960m.bin",
+  "sha256": "113e8960577a56e8e1610e96cbcdb83255c20575a93c78cf1acdc7545393efad",
+  "grid": {
+    "lines": 958,
+    "samples": 958,
+    "lineOffset": 478.5,
+    "sampleOffset": 478.5,
+    "scaleM": 960,
+    "radiusM": 1737400,
+    "maxLatitude": -75
+  },
+  "encoding": {
+    "heightM": "int16 little-endian, 917764 valores, metros sobre la esfera de 1737,4 km (promedio de 4×4 píxeles nativos)",
+    "zeroPct": "uint8, 917764 valores a continuación, % de píxeles nativos del bloque con count = 0",
+    "order": "fila por fila; line 0 arriba; misma proyección estereográfica polar sur que LDEM_60S_240M"
+  },
+  "reduction": {
+    "block": 4,
+    "nativeScaleM": 240
+  },
+  "source": {
+    "dataSetId": "LRO-L-LOLA-4-GDR-V1.0",
+    "doi": "10.17189/1520642",
+    "productVersion": "V2.1",
+    "dem": {
+      "productId": "LDEM_60S_240M",
+      "md5": "45d376f634f0c4ad2bf628fd5f66b3c0"
+    },
+    "counts": {
+      "productId": "LDEC_60S_240M",
+      "md5": "4b7340bc337009aa02b80a1bf9eeadd4"
+    }
+  }
+}

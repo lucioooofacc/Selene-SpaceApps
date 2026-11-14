@@ -140,3 +140,99 @@ export async function loadEphemerides(siteIds, fetchJson) {
   });
   return { loaded, failed };
 }
+
+// ---------------------------------------------------------------------------
+// Traslado a cualquier punto (CORE-03 parte A, DEC-034)
+// ---------------------------------------------------------------------------
+
+const DEG = Math.PI / 180;
+const MOON_RADIUS_KM = 1737.4;
+/**
+ * Distancia Tierra–Luna usada para la paralaje de la Tierra entre dos puntos
+ * de la Luna. La real varía entre ~356 500 y ~406 700 km; con un valor fijo el
+ * error de la corrección es < 0,02° (la paralaje máxima es ~0,26°).
+ */
+export const EARTH_DISTANCE_KM = 384_400;
+
+/** Ejes locales (arriba, este, norte) de un punto en el marco fijo a la Luna. */
+function localFrame(lat, lon) {
+  const p = lat * DEG;
+  const l = lon * DEG;
+  return {
+    up: [Math.cos(p) * Math.cos(l), Math.cos(p) * Math.sin(l), Math.sin(p)],
+    east: [-Math.sin(l), Math.cos(l), 0],
+    north: [-Math.sin(p) * Math.cos(l), -Math.sin(p) * Math.sin(l), Math.cos(p)],
+  };
+}
+
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+/** Azimut/elevación locales → vector unitario en el marco fijo a la Luna. */
+function toBody(f, azimuth, elevation) {
+  const az = azimuth * DEG;
+  const el = elevation * DEG;
+  const e = Math.cos(el) * Math.sin(az);
+  const n = Math.cos(el) * Math.cos(az);
+  const u = Math.sin(el);
+  return [0, 1, 2].map((i) => e * f.east[i] + n * f.north[i] + u * f.up[i]);
+}
+
+/** Vector en el marco fijo → azimut/elevación locales (grados). */
+function toLocal(f, v) {
+  const len = Math.hypot(v[0], v[1], v[2]);
+  const elevation = Math.asin(Math.max(-1, Math.min(1, dot(v, f.up) / len))) / DEG;
+  const azimuth = ((Math.atan2(dot(v, f.east), dot(v, f.north)) / DEG) % 360 + 360) % 360;
+  return { azimuth, elevation };
+}
+
+/** Distancia angular (rad) entre dos puntos de la esfera. */
+function angularDistance(a, b) {
+  const s = Math.sin(((b.lat - a.lat) * DEG) / 2) ** 2 +
+    Math.cos(a.lat * DEG) * Math.cos(b.lat * DEG) * Math.sin(((b.lon - a.lon) * DEG) / 2) ** 2;
+  return 2 * Math.asin(Math.min(1, Math.sqrt(s)));
+}
+
+/**
+ * Posiciones del Sol y la Tierra para cualquier punto, trasladadas desde la
+ * serie registrada más cercana. El Sol está tan lejos que su dirección es la
+ * misma en toda la Luna (diferencia < 0,0007°); la Tierra se corrige por
+ * paralaje con `EARTH_DISTANCE_KM`. El observador se toma sobre la esfera de
+ * 1737,4 km. Devuelve `null` si no hay ninguna serie registrada.
+ * @returns {{ref: object, meta: object, at: (ms:number) => object | null} | null}
+ */
+export function derivedEphemerisFor(site) {
+  if (!site || !Number.isFinite(site.lat) || !Number.isFinite(site.lon) || registry.size === 0) return null;
+  let ref = null;
+  let best = Infinity;
+  for (const eph of registry.values()) {
+    const d = angularDistance(site, eph.site);
+    if (d < best) {
+      best = d;
+      ref = eph;
+    }
+  }
+  const fRef = localFrame(ref.site.lat, ref.site.lon);
+  const fP = localFrame(site.lat, site.lon);
+  const refRadius = MOON_RADIUS_KM + (ref.meta.observer?.altitudeKm ?? 0);
+  const rRef = fRef.up.map((x) => x * refRadius);
+  const rP = fP.up.map((x) => x * MOON_RADIUS_KM);
+  return {
+    ref,
+    meta: Object.freeze({
+      ...ref.meta,
+      derivedFrom: ref.site.id,
+      derivedDistanceKm: Math.round(best * MOON_RADIUS_KM),
+      earthDistanceKm: EARTH_DISTANCE_KM,
+      observer: { altitudeKm: 0, altitudeBasis: "assumed-zero-reference-sphere" },
+    }),
+    at(ms) {
+      const p = positionsAt(ref, ms);
+      if (!p) return null;
+      const sun = toLocal(fP, toBody(fRef, p.sun.azimuth, p.sun.elevation));
+      const u = toBody(fRef, p.earth.azimuth, p.earth.elevation);
+      const earthPos = [0, 1, 2].map((i) => rRef[i] + u[i] * EARTH_DISTANCE_KM - rP[i]);
+      const earth = toLocal(fP, earthPos);
+      return { sun, earth: { ...earth, phase: p.earth.phase } };
+    },
+  };
+}

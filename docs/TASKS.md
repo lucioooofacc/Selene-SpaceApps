@@ -66,6 +66,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** carga/cancelación/caché; resultados obsoletos descartados; procedencia propagada; métricas existentes funcionan; pruebas y build verdes.
 - **Fuera de alcance:** rediseño visual.
 
+### CORE-03 — Datos reales para los puntos propios del mapa
+
+- **Prioridad:** P1 · **Issue:** [#59](https://github.com/lucioooofacc/Selene-SpaceApps/issues/59).
+- **Objetivo:** que los puntos elegidos en el mapa usen el Sol y la Tierra de Horizons (trasladados) y un horizonte LOLA calculado en el navegador cuando estén al sur de −75°.
+- **Rama sugerida:** `feat/datos-reales-puntos-propios`.
+- **Dependencias:** CORE-01, TERRAIN-02.
+- **Archivos afectados:** `lib/ephemeris.js`, `lib/horizon-lola.js`, `lib/polar-dem.js`, `lib/analysis.js`, script del DEM reducido, `public/data/terrain/`, carga en la interfaz y "Datos y fuentes".
+- **Criterios de aceptación:** errores medidos contra los datos completos y documentados; procedencia y resolución visibles; fuera de cobertura, sintético/aproximado marcado; pruebas y build verdes.
+- **Fuera de alcance:** mapa de calor (MAP-01); horizonte real fuera del polo sur.
+
 ### CORE-02 — Unificar criterios de visibilidad
 
 - **Prioridad:** P0 · **Issue:** [#12](https://github.com/lucioooofacc/Selene-SpaceApps/issues/12).

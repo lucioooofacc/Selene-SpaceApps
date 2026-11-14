@@ -88,7 +88,7 @@ export function lolaHtml(scenario) {
       <dt>${t("quality.lola.range")}</dt><dd>${deg(summary.minDeg)} / ${deg(summary.meanDeg)} / ${deg(summary.maxDeg)}</dd>
       <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction)}</dd>
       <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction)}</dd>
-      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a></dd>
+      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a>${horizon.meta.reduced ? ` · ${t("quality.lola.reduced", { res: horizon.meta.resolutionsM.join("/") })}` : ""}</dd>
     </dl>`;
 }
 
@@ -96,7 +96,9 @@ export function lolaHtml(scenario) {
 export function qualityRows(site, scenario) {
   const lola = lolaForScenario(scenario);
   const horizonRow =
-    lola.mode === "active"
+    lola.mode === "active" && lola.horizon.meta?.reduced
+      ? { key: "horizon", hint: "horizonReduced", kind: "approx", ref: "DEC-034" }
+      : lola.mode === "active"
       ? { key: "horizon", hint: "horizonActive", kind: "real", ref: "DEC-030" }
       : lola.mode === "preview"
         ? { key: "horizon", hint: "horizonPreview", kind: "synthetic", ref: "DEC-005 · DEC-030" }
@@ -104,7 +106,9 @@ export function qualityRows(site, scenario) {
   // Origen del Sol y la Tierra según el escenario (CORE-01 parte B, DEC-033).
   const source = scenario?.ephemeris?.source;
   const ephemerisRow =
-    source === "horizons"
+    source === "horizons" && scenario.ephemeris.derived
+      ? { key: "ephemeris", hint: "ephemerisDerived", kind: "real", ref: "DEC-034" }
+      : source === "horizons"
       ? { key: "ephemeris", hint: "ephemerisReal", kind: "real", ref: "DEC-033" }
       : source === "mixed"
         ? { key: "ephemeris", hint: "ephemerisMixed", kind: "approx", ref: "DEC-033 · DEC-004" }

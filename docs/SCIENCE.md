@@ -76,7 +76,13 @@ con `δ = d / R`, `r = R + h(d)` y `r₀ = R + h₀ + 2 m` (observador a 2 m sob
 
 - El cálculo se hace fuera del navegador (`scripts/build-lola-horizons.mjs`); la web interpola la tabla `data/terrain/lola-horizons.js` con continuidad 0°/360°.
 - Calidad por azimut: distancia del punto que define el horizonte, baja confianza si usa píxeles con `count = 0` y distancia alcanzada. Si el rayo sale de la cobertura (−60°) el valor es una cota inferior.
-- Solo existe para los sitios curados al sur de −60°. `analysis.js` lo usa para esos sitios (`scenarioHorizon`, DEC-032) y el sintético para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor.
+- Para los sitios curados al sur de −60°, a 240 m (`scenarioHorizon`, DEC-032).
+- Para puntos propios al sur de −75°, calculado en el navegador sobre un DEM reducido (480 m hasta −80°, 960 m hasta −75°), cada 1° y paso de 240 m (DEC-034). Error medio medido frente al de 240 m: 0,02–0,77°; se muestra como aproximado.
+- El sintético queda para Chang'e 4, Apollo 11, puntos propios fuera de −75° y el mapa de calor.
+
+### Puntos propios: Sol y Tierra trasladados (DEC-034)
+
+Para un punto sin serie propia, cada dirección de la serie Horizons más cercana se lleva al marco fijo a la Luna y se proyecta en los ejes locales (arriba, este, norte) del punto. El Sol se toma en la misma dirección; la Tierra se ubica a 384 400 km del sitio de origen para corregir la paralaje entre los dos puntos. Error medido contra series reales: Sol ≤ 0,0016°, Tierra ≤ 0,025°.
 
 ## Datos de elevación LOLA (TERRAIN-01)
 
