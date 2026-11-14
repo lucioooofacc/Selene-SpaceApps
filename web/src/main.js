@@ -16,6 +16,7 @@ import { initPlaces, rankedSites, renderPlaces } from "./ui/places.js";
 import { currentSite, missionQuery, parseMissionQuery, updateCompareLinks } from "./ui/links.js";
 import { initReport } from "./ui/report.js";
 import { applySettings, getSettings, initSettings } from "./ui/settings.js";
+import { initQualityDialog } from "./ui/provenance.js";
 import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
 import { refreshCalendar } from "./ui/calendar.js";
 import { renderInsight, renderStatus } from "./ui/status.js";
@@ -135,6 +136,7 @@ function init() {
 
   renderAll();
   initReport(() => scenario);
+  initQualityDialog(() => ({ site: getSite(getState().siteId), scenario }));
   initSettings({ onLanguage: renderAll, onMapMode: (mapMode) => setState({ mapMode }) });
 }
 

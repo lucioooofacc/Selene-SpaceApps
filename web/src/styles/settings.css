@@ -238,3 +238,122 @@
   background: var(--sun);
   color: #1a1206;
 }
+
+/* ---------- Procedencia y calidad de los datos (UI-01 parcial, DEC-028) ---------- */
+.params > .params-quality {
+  right: 10px;
+  top: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: var(--field);
+  color: var(--gold);
+  font: italic 700 15px/1 Georgia, serif;
+}
+
+.q-tag {
+  display: inline-block;
+  flex: none;
+  width: 116px; /* mismo ancho para todas: alinea el texto de las filas */
+  padding: 2px 8px;
+  border: 1px solid;
+  border-radius: var(--r-pill);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.q-real {
+  color: var(--green);
+  background: var(--green-bg);
+  border-color: var(--green-border);
+}
+
+.q-approx {
+  color: var(--gold);
+  background: #221f1a;
+  border-color: #4a4232;
+}
+
+.q-synthetic {
+  color: var(--red);
+  background: var(--red-bg);
+  border-color: var(--red);
+}
+
+.q-none {
+  color: var(--muted-2);
+  background: var(--field);
+  border-color: var(--border-field);
+}
+
+.prov {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.prov dt {
+  color: var(--muted-2);
+}
+
+.prov dd {
+  margin: 0;
+}
+
+.prov a {
+  color: var(--gold);
+}
+
+.q-conf-alta {
+  color: var(--green);
+}
+
+.q-conf-media {
+  color: var(--gold);
+}
+
+.q-conf-baja {
+  color: var(--red);
+}
+
+.prov-none {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted-2);
+}
+
+.quality {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quality li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.quality strong,
+.quality small {
+  display: block;
+}
+
+.quality small {
+  color: var(--muted-2);
+  font-size: 13px;
+}

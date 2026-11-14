@@ -163,6 +163,58 @@
     color: #9b3436;
   }
 
+  .report .prov {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 10px;
+    margin: 0;
+    font-size: 9.5pt;
+  }
+
+  .report .prov dt {
+    color: #555;
+  }
+
+  .report .prov dd {
+    margin: 0;
+  }
+
+  .report .prov a {
+    color: #111;
+    text-decoration: none;
+  }
+
+  .report .quality {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 9.5pt;
+  }
+
+  .report .quality li {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .report .quality small {
+    display: block;
+    color: #555;
+  }
+
+  .report .q-tag {
+    flex: none;
+    min-width: 70px;
+    padding: 0 6px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    font-size: 8pt;
+    font-weight: 700;
+    text-align: center;
+    color: #111;
+    background: none;
+  }
+
   .rep-foot {
     margin-top: 16px;
     padding-top: 6px;
