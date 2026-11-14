@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina efemérides **reales de JPL Horizons** para los 7 sitios curados entre el 01/11/2026 y el 01/01/2028 (DEC-033), con el modelo **aproximado** fuera de ese rango y en sitios propios, el horizonte **real de LOLA** en los sitios curados al sur de −60° (DEC-032) y un horizonte **sintético** en el resto, y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019).
+SELENE v1 es una herramienta conceptual. Combina efemérides **reales de JPL Horizons** para los 7 sitios curados entre el 01/11/2026 y el 01/01/2028 (DEC-033), con el modelo **aproximado** fuera de ese rango y en sitios propios, el horizonte **real de LOLA** en los 7 sitios curados (DEC-032; Chang'e 4 y Apollo 11 desde `LDEM_128`, DEC-061) y un horizonte **sintético** en el resto, y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019).
 
 ## Convenciones y unidades
 
@@ -78,7 +78,8 @@ con `δ = d / R`, `r = R + h(d)` y `r₀ = R + h₀ + 2 m` (observador a 2 m sob
 - Calidad por azimut: distancia del punto que define el horizonte, baja confianza si usa píxeles con `count = 0` y distancia alcanzada. Si el rayo sale de la cobertura (−60°) el valor es una cota inferior.
 - Para los sitios curados al sur de −60°, a 240 m (`scenarioHorizon`, DEC-032).
 - Para puntos propios al sur de −75°, calculado en el navegador sobre un DEM reducido (480 m hasta −80°, 960 m hasta −75°), cada 1° y paso de 240 m (DEC-034). Error medio medido frente al de 240 m: 0,02–0,77°; se muestra como aproximado.
-- El sintético queda para Chang'e 4, Apollo 11, puntos propios fuera de −75° y el mapa de calor.
+- Para Chang'e 4 y Apollo 11, fuera de la cobertura polar, con el mismo algoritmo sobre una ventana del DEM global `LDEM_128` (cilíndrica simple, 128 píxeles/grado ≈ 237 m; `createCylindricalWindowSampler`, DEC-061). Control cruzado en Chandrayaan-3, cubierto por los dos productos: mismo suelo y diferencia RMS de 0,069° en los azimuts no truncados.
+- El sintético queda para puntos propios fuera de −75° y el mapa de calor.
 
 ### Puntos propios: Sol y Tierra trasladados (DEC-034)
 
@@ -149,7 +150,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 ## Limitaciones conocidas
 
 - Dentro del 01/11/2026 – 01/01/2028 y para los sitios curados se usan efemérides de Horizons (DEC-033); fuera de ese rango, en sitios propios y en el mapa de calor, el modelo periódico aproximado. Los radios angulares siguen constantes.
-- Altura del observador en las series Horizons: suelo LOLA + 2 m en los sitios polares; 0 km supuesto en Chang'e 4 y Apollo 11 (DEC-033).
+- Altura del observador en las series Horizons: suelo LOLA + 2 m en los 7 sitios curados (DEC-033; Chang'e 4 y Apollo 11 desde `LDEM_128`, DEC-061).
 - Horizonte sintético calibrado conceptualmente, no topografía medida. El pipeline de elevación LOLA existe (DEC-025) pero el horizonte todavía no lo usa.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
 - Marco lunar del modelo astronómico y datum aún no formalizados.

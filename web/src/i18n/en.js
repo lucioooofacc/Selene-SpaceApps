@@ -301,7 +301,7 @@ export default {
     horizonTitle: "Horizon profile",
     lolaPreview: "Real LOLA (reference)",
     horizonNote:
-      "Terrain elevation by azimuth. Solid lines are the horizon used by the calculation: real LOLA at the polar sites and synthetic where there is no coverage. Dashed lines, if shown, are the LOLA horizon of an edited site's original coordinates.",
+      "Terrain elevation by azimuth. Solid lines are the horizon used by the calculation: real LOLA at the listed sites and synthetic at custom points without coverage. Dashed lines, if shown, are the LOLA horizon of an edited site's original coordinates.",
     horizonAria: "Horizon profile of both sites: terrain elevation by azimuth.",
     az: { 0: "N", 90: "E", 180: "S", 270: "W" },
     criteriaTitle: "Viability criteria",
@@ -335,7 +335,7 @@ export default {
     runs: "Longest night: {night}. Longest continuous light: {light}. Longest communication gap: {blackout}.",
     more: "… and {n} more windows.",
     sources:
-      "SELENE · NASA Space Apps Challenge 2026 · Team Hubble27. Sun and Earth: NASA/JPL Horizons ephemerides, Nov 2026 – Dec 2027 (outside that range, approximate model). Horizon: LOLA terrain at the polar sites and a synthetic profile elsewhere. Site coordinates from official sources. Viability thresholds set by the team.",
+      "SELENE · NASA Space Apps Challenge 2026 · Team Hubble27. Sun and Earth: NASA/JPL Horizons ephemerides, Nov 2026 – Dec 2027 (outside that range, approximate model). Horizon: LOLA terrain at the listed sites and at custom points south of −75°; a synthetic profile elsewhere. Site coordinates from official sources. Viability thresholds set by the team.",
   },
   settings: {
     title: "Settings",
@@ -513,7 +513,7 @@ export default {
       horizon: "Synthetic profile; no LOLA horizon for this site",
       horizonPreview: "Edited coordinates: the calculation uses another horizon; the LOLA horizon of the original coordinates is shown as a reference",
       horizonReduced: "Real LOLA horizon computed at lower resolution (480 m to −80°, 960 m to −75°); measured mean error 0.02–0.8°",
-      horizonActive: "Real topographic horizon from LOLA (240 m/pixel)",
+      horizonActive: "Real topographic horizon from LOLA (≈ 240 m/pixel)",
       horizonLoading: "Loading the reduced LOLA terrain; synthetic profile in the meantime",
       horizonError: "The reduced LOLA terrain could not be loaded; using the synthetic profile",
       imagery: "LROC mosaic and LOLA elevation from NASA SVS",

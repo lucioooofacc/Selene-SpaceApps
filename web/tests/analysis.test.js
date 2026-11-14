@@ -97,8 +97,17 @@ test("scenarioHorizon: LOLA para los sitios curados cubiertos", () => {
   }
 });
 
-test("scenarioHorizon: sintético fuera de cobertura, en sitios propios o con coordenadas distintas", () => {
-  for (const id of ["change4", "apollo11"]) assert.equal(scenarioHorizon(curated(id)).source, undefined, id);
+test("scenarioHorizon: Chang'e 4 y Apollo 11 usan LOLA de LDEM_128 (TERRAIN-03, DEC-061)", () => {
+  for (const id of ["change4", "apollo11"]) {
+    const h = scenarioHorizon(curated(id));
+    assert.equal(h.source, "lola", id);
+    assert.equal(h.meta.product.dem.productId, "LDEM_128", id);
+  }
+});
+
+test("scenarioHorizon: sintético en sitios propios o con coordenadas distintas", () => {
+  const apollo = curated("apollo11");
+  assert.equal(scenarioHorizon({ ...apollo, lat: apollo.lat + 0.01 }).source, undefined);
   const shackleton = curated("shackleton");
   assert.equal(scenarioHorizon({ ...shackleton, custom: true }).source, undefined);
   assert.equal(scenarioHorizon({ ...shackleton, lat: shackleton.lat + 0.01 }).source, undefined);

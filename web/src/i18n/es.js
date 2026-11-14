@@ -302,7 +302,7 @@ export default {
     horizonTitle: "Perfil del horizonte",
     lolaPreview: "LOLA real (referencia)",
     horizonNote:
-      "Elevación del relieve según el azimut. Las líneas llenas son el horizonte que usa el cálculo: LOLA real en los sitios polares y sintético donde no hay cobertura. Las punteadas, si aparecen, son el LOLA de las coordenadas originales de un sitio editado.",
+      "Elevación del relieve según el azimut. Las líneas llenas son el horizonte que usa el cálculo: LOLA real en los sitios de la lista y sintético en los puntos propios sin cobertura. Las punteadas, si aparecen, son el LOLA de las coordenadas originales de un sitio editado.",
     horizonAria: "Perfil del horizonte de los dos sitios: elevación del relieve según el azimut.",
     az: { 0: "N", 90: "E", 180: "S", 270: "O" },
     criteriaTitle: "Criterios de viabilidad",
@@ -336,7 +336,7 @@ export default {
     runs: "Noche más larga: {night}. Luz continua más larga: {light}. Corte de comunicación más largo: {blackout}.",
     more: "… y {n} ventanas más.",
     sources:
-      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (fuera de ese rango, modelo aproximado). Horizonte: relieve LOLA en los sitios polares y perfil sintético en el resto. Coordenadas de los sitios con fuente oficial. Umbrales de viabilidad definidos por el equipo.",
+      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (fuera de ese rango, modelo aproximado). Horizonte: relieve LOLA en los sitios de la lista y en los puntos propios al sur de −75°; perfil sintético en el resto. Coordenadas de los sitios con fuente oficial. Umbrales de viabilidad definidos por el equipo.",
   },
   settings: {
     title: "Configuración",
@@ -514,7 +514,7 @@ export default {
       horizon: "Perfil sintético; no hay horizonte LOLA para este sitio",
       horizonPreview: "Coordenadas editadas: el cálculo usa otro horizonte; el LOLA de las coordenadas originales se muestra como referencia",
       horizonReduced: "Horizonte LOLA real calculado a menor resolución (480 m hasta −80°, 960 m hasta −75°); error medio medido 0,02–0,8°",
-      horizonActive: "Horizonte topográfico real desde LOLA (240 m/píxel)",
+      horizonActive: "Horizonte topográfico real desde LOLA (≈ 240 m/píxel)",
       horizonLoading: "Cargando el relieve LOLA reducido; mientras tanto, perfil sintético",
       horizonError: "No se pudo cargar el relieve LOLA reducido; se usa el perfil sintético",
       imagery: "Mosaico LROC y elevación LOLA de NASA SVS",

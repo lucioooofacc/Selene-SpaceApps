@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 
 import {
   computeHorizonProfile,
+  createCylindricalWindowSampler,
   createLolaHorizon,
   createRasterSampler,
   destination,
@@ -190,4 +191,71 @@ test("createLolaHorizon: procedencia y calidad expuestas; null fuera de cobertur
   assert.equal(h.detail(359).azimuthDeg, 0);
   assert.equal(createLolaHorizon("y", TABLE), null);
   assert.equal(createLolaHorizon("no-existe", TABLE), null);
+});
+
+// --- Ventana cilíndrica global (LDEM_128, TERRAIN-03, DEC-061) ---
+// Grilla SINTÉTICA de 2 px/grado (720 × 360) con la misma convención que
+// LDEM_128: pixel registered, línea 0 al norte, sample 0 en longitud 0° E.
+const CYL = Object.freeze({
+  lines: 360,
+  samples: 720,
+  pixelsPerDegree: 2,
+  lineProjectionOffset: 179.5,
+  sampleProjectionOffset: 359.5,
+  centerLatitude: 0,
+  centerLongitude: 180,
+});
+
+function cylWindow(win, valueAt) {
+  const dem = new Int16Array(win.lines * win.samples);
+  const counts = new Int16Array(win.lines * win.samples).fill(1);
+  for (let r = 0; r < win.lines; r++) {
+    for (let c = 0; c < win.samples; c++) {
+      const s = (((win.sample0 + c) % CYL.samples) + CYL.samples) % CYL.samples;
+      dem[r * win.samples + c] = valueAt(win.line0 + r, s);
+    }
+  }
+  return { dem, counts };
+}
+
+test("ventana cilíndrica: centros de píxel, escala de DN y cruce de 0°/360°", () => {
+  const win = { line0: 170, lines: 20, sample0: -10, samples: 20 }; // 355°..5° E
+  const { dem, counts } = cylWindow(win, (l, s) => (l - 170) * 1000 + s); // cabe en int16
+  const sample = createCylindricalWindowSampler({ dem, counts, window: win, grid: CYL, scalingFactor: 0.5 });
+  // Centro del píxel (línea 179, sample 0) = lat 0,25°, lon 0,25°.
+  assert.equal(sample(0.25, 0.25).heightKm, ((9 * 1000 + 0) * 0.5) / 1000);
+  // Píxel 719 (lon 359,75°) dentro de la misma ventana, también como −0,25°.
+  assert.equal(sample(0.25, 359.75).heightKm, ((9 * 1000 + 719) * 0.5) / 1000);
+  assert.equal(sample(0.25, -0.25).heightKm, sample(0.25, 359.75).heightKm);
+  // Fuera de la ventana no se extrapola.
+  assert.equal(sample(0.25, 10), null);
+  assert.equal(sample(30, 0.25), null);
+});
+
+test("ventana cilíndrica: count = 0 marca baja confianza; tamaño validado", () => {
+  const win = { line0: 170, lines: 20, sample0: 350, samples: 20 };
+  const { dem, counts } = cylWindow(win, () => 0);
+  counts[9 * 20 + 9] = 0; // línea 179, sample 359 → centro (0,25°, 179,75°)
+  const sample = createCylindricalWindowSampler({ dem, counts, window: win, grid: CYL, scalingFactor: 0.5 });
+  assert.equal(sample(0.25, 179.75).lowConfidence, true);
+  assert.equal(sample(0.25, 182).lowConfidence, false);
+  assert.throws(() => createCylindricalWindowSampler({ dem: [], counts, window: win, grid: CYL, scalingFactor: 0.5 }), RangeError);
+});
+
+test("ventana cilíndrica: sobre una esfera lisa el horizonte es la depresión del observador", () => {
+  const win = { line0: 140, lines: 80, sample0: 320, samples: 80 }; // ±20° alrededor de (0°, 180°)
+  const { dem, counts } = cylWindow(win, () => 0);
+  const sampler = createCylindricalWindowSampler({ dem, counts, window: win, grid: CYL, scalingFactor: 0.5 });
+  const p = computeHorizonProfile(sampler, { lat: 0, lon: 180 }, { maxDistanceKm: 300, stepKm: 2, azimuthStepDeg: 45, radiusKm: R });
+  const dip = horizonDip(2 / 1000);
+  for (const e of p.elevationDeg) assert.ok(e < 0 && e > -1, `elevación ${e}`);
+  for (const c of p.coverageKm) assert.equal(c, 300);
+  // Con 300 km de rayo, el máximo está en la primera muestra: casi la depresión geométrica.
+  assert.ok(Math.abs(Math.max(...p.elevationDeg) - -dip) < 0.1);
+});
+
+test("createLolaHorizon: una entrada con `source` propio usa ese producto", () => {
+  const table = { ...TABLE, sites: { z: { ...TABLE.sites.x, source: { dataSetId: "GLOBAL" } } } };
+  assert.equal(createLolaHorizon("z", table).meta.product.dataSetId, "GLOBAL");
+  assert.equal(createLolaHorizon("x", TABLE).meta.product.dataSetId, "SINTÉTICO");
 });

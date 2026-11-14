@@ -832,3 +832,48 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** una segunda Luna 3D con three.js de fondo (otro contexto WebGL encima del del mapa); animar `background-position` (repinta en cada cuadro).
 - **Corrección (15/11):** `backdrop-filter` crea un contexto de apilamiento por caja y el calendario de la comparación y del informe quedaba debajo de las tarjetas siguientes; los controles (`.cmp-controls`) van con `z-index: 20` y el panel de parámetros con `z-index: 2`.
 - **Estado:** vigente. Reemplaza el calendario blanco de la réplica del Figma.
+
+## DEC-061 — Horizonte LOLA real para Chang'e 4 y Apollo 11 desde `LDEM_128` (TERRAIN-03)
+
+- **Contexto / problema:** Chang'e 4 (−45,46°) y Apollo 11 (0,67°) eran los únicos sitios curados con horizonte **sintético** (DEC-005), porque `LDEM_60S_240M` (DEC-025) solo cubre −90°..−60°. TERRAIN-03 (#71) pide calcularlo desde un producto global de LOLA con el mismo algoritmo que TERRAIN-02 (DEC-030). Las imágenes globales pesan ~2 GiB cada una y la máquina tenía ~8 GB libres.
+- **Decisión:**
+  - Producto: NASA PDS, data set `LRO-L-LOLA-4-GDR-V1.0` (DOI [10.17189/1520642](https://doi.org/10.17189/1520642)), DEM **`LDEM_128` V3.0** y conteos **`LDEC_128`**: cilíndrica simple, 128 píxeles/grado (236,901 m/píxel en el ecuador), 23 040 × 46 080, int16 little-endian, altura = DN × 0,5 m sobre la esfera de 1737,4 km, marco "Mean Earth/Polar Axis of DE421" (el mismo que el polar). Es el global de un solo archivo con resolución comparable al polar de 240 m.
+  - Mismo algoritmo y parámetros que DEC-030 (`selene-lola-horizon/v1`: rayos de 300 km, paso 0,12 km, 0,5° de azimut, observador a 2 m, curvatura exacta). Solo cambia el muestreador.
+  - No se guardan las imágenes enteras: se recorren en streaming, se verifica el tamaño y el MD5 del **archivo completo** y se guarda solo una ventana alrededor de cada sitio (radio del horizonte + 0,25°).
+  - Altura del observador en las efemérides de esos dos sitios: suelo LOLA + 2 m (`measured-datum`), como en los polares (DEC-033). Reemplaza los 0 km supuestos.
+- **Archivos e integridad** (base `https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/`). PDS no publica el MD5 de las imágenes: se calculó en la descarga del 2026-11-14 y una **segunda descarga independiente** dio el mismo MD5 y ventanas idénticas byte a byte.
+
+  | Archivo | Bytes | MD5 |
+  | --- | --- | --- |
+  | `ldem_128.img` | 2 123 366 400 | `397c24a9a5eb71cba641373fe9adb3a4` |
+  | `ldem_128.lbl` | — | `f6d5cef735e6b236a7821cb278a11efe` |
+  | `ldem_128.xml` | — | `ccc90d3c00d1be4443430a1b2ff05ea1` |
+  | `ldec_128.img` | 2 123 366 400 | `118203c4632ac4940713f7d54070e803` |
+  | `ldec_128.lbl` | — | `d4221ab1e14aabbcc095a2b6389712f2` |
+  | `ldec_128.xml` | — | `01db219b4917fe0bd904eefedd323c9c` |
+
+  Proyección (de la etiqueta): línea 0 al norte, sample 0 en 0° E, *pixel registered*; `línea = 11519,5 − 128·lat` y `sample = 23039,5 + 128·(lon − 180°)`, 0-based, con lon en 0..360 (la longitud se lee con módulo).
+- **Solución aplicada:**
+  - `web/src/data/terrain/lola-ldem-128.js` (nuevo): manifiesto (DOI, versión, URLs, bytes, MD5, grilla y proyección). No contiene muestras.
+  - `web/scripts/extract-lola-global.mjs` (nuevo, `npm run data:lola:global`): descarga en streaming las dos imágenes en paralelo (~4,2 GB en ~3 min a ~23 MB/s), verifica tamaño y MD5 y escribe las ventanas de Chang'e 4 (2599 × 4598), Apollo 11 (2599 × 2645) y Chandrayaan-3 (2599 × 14 274, solo para validar) en `web/data/derived/lola-128/` (~220 MB, ignorado por git) con su `index.json` (MD5 de origen y de cada ventana). `--src` lee imágenes locales en lugar de la red.
+  - `web/src/lib/horizon-lola.js`: `createCylindricalWindowSampler()` (bilineal, mismo contrato que `createRasterSampler`, `count = 0` ⇒ baja confianza, `null` fuera de la ventana: no se extrapola). `createLolaHorizon()` usa el `source` de la entrada si lo tiene, y si no, el de la tabla.
+  - `web/scripts/build-lola-horizons.mjs`: lee y verifica las ventanas (`loadGlobalWindows`), agrega las entradas de LDEM_128 con su propio `source` (producto, versión, MD5, proyección y escala) y deja `excluded` vacío. `--global-only` recalcula solo esas entradas y conserva las polares de la tabla versionada sin tocarlas (en esta máquina no estaban los rasters polares; se comprobó que las 5 entradas polares quedaron idénticas). `--svg` regenera `docs/img/horizonte-lola.svg` con los 7 sitios (LOLA vs. sintético: la comparación antes/después).
+  - `web/src/data/terrain/lola-horizons.js` regenerada; `web/public/data/ephemerides/change4.json`, `apollo11.json` e `index.json` regeneradas con `fetch-horizons.mjs --alt-km=-5.9284` / `--alt-km=-1.9329` y `build-ephemerides.mjs --sites change4,apollo11` (opción nueva: rehace solo esos sitios y actualiza su entrada del índice).
+  - Pruebas: `web/tests/horizon-lola.test.js` (ventana cilíndrica sintética: centros de píxel, escala de DN, cruce de 0°/360°, `count = 0`, esfera lisa ⇒ depresión del observador, `source` por entrada); `web/tests/validacion/horizonte-lola-global.test.js` (nuevo: entradas completas y sin truncar; con las ventanas presentes, reproducción exacta y control cruzado); `horizonte-lola-tabla.test.js`, `analysis.test.js` y `lola-ui.test.js` actualizadas.
+  - Textos ES/EN: la nota del perfil del horizonte y el pie del informe ya no dicen que el LOLA es solo polar; "240 m/píxel" pasa a "≈ 240 m/píxel".
+- **Resultados:**
+
+  | Sitio | Suelo LOLA | Horizonte (mín / media / máx) | `count = 0` | Luz media anual | Comunicación |
+  | --- | --- | --- | --- | --- | --- |
+  | Chang'e 4 | −5930,4 m | −0,02° / 1,19° / 2,99° | 65,4 % de azimuts | 49,9 % → **49,7 %** | 0 % → 0 % |
+  | Apollo 11 | −1934,9 m | 0,02° / 0,89° / 1,78° | 73,9 % de azimuts | 49,2 % → **48,9 %** | 100 % → 100 % |
+
+  Luz y comunicación: media de 12 ventanas de 30 días desde el 01/11/2026, antes (sintético, `main`) y después. El efecto es chico porque a esas latitudes el Sol sube mucho más que el horizonte; el cambio importante es que el relieve mostrado ya es medido. Las alturas son coherentes con el fondo de Von Kármán y con Mare Tranquillitatis.
+- **Control cruzado:** en Chandrayaan-3 (−69,37°), cubierto por los dos productos, el mismo algoritmo con LDEM_128 da el **mismo suelo** (529,7 m) y, en los 631 azimuts que el polar no trunca, una diferencia de media +0,028°, RMS 0,069° y máximo 0,309°. Las tolerancias de la prueba (media < 0,1°, RMS < 0,15°, máximo < 0,5°) son del equipo.
+- **Supuestos y límites:**
+  - `count = 0` en la mayoría de los azimuts: cerca del ecuador las trazas de LOLA están más separadas que 237 m y muchos píxeles son interpolados por el equipo LOLA (GMT `surface`). Se marca baja confianza, como en DEC-030; no se inventa un umbral.
+  - La etiqueta avisa de posibles artefactos en los bordes de las bandas de 45° de latitud con que se generó el producto: Chang'e 4 (−45,46°) está a 0,46° (~14 km) del borde de −45°. En la ventana, la diferencia media de altura entre las dos filas del borde es 20,2 m, frente a una mediana de 17,6 m (máximo 20,6 m) en las 80 filas vecinas: no se ve un escalón, pero queda como pendiente de revisión.
+  - El MD5 de las imágenes no lo publica PDS: es el calculado por el equipo, comprobado en dos descargas.
+  - Los puntos propios al norte de −75° siguen con horizonte sintético (fuera de alcance de TERRAIN-03).
+- **Alternativas descartadas:** `LDEM_64` (~474 m/píxel: la mitad de resolución que el polar); SLDEM2015 (±60°: no cubre todos los sitios con un solo producto y suma otro marco de procesamiento); descargar las imágenes enteras (~4,2 GB en disco sin necesidad); pedir rangos HTTP por fila (miles de pedidos y sin MD5 del archivo completo).
+- **Estado:** vigente. Desbloquea DATA-03 (#72). Pendiente de validar por astronomía: los dos horizontes y el posible artefacto de borde de banda en Chang'e 4.

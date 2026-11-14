@@ -1,8 +1,10 @@
 /**
  * Validación de la tabla versionada `src/data/terrain/lola-horizons.js`
- * (TERRAIN-02, DEC-030): procedencia, forma, rangos, unidades y cobertura.
- * La prueba final, opcional, la regenera desde los rasters LOLA reales si
- * están en LOLA_RAW_DIR (por defecto web/data/raw) y exige que coincida.
+ * (TERRAIN-02, DEC-030; TERRAIN-03, DEC-061): procedencia, forma, rangos,
+ * unidades y cobertura. La prueba final, opcional, regenera las entradas
+ * polares desde los rasters LOLA reales si están en LOLA_RAW_DIR (por defecto
+ * web/data/raw) y exige que coincidan. Las de LDEM_128 se validan en
+ * horizonte-lola-global.test.js.
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -11,6 +13,7 @@ import { join, resolve } from "node:path";
 
 import { LOLA_HORIZONS } from "../../src/data/terrain/lola-horizons.js";
 import { LOLA_PRODUCT } from "../../src/data/terrain/lola-ldem-60s-240m.js";
+import { LOLA_GLOBAL_PRODUCT } from "../../src/data/terrain/lola-ldem-128.js";
 import { SITES } from "../../src/data/sites.js";
 import { HORIZON_ALGORITHM, HORIZON_PARAMS, createLolaHorizon, lolaHorizonCoverage } from "../../src/lib/horizon-lola.js";
 import { isCovered } from "../../src/lib/terrain-data.js";
@@ -27,14 +30,23 @@ test("tabla: procedencia y parámetros coinciden con el producto y el algoritmo 
   assert.equal(T.source.counts.md5, LOLA_PRODUCT.counts.image.md5);
 });
 
-test("tabla: un perfil por sitio cubierto; los no cubiertos figuran como excluidos", () => {
+test("tabla: los 7 sitios curados tienen perfil; polar donde cubre LDEM_60S_240M y LDEM_128 en el resto", () => {
   const { sites, excluded } = lolaHorizonCoverage();
+  assert.deepEqual(excluded, []);
   for (const site of SITES) {
-    if (isCovered(site.lat, site.lon)) assert.ok(sites.includes(site.id), site.id);
-    else assert.ok(excluded.some((e) => e.id === site.id), site.id);
+    assert.ok(sites.includes(site.id), site.id);
+    const { product } = createLolaHorizon(site.id).meta;
+    if (isCovered(site.lat, site.lon)) {
+      assert.equal(T.sites[site.id].source, undefined, site.id);
+      assert.equal(product.dem.productId, LOLA_PRODUCT.dem.productId, site.id);
+    } else {
+      assert.equal(product.dem.productId, LOLA_GLOBAL_PRODUCT.dem.productId, site.id);
+      assert.equal(product.productVersion, LOLA_GLOBAL_PRODUCT.productVersion, site.id);
+      assert.equal(product.dem.md5, LOLA_GLOBAL_PRODUCT.dem.image.md5, site.id);
+      assert.equal(product.counts.md5, LOLA_GLOBAL_PRODUCT.counts.image.md5, site.id);
+      assert.equal(product.doi, LOLA_GLOBAL_PRODUCT.doi, site.id);
+    }
   }
-  assert.equal(createLolaHorizon("change4"), null);
-  assert.equal(createLolaHorizon("apollo11"), null);
 });
 
 test("tabla: valores finitos, en rango y con la misma coordenada del catálogo", () => {
@@ -69,8 +81,10 @@ const demPath = join(rawDir, LOLA_PRODUCT.dem.image.name);
 const countsPath = join(rawDir, LOLA_PRODUCT.counts.image.name);
 const hasReal = existsSync(demPath) && existsSync(countsPath);
 
-test("producto real: la tabla versionada se reproduce exactamente", { skip: !hasReal && "sin rasters reales" }, async () => {
+test("producto real: las entradas polares de la tabla se reproducen exactamente", { skip: !hasReal && "sin rasters reales" }, async () => {
   const { buildTable, readRaster } = await import("../../scripts/build-lola-horizons.mjs");
   const table = buildTable({ dem: readRaster(demPath, "float32"), counts: readRaster(countsPath, "int16") });
-  assert.deepEqual(JSON.parse(JSON.stringify(table)), JSON.parse(JSON.stringify(T)));
+  const polar = Object.fromEntries(Object.entries(T.sites).filter(([, e]) => !e.source));
+  assert.deepEqual(JSON.parse(JSON.stringify(table.sites)), JSON.parse(JSON.stringify(polar)));
+  assert.deepEqual(table.source, T.source);
 });

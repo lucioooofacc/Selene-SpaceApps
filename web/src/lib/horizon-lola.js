@@ -9,7 +9,9 @@
  *    exacta: el terreno a distancia angular δ = d / R con radio r se ve desde un
  *    observador de radio r₀ con elevación atan2(r·cos δ − r₀, r·sin δ) sobre el
  *    plano tangente local. Las alturas se interpolan bilinealmente en la grilla
- *    estereográfica de `terrain-data.js`.
+ *    estereográfica de `terrain-data.js` (LDEM_60S_240M) o, para los sitios
+ *    fuera de −90°..−60°, en una ventana de la grilla cilíndrica global
+ *    LDEM_128 (`createCylindricalWindowSampler`, TERRAIN-03, DEC-061).
  *
  * 2. Consulta (la usará CORE-01): `createLolaHorizon(siteId)` arma
  *    `horizon(azimuth) -> elevation` en grados desde la tabla precalculada
@@ -97,6 +99,55 @@ export function createRasterSampler({ dem, counts, grid = LOLA_GRID }) {
     const w11 = fl * fs;
     const heightKm = dem[i00] * w00 + dem[i01] * w01 + dem[i10] * w10 + dem[i11] * w11;
     if (!Number.isFinite(heightKm)) return null;
+    const lowConfidence =
+      (w00 > 0 && counts[i00] === 0) ||
+      (w01 > 0 && counts[i01] === 0) ||
+      (w10 > 0 && counts[i10] === 0) ||
+      (w11 > 0 && counts[i11] === 0);
+    return { heightKm, lowConfidence };
+  };
+}
+
+/**
+ * Muestreador bilineal sobre una ventana de una grilla cilíndrica simple
+ * global (LDEM_128 + LDEC_128, TERRAIN-03, DEC-061), con el mismo contrato que
+ * `createRasterSampler`.
+ * @param {object} args
+ * @param {ArrayLike<number>} args.dem  DN int16 de la ventana (fila por fila).
+ * @param {ArrayLike<number>} args.counts  conteos LDEC de la ventana.
+ * @param {{line0:number, lines:number, sample0:number, samples:number}} args.window
+ *   posición de la ventana en la grilla (0-based; `sample0` puede ser negativo:
+ *   la longitud es circular).
+ * @param {{lines:number, samples:number, pixelsPerDegree:number, lineProjectionOffset:number,
+ *   sampleProjectionOffset:number, centerLatitude:number, centerLongitude:number}} args.grid
+ * @param {number} args.scalingFactor  metros por DN (0,5 en LDEM_128).
+ * @returns `null` fuera de la ventana (no se extrapola).
+ */
+export function createCylindricalWindowSampler({ dem, counts, window: w, grid, scalingFactor }) {
+  const n = w.lines * w.samples;
+  if (dem.length !== n || counts.length !== n) throw new RangeError(`la ventana debe tener ${n} valores`);
+  const ppd = grid.pixelsPerDegree;
+  const kmPerDn = scalingFactor / 1000;
+  return function sample(lat, lon) {
+    if (!(lat >= -90 && lat <= 90)) return null;
+    const line = grid.lineProjectionOffset - ppd * (lat - grid.centerLatitude) - w.line0;
+    const lon360 = ((lon % 360) + 360) % 360;
+    let s = grid.sampleProjectionOffset + ppd * (lon360 - grid.centerLongitude) - w.sample0;
+    s = ((s % grid.samples) + grid.samples) % grid.samples;
+    const l0 = Math.floor(line);
+    const s0 = Math.floor(s);
+    if (l0 < 0 || s0 < 0 || l0 + 1 >= w.lines || s0 + 1 >= w.samples) return null;
+    const fl = line - l0;
+    const fs = s - s0;
+    const i00 = l0 * w.samples + s0;
+    const i01 = i00 + 1;
+    const i10 = i00 + w.samples;
+    const i11 = i10 + 1;
+    const w00 = (1 - fl) * (1 - fs);
+    const w01 = (1 - fl) * fs;
+    const w10 = fl * (1 - fs);
+    const w11 = fl * fs;
+    const heightKm = (dem[i00] * w00 + dem[i01] * w01 + dem[i10] * w10 + dem[i11] * w11) * kmPerDn;
     const lowConfidence =
       (w00 > 0 && counts[i00] === 0) ||
       (w01 > 0 && counts[i01] === 0) ||
@@ -261,7 +312,10 @@ function horizonFromEntry(entry, { siteId, product, algorithm, params, extra = {
 export function createLolaHorizon(siteId, table = LOLA_HORIZONS) {
   const entry = table?.sites?.[siteId];
   if (!entry) return null;
-  return horizonFromEntry(entry, { siteId, product: table.source, algorithm: table.algorithm, params: table.params });
+  // Las entradas calculadas con otro producto (LDEM_128, DEC-061) traen su
+  // propio `source`; las demás usan el producto polar de la tabla.
+  const product = entry.source ?? table.source;
+  return horizonFromEntry(entry, { siteId, product, algorithm: table.algorithm, params: table.params });
 }
 
 /**

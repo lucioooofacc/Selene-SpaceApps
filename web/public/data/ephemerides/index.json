@@ -54,19 +54,19 @@
     {
       "id": "change4",
       "file": "change4.json",
-      "bytes": 430336,
+      "bytes": 430212,
       "observer": {
-        "altitudeKm": 0,
-        "altitudeBasis": "assumed-zero-reference-sphere"
+        "altitudeKm": -5.9284,
+        "altitudeBasis": "measured-datum"
       }
     },
     {
       "id": "apollo11",
       "file": "apollo11.json",
-      "bytes": 419855,
+      "bytes": 419731,
       "observer": {
-        "altitudeKm": 0,
-        "altitudeBasis": "assumed-zero-reference-sphere"
+        "altitudeKm": -1.9329,
+        "altitudeBasis": "measured-datum"
       }
     }
   ]

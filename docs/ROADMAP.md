@@ -21,11 +21,11 @@ Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖
 | 0 | Base: réplica del Figma, repo y despliegue | ✅ | Equipo |
 | 1 | Interfaz completa y pulida | ✅ | Lucio |
 | 2 | Datos reales en el motor | ✅ | Facundo |
-| 3 | Validación científica | 🔄 (TEST-01 y SCIENCE-02 hechos; quedan revisiones de astronomía y TERRAIN-03) | Teo, Facu, Lucio |
+| 3 | Validación científica | 🔄 (TEST-01 y SCIENCE-02 hechos; TERRAIN-03 en revisión; quedan revisiones de astronomía) | Teo, Facu, Lucio |
 | 4 | Visualizaciones con los datos reales | ✅ (falta I18N-01) | Lucio (con Facundo) |
 | 5 | Entrega final | ⏳ | Equipo |
 
-**Hoy estamos entre las etapas 3 y 5:** la interfaz muestra los datos reales con su procedencia (UI-01, UI-02), el mapa de calor calcula luz, Tierra y viabilidad reales (MAP-01), el cálculo pesado corre en un worker (PERF-01) y los cruces de Sol y Tierra están refinados (SCIENCE-02). También se aplicó el bloc de notas de UI de Lucio (DEC-042 a DEC-046). Falta la revisión de astronomía y TERRAIN-03/DATA-03 (etapa 3), la revisión de traducciones (I18N-01) y la entrega (etapa 5).
+**Hoy estamos entre las etapas 3 y 5:** la interfaz muestra los datos reales con su procedencia (UI-01, UI-02), el mapa de calor calcula luz, Tierra y viabilidad reales (MAP-01), el cálculo pesado corre en un worker (PERF-01) y los cruces de Sol y Tierra están refinados (SCIENCE-02). También se aplicó el bloc de notas de UI de Lucio (DEC-042 a DEC-046). Falta la revisión de astronomía, integrar TERRAIN-03 y hacer DATA-03 (etapa 3), la revisión de traducciones (I18N-01) y la entrega (etapa 5).
 
 ---
 
@@ -64,7 +64,7 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 | CORE-01 parte B (#11): efemérides Horizons en el cálculo | ✅ (PR #56) | Series de los 7 sitios, nov 2026–dic 2027, paso 1 h; fuera de ese rango, modelo aproximado; `scenario.ephemeris` informa el origen (DEC-033) |
 | CORE-03 (#59): datos reales para puntos del mapa | ✅ (PR #60) | Sol y Tierra de Horizons trasladados a cualquier punto; horizonte LOLA reducido (480/960 m) al sur de −75°, marcado aproximado (DEC-034) |
 | DATA-02 (#61): Shackleton R04 → R01 | ✅ (PR #62) | R04 era el centro de un polígono en la pared del cráter; R01 Connecting Ridge (DEC-035) |
-| TERRAIN-03 (#71): horizonte LOLA real para Chang'e 4 y Apollo 11 | ⏳ | Hoy sintético: fuera de `LDEM_60S_240M` |
+| TERRAIN-03 (#71): horizonte LOLA real para Chang'e 4 y Apollo 11 | 🔄 (PR en revisión) | Desde `LDEM_128` V3.0 con el algoritmo de DEC-030; efemérides con la altura LOLA medida (DEC-061) |
 | DATA-03 (#72): quitar `relief`/`elevationKm` de los sitios curados | ⛔ | Depende de TERRAIN-03 |
 
 **Qué cambió con los datos reales** (media anual, Sol y Tierra de Horizons + horizonte LOLA):
