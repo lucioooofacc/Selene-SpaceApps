@@ -796,3 +796,12 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/ui/links.js` (`missionQuery()`, `parseMissionQuery()`), `web/src/main.js` (`stateFromUrl()` y actualización de la URL al cambiar de capa), prueba en `web/tests/links.test.js`.
 - **Alternativas descartadas:** guardarla en la configuración (`localStorage`): no se comparte con el enlace y cambiaría la vista inicial para todos los sitios.
 - **Estado:** vigente.
+
+## DEC-058 — La pestaña del mapa vuelve a llamarse "MAPA DE CALOR"
+
+- **Contexto / problema:** en UI-13 (DEC-029) la pestaña "MAPA DE CALOR" del Figma se renombró "ELEVACIÓN" porque solo mostraba la altura LOLA. Desde MAP-01 (DEC-040, DEC-050) tiene cinco capas: Elevación, Luz, Tierra, Sol + Tierra y Viabilidad, y el título quedó corto (pedido de Lucio).
+- **Decisión:** volver a **"MAPA DE CALOR"** / **"HEAT MAP"**: describe todas las capas (cada una es un mapa coloreado de un valor) y es el nombre original del Figma (DEC-014). La capa "Elevación" conserva su nombre dentro del selector.
+- **Solución aplicada:** textos `map.heat` (ES/EN). El subrayado de la pestaña se ajusta solo al ancho del texto.
+- **Alternativas descartadas:** "CAPAS" (no dice qué muestra); "ILUMINACIÓN" (deja afuera elevación y Tierra).
+- **Estado:** vigente. Reemplaza el renombre de DEC-029.
+
