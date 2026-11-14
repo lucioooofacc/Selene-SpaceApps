@@ -8,16 +8,18 @@
  * el sitio y cubre el instante, usa Horizons; si no, el modelo aproximado de
  * `astro.js` (DEC-004), marcado como tal.
  *
- * Formato de archivo (`selene-ephemeris/v1`): por sitio, una grilla regular
+ * Formato de archivo (`selene-ephemeris/v2`): por sitio, una grilla regular
  * `startMs + k·stepMinutes` con azimut y elevación del Sol y la Tierra en
- * milésimas de grado (enteros) y el % iluminado de la Tierra en centésimas.
+ * milésimas de grado (enteros), el % iluminado de la Tierra en centésimas y
+ * los radios angulares del Sol y la Tierra en diezmilésimas de grado (v2,
+ * CORE-02, DEC-036).
  * Entre muestras se interpola linealmente (el azimut, por el camino corto).
  */
 
-export const EPHEMERIS_SCHEMA = "selene-ephemeris/v1";
+export const EPHEMERIS_SCHEMA = "selene-ephemeris/v2";
 
-const SERIES = ["sunAz", "sunEl", "earthAz", "earthEl", "earthIllum"];
-const SCALE = { sunAz: 1000, sunEl: 1000, earthAz: 1000, earthEl: 1000, earthIllum: 100 };
+const SERIES = ["sunAz", "sunEl", "earthAz", "earthEl", "earthIllum", "sunRadius", "earthRadius"];
+const SCALE = { sunAz: 1000, sunEl: 1000, earthAz: 1000, earthEl: 1000, earthIllum: 100, sunRadius: 10000, earthRadius: 10000 };
 
 /** Valida y decodifica un archivo de efemérides. Lanza si algo no cuadra. */
 export function decodeEphemeris(json) {
@@ -61,7 +63,7 @@ function lerpAngle(a, b, f) {
 
 /**
  * Posiciones en el instante `ms` o `null` si cae fuera de la cobertura.
- * @returns {{sun:{azimuth:number, elevation:number}, earth:{azimuth:number, elevation:number, phase:number}} | null}
+ * @returns {{sun:{azimuth:number, elevation:number, radius:number}, earth:{azimuth:number, elevation:number, phase:number, radius:number}} | null}
  */
 export function positionsAt(eph, ms) {
   if (!(ms >= eph.startMs && ms <= eph.stopMs)) return null;
@@ -71,11 +73,12 @@ export function positionsAt(eph, ms) {
   const s = eph.series;
   const lerp = (arr) => arr[i] * (1 - f) + arr[i + 1] * f;
   return {
-    sun: { azimuth: lerpAngle(s.sunAz[i], s.sunAz[i + 1], f), elevation: lerp(s.sunEl) },
+    sun: { azimuth: lerpAngle(s.sunAz[i], s.sunAz[i + 1], f), elevation: lerp(s.sunEl), radius: lerp(s.sunRadius) },
     earth: {
       azimuth: lerpAngle(s.earthAz[i], s.earthAz[i + 1], f),
       elevation: lerp(s.earthEl),
       phase: lerp(s.earthIllum) / 100,
+      radius: lerp(s.earthRadius),
     },
   };
 }
@@ -228,11 +231,12 @@ export function derivedEphemerisFor(site) {
     at(ms) {
       const p = positionsAt(ref, ms);
       if (!p) return null;
-      const sun = toLocal(fP, toBody(fRef, p.sun.azimuth, p.sun.elevation));
+      // Los radios angulares cambian < 0,5 % entre dos puntos de la Luna: se conservan.
+      const sun = { ...toLocal(fP, toBody(fRef, p.sun.azimuth, p.sun.elevation)), radius: p.sun.radius };
       const u = toBody(fRef, p.earth.azimuth, p.earth.elevation);
       const earthPos = [0, 1, 2].map((i) => rRef[i] + u[i] * EARTH_DISTANCE_KM - rP[i]);
       const earth = toLocal(fP, earthPos);
-      return { sun, earth: { ...earth, phase: p.earth.phase } };
+      return { sun, earth: { ...earth, phase: p.earth.phase, radius: p.earth.radius } };
     },
   };
 }

@@ -9,7 +9,7 @@
     {
       "id": "shackleton",
       "file": "shackleton.json",
-      "bytes": 297083,
+      "bytes": 400656,
       "observer": {
         "altitudeKm": 1.9445,
         "altitudeBasis": "measured-datum"
@@ -18,7 +18,7 @@
     {
       "id": "malapert",
       "file": "malapert.json",
-      "bytes": 287910,
+      "bytes": 391502,
       "observer": {
         "altitudeKm": 4.7882,
         "altitudeBasis": "measured-datum"
@@ -27,7 +27,7 @@
     {
       "id": "cabeus",
       "file": "cabeus.json",
-      "bytes": 289891,
+      "bytes": 393481,
       "observer": {
         "altitudeKm": -3.8289,
         "altitudeBasis": "measured-datum"
@@ -36,7 +36,7 @@
     {
       "id": "im1",
       "file": "im1.json",
-      "bytes": 293924,
+      "bytes": 397539,
       "observer": {
         "altitudeKm": 2.5783,
         "altitudeBasis": "measured-datum"
@@ -45,7 +45,7 @@
     {
       "id": "chandrayaan3",
       "file": "chandrayaan3.json",
-      "bytes": 315213,
+      "bytes": 418857,
       "observer": {
         "altitudeKm": 0.5317,
         "altitudeBasis": "measured-datum"
@@ -54,7 +54,7 @@
     {
       "id": "change4",
       "file": "change4.json",
-      "bytes": 326949,
+      "bytes": 430336,
       "observer": {
         "altitudeKm": 0,
         "altitudeBasis": "assumed-zero-reference-sphere"
@@ -63,7 +63,7 @@
     {
       "id": "apollo11",
       "file": "apollo11.json",
-      "bytes": 315986,
+      "bytes": 419855,
       "observer": {
         "altitudeKm": 0,
         "altitudeBasis": "assumed-zero-reference-sphere"
