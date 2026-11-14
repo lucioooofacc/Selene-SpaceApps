@@ -27,6 +27,22 @@ export default {
   },
   places: {
     title: "Best places to land",
+    modeLabel: "What to rank",
+    mode: { sites: "Best sites", dates: "Best dates" },
+    dates: {
+      computing: "Computing the best dates for this site…",
+      none: "No JPL Horizons data for this site yet: dates are ranked only with real ephemerides.",
+      hint: {
+        overall: "Start dates for this site with the same duration ({days} days), between {from} and {to} (JPL Horizons data), without overlapping periods, sorted by viability points; ties broken by hours of light.",
+        communication: "Start dates for this site with the same duration ({days} days), between {from} and {to} (JPL Horizons data), without overlapping periods, sorted by the share of the period with the Earth visible.",
+        light: "Start dates for this site with the same duration ({days} days), between {from} and {to} (JPL Horizons data), without overlapping periods, sorted by the mean usable solar power.",
+      },
+      aria: "Use the period {range}",
+      sub: "Viability {level} · {points}/{max} points",
+      sunPct: "Share of the period with the Sun",
+      earthPeak: "Maximum Earth height in the period",
+      noScience: "Not applicable to dates: scientific features depend on the site, not the date.",
+    },
     categoryLabel: "Rank places by",
     category: { overall: "Overall", science: "Science", communication: "Comms", light: "Light" },
     categoryHint: {

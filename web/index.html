@@ -40,7 +40,15 @@
           <!-- Mejores lugares para alunizar -->
           <div class="places-column" id="comparar">
             <section class="places" aria-labelledby="places-title">
-              <h2 class="places-title" id="places-title" data-i18n="places.title"></h2>
+              <h2 class="places-title" id="places-title">
+                <span class="sr-only" data-i18n="places.title"></span>
+                <!-- Lugares / Fechas (DEC-046), con el patrón de pestañas del mapa -->
+                <span class="places-modes" role="tablist" data-i18n-attr="aria-label:places.modeLabel">
+                  <button type="button" role="tab" data-places-mode="sites" data-i18n="places.mode.sites"></button>
+                  <span aria-hidden="true">/</span>
+                  <button type="button" role="tab" data-places-mode="dates" data-i18n="places.mode.dates"></button>
+                </span>
+              </h2>
               <div class="places-categories" id="places-categories" role="radiogroup" data-i18n-attr="aria-label:places.categoryLabel">
                 <button type="button" role="radio" data-category="overall" data-i18n="places.category.overall"></button>
                 <button type="button" role="radio" data-category="science" data-i18n="places.category.science"></button>

@@ -23,6 +23,7 @@ const state = {
   speed: 1, // horas simuladas por segundo real
   mapView: "heat", // "global" | "heat" | "polar"
   placesCategory: "overall", // ranking de "Mejores lugares": overall | science | communication | light (UI-13)
+  placesMode: "sites", // panel de ranking: "sites" (mejores lugares) | "dates" (mejores fechas, DEC-046)
   mapMode: "3d", // GLOBAL y POLO SUR: "3d" (modelo) | "2d" (imagen NASA), DEC-021
   heatLayer: "elevation", // pestaña ELEVACIÓN: elevation | sun | earth | both | viability (MAP-01, DEC-040)
   customSites: [], // sitios agregados con el botón "+"
