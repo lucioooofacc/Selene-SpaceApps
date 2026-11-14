@@ -649,3 +649,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** los nombres se muestran con `innerHTML` en varias vistas, así que al crearlos se quitan `< > & " ' \``; ids `custom-<marca de tiempo>` para que no choquen. Los sitios propios siguen viviendo solo en la página (no se guardan al recargar) y la comparación los recibe por coordenadas.
 - **Alternativas descartadas:** `prompt()` del navegador (bloquea la página y rompe la automatización); escapar en cada vista (más cambios y fácil de olvidar en una nueva).
 - **Estado:** vigente.
+
+## DEC-044 — Informe imprimible como documento de texto
+
+- **Contexto / problema:** bloc de notas de UI de Lucio: el informe (UI-06) tenía grillas de tres columnas, tablas con bordes, un aviso en recuadro con fondo y etiquetas de calidad en "píldoras" con bordes redondeados. Se pidió que sea solo texto, apto para impresión.
+- **Decisión:** documento corrido en una columna, tipografía serif de imprenta, en negro sobre blanco y sin cajas, fondos, bordes ni esquinas redondeadas. Secciones numeradas: 1. Sitio y período (en un párrafo), 2. Viabilidad, 3. Métricas (lista "Métrica: valor. explicación"), 4. Posición promedio en el período y rachas (noche, luz continua y corte de comunicación más largos, de `windowStats`, DEC-042), 5. Ventanas de luz y de enlace (lista "inicio → fin (duración)"), 6. Procedencia y calidad ("[Real] Dato — explicación"), y el pie con las fuentes.
+- **Solución aplicada:** `web/src/ui/report.js` (`renderReport()` y `windowsList()` reescritos), `web/src/styles/report.css` reescrito (una regla anula fondos, bordes y sombras dentro del informe; las etiquetas de calidad se imprimen entre corchetes), textos `report.periodLine`, `report.windowsTitle`, `report.avgLine`, `report.runs` (ES/EN).
+- **Alternativas descartadas:** mantener tablas sin bordes (siguen leyéndose como recuadros alineados en columnas angostas); generar un PDF propio (agrega una dependencia; el navegador ya guarda en PDF).
+- **Estado:** vigente. Reemplaza el diseño del informe de UI-06 (DEC-020 sigue vigente para su contenido y su acceso desde el menú).
