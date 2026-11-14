@@ -424,3 +424,107 @@
   width: 22px;
   border-top: 2px dashed var(--muted-2);
 }
+
+/* ---------- Ubicación de los sitios en la Luna 3D (DEC-054) ---------- */
+.cmp-globe-layout {
+  display: grid;
+  grid-template-columns: 620px minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+}
+
+.cmp-globe {
+  position: relative;
+  width: 620px;
+  height: 620px;
+  border-radius: var(--r-md);
+  background: radial-gradient(circle at 50% 50%, #121a26 0%, #0a0e15 70%);
+  overflow: hidden;
+  cursor: grab;
+}
+
+.cmp-globe:active {
+  cursor: grabbing;
+}
+
+.cmp-globe .moon3d-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cmp-globe-pins {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cmp-globe-pins .pin {
+  pointer-events: none;
+}
+
+.cmp-globe[data-loading="true"] .map-status-loading,
+.cmp-globe[data-error="true"] .cmp-globe-error {
+  display: block;
+}
+
+.cmp-arc-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.75;
+  transform: translate(-50%, -50%) !important;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.cmp-globe-pin .pin-label {
+  padding: 1px 6px;
+  border: 1px solid;
+  border-radius: var(--r-pill);
+  background: rgba(9, 12, 18, 0.8);
+  font-size: 13px;
+}
+
+.cmp-globe-pin-a .pin-label {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.cmp-globe-pin-b .pin-label {
+  color: var(--earth);
+  border-color: var(--earth);
+}
+
+.cmp-globe-facts {
+  display: grid;
+  gap: 18px;
+  margin: 0 0 16px;
+}
+
+.cmp-globe-facts dt {
+  font-size: 14px;
+  color: var(--muted-2);
+}
+
+.cmp-globe-facts dd {
+  display: grid;
+  gap: 2px;
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cmp-globe-big dd {
+  font-size: 30px;
+  color: var(--text);
+}
+
+.cmp-globe-a {
+  color: var(--gold);
+}
+
+.cmp-globe-b {
+  color: var(--earth);
+}
