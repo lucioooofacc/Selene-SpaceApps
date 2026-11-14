@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-14 (capas en 3D, rama `feat/capas-3d`).
+Última actualización: 2026-11-14 (mapa suavizado, rama `design/mapa-suavizado`).
 
 ---
 
@@ -62,6 +62,8 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Las cajas del menú del "+" se salen del borde. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~El nombre del sitio personalizado no aparece en la comparación. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
 - [x] ~~"Mejores fechas": viabilidad más llamativa, con rojos y verdes. — Lucio~~ Resuelto 2026-11-14 (rama `fix/notas-ui-2`, DEC-049).
+- [x] ~~El mapa de calor calculado se ve pixelado. — Lucio~~ Resuelto 2026-11-14 (rama `design/mapa-suavizado`, DEC-051): interpolación bilineal de los valores entre celdas, en 2D y 3D.
+- [ ] Extender el mapa de calor calculado a toda la superficie lunar. Decisión de Lucio (14/11): esperar al horizonte LOLA global de TERRAIN-03 en lugar de usar un horizonte sin relieve o un DEM global de baja resolución. — Lucio, Facundo · TERRAIN-03 #71, DEC-051
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 

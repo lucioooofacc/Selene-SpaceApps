@@ -614,7 +614,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - `web/src/ui/elevation.js`: exporta `lut()` para reutilizar la paleta. `web/src/state.js`: `heatLayer`. `web/index.html`: grupo de botones con `aria-pressed`. Estilos en `main.css` (la leyenda baja 40 px para dejar lugar al selector). Textos `map.layer*` (ES/EN).
 - **Supuestos y límites:** cada celda vale lo de su centro (DEC-038); el primer cálculo de cada capa y período bloquea 0,2–1 s el hilo principal (PERF-01, opcional); la capa elegida no se guarda en la URL.
 - **Alternativas descartadas:** mostrar la grilla con la proyección hasta −60° (el disco calculado ocuparía un tercio del radio); pintar la capa sobre la Luna 3D (la grilla solo cubre el polo y requeriría otra textura); suavizar la imagen (sugiere una resolución que no existe); un selector de colores propio (DEC-014).
-- **Estado:** vigente; la parte "solo en 2D" la reemplazó DEC-050 (las capas también se ven en 3D).
+- **Estado:** vigente; la parte "solo en 2D" la reemplazó DEC-050 y la de "un píxel por celda sin suavizar", DEC-051.
 
 ## DEC-041 — Origen de los datos en la línea de tiempo, el panorama, el informe y la comparación (UI-02)
 
@@ -725,4 +725,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - El selector 3D/2D vuelve a verse con las capas calculadas; leyenda, crédito, marcadores y caché (DEC-047) son los mismos.
 - **Solución aplicada:** `web/src/ui/heat-layer.js` (`heatLayerTexture()`, cacheada por imagen de la capa), `web/src/ui/map.js` (rama 3D de las capas), `web/src/ui/moon3d.js` (vista `heatCalc`).
 - **Alternativas descartadas:** pintar la capa sobre la elevación coloreada (dos escalas de color en la misma superficie); una esfera aparte solo para el casquete (más código de three.js para el mismo resultado).
-- **Estado:** vigente. Reemplaza la parte "solo en 2D" de DEC-040.
+- **Estado:** vigente. Reemplaza la parte "solo en 2D" de DEC-040. El muestreo "sin suavizar" lo reemplazó DEC-051.
+
+## DEC-051 — Mapa de calor calculado suavizado; mapa global en espera de TERRAIN-03
+
+- **Contexto / problema:** pedido de Lucio: (1) aplicar el mapa de calor a toda la superficie lunar y (2) suavizar el render, que se veía pixelado (DEC-040 mostraba un píxel por celda de ~6,3 km a propósito, para no aparentar más resolución).
+- **Decisión:**
+  - **Suavizado:** la imagen de la capa pasa de 96 × 96 a 384 × 384 px. Cada píxel interpola en forma bilineal los **valores** de las 4 celdas vecinas (no los colores, para no inventar tonos que no corresponden a ningún dato) y después toma el color de la paleta; las celdas sin dato no participan y el borde del disco se suaviza. La textura 3D (DEC-050) usa la misma imagen y mezcla el borde con el mosaico. El crédito sigue indicando el tamaño real de las celdas ("celdas de ~6,3 km, suavizadas entre sí").
+  - **Toda la superficie: en espera.** El atlas de horizontes LOLA (DEC-038) solo cubre hasta −80°. Se ofrecieron tres caminos: horizonte sin relieve fuera del polo, un atlas global con el DEM SVS de baja resolución o esperar a TERRAIN-03 (#71, horizonte LOLA global, Facundo). **Lucio eligió esperar a TERRAIN-03**; queda anotado en PENDIENTES.
+- **Solución aplicada:** `web/src/ui/heat-layer.js` (`colorize()` con interpolación bilineal; clave persistente `heat2|…` para no reutilizar imágenes viejas; mezcla del borde en `heatLayerTexture()`), `main.css` (sin `image-rendering: pixelated`), texto `map.layerCredit.real` (ES/EN).
+- **Alternativas descartadas:** suavizar con el escalado del navegador (interpola colores: aparecen tonos intermedios sin dato); interpolación bicúbica (puede sobrepasar el rango 0–100 % entre celdas).
+- **Estado:** vigente. Reemplaza el "un píxel por celda, sin suavizar" de DEC-040 y DEC-050.
