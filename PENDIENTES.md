@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (comparación en 3D, rama `feat/comparar-3d`).
+Última actualización: 2026-11-15 (panorama con más detalle, rama `design/panorama-detalle`).
 
 ---
 
@@ -71,6 +71,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Quitar de la interfaz las referencias al trabajo interno del equipo (DEC-xxx, "confirmado por astronomía", "pendiente de validar"): el jurado es externo. — Lucio~~ Resuelto 2026-11-15 (rama `fix/textos-jurado`, DEC-052).
 - [x] ~~Que la caja del mapa no corte la Luna 3D al acercar, sin aislar lo que hay alrededor. — Lucio~~ Resuelto 2026-11-15 (rama `design/mapa-3d-sin-caja`, DEC-053).
 - [x] ~~Comparación: vista 3D con los dos sitios ubicados. — Lucio~~ Resuelto 2026-11-15 (rama `feat/comparar-3d`, DEC-054).
+- [x] ~~Panorama de "Comportamiento de los cuerpos celestes" más fiel a la ilustración del Figma: más calidad en el terreno, detalle en la Tierra, etc. — Lucio~~ Resuelto 2026-11-15 (rama `design/panorama-detalle`, DEC-055).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
