@@ -1367,7 +1367,7 @@ button {
 
 .behavior-right {
   display: grid;
-  gap: 36px;
+  gap: 24px; /* deja lugar al "Resumen del período" (DEC-045) */
   align-content: start;
   padding-top: 16px;
 }
@@ -1893,3 +1893,111 @@ button {
     transition-duration: 0ms !important;
   }
 }
+
+/* ---------- Resumen del período (DEC-045) ---------- */
+.period-card {
+  height: auto;
+  grid-template-rows: auto auto auto;
+  padding-bottom: 14px;
+}
+
+.period-card h3 {
+  margin: 0;
+}
+
+.period-card .status-tag {
+  cursor: help;
+}
+
+.period-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.period-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: help;
+}
+
+.period-stat dt {
+  font-size: 12px;
+  color: #8a94a1;
+}
+
+.period-stat dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.period-sources {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ---------- Hover y foco de los controles (DEC-045) ---------- */
+.header-nav a:hover,
+.places-link:hover,
+.period-sources:hover {
+  color: var(--gold);
+}
+
+.places-categories button:hover:not([aria-checked="true"]),
+.params-chips button:hover:not([aria-pressed="true"]),
+.map-mode button:hover:not([aria-pressed="true"]),
+.heat-layers button:hover:not([aria-pressed="true"]),
+.tl-button:hover,
+.params-date-button:hover,
+.params-select select:hover,
+.params-coords input:hover,
+.tl-goto input:hover {
+  border-color: var(--muted-2);
+  color: var(--text);
+}
+
+.map-tabs button:hover:not([aria-selected="true"]) {
+  color: var(--text);
+}
+
+.params-quality:hover,
+.tl-play:hover {
+  filter: brightness(1.12);
+}
+
+.criterion,
+.status-card,
+.insight {
+  transition: border-color 160ms ease;
+}
+
+.criterion:hover,
+.status-card:hover,
+.insight:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.place:focus-visible,
+.params-chips button:focus-visible,
+.heat-layers button:focus-visible,
+.map-mode button:focus-visible,
+.places-categories button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+

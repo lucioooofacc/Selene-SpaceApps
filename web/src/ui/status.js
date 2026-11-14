@@ -1,8 +1,11 @@
 /**
- * Tarjetas "Energía solar" y "Comunicación" y la "Lectura del momento"
- * de la sección "Comportamiento de los cuerpos celestes".
+ * Tarjetas "Energía solar" y "Comunicación", la "Lectura del momento" y el
+ * "Resumen del período" (DEC-045) de la sección "Comportamiento de los
+ * cuerpos celestes".
  */
 import { deg, duration } from "../lib/format.js";
+import { STEP_MINUTES } from "../lib/analysis.js";
+import { windowStats } from "../lib/stats.js";
 import { t } from "../i18n/index.js";
 
 const $ = (id) => document.getElementById(id);
@@ -92,4 +95,54 @@ export function renderInsight(scenario, sample) {
       <p class="mono-label">${t("insight.eyebrow")}</p>
       <p class="insight-text">${text}</p>
     </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Resumen del período (DEC-045)
+// ---------------------------------------------------------------------------
+
+const TONE = { high: "good", mid: "warn", low: "bad" };
+const summaryCache = new WeakMap();
+let lastSummary = null;
+let lastSummaryLang = "";
+
+/**
+ * Tarjeta "Resumen del período": viabilidad global (antes solo en la
+ * comparación y el informe) y datos de todo el período que sirven para
+ * comparar sitios: rachas más largas y simultaneidad del Sol y la Tierra.
+ * No depende del instante: se redibuja solo si cambia el escenario o el idioma.
+ */
+export function renderPeriodSummary(scenario) {
+  const lang = document.documentElement.lang;
+  if (scenario === lastSummary && lang === lastSummaryLang) return;
+  lastSummary = scenario;
+  lastSummaryLang = lang;
+  if (!summaryCache.has(scenario)) summaryCache.set(scenario, windowStats(scenario, STEP_MINUTES));
+  const st = summaryCache.get(scenario);
+  const v = scenario.viability;
+  const stat = (key, value) =>
+    `<div class="period-stat" title="${t(`periodCard.hint.${key}`)}"><dt>${t(`periodCard.${key}`)}</dt><dd>${value}</dd></div>`;
+  $("period-card").innerHTML = `
+    <div class="status-head">
+      <h3 class="status-name" id="period-title">${t("periodCard.title")}</h3>
+      <span class="status-tag ${TONE[v.overall]}" title="${t("periodCard.hint.viability")}">${t("periodCard.viability", {
+        level: t(`compare.level.${v.overall}`),
+        points: v.points,
+        max: v.maxPoints,
+      })}</span>
+    </div>
+    <dl class="period-stats">
+      ${stat("night", duration(st.longestNightMin))}
+      ${stat("light", duration(st.longestLightMin))}
+      ${stat("blackout", duration(st.longestBlackoutMin))}
+      ${stat("both", `${Math.round(st.bothFraction * 100)} %`)}
+    </dl>
+    <button type="button" class="period-sources" data-open-quality>${t("periodCard.sources")}</button>`;
+}
+
+/** El botón del resumen abre "Datos y fuentes" (el mismo modal que el botón "i"). */
+export function initPeriodSummary() {
+  $("period-card").addEventListener("click", (event) => {
+    if (event.target.closest("[data-open-quality]")) $("quality-button").click();
+  });
 }
