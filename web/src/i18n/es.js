@@ -48,12 +48,12 @@ export default {
     category: { overall: "Global", science: "Ciencia", communication: "Comunicación", light: "Luz" },
     categoryHint: {
       overall: "Ordenados por puntos de viabilidad (luz, potencia y comunicación, de 0 a 6) en el período elegido; a igualdad, por horas de luz.",
-      science: "Ordenados por cantidad de rasgos científicos con fuente citada (pendiente de validar); a igualdad, por viabilidad.",
+      science: "Ordenados por cantidad de rasgos científicos documentados en la bibliografía citada; a igualdad, por viabilidad.",
       communication: "Ordenados por el porcentaje del período con la Tierra visible; a igualdad, por la altura máxima de la Tierra.",
       light: "Ordenados por la potencia solar media aprovechable en el período; a igualdad, por horas de luz.",
     },
     noTraits: "Sin rasgos científicos documentados todavía",
-    scienceNote: "Interés científico: cuenta rasgos con fuente citada por sitio. Pendiente de validar por astronomía; no es una métrica científica.",
+    scienceNote: "Interés científico: cuenta los rasgos de cada sitio documentados en la bibliografía citada. Es una guía, no una métrica científica.",
     link: "Ver comparación detallada",
     coords: "Latitud: {lat}° · Longitud: {lon}°",
     comm: "Cobertura de comunicación en la misión",
@@ -300,7 +300,7 @@ export default {
       power: "Potencia relativa",
       communication: "Comunicación",
     },
-    criteriaNote: "Umbrales de DEC-007, ajustables por el equipo. Alta = 2 puntos, media = 1, baja = 0.",
+    criteriaNote: "Umbrales definidos por el equipo. Alta = 2 puntos, media = 1, baja = 0.",
   },
   report: {
     title: "Informe de la misión planificada",
@@ -321,7 +321,7 @@ export default {
     runs: "Noche más larga: {night}. Luz continua más larga: {light}. Corte de comunicación más largo: {blackout}.",
     more: "… y {n} ventanas más.",
     sources:
-      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (DEC-033; fuera de ese rango, modelo aproximado, DEC-004). Horizonte: relieve LOLA en los sitios polares (DEC-030, DEC-034) y sintético en el resto (DEC-005). Coordenadas de sitios con fuente oficial (DEC-019). Umbrales de viabilidad: criterio del equipo (DEC-007).",
+      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (fuera de ese rango, modelo aproximado). Horizonte: relieve LOLA en los sitios polares y perfil sintético en el resto. Coordenadas de los sitios con fuente oficial. Umbrales de viabilidad definidos por el equipo.",
   },
   settings: {
     title: "Configuración",
@@ -353,7 +353,7 @@ export default {
     both: "Sol y Tierra a la vez",
     sources: "Ver datos y fuentes",
     hint: {
-      viability: "Viabilidad del sitio en las fechas elegidas: luz, potencia y comunicación suman de 0 a 6 puntos (umbrales del equipo, DEC-007).",
+      viability: "Viabilidad del sitio en las fechas elegidas: luz, potencia y comunicación suman de 0 a 6 puntos (umbrales definidos por el equipo).",
       night: "Tiempo seguido más largo sin Sol en el período: cuánto tienen que aguantar las baterías.",
       light: "Tiempo seguido más largo con Sol en el período.",
       blackout: "Tiempo seguido más largo sin la Tierra a la vista: sin enlace directo hace falta un satélite de relevo.",
@@ -381,7 +381,7 @@ export default {
     close: "Cerrar datos y fuentes",
     title: "Datos y fuentes",
     siteTitle: "Procedencia de {name}",
-    traitsTitle: "Interés científico (pendiente de validar)",
+    traitsTitle: "Interés científico (según la bibliografía citada)",
     lola: {
       title: "Horizonte LOLA real",
       none: "Sin horizonte LOLA: el sitio está fuera de la cobertura polar (los puntos elegidos en el mapa la tienen al sur de −75°).",
@@ -437,7 +437,6 @@ export default {
     frameDeclared: "declarado por la fuente",
     frameInferred: "inferido, no declarado",
     sources: "Fuentes oficiales",
-    confirmed: "Confirmado por astronomía",
     tag: { real: "Real", approx: "Aproximado", synthetic: "Sintético", none: "Sin fuente", loading: "Cargando" },
     row: {
       coords: "Coordenadas del sitio",
@@ -463,7 +462,7 @@ export default {
       imagery: "Mosaico LROC y elevación LOLA de NASA SVS",
       thresholds: "Criterio del equipo, ajustable",
     },
-    footer: "Las referencias DEC-xxx están en docs/DECISIONES.md del repositorio.",
+    footer: "Fuentes: NASA/JPL Horizons, LRO LOLA y LROC (NASA PDS y SVS) y las publicaciones citadas de cada sitio.",
   },
   traits: {
     waterIce: "Hielo de agua detectado (LCROSS)",
