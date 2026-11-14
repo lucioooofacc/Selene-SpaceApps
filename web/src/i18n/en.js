@@ -293,6 +293,10 @@ export default {
     lightWindows: "Light windows (Sun visible)",
     linkWindows: "Link windows (Earth visible)",
     none: "No windows in the period.",
+    periodLine: "Analysed period: from {start} 00:00 to {end} 24:00 UTC ({days} days).",
+    windowsTitle: "Light and link windows",
+    avgLine: "mean elevation {mean} (min {min}, max {max}); visible {pct} % of the period.",
+    runs: "Longest night: {night}. Longest continuous light: {light}. Longest communication gap: {blackout}.",
     more: "… and {n} more windows.",
     sources:
       "SELENE · NASA Space Apps Challenge 2026 · Team Hubble27. Sun and Earth: NASA/JPL Horizons ephemerides, Nov 2026 – Dec 2027 (DEC-033; outside that range, approximate model, DEC-004). Horizon: LOLA terrain at the polar sites (DEC-030, DEC-034) and synthetic elsewhere (DEC-005). Site coordinates from official sources (DEC-019). Viability thresholds: team criterion (DEC-007).",
