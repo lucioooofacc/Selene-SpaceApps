@@ -46,6 +46,7 @@ Desde `web/`:
 | Política de visibilidad (`visibility`) | Geometría exacta del disco | 1e-4 | Área del segmento circular; mapa de calor y escenario coinciden celda a celda. |
 | Mapa de calor real (`heat-map`) | Traslado de efemérides de CORE-03 en el centro de la celda | ≤ 1 muestra de diferencia | Mismo cálculo por dos caminos. |
 | Modos `both` y `viability` (`heat-map`) | Componentes del mismo cálculo y umbrales de DEC-007 | Exacta | `both` ≤ mín(luz, Tierra) y ≥ luz + Tierra − 1; puntos iguales a los de los sitios. |
+| Cruces refinados (`crossings`, SCIENCE-02) | Paso de 10 min del mismo escenario | Cada cruce dentro del intervalo de 10 min que lo encierra; bisección hasta 5 s | 46 cruces (7 sitios, 30 días desde 01/01/2027): adelanto medio 4,5 min y máximo 9,7 min respecto de la muestra; ventanas ordenadas y dentro del período; el estado instantáneo cambia en el cruce refinado. |
 
 ## Incertidumbre conocida
 
@@ -53,6 +54,7 @@ Desde `web/`:
 | --- | --- | --- |
 | Interpolación horaria de Horizons | < 0,0003° cerca del horizonte; hasta ~0,08° cerca del cenit | Medida (arriba). |
 | Cuantización de los archivos | 0,001° (ángulos), 0,0001° (radios) | Por diseño (DEC-033, DEC-036). |
+| Instante de amaneceres, ocasos, salidas y puestas de la Tierra | Tolerancia de 5 s del refinamiento; la exactitud real la limitan la interpolación horaria y la resolución del horizonte | Por diseño (DEC-048). Los porcentajes siguen con el paso de 10 min. |
 | Traslado a puntos propios | Sol ≤ 0,0016°, Tierra ≤ 0,025° | Medida (DEC-034). |
 | Distancia Tierra–Luna fija en el traslado | Incluida en el error medido del traslado | Medida en conjunto. |
 | Horizonte LOLA reducido (puntos propios) | Error medio 0,02°–0,77° | Medida (DEC-034); se muestra como aproximado. |
