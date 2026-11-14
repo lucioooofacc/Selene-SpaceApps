@@ -4,271 +4,173 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
-    <meta
-      name="description"
-      content="SELENE: explorador de sitios de alunizaje. Compara sitios y fechas en el polo sur lunar según la luz solar y la comunicación con la Tierra."
-    />
-    <title>SELENE · Hubble27</title>
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <title>SELENE</title>
+    <link rel="icon" href="./figma/logo.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
-    <a class="skip-link" href="#main" data-i18n="app.skip"></a>
-
-    <header class="topbar">
-      <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2" />
-          <path d="M16 5a11 11 0 0 1 0 22a7 11 0 0 0 0-22z" fill="currentColor" />
-        </svg>
-        <div>
-          <p class="brand-name">SELENE</p>
-          <p class="brand-sub" data-i18n="app.tagline"></p>
+    <div class="stage" id="stage">
+      <!-- Vista 6: encabezado -->
+      <header class="header">
+        <img class="header-logo" src="./figma/logo.png" alt="" width="80" height="64" />
+        <p class="header-brand">SELENE</p>
+        <nav class="header-nav" data-i18n-attr="aria-label:nav.label">
+          <a href="#mision" data-i18n="nav.mission"></a>
+          <a href="#comparar" data-i18n="nav.compare"></a>
+          <a href="#" data-i18n="nav.option3"></a>
+          <a href="#" data-i18n="nav.option4"></a>
+          <a href="#" data-i18n="nav.option5"></a>
+        </nav>
+        <div class="header-actions">
+          <button type="button" class="icon-button" id="lang-toggle" data-i18n-attr="aria-label:nav.language;title:nav.language">
+            <img src="./figma/icon-globe.svg" alt="" width="46" height="46" />
+          </button>
+          <button type="button" class="icon-button" data-i18n-attr="aria-label:nav.settings;title:nav.settings">
+            <img src="./figma/icon-gear.svg" alt="" width="44" height="44" />
+          </button>
         </div>
-      </div>
-      <div class="topbar-actions">
-        <span class="badge badge-warn" data-i18n="app.modelBadge" data-i18n-attr="title:app.modelBadgeHint"></span>
-        <div class="segmented" role="group" data-i18n-attr="aria-label:app.language">
-          <button type="button" data-lang="es">ES</button>
-          <button type="button" data-lang="en">EN</button>
-        </div>
-      </div>
-    </header>
+      </header>
 
-    <main id="main">
-      <section class="intro">
-        <h1 data-i18n="app.title"></h1>
-        <p data-i18n="app.lead"></p>
-      </section>
+      <!-- Vista 1 -->
+      <main class="view" id="mision">
+        <div class="top-row">
+          <!-- Mejores lugares para alunizar -->
+          <div class="places-column" id="comparar">
+            <section class="places" aria-labelledby="places-title">
+              <h2 class="places-title" id="places-title" data-i18n="places.title"></h2>
+              <ol class="places-list" id="places-list"></ol>
+            </section>
+            <a class="places-link" href="#comparar" data-i18n="places.link"></a>
+          </div>
 
-      <div class="dashboard">
-        <!-- Columna izquierda: lectura instantánea -->
-        <section class="card-group area-metrics" aria-labelledby="metrics-title">
-          <div class="group-head">
-            <div>
-              <p class="eyebrow" data-i18n="metrics.eyebrow"></p>
-              <h2 id="metrics-title" data-i18n="metrics.title"></h2>
+          <!-- Mapa -->
+          <section class="map-card" aria-label="Mapa">
+            <div class="map-tabs" role="tablist" data-i18n-attr="aria-label:map.tabsLabel">
+              <button type="button" role="tab" data-map-view="global" data-i18n="map.global"></button>
+              <span class="map-tabs-sep" aria-hidden="true">/ </span>
+              <button type="button" role="tab" data-map-view="heat" data-i18n="map.heat"></button>
+              <span class="map-tabs-sep" aria-hidden="true">  / </span>
+              <button type="button" role="tab" data-map-view="polar" data-i18n="map.polar"></button>
             </div>
-            <span class="chip mono" id="metrics-stamp"></span>
-          </div>
-          <div class="metric-grid" id="metric-grid"></div>
-        </section>
-
-        <!-- Centro: mapa -->
-        <section class="card area-map" aria-labelledby="map-title">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow" id="map-eyebrow"></p>
-              <h2 id="map-title"></h2>
+            <div class="map-tabs-line" aria-hidden="true">
+              <img class="map-tabs-full" src="./figma/title-line-full.svg" alt="" width="460" height="3" />
+              <img class="map-tabs-accent" id="map-tabs-accent" src="./figma/title-line-accent.svg" alt="" width="208" height="3" />
             </div>
-            <div class="segmented" role="group" data-i18n-attr="aria-label:map.viewLabel">
-              <button type="button" data-map-view="polar" data-i18n="map.polar"></button>
-              <button type="button" data-map-view="global" data-i18n="map.global"></button>
+            <div class="map-area" id="map-area">
+              <img class="map-image" id="map-image" src="./figma/moon-heatmap.png" alt="" />
+              <div class="map-pins" id="map-pins"></div>
             </div>
-          </div>
-          <div class="map-stage" id="map-stage">
-            <canvas id="heat-canvas" width="720" height="720" aria-hidden="true"></canvas>
-            <img id="global-map" src="./img/luna-global.png" alt="" hidden />
-            <svg id="map-overlay" role="img"></svg>
-            <div class="map-busy" id="map-busy" hidden data-i18n="map.computing"></div>
-          </div>
-          <div class="map-foot">
-            <div class="segmented small" role="group" id="heat-mode" data-i18n-attr="aria-label:map.heatLabel">
-              <button type="button" data-heat="sun" data-i18n="map.heatSun"></button>
-              <button type="button" data-heat="earth" data-i18n="map.heatEarth"></button>
-            </div>
-            <div class="heat-legend" id="heat-legend">
-              <span class="mono">0 %</span>
-              <span class="heat-ramp"></span>
-              <span class="mono">100 %</span>
-            </div>
-          </div>
-          <p class="hint" id="map-hint"></p>
-        </section>
 
-        <!-- Derecha: configuración -->
-        <aside class="card area-setup" aria-labelledby="setup-title">
-          <p class="eyebrow" data-i18n="setup.eyebrow"></p>
-          <h2 id="setup-title" class="sr-only" data-i18n="setup.eyebrow"></h2>
-
-          <label class="field">
-            <span class="field-label" data-i18n="setup.site"></span>
-            <select id="site-select"></select>
-          </label>
-          <div class="chips" id="site-chips" role="group" data-i18n-attr="aria-label:setup.presets"></div>
-          <p class="site-note" id="site-note"></p>
-
-          <hr />
-          <div class="field-row">
-            <label class="field">
-              <span class="field-label" data-i18n="setup.lat"></span>
-              <input id="lat-input" type="number" min="-90" max="90" step="0.01" inputmode="decimal" />
-            </label>
-            <label class="field">
-              <span class="field-label" data-i18n="setup.lon"></span>
-              <input id="lon-input" type="number" min="-180" max="180" step="0.01" inputmode="decimal" />
-            </label>
-          </div>
-
-          <hr />
-          <label class="field">
-            <span class="field-label" data-i18n="setup.start"></span>
-            <input id="start-input" type="datetime-local" />
-          </label>
-          <div class="lunar-shift" role="group" data-i18n-attr="aria-label:setup.shiftLabel">
-            <button type="button" class="btn ghost small" data-shift="-1" data-i18n="setup.prevLunarDay"></button>
-            <button type="button" class="btn ghost small" data-shift="1" data-i18n="setup.nextLunarDay"></button>
-          </div>
-
-          <label class="field">
-            <span class="field-label field-label-row">
-              <span data-i18n="setup.window"></span>
-              <output id="window-output" class="mono"></output>
-            </span>
-            <input id="window-input" type="range" min="1" max="30" step="1" />
-          </label>
-
-          <button type="button" class="btn primary block" id="pin-scenario" data-i18n="compare.pin"></button>
-        </aside>
-
-        <!-- Izquierda abajo: energía y comunicación -->
-        <section class="area-status" aria-label="Estado" data-i18n-attr="aria-label:status.label">
-          <article class="card status-card" id="energy-card"></article>
-          <article class="card status-card" id="comm-card"></article>
-        </section>
-
-        <!-- Derecha abajo: viabilidad -->
-        <section class="card area-viability" id="viability" aria-labelledby="viability-title"></section>
-      </div>
-
-      <!-- Simulación -->
-      <section class="simulation" aria-labelledby="sim-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow" data-i18n="sim.eyebrow"></p>
-            <h2 id="sim-title" data-i18n="sim.title"></h2>
-          </div>
-          <p class="section-sub" data-i18n="sim.subtitle"></p>
-        </div>
-
-        <div class="panorama card" id="panorama">
-          <svg id="panorama-svg" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice" role="img"></svg>
-          <span class="pill pano-site" id="pano-site"></span>
-          <div class="pano-clock">
-            <span class="mono" id="pano-date"></span>
-            <strong id="pano-time"></strong>
-            <span class="mono" id="pano-mission"></span>
-          </div>
-          <span class="pill pano-status" id="pano-status"></span>
-          <p class="pano-caption mono" data-i18n="sim.caption"></p>
-        </div>
-
-        <article class="card insight" id="insight" aria-live="polite"></article>
-
-        <div class="card timeline">
-          <div class="timeline-top">
-            <div>
-              <p class="eyebrow" data-i18n="sim.missionTime"></p>
-              <strong class="mission-clock mono" id="mission-clock"></strong>
-            </div>
-            <div class="playback">
-              <button type="button" class="btn icon" id="step-back" data-i18n-attr="aria-label:sim.back">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6l-6 6 6 6M19 6l-6 6 6 6" /></svg>
+            <div class="map-add">
+              <button type="button" class="map-add-button" id="add-site" data-i18n-attr="aria-label:map.addSite">
+                <img src="./figma/btn-plus.svg" alt="" width="40" height="40" />
               </button>
-              <button type="button" class="btn play" id="play-toggle"></button>
-              <button type="button" class="btn icon" id="step-forward" data-i18n-attr="aria-label:sim.forward">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 6l6 6-6 6M5 6l6 6-6 6" /></svg>
-              </button>
-              <label class="speed">
-                <span data-i18n="sim.speed"></span>
-                <select id="speed-select">
-                  <option value="1">1×</option>
-                  <option value="6">6×</option>
-                  <option value="24">24×</option>
-                </select>
+              <span class="map-add-tooltip" data-i18n="map.addSite"></span>
+            </div>
+            <div class="map-coords" aria-live="polite">
+              <div class="map-coord">
+                <span data-i18n="params.lat"></span>
+                <strong id="map-lat"></strong>
+              </div>
+              <div class="map-coord">
+                <span data-i18n="params.lon"></span>
+                <strong id="map-lon"></strong>
+              </div>
+            </div>
+          </section>
+
+          <!-- Parámetros de la misión -->
+          <aside class="params" aria-labelledby="params-title">
+            <h2 class="params-title" id="params-title" data-i18n="params.title" data-i18n-attr="title:params.modelNote"></h2>
+            <label class="params-label" for="site-select" data-i18n="params.site"></label>
+            <div class="params-select">
+              <select id="site-select"></select>
+              <img src="./figma/param-arrow.svg" alt="" width="8" height="16" />
+            </div>
+            <div class="params-chips" id="site-chips"></div>
+            <hr class="params-rule" />
+            <div class="params-coords">
+              <label>
+                <span class="params-label" data-i18n="params.lat"></span>
+                <input id="lat-input" type="number" min="-90" max="90" step="0.01" />
               </label>
-              <span class="hint mono" data-i18n="sim.speedHint"></span>
+              <label>
+                <span class="params-label" data-i18n="params.lon"></span>
+                <input id="lon-input" type="number" min="-180" max="180" step="0.01" />
+              </label>
+            </div>
+            <span class="params-label params-label-duration" data-i18n="params.duration"></span>
+            <div class="params-date">
+              <button type="button" class="params-date-button" id="date-button" aria-haspopup="dialog" aria-expanded="false"></button>
+              <div class="calendar" id="calendar" role="dialog" hidden></div>
+            </div>
+            <hr class="params-rule params-rule-2" />
+            <span class="params-label params-label-window" data-i18n="params.window"></span>
+            <div class="criteria" id="criteria"></div>
+          </aside>
+        </div>
+
+        <!-- Comportamiento de los cuerpos celestes -->
+        <section class="behavior" aria-labelledby="behavior-title">
+          <h2 class="behavior-title" id="behavior-title" data-i18n="behavior.title"></h2>
+          <div class="behavior-grid">
+            <div class="behavior-left">
+              <div class="panorama" id="panorama">
+                <svg id="panorama-svg" viewBox="0 0 1240 544" role="img"></svg>
+                <span class="pano-pill pano-site" id="pano-site"></span>
+                <div class="pano-clock">
+                  <span id="pano-date"></span>
+                  <strong id="pano-time"></strong>
+                  <span id="pano-mission"></span>
+                </div>
+                <span class="pano-pill pano-status" id="pano-status"></span>
+                <p class="pano-caption" data-i18n="sim.caption"></p>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline-top">
+                  <div>
+                    <p class="mono-label" data-i18n="sim.missionTime"></p>
+                    <strong class="mission-clock" id="mission-clock"></strong>
+                  </div>
+                  <div class="playback">
+                    <button type="button" class="tl-button" id="step-back" data-i18n-attr="aria-label:sim.back">«</button>
+                    <button type="button" class="tl-play" id="play-toggle"></button>
+                    <button type="button" class="tl-button" id="step-forward" data-i18n-attr="aria-label:sim.forward">»</button>
+                    <label class="tl-speed">
+                      <span data-i18n="sim.speed"></span>
+                      <select id="speed-select">
+                        <option value="1">1×</option>
+                        <option value="6">6×</option>
+                        <option value="24">24×</option>
+                      </select>
+                    </label>
+                    <span class="tl-hint" data-i18n="sim.speedHint"></span>
+                  </div>
+                </div>
+                <div class="scrub-head">
+                  <span class="mono-label" data-i18n="sim.drag"></span>
+                  <span class="scrub-date" id="scrub-date"></span>
+                </div>
+                <input type="range" id="time-range" class="time-range" min="0" max="1000" step="1" data-i18n-attr="aria-label:sim.missionTime" />
+                <div class="scrub-ticks" id="scrub-ticks"></div>
+              </div>
+            </div>
+
+            <div class="behavior-right">
+              <article class="status-card" id="energy-card"></article>
+              <article class="status-card" id="comm-card"></article>
+              <article class="insight" id="insight" aria-live="polite"></article>
             </div>
           </div>
-          <div class="scrub-head">
-            <span class="eyebrow" data-i18n="sim.drag"></span>
-            <span class="mono accent-sun" id="scrub-date"></span>
-          </div>
-          <input type="range" id="time-range" class="time-range" min="0" max="1000" step="1" data-i18n-attr="aria-label:sim.missionTime" />
-          <div class="scrub-ticks mono" id="scrub-ticks"></div>
-        </div>
-
-        <div class="card windows">
-          <div class="card-head">
-            <div>
-              <h3 data-i18n="windows.title"></h3>
-              <p class="section-sub" id="windows-sub"></p>
-            </div>
-            <div class="legend">
-              <span><i class="swatch sun"></i><span data-i18n="windows.sun"></span></span>
-              <span><i class="swatch earth"></i><span data-i18n="windows.link"></span></span>
-            </div>
-          </div>
-          <div class="windows-chart" id="windows-chart" tabindex="0" role="slider" data-i18n-attr="aria-label:windows.slider"></div>
-          <div class="windows-foot">
-            <span data-i18n="windows.help"></span>
-            <span class="mono" data-i18n="windows.keys"></span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Comparador -->
-      <section class="compare" aria-labelledby="compare-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow" data-i18n="compare.eyebrow"></p>
-            <h2 id="compare-title" data-i18n="compare.title"></h2>
-          </div>
-          <p class="section-sub" data-i18n="compare.subtitle"></p>
-        </div>
-        <div class="card" id="compare-body"></div>
-      </section>
-
-      <!-- Cómo funciona -->
-      <section class="about" aria-labelledby="about-title">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow" data-i18n="about.eyebrow"></p>
-            <h2 id="about-title" data-i18n="about.title"></h2>
-          </div>
-        </div>
-        <div class="about-grid">
-          <article class="card">
-            <h3 data-i18n="about.whyTitle"></h3>
-            <p data-i18n="about.whyBody"></p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="about.howTitle"></h3>
-            <p data-i18n="about.howBody"></p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="about.dataTitle"></h3>
-            <p data-i18n="about.dataBody"></p>
-            <ul class="sources">
-              <li><a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">JPL Horizons</a></li>
-              <li><a href="https://pds-geosciences.wustl.edu/missions/lro/lola.htm" target="_blank" rel="noopener">LRO · LOLA</a></li>
-              <li><a href="https://quickmap.lroc.asu.edu/" target="_blank" rel="noopener">LROC Quickmap</a></li>
-              <li><a href="https://trek.nasa.gov/moon/" target="_blank" rel="noopener">NASA Moon Trek</a></li>
-            </ul>
-          </article>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <p data-i18n="app.footer"></p>
-      <p class="mono" data-i18n="app.disclaimer"></p>
-    </footer>
+        </section>
+      </main>
+    </div>
 
     <script type="module" src="./src/main.js"></script>
   </body>

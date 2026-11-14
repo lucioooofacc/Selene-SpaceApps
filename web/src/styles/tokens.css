@@ -1,67 +1,51 @@
 /*
- * Tokens de diseño — derivados del Figma SELENE, redondeados a una escala común.
- * Espaciado: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64
- * Radios:    8 · 12 · 16 · 999 (píldora)
- * Ver DEC-003 en docs/DECISIONES.md.
+ * Tokens de diseño — tomados del Figma SELENE ("Vista 6" y "Vista 1").
+ * Los colores son exactamente los del archivo; las medidas se redondearon
+ * a números comunes (pedido de contexto.md). Ver DEC-011.
  */
 :root {
-  /* Superficies */
-  --bg: #06080c;
-  --surface: #0c1016;
-  --surface-2: #111722;
-  --surface-3: #18202c;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  /* Fondos */
+  --bg: #04060b; /* página y encabezado */
+  --panel: #090c12; /* tarjetas, mapa, "Mejores lugares" */
+  --panel-2: #0b1019; /* "Parámetros de la misión" y sección inferior */
+  --field: #0c111a; /* campos, chips, tooltip */
+
+  /* Bordes */
+  --border: #2c3137; /* tarjetas de "Mejores lugares" */
+  --border-field: #2e3339; /* campos y chips */
+  --border-card: #242830; /* tarjetas de parámetros y divisores */
+  --border-icon: #20252c; /* cajas de íconos */
 
   /* Texto */
-  --text: #e8edf3;
-  --text-muted: #8f9baa;
-  --text-faint: #5d6877;
+  --text: #f1ede4;
+  --muted: #585e69;
+  --muted-2: #7c828d;
 
-  /* Semántica: el Sol es ámbar, la Tierra es cian (igual que en el Figma) */
-  --sun: #f0b35b;
-  --sun-soft: rgba(240, 179, 91, 0.14);
-  --earth: #5fcde0;
-  --earth-soft: rgba(95, 205, 224, 0.14);
-  --good: #6fcf97;
-  --good-soft: rgba(111, 207, 151, 0.14);
-  --warn: #f2c94c;
-  --warn-soft: rgba(242, 201, 76, 0.14);
-  --bad: #ef6b6b;
-  --bad-soft: rgba(239, 107, 107, 0.14);
+  /* Acentos */
+  --gold: #bfa780;
+  --green: #78b08b;
+  --green-bg: #1b2729;
+  --green-border: #364f47;
+  --red: #c46b6d;
+  --red-bg: #282129;
+  --seg-off: #44474d;
 
-  /* Espaciado */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
-
-  /* Radios */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 999px;
+  /* Sección inferior (componentes del panorama y la línea de tiempo) */
+  --sun: #e8ad5b;
+  --earth: #5cc6d8;
+  --card-low: #0d121a;
 
   /* Tipografía */
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-md: 16px;
-  --text-lg: 20px;
-  --text-xl: 24px;
-  --text-2xl: 32px;
-  --text-3xl: 48px;
+  --font: "Arimo", Arial, sans-serif;
+  --font-title: "Inter", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  /* Movimiento */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-  --dur-fast: 160ms;
-  --dur-base: 200ms;
+  /* Radios */
+  --r-sm: 4px;
+  --r-md: 10px;
+  --r-lg: 56px;
+  --r-pill: 999px;
 
-  --page-max: 1440px;
+  /* Ancho de diseño del Figma (redondeado de 1991 px) */
+  --design-width: 1992px;
 }
