@@ -14,6 +14,11 @@
  *   node scripts/build-ephemerides.mjs [--cache .cache/horizons]
  *        [--out public/data/ephemerides]
  *        [--start 2026-11-01T00:00Z] [--stop 2028-01-01T00:00Z] [--step-min 60]
+ *        [--sites change4,apollo11]
+ *
+ * Con `--sites` solo se regeneran esos sitios y se actualizan sus entradas
+ * en el `index.json` existente; los demás archivos quedan intactos (así se
+ * puede rehacer un sitio sin tener en caché las consultas de todos).
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -117,6 +122,7 @@ export function main(argv = process.argv.slice(2)) {
       start: { type: "string", default: EPHEMERIS_RANGE.start },
       stop: { type: "string", default: EPHEMERIS_RANGE.stop },
       "step-min": { type: "string", default: String(EPHEMERIS_RANGE.stepMinutes) },
+      sites: { type: "string" },
     },
   });
   const cacheDir = resolve(WEB_ROOT, values.cache);
@@ -125,14 +131,22 @@ export function main(argv = process.argv.slice(2)) {
   const manifest = JSON.parse(readFileSync(join(cacheDir, "manifest.json"), "utf8"));
 
   mkdirSync(outDir, { recursive: true });
-  const index = { schema: "selene-ephemeris-index/v1", range: { ...range }, sites: [] };
-  for (const site of SITES) {
+  const only = values.sites ? values.sites.split(",").map((x) => x.trim()) : null;
+  for (const id of only ?? []) if (!SITES.some((s) => s.id === id)) throw new Error(`sitio desconocido: ${id}`);
+  const index = only
+    ? JSON.parse(readFileSync(join(outDir, "index.json"), "utf8"))
+    : { schema: "selene-ephemeris-index/v1", range: { ...range }, sites: [] };
+  if (only && JSON.stringify(index.range) !== JSON.stringify(range)) throw new Error("el index.json existente tiene otro rango");
+  for (const site of SITES.filter((s) => !only || only.includes(s.id))) {
     const sun = findEntry(manifest, cacheDir, site, "sun", range);
     const earth = findEntry(manifest, cacheDir, site, "earth", range);
     const eph = buildSiteEphemeris(site, sun, earth);
     const text = `${JSON.stringify(eph)}\n`;
     writeFileSync(join(outDir, `${site.id}.json`), text);
-    index.sites.push({ id: site.id, file: `${site.id}.json`, bytes: Buffer.byteLength(text), observer: eph.meta.observer });
+    const item = { id: site.id, file: `${site.id}.json`, bytes: Buffer.byteLength(text), observer: eph.meta.observer };
+    const k = index.sites.findIndex((x) => x.id === site.id);
+    if (k === -1) index.sites.push(item);
+    else index.sites[k] = item;
     console.log(`${site.id}: ${eph.coverage.rows} filas, ${(Buffer.byteLength(text) / 1024).toFixed(0)} KiB, altura ${eph.meta.observer.altitudeKm} km (${eph.meta.observer.altitudeBasis})`);
   }
   writeFileSync(join(outDir, "index.json"), `${JSON.stringify(index, null, 2)}\n`);
