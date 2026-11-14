@@ -16,6 +16,7 @@ Herramienta web para comparar sitios y fechas de alunizaje, con foco en el polo 
 | `docs/SCIENCE.md` | Convenciones, modelos actuales y limitaciones científicas |
 | `docs/DATA_SOURCES.md` | Catálogo y estado de fuentes científicas oficiales |
 | `docs/TASKS.md` | Backlog priorizado para la hackathon |
+| `docs/ROADMAP.md` | Plan por etapas: estado actual, qué se está viendo y qué sigue |
 | `PENDIENTES.md` | Lista viva de lo que falta aplicar (se agrega y se tacha) |
 | `AGENTS.md` | Reglas obligatorias para agentes de IA y para el equipo |
 | `desafio.md` | Enunciado del desafío de la NASA |

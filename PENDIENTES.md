@@ -1,6 +1,6 @@
 # Pendientes del proyecto
 
-Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS.md` (regla 10):
+Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se está viendo y qué sigue) está en `docs/ROADMAP.md`. Las reglas para mantenerla están en `AGENTS.md` (regla 10):
 
 - **Agregar:** todo lo que se detecte y no se resuelva en el momento va como `- [ ]`, con responsable y referencia (DEC-XXX, PR o archivo).
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
@@ -14,7 +14,7 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 
 - [x] ~~Leer el color de la franja de 8 px entre el encabezado y el cuerpo (frame "Vista 7").~~ Se mantiene el color de fondo: el MCP de Figma necesita la URL del archivo en figma.com y el repo solo tiene el `.fig` local. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [x] ~~Reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (fuentes NASA), con opción de alternar entre 3D y vistas 2D.~~ three.js + CGI Moon Kit de NASA SVS. Resuelto 2026-11-14 (rama `feat/luna-3d`, #25, DEC-021).
-- [ ] Mejorar el detalle del polo sur en 2D (textura de 8k o mosaico polar de LROC) si el equipo lo necesita. — Desarrollo web, DEC-021
+- [x] ~~Mejorar el detalle del polo sur en 2D (textura de 8k o mosaico polar de LROC) si el equipo lo necesita. — Desarrollo web, DEC-021~~ Descartado 2026-11-14 (rama `docs/cerrar-diseno`): el detalle actual alcanza para la demo (decisión del equipo).
 - [x] ~~"Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios elegidos con métricas técnicas.~~ `compare.html`. Resuelto 2026-11-14 (rama `feat/comparacion-sitios`, #23).
 - [x] ~~Al volver de la comparación a la misión se pierde la selección (sitio y fechas), porque la página de misión no lee la URL. — Desarrollo web, UI-05~~ Resuelto 2026-11-14 (rama `feat/url-estado`, #46, DEC-027).
 - [x] ~~"Opción 3" pasa a ser el informe imprimible de la misión planificada.~~ "Informe" en el menú. Resuelto 2026-11-14 (rama `feat/informe-imprimible`, #24).
@@ -27,12 +27,10 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
 - [x] ~~Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.~~ Modal con idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa. Resuelto 2026-11-14 (rama `feat/configuracion`, #37, DEC-023).
 - [x] ~~El mapa de calor (imagen del Figma) no cambia con la paleta para daltonismo; revisarlo cuando se haga MAP-01. — Desarrollo web, DEC-023~~ Ahora es elevación LOLA coloreada en el navegador, con paleta estándar o cividis y vista 3D física. Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42, DEC-026).
-- [ ] Regenerar el mapa de elevación desde el producto polar `LDEM_60S_240M` (TERRAIN-01, #39, ya integrado; DEC-025), si el equipo lo prefiere. — Facundo, Desarrollo web · DEC-026
+- [x] ~~Regenerar el mapa de elevación desde el producto polar `LDEM_60S_240M` (TERRAIN-01, #39, ya integrado; DEC-025), si el equipo lo prefiere. — Facundo, Desarrollo web · DEC-026~~ Descartado 2026-11-14 (rama `docs/cerrar-diseno`): ELEVACIÓN ya usa datos reales de LOLA; la descarga (~240 MB) no se justifica para la demo (decisión del equipo).
 - [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
 - [x] ~~Mostrar en la interfaz los datos reales disponibles (horizonte LOLA de TERRAIN-02).~~ Vista previa en el panorama, la comparación y "Datos y fuentes", con marcas de calidad. Resuelto 2026-11-14 (rama `feat/horizonte-lola-ui`, #52, DEC-031).
-- [x] ~~CORE-01: conectar el horizonte LOLA (y las efemérides Horizons cuando haya series) en `analysis.js`; la interfaz ya pasa de "vista previa" a "en uso" sola. — Facundo · #11, DEC-031~~ Horizonte LOLA conectado (parte A). Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
-- [ ] CORE-01 parte B: efemérides JPL Horizons en `analysis.js` (series nov 2026 – dic 2027, paso 1 h, interpoladas; fuera del rango, modelo aproximado marcado). — Facundo · #11, DEC-024, DEC-032
-- [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
+- [x] ~~Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015~~ Cerrado por compatibilidad 2026-11-14 (rama `docs/cerrar-diseno`): `zoom` es CSS estándar soportado por Firefox 126+ (2024) y Safari; sin prueba manual (decisión del equipo).
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
 - [x] ~~Las tarjetas de "Mejores lugares" se rompían con valores largos ("890 Min", "-46.2°").~~ Resuelto 2026-11-13: columnas de 66 px y minutos en horas desde 100 min.
 - [x] ~~Las etiquetas de los marcadores se pisaban cerca del polo.~~ Resuelto 2026-11-13: se ocultan las que chocan (el nombre queda como tooltip) y la del sitio elegido siempre se ve.
@@ -40,11 +38,13 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~La imagen de la pestaña POLO SUR estaba mal ubicada.~~ Resuelto 2026-11-13: posición (136, 176) del Figma.
 - [x] ~~El calendario cortaba la columna del domingo.~~ Resuelto 2026-11-13.
 - [x] ~~En el panel de la izquierda, del top 5 lugares, tiene que haber categorias para rankear los sitios. Por ejemplo: Interes cientifico, comunicacion terrestre, luz solar aprovechable.~~ Categorías Global, Ciencia, Comunicación y Luz. Resuelto 2026-11-14 (rama `feat/ranking-categorias`, #49, DEC-029).
-- [ ] Validar los rasgos de interés científico de `web/src/data/site-traits.js` (y sumar rasgos de IM-1 si corresponde). — Teo, Facu, Lucio · DEC-029
 - [x] ~~Cambiar titulo de Mapa de Calor, a algo relacionado a que el mapa muestra elevacion del terreno~~ Ahora se llama ELEVACIÓN / ELEVATION. Resuelto 2026-11-14 (rama `feat/ranking-categorias`, #49, DEC-029).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
+- [x] ~~CORE-01: conectar el horizonte LOLA (y las efemérides Horizons cuando haya series) en `analysis.js`; la interfaz ya pasa de "vista previa" a "en uso" sola. — Facundo · #11, DEC-031~~ Horizonte LOLA conectado (parte A). Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
+- [ ] CORE-01 parte B: efemérides JPL Horizons en `analysis.js` (series nov 2026 – dic 2027, paso 1 h, interpoladas; fuera del rango, modelo aproximado marcado). — Facundo · #11, DEC-024, DEC-032
+- [ ] Validar los rasgos de interés científico de `web/src/data/site-traits.js` (y sumar rasgos de IM-1 si corresponde). — Teo, Facu, Lucio · DEC-029
 - [x] ~~Verificar las coordenadas de los 7 sitios con LROC Quickmap o Moon Trek. — DEC-006~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DATA-01 #9): valores e identidades confirmados por Facu y normalizados a MOON_ME/DE421 (DEC-019). La procedencia sigue abierta en los puntos de abajo.
 - [x] ~~Agregar URLs oficiales verificadas por sitio en `provenance.urls` de `web/src/data/sites.js` (hoy vacías: no hubo acceso web para verificarlas). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): URLs de NSSDCA, Lunar Surface Data Book, LCROSS (NTRS), PGDA, CNSA y USGS cargadas en `SOURCE_URLS`.
 - [x] ~~Confirmar las referencias marcadas como "candidata (no verificada)" en `sites.js` (LCROSS, Chang'e 4, Apollo 11) y citar la publicación LROC de IM-1 y Chandrayaan-3. — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): se quitaron las candidatas; LCROSS cita Marshall et al. (2012), Chang'e 4 y Apollo 11 citan NSSDCA, IM-1 y Chandrayaan-3 citan PGDA (LRA).
