@@ -33,7 +33,8 @@ flowchart LR
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
-| `src/data/sites.js` | Catálogo de sitios curados con coordenadas y parámetros sintéticos pendientes de validación. |
+| `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
+| `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
 | `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
 | `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D (GLOBAL y POLO SUR), selección de coordenadas y alta de sitios. MAPA DE CALOR sigue con la imagen del Figma. |

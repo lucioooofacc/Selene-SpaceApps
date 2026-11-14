@@ -25,7 +25,7 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~Panorama: acercar la iluminación de las dunas y el resplandor a la ilustración del Figma, y que el relieve represente fielmente el horizonte del punto (montañoso, plano, con cráteres).~~ La cresta es el horizonte del motor sin decoración, con escala y fuente indicadas. Resuelto 2026-11-14 (rama `design/panorama-relieve`, #26).
 - [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
-- [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Equipo
+- [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
 - [x] ~~Las tarjetas de "Mejores lugares" se rompían con valores largos ("890 Min", "-46.2°").~~ Resuelto 2026-11-13: columnas de 66 px y minutos en horas desde 100 min.
@@ -36,7 +36,15 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
-- [ ] Verificar las coordenadas de los 7 sitios con LROC Quickmap o Moon Trek. — DEC-006
+- [x] ~~Verificar las coordenadas de los 7 sitios con LROC Quickmap o Moon Trek. — DEC-006~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DATA-01 #9): valores e identidades confirmados por Facu y normalizados a MOON_ME/DE421 (DEC-019). La procedencia sigue abierta en los puntos de abajo.
+- [x] ~~Agregar URLs oficiales verificadas por sitio en `provenance.urls` de `web/src/data/sites.js` (hoy vacías: no hubo acceso web para verificarlas). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): URLs de NSSDCA, Lunar Surface Data Book, LCROSS (NTRS), PGDA, CNSA y USGS cargadas en `SOURCE_URLS`.
+- [x] ~~Confirmar las referencias marcadas como "candidata (no verificada)" en `sites.js` (LCROSS, Chang'e 4, Apollo 11) y citar la publicación LROC de IM-1 y Chandrayaan-3. — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): se quitaron las candidatas; LCROSS cita Marshall et al. (2012), Chang'e 4 y Apollo 11 citan NSSDCA, IM-1 y Chandrayaan-3 citan PGDA (LRA).
+- [x] ~~Citar el catálogo que define los puntos Shackleton Rim R04 y Malapert Massif R23. — Facu · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): NASA Lunar Surface Data Book Rev A, tabla A2-2.
+- [x] ~~Verificar el marco de cada fuente original (¿MOON_ME o MOON_PA?) y, si alguna está en PA, convertirla con SPICE; luego poner `sourceFrameVerified: true`. — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): Mean Earth declarado en Cabeus, Chang'e 4 y Apollo 11 (`true`). Lo que queda, en el punto siguiente.
+- [ ] Confirmar el marco de R04/R23 (inferido de DEM LOLA; el Data Book no lo declara en la tabla) y de IM-1/Chandrayaan-3 (PGDA no lo declara). — Teo, Facu, Lucio · DEC-019
+- [ ] Chang'e 4: decidir si se documenta en la interfaz la discrepancia de ≈ 415 m entre NSSDCA (usado) y CNSA (177,5991° E, 45,4446° S). — Teo, Facu, Lucio · DEC-019
+- [x] ~~Cargar la exactitud declarada por cada fuente en `precision.accuracyM` (hoy `null`). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): 10 m en R04/R23 y 115 m (1σ) en Cabeus, con `accuracyBasis`. Las demás fuentes no la declaran (`null`).
+- [ ] Decidir si la interfaz muestra la procedencia y la confianza de cada sitio (requiere claves nuevas en `es.js`/`en.js` y consultar el diseño). — Desarrollo web · DEC-019, DEC-014
 - [ ] Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021). — DEC-016
 - [ ] Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS). — DEC-016
 - [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
@@ -45,8 +53,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 
 ## Textos y traducción
 
-- [ ] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
-- [ ] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
+- [x] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
+- [x] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
 
 ## Repositorio y entrega
 
