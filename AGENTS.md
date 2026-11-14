@@ -95,6 +95,29 @@ Commits chicos y enfocados: un commit no debería mezclar cambios de diseño, da
 - Consultar antes de modificar contratos compartidos y comunicar cuanto antes bloqueos, dependencias o archivos en disputa.
 - Antes de publicar, actualizar la rama de forma segura y revisar el diff completo para detectar cambios accidentales.
 
+#### Coordinación de tareas (GitHub Issues)
+
+- **Fuentes de verdad:** `docs/TASKS.md` define cada tarea (ID, prioridad, objetivo, dependencias, criterios). La Issue de GitHub de esa tarea define su **estado y responsable**. No escribir estados ni responsables en `TASKS.md`. Ver DEC-013.
+- **Estados** (etiquetas en la Issue):
+  - `pendiente`: Issue abierta, sin etiqueta de estado ni persona asignada.
+  - `estado: en curso`, `estado: bloqueada`, `estado: en revisión`: una sola a la vez.
+  - `completada`: Issue cerrada por un PR integrado a `main`. No cerrar Issues sin PR integrado.
+- **Responsable:** siempre una persona del equipo, asignada en la Issue (*Assignees*). Un agente trabaja en nombre de esa persona; nunca figura como responsable.
+
+**Antes de empezar:**
+
+1. Consultar las Issues abiertas y los PR abiertos del repositorio. No decidir con una copia local: puede estar desactualizada.
+2. Ubicar la tarea en `TASKS.md` y su Issue. Comprobar que esté `pendiente` y que sus dependencias estén `completada`s. Revisar que ningún PR abierto toque los mismos archivos.
+3. Si la tarea no está asignada a la persona con la que trabajás, pedirle confirmación antes de tomarla. Si no hay tarea asignada, proponer una `pendiente` con dependencias resueltas (priorizando P0) y esperar la confirmación.
+4. Tomarla: asignar a la persona responsable, poner `estado: en curso` y comentar en la Issue la rama y los archivos que se prevé modificar.
+5. **Asignación simultánea:** si al tomarla la Issue ya tiene otra persona asignada o un comentario de toma anterior, gana la primera. Detenerse, no crear la rama y avisar.
+
+**Durante el trabajo:** respetar el alcance de la Issue. Comentar en ella bloqueos (y poner `estado: bloqueada`), cambios de archivos previstos y cualquier cambio a contratos o archivos compartidos, coordinándolo antes con quien corresponda.
+
+**Al terminar:** ejecutar las validaciones (sección 9 y convenciones de `web/`), abrir el PR con la plantilla y la línea `Closes #<n>`, y poner `estado: en revisión`. La tarea está completada recién cuando el PR se integra a `main` y la Issue se cierra.
+
+**Sin acceso a GitHub:** el agente lo informa y la persona responsable consulta y actualiza la Issue. El agente no asume que una tarea está libre.
+
 ### 9. Finalización de tareas
 
 Al entregar, informar:
