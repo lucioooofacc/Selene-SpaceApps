@@ -26,8 +26,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
 - [x] ~~Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.~~ Modal con idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa. Resuelto 2026-11-14 (rama `feat/configuracion`, #37, DEC-023).
-- [x] ~~El mapa de calor (imagen del Figma) no cambia con la paleta para daltonismo; revisarlo cuando se haga MAP-01. — Desarrollo web, DEC-023~~ Ahora es elevación LOLA coloreada en el navegador, con paleta estándar o cividis y vista 3D física. Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42, DEC-024).
-- [ ] Regenerar el mapa de elevación desde el producto polar `LDEM_60S_240M` cuando se integre TERRAIN-01 (#39), si el equipo lo prefiere. — Facundo, Desarrollo web · DEC-024
+- [x] ~~El mapa de calor (imagen del Figma) no cambia con la paleta para daltonismo; revisarlo cuando se haga MAP-01. — Desarrollo web, DEC-023~~ Ahora es elevación LOLA coloreada en el navegador, con paleta estándar o cividis y vista 3D física. Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42, DEC-026).
+- [ ] Regenerar el mapa de elevación desde el producto polar `LDEM_60S_240M` (TERRAIN-01, #39, ya integrado; DEC-025), si el equipo lo prefiere. — Facundo, Desarrollo web · DEC-026
 - [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
@@ -48,10 +48,20 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Chang'e 4: decidir si se documenta en la interfaz la discrepancia de ≈ 415 m entre NSSDCA (usado) y CNSA (177,5991° E, 45,4446° S). — Teo, Facu, Lucio · DEC-019
 - [x] ~~Cargar la exactitud declarada por cada fuente en `precision.accuracyM` (hoy `null`). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): 10 m en R04/R23 y 115 m (1σ) en Cabeus, con `accuracyBasis`. Las demás fuentes no la declaran (`null`).
 - [ ] Decidir si la interfaz muestra la procedencia y la confianza de cada sitio (requiere claves nuevas en `es.js`/`en.js` y consultar el diseño). — Desarrollo web · DEC-019, DEC-014
-- [x] ~~Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021).~~ Ya no se usa la imagen del Figma: MAPA DE CALOR muestra elevación LOLA (DEC-024). Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42).
-- [x] ~~Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS).~~ Ya no se usa la imagen del Figma: MAPA DE CALOR muestra elevación LOLA (DEC-024). Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42).
-- [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004
+- [x] ~~Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021).~~ Ya no se usa la imagen del Figma: MAPA DE CALOR muestra elevación LOLA (DEC-026). Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42).
+- [x] ~~Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS).~~ Ya no se usa la imagen del Figma: MAPA DE CALOR muestra elevación LOLA (DEC-026). Resuelto 2026-11-14 (rama `feat/mapa-elevacion`, #42).
+- [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004 · Avance 2026-11-14 (rama `data/efemerides-horizons`, ASTRO-01 #6, DEC-024): adaptador, adquisición, caché y fixtures listos; falta consumirlos en `analysis.js` (CORE-01 #11).
+- [ ] Definir la altura datum de cada sitio para Horizons (hoy 0 km sobre la esfera de 1737,4 km, marcado como supuesto). Depende de TERRAIN-01. — Teo, Facu, Lucio · DEC-024
+- [ ] Validar que pasar coordenadas MOON_ME/DE421 sin transformar al sitio de Horizons (MEAN_ME, DE441) es aceptable a la escala de la app. — Teo, Facu, Lucio · DEC-024
+- [ ] Generar las series Horizons de los 7 sitios para el período de la demo (hoy solo Shackleton R04, 14–16/11/2026, paso 60 min) y decidir dónde se guardan para la web. Coordinar con CORE-01. — Facu · DEC-024
+- [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-024
+- [ ] Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-024
+- [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
+- [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
+- [ ] TERRAIN-02: definir el radio de los recortes (hoy ±64 px provisorio) y si los recortes reales se versionan para la demo y con qué tamaño. — Facu, Lucio · DEC-025, TERRAIN-02 #8
+- [ ] Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025
+- [ ] Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
 ## Textos y traducción

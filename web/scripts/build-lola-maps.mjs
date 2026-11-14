@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Genera los mapas de elevación de la pestaña MAPA DE CALOR (UI-11, DEC-024)
+ * Genera los mapas de elevación de la pestaña MAPA DE CALOR (UI-11, DEC-026)
  * a partir del DEM LOLA del CGI Moon Kit de NASA SVS.
  *
  * Entrada: ldem_16.tif (https://svs.gsfc.nasa.gov/4720/), 5760×2880,
@@ -237,7 +237,7 @@ const meta = {
 writeFileSync(
   resolve(root, "src/data/lola-maps.js"),
   `/**
- * Metadatos de los mapas de elevación de MAPA DE CALOR (UI-11, DEC-024).
+ * Metadatos de los mapas de elevación de MAPA DE CALOR (UI-11, DEC-026).
  * ARCHIVO GENERADO por web/scripts/build-lola-maps.mjs: no editar a mano.
  * R de cada PNG = elevación cuantizada entre minKm y maxKm (8 bits);
  * G = sombreado (relieve exagerado ×zFactor solo para el sombreado);

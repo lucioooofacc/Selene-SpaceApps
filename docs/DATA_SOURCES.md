@@ -1,6 +1,6 @@
 # Catálogo de fuentes científicas
 
-Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo las coordenadas de sitios curados (DEC-019) y el CGI Moon Kit, que se usa solo como imagen del mapa (DEC-021). Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
+Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo las coordenadas de sitios curados (DEC-019), el adaptador de JPL Horizons (DEC-024), que todavía no consume el análisis, y el CGI Moon Kit, que se usa solo como imagen del mapa (DEC-021). El producto LOLA ya se descarga y se recorta por sitio (DEC-025), pero el motor todavía no lo consume. Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
 
 ## NASA SVS — CGI Moon Kit (imagen del mapa, integrado)
 
@@ -13,11 +13,11 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Limitaciones:** en 3D el relieve se exagera (`RELIEF_SCALE` en `moon3d.js`) y la luz es ilustrativa, no solar. El mosaico de color tiene poco contraste cerca de los polos. La conversión de unidades del `ldem_3_8bit` (gris → km) no se usa ni se verificó: el relieve 3D es solo visual.
 - **Atribución/licencia:** NASA's Scientific Visualization Studio, CGI Moon Kit (Ernie Wright), con datos de LRO/LROC WAC y LOLA. Material de NASA, en general de dominio público; se acredita en la interfaz ("Imagen: NASA SVS…").
 
-### Elevación LOLA para MAPA DE CALOR (UI-11, DEC-024)
+### Elevación LOLA para MAPA DE CALOR (UI-11, DEC-026)
 
 - **Archivo:** `ldem_16.tif` del mismo kit (5760×2880, 16 px por grado, float32 en km respecto de un radio de 1737,4 km, equirectangular centrado en 0°; SHA-256 `1ea42bf44f7e9d694f79c3afa7145f97fbf06cc67372067d9fe73dce43bad796`). Descargado el 14/11/2026; **no se sube al repo**.
 - **Procesamiento reproducible:** `node web/scripts/build-lola-maps.mjs /ruta/a/ldem_16.tif` genera `web/public/nasa/lola_polar_1024.png` (polo sur hasta −60°, azimutal equidistante, 0° arriba) y `lola_global_2048.png` (equirectangular), más `web/src/data/lola-maps.js` con rangos y procedencia. Canales: R = elevación cuantizada a 8 bits entre los percentiles 1 y 99 redondeados a 0,5 km (polo: −7 a +4,5 km; globo: −5,5 a +6 km), G = sombreado (luz del noroeste a 45°, relieve ×4 solo para el sombreado), B = dato válido.
-- **Limitaciones:** la cuantización a 8 bits deja escalones de ~45 m. El DEM del kit es un producto de visualización; para cálculos, usar el producto PDS de TERRAIN-01. Cuando el producto polar `LDEM_60S_240M` (PR #39) esté integrado, se puede regenerar el mapa desde esa fuente.
+- **Limitaciones:** la cuantización a 8 bits deja escalones de ~45 m. El DEM del kit es un producto de visualización; para cálculos, usar el producto PDS de TERRAIN-01. El producto polar `LDEM_60S_240M` (TERRAIN-01, DEC-025) ya está integrado: se puede regenerar el mapa desde esa fuente, que tiene más resolución.
 
 ## Coordenadas de sitios curados (`web/src/data/sites.js`)
 
@@ -40,29 +40,34 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 
 ## NASA JPL Horizons
 
-- **URL oficial:** https://ssd.jpl.nasa.gov/horizons/ · API: https://ssd-api.jpl.nasa.gov/doc/horizons.html
-- **Finalidad:** reemplazar el modelo periódico de `astro.js` con posiciones del Sol y la Tierra respecto de un observador lunar.
-- **Datos requeridos:** azimut/elevación topocéntricos o vectores suficientes para derivarlos; instante/intervalo, sitio, escala temporal y marco explícitos.
-- **Formato:** tablas de observador, vectores o elementos en texto; opción CSV; la API devuelve una envoltura documentada. La selección exacta queda pendiente de prototipo.
-- **Cobertura:** depende del objeto y del tipo de efeméride; debe validarse para cada consulta.
-- **Referencia:** Horizons permite configurar centro/observador, sistema de coordenadas, plano y correcciones. La configuración exacta para superficie lunar está pendiente de validar.
-- **Limitaciones:** red externa, límites y errores de consulta; valores por defecto pueden no ser adecuados; Horizons no aporta el horizonte topográfico local.
-- **Estado:** no integrado; reemplazo previsto de `web/src/lib/astro.js` mediante adaptador y caché.
-- **Módulos responsables:** futuro adaptador de efemérides; consumidor `analysis.js`.
-- **Atribución/licencia:** citar JPL Horizons y conservar parámetros/fecha de consulta. Condiciones específicas de reutilización: pendiente de verificar antes de publicar datos derivados.
+- **URL oficial:** https://ssd.jpl.nasa.gov/horizons/ · API: https://ssd.jpl.nasa.gov/api/horizons.api · documentación: https://ssd-api.jpl.nasa.gov/doc/horizons.html · manual: https://ssd.jpl.nasa.gov/horizons/manual.html
+- **Finalidad:** reemplazar el modelo periódico de `astro.js` con posiciones del Sol y la Tierra respecto de un observador lunar (ASTRO-01, DEC-024).
+- **Consulta (perfil `selene-observer-v1`):** `EPHEM_TYPE=OBSERVER`, `COMMAND=10` (Sol) o `399` (Tierra), `CENTER=coord@301`, `COORD_TYPE=GEODETIC`, `SITE_COORD=lon_E,lat,alt_km`, `TIME_TYPE=UT`, `CAL_FORMAT=JD`, `ANG_FORMAT=DEG`, `APPARENT=AIRLESS`, `REF_SYSTEM=ICRF`, `QUANTITIES=4,10,13`, `CSV_FORMAT=YES`, `ELEV_CUT=-90`, `OBJ_DATA=NO`. La URL exacta la arma `buildQueryUrl()` y queda guardada en cada serie.
+- **Formato:** envoltura JSON de la API (`signature`, `result`, `error`); `result` contiene una tabla CSV entre `$$SOE` y `$$EOE`. Validado con la versión 1.2.
+- **Cobertura:** la de DE441 para Sol y Tierra; cada serie registra inicio, fin, paso, filas, faltantes y período de EOP (medido o predicho). Máximo 50 000 filas por consulta en el adaptador.
+- **Referencia:** centro Luna (301), esfera de 1737,4 km, polo `MEAN_ME (high precision)`, efeméride DE441 (informados por Horizons). Los sitios MOON_ME/DE421 se pasan sin transformar.
+- **Unidades:** azimut/elevación en grados (aparentes, sin aire), % iluminado, diámetro angular en segundos de arco, tiempo JD UT → Unix ms UTC. Detalle en `docs/SCIENCE.md`.
+- **Limitaciones:** requiere red al adquirir (no en la demo); la API responde errores de consulta con HTTP 200 y campo `error`; no aporta horizonte topográfico; la altura del observador debe darse explícitamente (hoy 0 km supuesto).
+- **Caché:** `web/scripts/fetch-horizons.mjs` guarda el crudo sin modificar + SHA-256, la serie normalizada y un `manifest.json`, con clave que incluye fuente, versiones de API y perfil, objetivo, sitio, altura y su base, intervalo y paso. Por defecto en `web/.cache/horizons` (ignorado por git); `--offline` solo lee la caché.
+- **Datos incluidos en el repo:** fixtures de Sol y Tierra desde Shackleton R04, 14–16/11/2026, paso 60 min, obtenidos el 14/11/2026 (`web/tests/fixtures/horizons/README.md`).
+- **Estado:** adaptador, adquisición y caché integrados y probados; **no** consumidos todavía por `analysis.js` ni la UI (CORE-01).
+- **Módulos responsables:** `web/src/lib/horizons.js` (puro, sin red), `web/scripts/fetch-horizons.mjs` (adquisición en Node); pruebas en `web/tests/horizons.test.js` y `web/tests/horizons.fixture.test.js`.
+- **Atribución/licencia:** citar NASA/JPL Horizons y conservar parámetros, versión de API, efeméride y fecha de consulta (ya guardados en `source`). Condiciones específicas de reutilización: pendiente de verificar antes de publicar datos derivados.
 
 ## LOLA / Lunar Reconnaissance Orbiter
 
-- **URL oficial:** https://pds-geosciences.wustl.edu/missions/lro/lola.htm
+- **URL oficial:** https://pds-geosciences.wustl.edu/missions/lro/lola.htm · directorio del producto: https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/polar/
 - **Finalidad:** obtener elevaciones lunares y construir un horizonte topográfico real.
-- **Datos requeridos:** producto de elevación apropiado (por ejemplo GDR/SLDEM según el área), etiquetas PDS, datum, proyección, escala y valor de ausencia.
-- **Formato:** PDS3/PDS4 según producto y fecha; existen EDR, RDR, GDR, SHADR y SLDEM. La selección y el decodificador exactos quedan pendientes.
-- **Cobertura:** LOLA ofrece topografía global; cobertura y densidad efectivas varían espacialmente y por producto. Verificar en la etiqueta del producto elegido.
-- **Referencia:** definido por la etiqueta y el SIS del producto; no asumir que coincide con coordenadas o radios internos actuales.
-- **Limitaciones:** volumen, resolución desigual, proyecciones/datum, huecos y necesidad de preprocesado; no descargar dentro de bucles interactivos.
-- **Estado:** no integrado; reemplazo previsto de `terrain.js`.
-- **Módulos responsables:** futuro pipeline topográfico y adaptador de horizonte; consumidor `analysis.js`.
-- **Atribución/licencia:** citar el conjunto PDS y su DOI/citación cuando exista, además de LRO/LOLA. Revisar etiqueta y política PDS del producto.
+- **Producto seleccionado (TERRAIN-01, DEC-025):** data set `LRO-L-LOLA-4-GDR-V1.0`, DOI [10.17189/1520642](https://doi.org/10.17189/1520642). DEM `LDEM_60S_240M_FLOAT` V2.1 (`float_img/`) y conteos `LDEC_60S_240M` (`img/`), con sus etiquetas `.lbl` (PDS3) y `.xml` (PDS4). URLs, bytes y MD5 de los seis archivos en DEC-025 y en `web/src/data/terrain/lola-ldem-60s-240m.js`.
+- **Formato:** imágenes crudas sin cabecera, 7760 × 7760, orden por filas. DEM float32 little-endian, altura en km sobre la esfera de 1737,4 km. Conteos int16 little-endian, número de mediciones LOLA por píxel.
+- **Cobertura:** nominal −90°..−60° (las esquinas llegan a −48,49°, no se usan). Cubre Shackleton, Malapert, Cabeus, IM-1 y Chandrayaan-3; **no** cubre Chang'e 4 ni Apollo 11.
+- **Referencia:** estereográfica polar esférica centrada en −90°, 240 m/píxel exactos, latitud planetocéntrica, longitud este positiva, "Mean Earth/Polar Axis of DE421", esfera de 1737,4 km (etiquetas y `catalog/dsmap_polar.cat`). Coincide con la referencia de los sitios (DEC-019); no se aplica transformación.
+- **Ausencias y confianza:** el DEM float no declara valor de ausencia (los huecos ya vienen interpolados). Por eso se usa `LDEC`: `count = 0` ⇒ valor interpolado, sin medición directa, confianza baja.
+- **Pipeline:** `web/scripts/download-lola.mjs` (descarga y MD5 en streaming) → `web/data/raw/` · `web/scripts/prepare-lola.mjs` (recortes por sitio) → `web/data/derived/lola-60s-240m/` · lectura en `web/src/lib/terrain-data.js`. `web/data/` está en `.gitignore`.
+- **Limitaciones:** ~345 MiB de descarga; 240 m/píxel no resuelve relieve menor a ese tamaño; los recortes se hacen sobre la grilla nativa, sin remuestreo. Hallazgo sobre el signo de la ecuación directa del catálogo, a validar por astronomía (DEC-025).
+- **Estado:** producto seleccionado, descargado y verificado (2026-11-14). Recortes reales no versionados todavía; el horizonte (TERRAIN-02) aún no los consume.
+- **Módulos responsables:** `web/scripts/*-lola.mjs`, `web/src/lib/terrain-data.js`, `web/src/data/terrain/`; consumidor futuro: horizonte de TERRAIN-02.
+- **Atribución/licencia:** citar LRO/LOLA y el DOI 10.17189/1520642 con la cita que publica PDS para el data set (autores y año pendientes de copiar textualmente). Los datos del PDS son de NASA y de uso público; revisar la política de citación antes de publicar derivados.
 
 ## NASA PDS Geosciences Node
 
@@ -73,7 +78,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Cobertura:** la de cada misión, instrumento y release; no existe una cobertura única del nodo.
 - **Referencia:** declarada en etiquetas y documentación de cada producto.
 - **Limitaciones:** catálogo amplio, versiones/releases y archivos de gran tamaño; exige seleccionar el producto correcto.
-- **Estado:** no integrado; fuente primaria prevista para LOLA.
+- **Estado:** fuente del producto LOLA seleccionado (`LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M`, DEC-025); se descarga con `web/scripts/download-lola.mjs`.
 - **Módulos responsables:** pipeline de adquisición y catálogo de metadatos.
 - **Atribución/licencia:** usar la cita/DOI del producto y acreditar a productores y archivo según la guía PDS. Verificar restricciones excepcionales en cada producto.
 

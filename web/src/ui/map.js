@@ -5,7 +5,7 @@
  *      · Global 2D: mapa equirectangular (longitud -180..180, latitud 90..-90).
  *      · Polo sur 2D: reproyección azimutal equidistante hasta POLAR_EDGE_LAT
  *        (polar2d.js), 0° arriba.
- *  - MAPA DE CALOR: elevación real de LOLA (elevation.js, DEC-024): en 2D, el
+ *  - MAPA DE CALOR: elevación real de LOLA (elevation.js, DEC-026): en 2D, el
  *    polo sur con la misma proyección polar; en 3D, la Luna como mapa físico
  *    (tinte hipsométrico × sombreado). Leyenda en km; la paleta sigue la
  *    configuración (estándar o apta para daltonismo). No es un mapa de

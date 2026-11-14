@@ -1,5 +1,5 @@
 /**
- * Mapas de elevación de MAPA DE CALOR (UI-11, DEC-024).
+ * Mapas de elevación de MAPA DE CALOR (UI-11, DEC-026).
  *
  * Los PNG de web/public/nasa/ los genera web/scripts/build-lola-maps.mjs desde
  * el DEM LOLA del CGI Moon Kit: R = elevación cuantizada (8 bits entre minKm

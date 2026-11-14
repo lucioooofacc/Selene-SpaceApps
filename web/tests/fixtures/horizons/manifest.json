@@ -1,0 +1,19 @@
+{
+  "schema": "selene.horizons.manifest/1",
+  "entries": [
+    {
+      "cacheKey": "src=jpl-horizons-api|api=1.2|profile=selene-observer-v1|target=10|lon=-171.87|lat=-89.7668|altKm=0|altBasis=assumed-zero-reference-sphere|start=2026-11-14T00:00:00.000Z|stop=2026-11-16T00:00:00.000Z|stepMin=60",
+      "hash": "a821ce09040a6d31",
+      "target": "sun",
+      "raw": "sun-a821ce09040a6d31.raw.json",
+      "normalized": "sun-a821ce09040a6d31.normalized.json"
+    },
+    {
+      "cacheKey": "src=jpl-horizons-api|api=1.2|profile=selene-observer-v1|target=399|lon=-171.87|lat=-89.7668|altKm=0|altBasis=assumed-zero-reference-sphere|start=2026-11-14T00:00:00.000Z|stop=2026-11-16T00:00:00.000Z|stepMin=60",
+      "hash": "83a4e9a22af040bb",
+      "target": "earth",
+      "raw": "earth-83a4e9a22af040bb.raw.json",
+      "normalized": "earth-83a4e9a22af040bb.normalized.json"
+    }
+  ]
+}

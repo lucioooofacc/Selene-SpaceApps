@@ -1,5 +1,5 @@
 /**
- * Metadatos de los mapas de elevación de MAPA DE CALOR (UI-11, DEC-024).
+ * Metadatos de los mapas de elevación de MAPA DE CALOR (UI-11, DEC-026).
  * ARCHIVO GENERADO por web/scripts/build-lola-maps.mjs: no editar a mano.
  * R de cada PNG = elevación cuantizada entre minKm y maxKm (8 bits);
  * G = sombreado (relieve exagerado ×zFactor solo para el sombreado);

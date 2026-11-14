@@ -1,6 +1,6 @@
 # Arquitectura de SELENE
 
-Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; las integraciones con JPL Horizons y LOLA indicadas aquí son propuestas y todavía no están implementadas.
+Este documento describe la implementación actual de `web/`. El código es la fuente de verdad; el consumo de efemérides Horizons y de topografía LOLA en el análisis indicados aquí son propuestas y todavía no están implementados. El adaptador Horizons y su adquisición sí existen (DEC-024), pero `analysis.js` aún no los usa. El pipeline de datos LOLA (descarga, preparación de recortes y lectura) ya existe (DEC-025), pero el horizonte todavía no lo consume.
 
 ## Vista general
 
@@ -33,13 +33,19 @@ flowchart LR
 | `src/lib/analysis.js` | Muestrea Sol/Tierra cada 10 minutos, aplica horizonte y radios angulares, calcula ventanas, métricas, viabilidad y mapas de calor. |
 | `src/lib/compare.js` | Resume dos escenarios en métricas comparables (todas con "más es mejor") e indica qué sitio tiene ventaja, con tolerancias de empate. No agrega fórmulas científicas. |
 | `src/lib/format.js` | Formatea ángulos, coordenadas, porcentajes, fechas UTC y duraciones para la interfaz. |
+| `src/lib/horizons.js` | Adaptador puro de JPL Horizons (DEC-024): valida peticiones, arma la consulta y la clave de caché, interpreta y valida tablas `OBSERVER` y produce series normalizadas con fuente, marco, unidades y cobertura. Sin red ni DOM; todavía no lo consume `analysis.js`. |
+| `scripts/fetch-horizons.mjs` | Script Node, fuera del bundle: consulta la API, guarda crudo + SHA-256 + serie normalizada en una caché con manifiesto. |
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
+| `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-025). |
 | `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
+| `src/data/terrain/lola-ldem-60s-240m.js` | Manifiesto del producto LOLA seleccionado: DOI, versión, URLs oficiales, bytes, MD5, grilla y proyección. Sin muestras. |
+| `scripts/download-lola.mjs` | Descarga los archivos del manifiesto a `web/data/raw/` con MD5 en streaming y control de tamaño; `--verify` comprueba lo descargado. |
+| `scripts/prepare-lola.mjs` | Lee DEM float32 + conteos int16 por ventanas y escribe un recorte JSON por sitio cubierto en `web/data/derived/` (no versionado). |
 | `src/i18n/` | Diccionarios ES/EN, idioma persistido y traducción del DOM. |
 | `src/ui/places.js` | "Mejores lugares para alunizar": ranking de sitios para la ventana elegida. |
 | `src/ui/map.js` | Mapa con las pestañas GLOBAL / MAPA DE CALOR / POLO SUR, selector 3D/2D (GLOBAL y POLO SUR), selección de coordenadas y alta de sitios. MAPA DE CALOR sigue con la imagen del Figma. |
 | `src/ui/moon3d.js` | Luna 3D con three.js (carga diferida): textura LROC y relieve LOLA del CGI Moon Kit, render a demanda, giro con arrastre o teclado, clic → coordenadas, y marcadores HTML proyectados. |
-| `src/ui/elevation.js` | Colorea en el navegador los PNG de elevación LOLA (tinte hipsométrico × sombreado) con la paleta estándar o cividis, para MAPA DE CALOR en 2D y 3D (DEC-024). Los PNG los genera `web/scripts/build-lola-maps.mjs`. |
+| `src/ui/elevation.js` | Colorea en el navegador los PNG de elevación LOLA (tinte hipsométrico × sombreado) con la paleta estándar o cividis, para MAPA DE CALOR en 2D y 3D (DEC-026). Los PNG los genera `web/scripts/build-lola-maps.mjs`. |
 | `src/ui/polar2d.js` | Reproyecta en el navegador el mosaico LROC equirectangular a la vista polar 2D (azimutal equidistante hasta −60°, 0° arriba). |
 | `src/ui/params.js` | "Parámetros de la misión": sitio, coordenadas, duración y tarjetas de "Ventana de análisis". |
 | `src/ui/calendar.js` | Selector de rango de fechas de "Duración de misión (UTC)". |
@@ -91,6 +97,20 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 | `horizonDip(elevationKm = 0)` | km sobre terreno vecino | depresión angular positiva en grados |
 | `createHorizon(site, options?)` | sitio; `precompute` opcional | función `horizon(azimuthDeg) -> elevationDeg` |
 
+### `lib/terrain-data.js`
+
+| Firma | Entrada | Salida |
+| --- | --- | --- |
+| `latLonToPixel(lat, lon, grid?)` | grados (lat ≤ 0) | `{line, sample}` fraccionarios, base 0 |
+| `pixelToLatLon(line, sample, grid?)` | píxel | `{lat, lon}` con lon en `[-180, 180)` |
+| `nearestPixel(lat, lon, grid?)` | grados | `{line, sample}` enteros o `null` fuera de la grilla |
+| `isCovered(lat, lon, grid?)` | grados | `true` si lat ≤ −60° y el píxel está en la grilla |
+| `measurementFromCount(count)` | conteo LDEC | `{count, direct, confidence}`; `count = 0` ⇒ `direct: false`, `"baja"` |
+| `validateTile(tile)` | recorte de `prepare-lola.mjs` | lista de errores (vacía si es válido) |
+| `tileValueAt(tile, lat, lon, grid?)` | recorte y punto | `{heightM, count, direct, confidence, line, sample}` o `null` |
+
+`grid` por defecto es `LOLA_GRID` (7760 × 7760, 240 m, offset 3879,5); las pruebas pasan una grilla sintética con la misma forma. Alturas en metros sobre la esfera de 1737,4 km.
+
 ### `lib/analysis.js`
 
 | Firma | Entrada | Salida |
@@ -101,6 +121,20 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 
 `Scenario.summary.illumination` y `.communication` son porcentajes `[0,100]`; `.power` es una razón adimensional; tiempos de ventanas son Unix ms UTC; `.sunMinutes` y `.linkMinutes` son minutos. `STEP_MINUTES` vale actualmente 10.
 
+### `lib/horizons.js` (DEC-024)
+
+| Firma | Entrada | Salida |
+| --- | --- | --- |
+| `normalizeRequest(input)` | `{target: "sun"\|"earth", site: {lat, lon, altitudeKm, altitudeBasis, id?}, startMs, stopMs, stepMinutes}` | petición congelada con `command` y `expectedRows`; `HorizonsError` si es inválida |
+| `buildQueryParams(req)` / `buildQueryUrl(req)` | petición | pares `[clave, valor]` en orden fijo / URL de la API (no la ejecuta) |
+| `cacheKey(req, meta?)` | petición; fuente/versiones opcionales | texto canónico `src=…\|api=…\|profile=…\|…` |
+| `unwrapApiResponse(body)` | texto JSON u objeto de la API | `{result, apiVersion}` o `HorizonsError` (`api-error`, `invalid-envelope`) |
+| `parseObserverTable(result)` | texto `result` | `{meta, columns, samples, missing}` |
+| `normalizeHorizons(body, req, retrieval?)` | cuerpo crudo, petición, metadatos de adquisición | serie `selene.horizons.observer/1` (`source`, `profile`, `request`, `frame`, `units`, `coverage`, `samples`, `assumptions`, `warnings`) |
+| `jdToUnixMs(jdText)` / `formatHorizonsTime(ms)` | JD en texto / Unix ms | Unix ms UTC / `YYYY-MM-DD HH:MM` UTC |
+
+`samples` contiene arreglos paralelos (`timeMs`, `jdUt`, `azimuthDeg`, `elevationDeg`, `illuminatedPct`, `angularDiameterArcsec`, `solarPresence`, `interfererPresence`); los faltantes son `null`. Los errores son `HorizonsError` con `code` estable (`invalid-site`, `missing-altitude`, `no-ephemeris`, `unexpected-columns`, `out-of-range`, `coverage-mismatch`, `site-mismatch`, …).
+
 ### `state.js`
 
 - `getState() -> State`: devuelve la referencia del estado actual; los consumidores no deben mutarla directamente.
@@ -110,6 +144,7 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 ## Dependencias internas
 
 - `analysis.js` depende de `astro.js` y `terrain.js`; ninguno depende de la interfaz.
+- `horizons.js` depende solo de `coordinates.js`. No hace red: la red vive en `scripts/fetch-horizons.mjs`, que se ejecuta con Node antes de la demo.
 - `main.js` es el único coordinador entre análisis y renderizado.
 - Los módulos `ui/` pueden leer/escribir estado, formatear e internacionalizar, pero no deben implementar fórmulas científicas.
 - `map.js` es la excepción de coordinación que invoca el cálculo público del mapa de calor; el cálculo permanece en `lib/analysis.js`.
@@ -119,7 +154,7 @@ Constantes públicas: `DAY_MS`, `SYNODIC_MONTH`, `ANOMALISTIC_MONTH`, `DRACONIC_
 
 ### Efemérides con JPL Horizons
 
-La integración prevista debe producir el mismo contrato conceptual de `sunPosition()` y `earthPosition()`: azimut y elevación locales en grados para sitio e instante. Un adaptador separado debería:
+El adaptador (`lib/horizons.js`) y la adquisición con caché (`scripts/fetch-horizons.mjs`) ya cumplen los puntos 1, 3, 4 y 5 y la parte de caché del 2 (DEC-024). Falta que CORE-01 cargue las series en el análisis manteniendo el contrato conceptual de `sunPosition()` y `earthPosition()`: azimut y elevación locales en grados para sitio e instante. Requisitos del adaptador:
 
 1. normalizar sitio, intervalo, paso, escala temporal y sistema de referencia;
 2. consultar o leer una caché fuera de los bucles de renderizado y muestreo;
@@ -129,7 +164,9 @@ La integración prevista debe producir el mismo contrato conceptual de `sunPosit
 
 ### Topografía con LOLA
 
-Un proceso de preparación debe obtener el producto PDS/LOLA elegido, documentar su referencia y resolución, extraer un DEM alrededor del sitio y calcular el ángulo máximo de obstrucción por azimut incluyendo curvatura lunar. El resultado puede implementar el contrato `horizon(azimuthDeg) -> elevationDeg`, acompañado de metadatos y cobertura. No debe descargarse topografía dentro de `computeScenario()`.
+El pipeline de datos está implementado (DEC-025) para `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (DOI 10.17189/1520642): `web/scripts/download-lola.mjs` descarga los archivos oficiales con MD5 en streaming, `web/scripts/prepare-lola.mjs` escribe recortes por sitio en la grilla nativa (sin remuestreo) y `web/src/lib/terrain-data.js` los consulta sin DOM ni red. Los rasters y los recortes no se versionan.
+
+TERRAIN-02 debe extraer un DEM alrededor del sitio y calcular el ángulo máximo de obstrucción por azimut incluyendo curvatura lunar. El resultado puede implementar el contrato `horizon(azimuthDeg) -> elevationDeg`, acompañado de metadatos y cobertura. No debe descargarse topografía dentro de `computeScenario()` ni dentro de bucles de renderizado.
 
 ### Arquitectura futura propuesta
 
