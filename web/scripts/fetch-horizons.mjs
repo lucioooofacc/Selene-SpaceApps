@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Adquisición reproducible de efemérides JPL Horizons (ASTRO-01, DEC-023).
+ * Adquisición reproducible de efemérides JPL Horizons (ASTRO-01, DEC-024).
  *
  * Corre en Node, FUERA del navegador. Consulta la API oficial con el perfil
  * de `src/lib/horizons.js`, guarda la respuesta cruda tal cual y la serie

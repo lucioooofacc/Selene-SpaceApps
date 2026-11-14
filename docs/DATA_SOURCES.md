@@ -1,6 +1,6 @@
 # Catálogo de fuentes científicas
 
-Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo las coordenadas de sitios curados (DEC-019), el adaptador de JPL Horizons (DEC-023), que todavía no consume el análisis, y el CGI Moon Kit, que se usa solo como imagen del mapa (DEC-021). Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
+Las fuentes de esta tabla todavía no están integradas en el motor científico, salvo las coordenadas de sitios curados (DEC-019), el adaptador de JPL Horizons (DEC-024), que todavía no consume el análisis, y el CGI Moon Kit, que se usa solo como imagen del mapa (DEC-021). Antes de implementar una descarga se debe revisar la documentación vigente del producto concreto, su marco, unidades, cobertura, resolución, atribución y condiciones de uso. Los detalles no confirmados se marcan como pendientes.
 
 ## NASA SVS — CGI Moon Kit (imagen del mapa, integrado)
 
@@ -35,7 +35,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 ## NASA JPL Horizons
 
 - **URL oficial:** https://ssd.jpl.nasa.gov/horizons/ · API: https://ssd.jpl.nasa.gov/api/horizons.api · documentación: https://ssd-api.jpl.nasa.gov/doc/horizons.html · manual: https://ssd.jpl.nasa.gov/horizons/manual.html
-- **Finalidad:** reemplazar el modelo periódico de `astro.js` con posiciones del Sol y la Tierra respecto de un observador lunar (ASTRO-01, DEC-023).
+- **Finalidad:** reemplazar el modelo periódico de `astro.js` con posiciones del Sol y la Tierra respecto de un observador lunar (ASTRO-01, DEC-024).
 - **Consulta (perfil `selene-observer-v1`):** `EPHEM_TYPE=OBSERVER`, `COMMAND=10` (Sol) o `399` (Tierra), `CENTER=coord@301`, `COORD_TYPE=GEODETIC`, `SITE_COORD=lon_E,lat,alt_km`, `TIME_TYPE=UT`, `CAL_FORMAT=JD`, `ANG_FORMAT=DEG`, `APPARENT=AIRLESS`, `REF_SYSTEM=ICRF`, `QUANTITIES=4,10,13`, `CSV_FORMAT=YES`, `ELEV_CUT=-90`, `OBJ_DATA=NO`. La URL exacta la arma `buildQueryUrl()` y queda guardada en cada serie.
 - **Formato:** envoltura JSON de la API (`signature`, `result`, `error`); `result` contiene una tabla CSV entre `$$SOE` y `$$EOE`. Validado con la versión 1.2.
 - **Cobertura:** la de DE441 para Sol y Tierra; cada serie registra inicio, fin, paso, filas, faltantes y período de EOP (medido o predicho). Máximo 50 000 filas por consulta en el adaptador.

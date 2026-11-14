@@ -1,4 +1,4 @@
-// Validación contra respuestas oficiales de JPL Horizons (ASTRO-01, DEC-023).
+// Validación contra respuestas oficiales de JPL Horizons (ASTRO-01, DEC-024).
 // Separada de las pruebas unitarias: los fixtures se obtuvieron con
 // scripts/fetch-horizons.mjs y su procedencia está en fixtures/horizons/README.md.
 // Tolerancia: 0 (comparación exacta), porque solo se verifica el parseo y la

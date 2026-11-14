@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). La interfaz no usa aún efemérides JPL Horizons ni topografía LOLA; desde DEC-023 existe un adaptador Horizons validado (`lib/horizons.js`) que se integrará en CORE-01.
+SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). La interfaz no usa aún efemérides JPL Horizons ni topografía LOLA; desde DEC-024 existe un adaptador Horizons validado (`lib/horizons.js`) que se integrará en CORE-01.
 
 ## Convenciones y unidades
 
@@ -18,7 +18,7 @@ Los sitios curados declaran su referencia desde DEC-019: MOON_ME / DE421, latitu
 
 El modelo astronómico usa una esfera lunar y coordenadas selenográficas simplificadas. No declara actualmente un marco IAU o SPICE específico, el datum vertical de las coordenadas ni una realización cartográfica. Esto es aceptable solo para el prototipo aproximado y debe resolverse antes de mezclar datos de distintas fuentes.
 
-El adaptador Horizons (DEC-023) fija su propia referencia: centro `coord@301` sobre la esfera de 1737,4 km con polo `MEAN_ME (high precision)` y efemérides DE441, coordenadas geodésicas con longitud este, escala UT (UTC) y valores aparentes sin refracción (`AIRLESS`). Las coordenadas MOON_ME/DE421 de los sitios se pasan sin transformación; la diferencia entre ambas realizaciones no está evaluada.
+El adaptador Horizons (DEC-024) fija su propia referencia: centro `coord@301` sobre la esfera de 1737,4 km con polo `MEAN_ME (high precision)` y efemérides DE441, coordenadas geodésicas con longitud este, escala UT (UTC) y valores aparentes sin refracción (`AIRLESS`). Las coordenadas MOON_ME/DE421 de los sitios se pasan sin transformación; la diferencia entre ambas realizaciones no está evaluada.
 
 Una integración real deberá fijar y registrar, como mínimo: marco lunar, convención de longitud, datum/radio de referencia, escala temporal, correcciones de luz/aberración y transformación entre el producto topográfico y el observador de Horizons o SPICE.
 
@@ -33,7 +33,7 @@ Una integración real deberá fijar y registrar, como mínimo: marco lunar, conv
 
 Estas expresiones generan movimiento coherente para la interfaz, pero no son efemérides de navegación, no incluyen todos los términos orbitales ni sustituyen Horizons/SPICE.
 
-## Efemérides JPL Horizons (adaptador, DEC-023)
+## Efemérides JPL Horizons (adaptador, DEC-024)
 
 `lib/horizons.js` interpreta tablas `OBSERVER` de Horizons para el Sol (`10`) y la Tierra (`399`) vistos desde un sitio lunar. Todavía no lo consume `analysis.js`.
 
@@ -108,7 +108,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 ## Limitaciones conocidas
 
-- La interfaz usa todavía efemérides periódicas aproximadas y radios angulares constantes; el adaptador Horizons (DEC-023) existe pero no está integrado (CORE-01).
+- La interfaz usa todavía efemérides periódicas aproximadas y radios angulares constantes; el adaptador Horizons (DEC-024) existe pero no está integrado (CORE-01).
 - Las series Horizons asumen altura 0 km del observador mientras no haya altura datum por sitio.
 - Horizonte sintético calibrado conceptualmente, no topografía medida.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
@@ -122,7 +122,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 1. Definir explícitamente marcos, escalas temporales, unidades y convenciones comunes.
 2. Validar sitios y procedencia antes de analizarlos.
-3. ~~Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.~~ Adaptador, adquisición y caché listos (DEC-023); falta consumirlos en `analysis.js` (CORE-01).
+3. ~~Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.~~ Adaptador, adquisición y caché listos (DEC-024); falta consumirlos en `analysis.js` (CORE-01).
 4. Elegir un producto LOLA adecuado y calcular perfiles de horizonte con curvatura y datum documentados.
 5. Mantener los contratos de azimut/elevación/horizonte o versionar el cambio.
 6. Comparar contra casos controlados y datos externos sin convertir valores de referencia no verificados en “verdad NASA”.

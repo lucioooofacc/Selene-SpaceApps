@@ -25,7 +25,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~Panorama: acercar la iluminación de las dunas y el resplandor a la ilustración del Figma, y que el relieve represente fielmente el horizonte del punto (montañoso, plano, con cráteres).~~ La cresta es el horizonte del motor sin decoración, con escala y fuente indicadas. Resuelto 2026-11-14 (rama `design/panorama-relieve`, #26).
 - [ ] La fidelidad real del relieve del panorama depende del horizonte LOLA (TERRAIN-02, #8). Propuesta: que la función del horizonte exponga `source: "lola"` para que la leyenda cambie sola. — Facundo, DEC-020
 - [x] ~~Calendario: permitir moverse entre días con las flechas del teclado.~~ Flechas, Inicio/Fin, RePág/AvPág, Enter y Escape (el foco vuelve al botón). Resuelto 2026-11-14 (rama `feat/calendario-teclado`, #22).
-- [ ] Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.
+- [x] ~~Definir el destino del botón de configuración (el equipo todavía no lo decidió). — Configuracion sera un modal con: accesibilidad, estilo daltonismo. Opciones diversas, etc.~~ Modal con idioma, paleta para daltonismo, alto contraste, reducir movimiento y vista del mapa. Resuelto 2026-11-14 (rama `feat/configuracion`, #37, DEC-023).
+- [ ] El mapa de calor (imagen del Figma) no cambia con la paleta para daltonismo; revisarlo cuando se haga MAP-01. — Desarrollo web, DEC-023
 - [x] ~~Corregir alineaciones y desbordes: columnas desalineadas, "Lectura del momento" fuera de la sección, coordenadas sobre la esquina del mapa, menú y pestañas descentrados, leyenda del panorama superpuesta.~~ Resuelto 2026-11-14 (rama `design/ajustes-layout`, #35, DEC-022).
 - [ ] Probar el escalado (`zoom`) en Firefox y Safari, además de Chrome. — DEC-015
 - [x] ~~Íconos deformados: los SVG del Figma usan `preserveAspectRatio="none"` y se forzaban a cuadrado.~~ Resuelto 2026-11-13 (rama `design/figma-exacto`).
@@ -48,12 +49,12 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [ ] Decidir si la interfaz muestra la procedencia y la confianza de cada sitio (requiere claves nuevas en `es.js`/`en.js` y consultar el diseño). — Desarrollo web · DEC-019, DEC-014
 - [ ] Confirmar qué latitud cubre la imagen del MAPA DE CALOR (supuesto: hasta −60°) y su orientación (0° arriba). GLOBAL y POLO SUR ya usan NASA SVS con proyección conocida (DEC-021). — DEC-016
 - [ ] Confirmar origen y licencia de la imagen del MAPA DE CALOR que viene del Figma (las otras dos se reemplazaron por NASA SVS). — DEC-016
-- [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004 · Avance 2026-11-14 (rama `data/efemerides-horizons`, ASTRO-01 #6, DEC-023): adaptador, adquisición, caché y fixtures listos; falta consumirlos en `analysis.js` (CORE-01 #11).
-- [ ] Definir la altura datum de cada sitio para Horizons (hoy 0 km sobre la esfera de 1737,4 km, marcado como supuesto). Depende de TERRAIN-01. — Teo, Facu, Lucio · DEC-023
-- [ ] Validar que pasar coordenadas MOON_ME/DE421 sin transformar al sitio de Horizons (MEAN_ME, DE441) es aceptable a la escala de la app. — Teo, Facu, Lucio · DEC-023
-- [ ] Generar las series Horizons de los 7 sitios para el período de la demo (hoy solo Shackleton R04, 14–16/11/2026, paso 60 min) y decidir dónde se guardan para la web. Coordinar con CORE-01. — Facu · DEC-023
-- [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-023
-- [ ] Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-023
+- [ ] Reemplazar el modelo aproximado del Sol y la Tierra por efemérides de JPL Horizons. — DEC-004 · Avance 2026-11-14 (rama `data/efemerides-horizons`, ASTRO-01 #6, DEC-024): adaptador, adquisición, caché y fixtures listos; falta consumirlos en `analysis.js` (CORE-01 #11).
+- [ ] Definir la altura datum de cada sitio para Horizons (hoy 0 km sobre la esfera de 1737,4 km, marcado como supuesto). Depende de TERRAIN-01. — Teo, Facu, Lucio · DEC-024
+- [ ] Validar que pasar coordenadas MOON_ME/DE421 sin transformar al sitio de Horizons (MEAN_ME, DE441) es aceptable a la escala de la app. — Teo, Facu, Lucio · DEC-024
+- [ ] Generar las series Horizons de los 7 sitios para el período de la demo (hoy solo Shackleton R04, 14–16/11/2026, paso 60 min) y decidir dónde se guardan para la web. Coordinar con CORE-01. — Facu · DEC-024
+- [ ] Confirmar si los EOP predichos que usa Horizons después del 13/11/2026 afectan los valores a la escala de la app. — Teo, Facu, Lucio · DEC-024
+- [ ] Decidir si `analysis.js` usa el diámetro angular de Horizons en lugar de los radios fijos (0,27° Sol, 0,95° Tierra). — CORE-01/CORE-02 · DEC-024
 - [ ] Verificar las condiciones de reutilización de datos derivados de JPL Horizons antes de publicarlos. — Equipo · `docs/DATA_SOURCES.md`
 - [ ] Reemplazar el horizonte sintético por relieve real de LOLA. — DEC-005
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007

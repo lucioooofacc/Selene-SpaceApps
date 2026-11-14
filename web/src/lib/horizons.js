@@ -1,5 +1,5 @@
 /**
- * Adaptador puro de efemérides JPL Horizons (ASTRO-01, DEC-023).
+ * Adaptador puro de efemérides JPL Horizons (ASTRO-01, DEC-024).
  *
  * Construye consultas, interpreta la respuesta oficial de la API
  * (envoltura JSON + tabla CSV entre $$SOE y $$EOE), valida y normaliza.
