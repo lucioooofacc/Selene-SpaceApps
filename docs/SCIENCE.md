@@ -1,6 +1,6 @@
 # Modelo científico y convenciones
 
-SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). No usa aún efemérides JPL Horizons. Existe un pipeline de elevación LOLA (DEC-025), pero el análisis todavía no lo consume: el horizonte sigue siendo sintético.
+SELENE v1 es una herramienta conceptual. Combina un modelo astronómico **aproximado** con un horizonte **sintético** y coordenadas de sitios confirmadas por el equipo y cotejadas con fuentes oficiales (DEC-019). La interfaz no usa aún efemérides JPL Horizons ni topografía LOLA; desde DEC-024 existe un adaptador Horizons validado (`lib/horizons.js`) que se integrará en CORE-01, y existe un pipeline de elevación LOLA (DEC-025), pero el análisis todavía no lo consume: el horizonte sigue siendo sintético.
 
 ## Convenciones y unidades
 
@@ -18,6 +18,8 @@ Los sitios curados declaran su referencia desde DEC-019: MOON_ME / DE421, latitu
 
 El modelo astronómico usa una esfera lunar y coordenadas selenográficas simplificadas. No declara actualmente un marco IAU o SPICE específico, el datum vertical de las coordenadas ni una realización cartográfica. Esto es aceptable solo para el prototipo aproximado y debe resolverse antes de mezclar datos de distintas fuentes.
 
+El adaptador Horizons (DEC-024) fija su propia referencia: centro `coord@301` sobre la esfera de 1737,4 km con polo `MEAN_ME (high precision)` y efemérides DE441, coordenadas geodésicas con longitud este, escala UT (UTC) y valores aparentes sin refracción (`AIRLESS`). Las coordenadas MOON_ME/DE421 de los sitios se pasan sin transformación; la diferencia entre ambas realizaciones no está evaluada.
+
 Una integración real deberá fijar y registrar, como mínimo: marco lunar, convención de longitud, datum/radio de referencia, escala temporal, correcciones de luz/aberración y transformación entre el producto topográfico y el observador de Horizons o SPICE.
 
 ## Modelo astronómico implementado
@@ -30,6 +32,27 @@ Una integración real deberá fijar y registrar, como mínimo: marco lunar, conv
 - La fase visible de la Tierra es el complemento periódico de la fase lunar y se expresa como fracción `[0,1]`.
 
 Estas expresiones generan movimiento coherente para la interfaz, pero no son efemérides de navegación, no incluyen todos los términos orbitales ni sustituyen Horizons/SPICE.
+
+## Efemérides JPL Horizons (adaptador, DEC-024)
+
+`lib/horizons.js` interpreta tablas `OBSERVER` de Horizons para el Sol (`10`) y la Tierra (`399`) vistos desde un sitio lunar. Todavía no lo consume `analysis.js`.
+
+| Campo de la serie | Unidad / convención |
+| --- | --- |
+| `timeMs` | Unix ms UTC, convertido desde JD UT sin segundos intercalares |
+| `jdUt` | día juliano UT tal como lo da Horizons |
+| `azimuthDeg` | `[0°, 360°)` desde el norte, sentido horario; aparente, sin aire |
+| `elevationDeg` | `[-90°, 90°]` sobre el plano tangente local; aparente, sin aire; **sin topografía** |
+| `illuminatedPct` | `[0, 100]` % del disco iluminado (Sol siempre 100) |
+| `angularDiameterArcsec` | segundos de arco, `> 0` |
+| `solarPresence`, `interfererPresence` | códigos de Horizons (`*`, `i`); consideran solo el horizonte matemático |
+
+- **Altura del observador:** obligatoria y con base declarada (`measured-datum` o `assumed-zero-reference-sphere`). Los fixtures usan 0 km como **supuesto**; `elevationKm` (sintético) no se acepta.
+- **Faltantes:** `n.a.` se guarda como `null` y se cuenta en `coverage.missing`; nunca se reemplaza por cero ni se interpola.
+- **Validación:** valores fuera de rango, filas o pasos irregulares, cobertura distinta de la pedida y sitio/objetivo/perfil no coincidentes son errores (`HorizonsError`), no se recortan.
+- **Cobertura:** cada serie registra inicio, fin, paso, filas y completitud, y el período de EOP usado (`frame.eopCoverage`); fuera del período medido Horizons usa EOP predichos.
+- **Comparación con la fuente:** exacta (tolerancia 0) contra las respuestas oficiales guardadas en `web/tests/fixtures/horizons/`. No se mide aún la diferencia con el modelo de `astro.js`.
+- **Radios angulares:** Horizons entrega el diámetro real (≈ 1942″ del Sol, ≈ 6486″ de la Tierra en los fixtures); `analysis.js` sigue usando radios fijos hasta que CORE-01/CORE-02 decidan el cambio.
 
 ## Horizonte sintético y curvatura
 
@@ -105,7 +128,8 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 ## Limitaciones conocidas
 
-- Efemérides periódicas aproximadas y radios angulares constantes.
+- La interfaz usa todavía efemérides periódicas aproximadas y radios angulares constantes; el adaptador Horizons (DEC-024) existe pero no está integrado (CORE-01).
+- Las series Horizons asumen altura 0 km del observador mientras no haya altura datum por sitio.
 - Horizonte sintético calibrado conceptualmente, no topografía medida. El pipeline de elevación LOLA existe (DEC-025) pero el horizonte todavía no lo usa.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
 - Marco lunar del modelo astronómico y datum aún no formalizados.
@@ -118,7 +142,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 1. Definir explícitamente marcos, escalas temporales, unidades y convenciones comunes.
 2. Validar sitios y procedencia antes de analizarlos.
-3. Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.
+3. ~~Obtener efemérides topocéntricas del Sol y la Tierra con Horizons o calcularlas con SPICE; almacenar consulta y cobertura.~~ Adaptador, adquisición y caché listos (DEC-024); falta consumirlos en `analysis.js` (CORE-01).
 4. Elegir un producto LOLA adecuado y calcular perfiles de horizonte con curvatura y datum documentados.
 5. Mantener los contratos de azimut/elevación/horizonte o versionar el cambio.
 6. Comparar contra casos controlados y datos externos sin convertir valores de referencia no verificados en “verdad NASA”.

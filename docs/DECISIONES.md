@@ -46,7 +46,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Decisión:** calcular el Sol y la Tierra con movimientos medios periódicos.
 - **Solución aplicada:** `web/src/lib/astro.js`. El punto subsolar se mueve 360° por mes sinódico (29,53 d), con una declinación de ±1,54° (período de 346,6 d). La Tierra oscila por la libración: ±7,9° en longitud (27,55 d) y ±6,68° en latitud (27,21 d). Referencia: luna nueva del 06/01/2000 a las 18:14 UTC. La elevación y el azimut se obtienen por proyección vectorial. La fase de la Tierra es el complemento de la fase lunar.
 - **Alternativas descartadas:** datos fijos inventados (no reaccionan a los cambios).
-- **Estado:** vigente para v1. **Reemplazo previsto:** efemérides de JPL Horizons (mismas salidas: elevación y azimut por instante), sin tocar `src/ui/`.
+- **Estado:** vigente para v1. **Reemplazo previsto:** efemérides de JPL Horizons (mismas salidas: elevación y azimut por instante), sin tocar `src/ui/`. Desde DEC-024 existe el adaptador Horizons (`lib/horizons.js`) con fixtures validados; `analysis.js` todavía usa este modelo hasta CORE-01.
 
 ## DEC-005 — Horizonte sintético con depresión por altura
 
@@ -263,6 +263,39 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - `main.js` aplica las opciones antes del primer dibujo y toma `mapMode` de la configuración; `compare.js` también las aplica. Textos en `settings.*` (ES/EN).
 - **Alternativas descartadas:** tamaño de letra (el diseño se escala con `zoom` a 1992 px y rompería la grilla); recolorear la imagen del mapa de calor del Figma (es un bitmap; corresponde a MAP-01).
 - **Estado:** vigente.
+
+## DEC-024 — Efemérides JPL Horizons: adaptador puro, adquisición fuera del navegador y caché versionada (ASTRO-01)
+
+- **Contexto / problema:** el Sol y la Tierra salen de un modelo periódico aproximado (DEC-004). ASTRO-01 (#6) pide series verificables desde un observador en la superficie lunar, con consulta reproducible, unidades/marco/cobertura registrados, caché, faltantes y errores explícitos, comparación controlada con la fuente y sin peticiones por cuadro en la UI.
+- **Decisión:**
+  1. **Fuente:** API oficial de NASA/JPL Horizons v1.2, tabla `OBSERVER` con centro `coord@301` (sitio geodésico sobre la Luna, esfera 1737,4 km, polo `MEAN_ME`).
+  2. **Perfil fijo y versionado** `selene-observer-v1`: `COORD_TYPE=GEODETIC`, `TIME_TYPE=UT`, `CAL_FORMAT=JD`, `ANG_FORMAT=DEG`, `APPARENT=AIRLESS`, `REF_SYSTEM=ICRF`, `QUANTITIES=4,10,13` (azimut/elevación aparentes, % iluminado, diámetro angular), `CSV_FORMAT=YES`, `ELEV_CUT=-90` (no se descartan filas bajo el horizonte).
+  3. **Separación red / cálculo:** el módulo del navegador (`lib/horizons.js`) es puro: construye la consulta, interpreta y valida, pero no hace red ni importa Node. La adquisición es un script Node (`web/scripts/fetch-horizons.mjs`) que se corre antes, nunca desde el render ni desde bucles de análisis.
+  4. **Altura obligatoria con base declarada:** `altitudeKm` + `altitudeBasis` (`measured-datum` | `assumed-zero-reference-sphere`). `elevationKm` de `sites.js` (sintético, DEC-005) se rechaza como altura.
+  5. **Errores, no recortes:** faltantes `n.a.` → `null` contados en `coverage.missing`; valores fuera de rango, columnas inesperadas, filas faltantes, paso irregular o sitio/objetivo/perfil distintos de lo pedido → `HorizonsError` con `code`.
+  6. **No se integra todavía en `analysis.js` ni en la UI:** la combinación con el horizonte y el manejo de carga/estados es CORE-01 (#11). DEC-004 sigue vigente para la interfaz.
+- **Solución aplicada:**
+  - `web/src/lib/horizons.js`: `normalizeRequest()` (sitio MOON_ME vía `coordinates.js`, intervalo en minuto exacto y dentro del rango de `Date` (±8,64e15 ms, si no `invalid-interval`), paso entero que divide el intervalo, máximo 50 000 filas), `buildQueryParams()` / `buildQueryUrl()` (orden fijo, valores entre comillas simples), `cacheKey()` (fuente, versión de API, versión de perfil, objetivo, lon/lat, altura y base, inicio, fin, paso), `unwrapApiResponse()` (firma y campo `error` de la API), `parseObserverTable()` (tabla `$$SOE`/`$$EOE`, encabezado, columnas, rangos, monotonía), `normalizeHorizons()` (valida contra la petición y devuelve `selene.horizons.observer/1` con `source`, `profile`, `request`, `frame`, `units`, `coverage`, `samples`, `assumptions`, `warnings`) y `jdToUnixMs()` (separa parte entera y fraccionaria para conservar precisión de milisegundos).
+  - `web/scripts/fetch-horizons.mjs`: CLI con `--site` o `--lat/--lon`, `--alt-km` o `--assume-zero-altitude` (excluyentes, obligatorio uno), `--start/--stop` ISO con zona, `--step-min`, `--targets`, `--out` (por defecto `web/.cache/horizons`, ignorado por git), `--force` y `--offline`. Guarda el crudo **sin modificar** y su SHA-256, valida antes de escribir (una respuesta con error no entra en caché), revalida clave y hash al reutilizar la caché y mantiene `manifest.json`. Las respuestas HTTP fuera de 2xx no se cachean.
+  - Fixtures en `web/tests/fixtures/horizons/` (Sol y Tierra desde Shackleton R04, 14–16/11/2026, paso 60 min, 49 filas, obtenidos el 14/11/2026 13:28 UTC) con `README.md` de procedencia.
+  - Pruebas: `web/tests/horizons.test.js` (unitarias: validación de petición, perfil, URL, clave de caché, envoltura, parser, `n.a.`, rangos, discrepancias, módulo sin red) y `web/tests/horizons.fixture.test.js` (comparación exacta con la respuesta oficial).
+- **Comparación controlada con la fuente:** tolerancia **0**: cada celda de la tabla oficial debe ser igual a la serie normalizada, el crudo debe conservar su SHA-256 y renormalizar debe dar exactamente el fixture. La tolerancia es cero porque solo se prueba el parseo; no se compara Horizons contra `astro.js` (eso corresponde a CORE-01/TEST-01). El sitio que Horizons dice haber usado se compara con tolerancia 1e-6° y 1e-6 km (Horizons devuelve la altura 0 como `1.92896e-13` y la longitud −171,87° como 188,13°).
+- **Supuestos (a verificar por Teo, Facu, Lucio):**
+  - **Altura 0 km sobre la esfera de 1737,4 km en los fixtures: SUPUESTO**, no medida. Falta una altura datum por sitio (dependencia de TERRAIN-01). Queda registrado en `assumptions` y en `altitudeBasis`.
+  - Las coordenadas de `sites.js` (MOON_ME/DE421, DEC-019) se pasan **sin transformación** al sitio de Horizons, que usa `MEAN_ME (high precision)` con DE441. No se evaluó la diferencia entre ambas realizaciones del marco Mean Earth.
+  - La elevación es respecto del plano tangente local (horizonte matemático): no incluye topografía. Los códigos de presencia solar (`*`) e interferencia (`i`) de Horizons tampoco consideran relieve y se guardan solo como referencia.
+  - `APPARENT=AIRLESS` (sin refracción, correcto para la Luna); azimut/elevación son aparentes (tiempo de luz y aberración según Horizons).
+  - JD UT de Horizons (UTC desde 1962) → Unix ms sin segundos intercalares, igual que el resto de la web.
+  - Los fixtures cubren un intervalo posterior al último EOP medido (`eop.261113.p270209`, medido hasta 2026-11-13): Horizons usa EOP predichos. Se registra en `frame.eopCoverage`.
+  - El diámetro angular de Horizons (segundos de arco) reemplazaría los radios fijos de `analysis.js` (0,27° Sol, 0,95° Tierra) recién en CORE-01; cambiar eso es una decisión científica aparte (CORE-02).
+- **Alternativas descartadas:**
+  - Consultar Horizons desde el navegador: depende de CORS y de la red durante la demo, y arriesga peticiones por cuadro.
+  - Tabla `VECTORS` y cálculo local de azimut/elevación: agrega transformaciones de marco propias sin necesidad, ya que `OBSERVER` entrega azimut/elevación directamente.
+  - Formato de texto sin CSV: parseo por columnas fijas más frágil.
+  - Usar `elevationKm` como altura del observador: es un parámetro sintético (DEC-005).
+  - Interpolar o poner 0 en faltantes: ocultaría huecos de cobertura.
+  - SPICE local: más reproducible a largo plazo pero exige seleccionar y empaquetar kernels; queda como alternativa en `DATA_SOURCES.md`.
+- **Estado:** **vigente** para el adaptador, la adquisición y la caché. Pendiente de validar por astronomía: altura de los sitios, equivalencia MOON_ME/DE421 ↔ MEAN_ME/DE441 y uso de los EOP predichos. La integración en `analysis.js` y la UI queda en CORE-01.
 
 ## DEC-025 — Producto LOLA `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (TERRAIN-01)
 
