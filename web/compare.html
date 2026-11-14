@@ -78,6 +78,21 @@
 
         <section class="cmp-sites" id="cmp-sites" aria-live="polite"></section>
 
+        <!-- Ubicación de los dos sitios en la Luna 3D (DEC-054) -->
+        <section class="cmp-panel cmp-globe-panel" aria-labelledby="cmp-globe-title">
+          <div class="cmp-panel-head">
+            <h2 id="cmp-globe-title" data-i18n="compare.globe.title"></h2>
+          </div>
+          <div class="cmp-globe-layout">
+            <div class="cmp-globe" id="cmp-globe" data-mode="3d" role="img" tabindex="0">
+              <div class="cmp-globe-pins" id="cmp-globe-pins"></div>
+              <p class="map-status map-status-loading" data-i18n="map.loading"></p>
+              <p class="map-status cmp-globe-error" data-i18n="compare.globe.noWebgl"></p>
+            </div>
+            <div class="cmp-globe-info" id="cmp-globe-info"></div>
+          </div>
+        </section>
+
         <section class="cmp-panel" aria-labelledby="cmp-metrics-title">
           <div class="cmp-panel-head">
             <h2 id="cmp-metrics-title" data-i18n="compare.metricsTitle"></h2>

@@ -29,6 +29,7 @@ const VIEWS = {
   global: { lat: 0, lon: 0, dist: 5.3 },
   polar: { lat: -90, lon: 0, dist: 5.25 },
   heat: { lat: -90, lon: 0, dist: 5.25 }, // mapa físico (elevación LOLA), centrado en el polo sur
+  compare: { lat: 0, lon: 0, dist: 4.1 }, // comparación (DEC-054): Luna entera en un recuadro de 620 px
   heatCalc: { lat: -90, lon: 0, dist: 2.1 }, // capas calculadas hasta −80° (DEC-050): más cerca para que el casquete llene la vista
 };
 
