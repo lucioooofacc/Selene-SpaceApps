@@ -640,3 +640,12 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/lib/stats.js` (nuevo, puro: `windowStats()` con medias, extremos y rachas dentro de la ventana) y `web/tests/stats.test.js`; `web/src/ui/params.js` (`averageCard()`, las tarjetas ya no se redibujan en cada cuadro); `web/src/ui/places.js` e `index.html` (`#places-hint`); `main.css`; textos `params.avg*`, `params.period.avg`, `params.periodTitle.avg`, `places.categoryHint.*` (ES/EN; se quitan `period.now` y `periodTitle.now`).
 - **Alternativas descartadas:** promediar también el azimut (ver arriba); mostrar 6 lugares en vez de 5 (no entran 6 tarjetas de 108 px con 8 px de separación).
 - **Estado:** vigente. Reemplaza la parte "AHORA" de UI-15 en el panel de parámetros.
+
+## DEC-043 — Menú del botón "+" con nombre del sitio y avisos de confirmación
+
+- **Contexto / problema:** bloc de notas de UI de Lucio. El "+" agregaba el punto observado al instante con el nombre "Sitio propio N", y el texto "Agregar coordenada como sitio" estaba siempre visible a su lado. En el Figma ese texto es el menú que sale del botón, pero faltaba la lógica. También se pidió poder nombrar el sitio al crearlo y dar respuestas visibles a las acciones.
+- **Decisión:** el "+" abre un menú (formulario) encima del botón con el título del Figma, las coordenadas, un campo "Nombre del sitio" (precargado con "Sitio propio N" y seleccionado) y los botones Cancelar / Agregar. Enter confirma; Escape, Cancelar o un clic afuera cierran. Al agregar se muestra un aviso breve ("Sitio «X» agregado…").
+- **Solución aplicada:** `web/index.html` (formulario `#add-menu`, `aria-haspopup`/`aria-expanded`), `web/src/ui/map.js` (`initAddMenu()`), `web/src/ui/toast.js` (nuevo, aviso con `role="status"`, sin animación con `data-motion="reduced"`), estilos en `main.css` (menú con el borde dorado del Figma; hover y estado deshabilitado del "+"), textos `map.add*` (ES/EN).
+- **Supuestos y límites:** los nombres se muestran con `innerHTML` en varias vistas, así que al crearlos se quitan `< > & " ' \``; ids `custom-<marca de tiempo>` para que no choquen. Los sitios propios siguen viviendo solo en la página (no se guardan al recargar) y la comparación los recibe por coordenadas.
+- **Alternativas descartadas:** `prompt()` del navegador (bloquea la página y rompe la automatización); escapar en cada vista (más cambios y fácil de olvidar en una nueva).
+- **Estado:** vigente.

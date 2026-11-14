@@ -496,15 +496,119 @@ button {
   transform: scale(0.95);
 }
 
-.map-add-tooltip {
-  width: 120px;
-  padding: 2px 4px;
+.map-add-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.map-add-button:not(:disabled):hover {
+  transform: scale(1.06);
+}
+
+/* Menú del "+" (DEC-043): sale del botón hacia arriba, con el estilo del texto del Figma */
+.map-add-menu {
+  position: absolute;
+  right: 0;
+  bottom: 48px; /* encima del botón, sin salir de la tarjeta del mapa */
+  z-index: 6;
+  width: 220px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
   background: var(--field);
-  border: 1px solid var(--border-field);
-  border-radius: 5px;
+  border: 1px solid var(--gold);
+  border-radius: var(--r-md);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+}
+
+.map-add-menu[hidden] {
+  display: none;
+}
+
+.map-add-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.map-add-coords {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-2);
+}
+
+.map-add-label {
   font-size: 12px;
-  line-height: 13px;
-  text-align: center;
+  color: var(--muted-2);
+}
+
+.map-add-menu input {
+  height: 32px;
+  padding: 0 8px;
+  background: var(--panel);
+  border: 1px solid var(--border-field);
+  border-radius: var(--r-md);
+  font-size: 14px;
+}
+
+.map-add-menu input:focus-visible {
+  border-color: var(--gold);
+  outline: none;
+}
+
+.map-add-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.map-add-actions button {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-md);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-field);
+  background: var(--panel);
+  color: var(--muted-2);
+}
+
+.map-add-actions .map-add-confirm {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.map-add-actions button:hover {
+  color: var(--text);
+}
+
+/* Aviso de confirmación (DEC-043) */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 50;
+  max-width: 560px;
+  padding: 10px 16px;
+  background: var(--field);
+  border: 1px solid var(--gold);
+  border-radius: var(--r-md);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+[data-motion="reduced"] .toast {
+  transition: none;
 }
 
 .map-coords {

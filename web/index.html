@@ -87,10 +87,20 @@
             <div class="map-legend" id="map-legend" role="img" hidden></div>
 
             <div class="map-add">
-              <button type="button" class="map-add-button" id="add-site" data-i18n-attr="aria-label:map.addSite">
+              <button type="button" class="map-add-button" id="add-site" aria-haspopup="dialog" aria-expanded="false" aria-controls="add-menu" data-i18n-attr="aria-label:map.addSite;title:map.addSite">
                 <img src="./figma/btn-plus.svg" alt="" width="40" height="40" />
               </button>
-              <span class="map-add-tooltip" data-i18n="map.addSite"></span>
+              <!-- Menú del "+" (DEC-043): en el Figma era el texto al lado del botón -->
+              <form class="map-add-menu" id="add-menu" role="dialog" aria-labelledby="add-menu-title" hidden>
+                <p class="map-add-title" id="add-menu-title" data-i18n="map.addSite"></p>
+                <p class="map-add-coords" id="add-menu-coords"></p>
+                <label class="map-add-label" for="add-menu-name" data-i18n="map.addName"></label>
+                <input type="text" id="add-menu-name" maxlength="40" autocomplete="off" required />
+                <div class="map-add-actions">
+                  <button type="button" class="map-add-cancel" id="add-menu-cancel" data-i18n="map.addCancel"></button>
+                  <button type="submit" class="map-add-confirm" data-i18n="map.addConfirm"></button>
+                </div>
+              </form>
             </div>
             <div class="map-coords" aria-live="polite">
               <div class="map-coord">

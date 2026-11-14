@@ -22,6 +22,7 @@ import { LOLA_MAPS, elevationCanvas, elevationUrl, paletteGradient } from "./ele
 import { HEAT_MIN_LAT, cachedHeatLayer, computeHeatLayer } from "./heat-layer.js";
 import { ensureHeatAtlas } from "./ephemerides.js";
 import { dataStatus, onDataStatus } from "./data-status.js";
+import { toast } from "./toast.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -150,12 +151,59 @@ export function initMap() {
   // La configuración avisa cuando cambia la paleta: se recolorea el mapa de calor.
   document.addEventListener("selene:palette", () => renderMap(getState()));
 
-  $("add-site").addEventListener("click", () => {
+  initAddMenu();
+}
+
+/**
+ * Menú del botón "+" (DEC-043): agrega el punto observado como sitio con el
+ * nombre que elija el usuario (por defecto "Sitio propio N"). Enter confirma,
+ * Escape o "Cancelar" cierran y devuelven el foco al botón.
+ */
+function initAddMenu() {
+  const button = $("add-site");
+  const menu = $("add-menu");
+  const input = $("add-menu-name");
+
+  const close = ({ focus = true } = {}) => {
+    menu.hidden = true;
+    button.setAttribute("aria-expanded", "false");
+    if (focus) button.focus();
+  };
+  const open = () => {
     const { lat, lon, customSites, siteId } = getState();
     if (siteId !== CUSTOM_ID) return; // ya es un sitio guardado
+    $("add-menu-coords").textContent = `${lat.toFixed(2)}° · ${lon.toFixed(2)}°`;
+    input.value = t("map.customName", { n: customSites.length + 1 });
+    menu.hidden = false;
+    button.setAttribute("aria-expanded", "true");
+    input.focus();
+    input.select();
+  };
+
+  button.addEventListener("click", () => (menu.hidden ? open() : close()));
+  $("add-menu-cancel").addEventListener("click", () => close());
+  menu.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.stopPropagation();
+      close();
+    }
+  });
+  // Clic fuera del menú: se cierra sin mover el foco.
+  document.addEventListener("pointerdown", (event) => {
+    if (!menu.hidden && !menu.contains(event.target) && !button.contains(event.target)) close({ focus: false });
+  });
+  menu.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const { lat, lon, customSites, siteId } = getState();
+    if (siteId !== CUSTOM_ID) return close();
     const n = customSites.length + 1;
-    const site = { id: `custom-${n}`, name: t("map.customName", { n }), lat, lon, custom: true };
+    // Los nombres se muestran con innerHTML en varias vistas: se quitan los caracteres de HTML.
+    const name = input.value.replace(/[<>&"'`]/g, "").trim() || t("map.customName", { n });
+    // id único aunque se repitan nombres.
+    const site = { id: `custom-${Date.now().toString(36)}`, name, lat, lon, custom: true };
     setState({ customSites: [...customSites, site], siteId: site.id });
+    close();
+    toast(t("map.addDone", { name }));
   });
 }
 
