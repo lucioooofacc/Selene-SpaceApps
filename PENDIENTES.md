@@ -16,9 +16,9 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~Reemplazar las imágenes de GLOBAL y POLO SUR por un modelo 3D de la Luna (fuentes NASA), con opción de alternar entre 3D y vistas 2D.~~ three.js + CGI Moon Kit de NASA SVS. Resuelto 2026-11-14 (rama `feat/luna-3d`, #25, DEC-021).
 - [ ] Mejorar el detalle del polo sur en 2D (textura de 8k o mosaico polar de LROC) si el equipo lo necesita. — Desarrollo web, DEC-021
 - [x] ~~"Ver comparación detallada" y "Comparar" llevan a una página nueva que compara dos sitios elegidos con métricas técnicas.~~ `compare.html`. Resuelto 2026-11-14 (rama `feat/comparacion-sitios`, #23).
-- [ ] Al volver de la comparación a la misión se pierde la selección (sitio y fechas), porque la página de misión no lee la URL. — Desarrollo web, UI-05
+- [x] ~~Al volver de la comparación a la misión se pierde la selección (sitio y fechas), porque la página de misión no lee la URL. — Desarrollo web, UI-05~~ Resuelto 2026-11-14 (rama `feat/url-estado`, #46, DEC-027).
 - [x] ~~"Opción 3" pasa a ser el informe imprimible de la misión planificada.~~ "Informe" en el menú. Resuelto 2026-11-14 (rama `feat/informe-imprimible`, #24).
-- [ ] "Informe" desde la página de comparación imprime la misión por defecto, no los sitios comparados (misma causa: la misión no lee la URL). — Desarrollo web, UI-06
+- [x] ~~"Informe" desde la página de comparación imprime la misión por defecto, no los sitios comparados (misma causa: la misión no lee la URL). — Desarrollo web, UI-06~~ Resuelto 2026-11-14 (rama `feat/url-estado`, #46, DEC-027).
 - [x] ~~Quitar "Opción 4" y "Opción 5" del menú.~~ "Opción 3" pasa a llamarse "Informe". Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [x] ~~Corregir las faltas de ortografía heredadas del Figma ("Parametros", "Duracion", "Disponilidad", "comparacion", "Mision", "Opcion").~~ Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
 - [x] ~~"Mejores lugares": confirmado el subtítulo "Latitud · Longitud".~~ La web ya lo usaba. Resuelto 2026-11-14 (rama `fix/textos-navegacion`, #21).
@@ -36,6 +36,8 @@ Lista viva de lo que falta aplicar. Las reglas para mantenerla están en `AGENTS
 - [x] ~~El relieve del panorama quedaba demasiado alto y el equipo fuera de lugar respecto de la ilustración.~~ Resuelto 2026-11-13: 12 px por grado, horizonte en y = 400 y escenografía en las posiciones del Figma.
 - [x] ~~La imagen de la pestaña POLO SUR estaba mal ubicada.~~ Resuelto 2026-11-13: posición (136, 176) del Figma.
 - [x] ~~El calendario cortaba la columna del domingo.~~ Resuelto 2026-11-13.
+- [ ] En el panel de la izquierda, del top 5 lugares, tiene que haber categorias para rankear los sitios. Por ejemplo: Interes cientifico, comunicacion terrestre, luz solar aprovechable.
+- [ ] Cambiar titulo de Mapa de Calor, a algo relacionado a que el mapa muestra elevacion del terreno
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 

@@ -232,6 +232,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** sin menciones desactualizadas; URL y configuración de Vercel documentadas; reglas de UI al día.
 - **Fuera de alcance:** validación final de la entrega (DEPLOY-01).
 
+### UI-12 — Guardar la selección de la misión en la URL
+
+- **Prioridad:** P1 · **Issue:** [#46](https://github.com/lucioooofacc/Selene-SpaceApps/issues/46).
+- **Objetivo:** que la misión lea y escriba sitio y fechas en la URL, para volver desde la comparación sin perder la selección, imprimir el informe de los sitios comparados y compartir enlaces.
+- **Rama sugerida:** `feat/url-estado`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `web/src/ui/links.js`, `web/src/main.js`, `web/src/compare.js`, `web/compare.html`, `web/tests/links.test.js`.
+- **Criterios de aceptación:** la misión restaura y actualiza la URL; los enlaces desde la comparación conservan el sitio A y las fechas; lo inválido se ignora; pruebas del parseo.
+- **Fuera de alcance:** guardar el instante de la línea de tiempo o la pestaña del mapa.
+
 ## P2 — Opcionales
 
 ### PERF-01 — Worker y caché persistente
