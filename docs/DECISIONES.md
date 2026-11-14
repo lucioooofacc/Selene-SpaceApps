@@ -358,3 +358,13 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** `sessionStorage` (no sirve para compartir enlaces); guardar también el instante de la línea de tiempo y la pestaña del mapa (más ruido en la URL; se puede sumar después).
 - **Estado:** vigente.
 
+## DEC-028 — Procedencia de los sitios y calidad de los datos en la interfaz (UI-01 parcial)
+
+- **Contexto / problema:** UI-01 (#13) pide mostrar si cada resultado es real, aproximado o sintético, y su fuente. DATA-01 cargó procedencia, confianza y exactitud por sitio (DEC-019), y quedó anotado "decidir si la interfaz muestra la procedencia y la confianza". El contrato de metadatos de CORE-01 todavía no existe.
+- **Decisión** (pedido del equipo, 14/11/2026): mostrar ya lo que existe, sin esperar a CORE-01.
+  - **Procedencia del sitio:** solo campos traducibles (tipo de punto, confianza, exactitud declarada, marco declarado o inferido, fuentes oficiales con enlace y fecha de confirmación). Las notas en prosa de `sites.js` están solo en español y no se muestran. Un punto elegido en el mapa figura como "Sin fuente".
+  - **Calidad de los datos:** coordenadas (real si hay procedencia), Sol y Tierra (aproximado, DEC-004), horizonte (sintético, DEC-005; pasa a real si la función declara `source === "lola"`), imágenes del mapa (real, DEC-021/026) y umbrales (aproximado, DEC-007).
+- **Solución aplicada:** `web/src/ui/provenance.js` arma los dos bloques. Se muestran en un modal "Datos y fuentes" (botón "i" en el panel de parámetros de la misión), en la comparación (procedencia plegable por sitio y panel de calidad) y en el informe imprimible. Las etiquetas usan los tokens de color, así que siguen la paleta para daltonismo. Textos en `quality.*` (ES/EN). El pie del informe dejó de decir que los sitios están "pendientes de validar".
+- **Alternativas descartadas:** mostrar las notas en prosa (rompería el bilingüismo); esperar al contrato de CORE-01 (dejaba sin mostrar datos que ya están).
+- **Estado:** vigente. **Pendiente (resto de UI-01, depende de CORE-01):** fuente, fecha y cobertura de efemérides y horizonte reales; estados de carga, error y faltante; píxeles LOLA con `count = 0` como interpolados (DEC-025).
+
