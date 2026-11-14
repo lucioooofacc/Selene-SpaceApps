@@ -1,0 +1,4 @@
+# Fixtures de JPL Horizons: las pruebas verifican el SHA-256 del crudo tal
+# como lo devolvió la API (LF). Sin conversión de fin de línea para que en
+# Windows (core.autocrlf=true) no se reescriban con CRLF. Ver DEC-062.
+web/tests/fixtures/horizons/*.json -text

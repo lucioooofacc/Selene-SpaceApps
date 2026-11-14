@@ -877,3 +877,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Los puntos propios al norte de −75° siguen con horizonte sintético (fuera de alcance de TERRAIN-03).
 - **Alternativas descartadas:** `LDEM_64` (~474 m/píxel: la mitad de resolución que el polar); SLDEM2015 (±60°: no cubre todos los sitios con un solo producto y suma otro marco de procesamiento); descargar las imágenes enteras (~4,2 GB en disco sin necesidad); pedir rangos HTTP por fila (miles de pedidos y sin MD5 del archivo completo).
 - **Estado:** vigente. Desbloquea DATA-03 (#72). Pendiente de validar por astronomía: los dos horizontes y el posible artefacto de borde de banda en Chang'e 4.
+
+## DEC-062 — Fixtures de JPL Horizons sin conversión de fin de línea
+
+- **Contexto / problema:** `web/tests/validacion/horizons-fixture.test.js` verifica el SHA-256 de las respuestas crudas de Horizons guardadas en `web/tests/fixtures/horizons/`. En Windows con `core.autocrlf=true`, Git las reescribía con CRLF al hacer checkout y fallaban 2 pruebas en local (en la CI, sobre Linux, pasaban).
+- **Decisión:** marcar esos archivos como no texto para Git (`-text`): se guardan y se extraen byte a byte, sin convertir los fines de línea.
+- **Solución aplicada:** `.gitattributes` (nuevo, en la raíz) con `web/tests/fixtures/horizons/*.json -text`. Los archivos del repositorio no cambian (ya estaban con LF); solo se vuelven a extraer en la copia local.
+- **Alternativas descartadas:** normalizar los fines de línea en la prueba antes de calcular el hash (dejaría de verificar el crudo exacto de la API); `*.json -text` para todo el repo (más amplio de lo necesario).
+- **Estado:** vigente.
