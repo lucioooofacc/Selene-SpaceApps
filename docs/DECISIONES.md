@@ -725,6 +725,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - El selector 3D/2D vuelve a verse con las capas calculadas; leyenda, crédito, marcadores y caché (DEC-047) son los mismos.
 - **Solución aplicada:** `web/src/ui/heat-layer.js` (`heatLayerTexture()`, cacheada por imagen de la capa), `web/src/ui/map.js` (rama 3D de las capas), `web/src/ui/moon3d.js` (vista `heatCalc`).
 - **Alternativas descartadas:** pintar la capa sobre la elevación coloreada (dos escalas de color en la misma superficie); una esfera aparte solo para el casquete (más código de three.js para el mismo resultado).
+- **Nota (15/11/2026):** con MAP-02 (DEC-065), fuera del casquete se pinta la capa global y la vista `heatCalc` muestra la Luna entera.
 - **Estado:** vigente. Reemplaza la parte "solo en 2D" de DEC-040. El muestreo "sin suavizar" lo reemplazó DEC-051.
 
 ## DEC-051 — Mapa de calor calculado suavizado; mapa global en espera de TERRAIN-03
@@ -911,4 +912,39 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **Ortografía:** el inglés queda unificado en la variante estadounidense ("Analyzed", "kilometer-scale"), igual que "color" y "behavior". En español, `sim.drag` pasa a voseo ("Arrastrá"), como el resto de la interfaz.
 - **Alternativas descartadas:** unificar ahora el espacio antes de `%`. Muchas cifras se arman en `web/src/ui/` sin pasar por `i18n`, así que haría falta un cambio de formato fuera del alcance de esta tarea; queda en `PENDIENTES.md`.
 - **Estado:** vigente, pendiente de aprobación de Lucio y Cata en el PR.
+
+## DEC-065 — Mapa de calor en toda la superficie lunar con LOLA global (MAP-02)
+
+- **Contexto / problema:** las capas calculadas del mapa de calor (luz, Tierra, Sol + Tierra, viabilidad; DEC-038, DEC-040, DEC-050) solo cubrían el casquete hasta −80°, porque el atlas de horizontes sale de `LDEM_60S_240M`. Las efemérides de JPL Horizons, en cambio, sirven para cualquier punto (traslado de DEC-034).
+- **Decisión** (Lucio, 15/11/2026, MAP-02 #100):
+  - El horizonte fuera del casquete sale de un **atlas global LOLA** calculado desde `LDEM_16` + `LDEC_16` de PDS (~1,9 km/píxel). Se descartaron el horizonte matemático y el sintético.
+  - En **3D** se colorea la Luna entera y el casquete sur conserva su atlas de 240 m. La **vista 2D** polar no cambia (Figma).
+- **Solución aplicada:**
+  - Datos: `web/src/data/terrain/lola-ldem-16.js` (manifiesto con URL, bytes, MD5 calculado por el equipo y grilla de las etiquetas PDS3). `web/scripts/build-global-heat-atlas.mjs` genera `web/public/data/terrain/heat-atlas-global-2deg.{bin,json}` (2,3 MiB, 62 s). La grilla es equirectangular de 2° × 2° (180 × 90 celdas, fila 0 al norte, columna 0 desde −180°), con el algoritmo de DEC-030: 72 azimuts cada 5°, rayos de 300 km, paso de 0,95 km (medio píxel) y observador a 2 m. Se usa la misma codificación que el atlas polar.
+  - `web/src/lib/horizon-lola.js`: `createGlobalCylindricalSampler()`. Es bilineal, con la longitud circular y la fila más cercana a menos de medio píxel del polo, para que ningún rayo se corte en 0° ni cerca de un polo.
+  - `web/src/lib/heat-map.js`:
+    - `globalCellCenter()`, `decodeGlobalHeatAtlas()`, `registerGlobalHeatAtlas()` y `computeRealGlobalHeatStats()`.
+    - El cálculo por celda se factorizó (`bodySeries()`, `atlasStats()`) y es el mismo para los dos atlas; el resultado polar no cambia.
+  - `web/src/lib/analysis.js`: `computeGlobalHeatmap()` tiene las mismas capas y la misma política de visibilidad (DEC-036) y viabilidad (DEC-007) que `computePolarHeatmap()`. **Solo trabaja con datos reales:** si falta el atlas global o la ventana sale de Horizons, devuelve `null` y la interfaz pinta solo el casquete.
+  - Interfaz:
+    - `ui/ephemerides.js` baja el atlas global junto con el polar, con su estado en `ui/data-status.js` (`globalHeatAtlas`). El worker (`workers/compute.worker.js`) calcula las dos grillas en la misma tarea.
+    - `ui/heat-layer.js` colorea la grilla global con la misma interpolación de valores que DEC-051 (longitud circular) y la pinta debajo del casquete detallado en la textura 3D. La caché persistente guarda los valores globales cuantizados a un byte (~22 KB) en lugar de la imagen; la clave pasa a `heat3`.
+    - `ui/map.js` agrega al crédito la resolución y la fuente del resto de la Luna (`map.layerCredit.global*`, ES/EN).
+    - `ui/moon3d.js`: la vista inicial de las capas (`heatCalc`) pasa a mostrar la Luna entera, inclinada hacia el polo sur (lat −60°, distancia 5,25). Reemplaza la cámara cercana de DEC-050.
+- **Validación** (`tests/heat-map-global.test.js` con un atlas sintético; `tests/validacion/heat-atlas-global.test.js` con el atlas real):
+  - En ventanas de 30 días desde el 01/12/2026, la luz de la celda global coincide con el escenario puntual (horizonte LOLA de alta resolución) en Chandrayaan-3 (48,9 % frente a 49,1 %), Chang'e 4 (49,7 % frente a 49,4 %) y Apollo 11 (49,4 % frente a 49,1 %). La prueba usa una tolerancia de 2 p. p., criterio del equipo.
+  - En el borde de −80°, la diferencia media global − polar es de +2,1 p. p. de luz y +0,4 p. p. de Tierra, sin salto sistemático. El RMS (15 y 24 p. p.) refleja la distinta resolución: celdas de ~60 km contra ~6 km.
+  - La cara visible ve la Tierra todo el tiempo y la oculta no, salvo cerca de los polos y en la franja de libración.
+- **Supuestos y límites:**
+  - Las celdas son de 2° (~61 km en el ecuador, más angostas en longitud cerca de los polos) y cada una vale lo de su centro. LDEM_16 no resuelve relieve menor a ~2 km. Por eso, cerca de los polos, la celda global no representa a un sitio puntual: ahí manda el casquete detallado. El crédito lo indica.
+  - La etiqueta de `LDEM_16` declara la versión V3.1 y la de `LDEC_16`, la V3.0. Se usan tal como las publica PDS.
+  - El MD5 de las imágenes no lo publica PDS: es el calculado por el equipo sobre la descarga del 15/11/2026.
+  - Sol y Tierra salen de la serie de Shackleton trasladada (DEC-034). La distancia Tierra–Luna fija agrega < 0,02° de error.
+- **Alternativas descartadas:**
+  - Grilla de 1° (9,3 MiB con 72 azimuts: demasiado para la página).
+  - `LDEM_128` completo (~2 GiB de descarga y horas de cálculo).
+  - Horizonte matemático o sintético fuera del casquete (ver la decisión).
+  - Vista 2D equirrectangular (el polo queda muy estirado y cambia el Figma).
+  - Guardar la imagen global en localStorage (excede la cuota).
+- **Estado:** vigente. Pendiente de validar por astronomía: la grilla global y el empalme en −80°.
 

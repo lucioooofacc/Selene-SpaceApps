@@ -293,12 +293,20 @@ function calcImage(state) {
   return null;
 }
 
+/** Parte del crédito sobre el resto de la Luna (MAP-02, DEC-065). */
+function globalCredit(result, num) {
+  if (result.globalSource) return t("map.layerCredit.global", { deg: num(result.globalSource.cellDeg), km: num(result.globalSource.cellKm) });
+  const st = dataStatus().globalHeatAtlas.state;
+  return st === "loading" ? t("map.layerCredit.globalLoading") : st === "error" ? t("map.layerCredit.globalError") : "";
+}
+
 /** Crédito de la capa calculada: procedencia, resolución y estado de carga del atlas. */
 function calcCredit(result) {
   if (!result) return t("map.layerCredit.computing");
   if (result.source?.kind === "real") {
     const num = (v) => v.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "es-UY");
-    return t("map.layerCredit.real", { km: num(result.source.cellKm), step: num(result.source.stepMinutes / 60) });
+    const polar = t("map.layerCredit.real", { km: num(result.source.cellKm), step: num(result.source.stepMinutes / 60) });
+    return `${polar} ${globalCredit(result, num)}`.trim();
   }
   const atlas = dataStatus().heatAtlas.state;
   return t(atlas === "loading" ? "map.layerCredit.loading" : atlas === "error" ? "map.layerCredit.error" : "map.layerCredit.approximate");

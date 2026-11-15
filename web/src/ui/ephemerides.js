@@ -10,7 +10,7 @@ import { setDataStatus } from "./data-status.js";
 import { loadEphemerides } from "../lib/ephemeris.js";
 import { needsPolarDem } from "../lib/analysis.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
-import { decodeHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
+import { decodeGlobalHeatAtlas, decodeHeatAtlas, registerGlobalHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
 import { SITES } from "../data/sites.js";
 
 let loading = null;
@@ -94,6 +94,7 @@ let atlasLoading = null;
  */
 export function ensureHeatAtlas(onLoaded) {
   const first = !atlasLoading;
+  ensureGlobalHeatAtlas(onLoaded);
   atlasLoading ??= (async () => {
     const base = `${import.meta.env.BASE_URL}data/terrain/heat-atlas-96`;
     const [metaRes, binRes] = await Promise.all([fetch(`${base}.json`), fetch(`${base}.bin`)]);
@@ -114,3 +115,36 @@ export function ensureHeatAtlas(onLoaded) {
   if (first) setDataStatus("heatAtlas", { state: "loading" });
   return onLoaded ? atlasLoading.then((ok) => ok && onLoaded()) : atlasLoading;
 }
+
+let globalAtlasLoading = null;
+
+/**
+ * Baja (una vez por página) el atlas de horizontes de toda la Luna (MAP-02,
+ * DEC-065, ~2,3 MiB) y lo registra; después `computeGlobalHeatmap()` devuelve
+ * el mapa global. Si falla, el mapa sigue solo con el casquete polar.
+ */
+function ensureGlobalHeatAtlas(onLoaded) {
+  if (globalAtlasLoading) return globalAtlasLoading;
+  globalAtlasLoading = (async () => {
+    const base = `${import.meta.env.BASE_URL}data/terrain/${GLOBAL_HEAT_ATLAS_NAME}`;
+    const [metaRes, binRes] = await Promise.all([fetch(`${base}.json`), fetch(`${base}.bin`)]);
+    if (!metaRes.ok || !binRes.ok) throw new Error(`HTTP ${metaRes.status}/${binRes.status}`);
+    registerGlobalHeatAtlas(decodeGlobalHeatAtlas(await binRes.arrayBuffer(), await metaRes.json()));
+  })().then(
+    () => {
+      setDataStatus("globalHeatAtlas", { state: "ready" });
+      onLoaded?.();
+      return true;
+    },
+    (error) => {
+      setDataStatus("globalHeatAtlas", { state: "error", error: error.message });
+      console.warn(`Atlas global del mapa de calor no disponible (solo el casquete polar): ${error.message}`);
+      return false;
+    },
+  );
+  setDataStatus("globalHeatAtlas", { state: "loading" });
+  return globalAtlasLoading;
+}
+
+/** Nombre del atlas global en public/data/terrain (MAP-02, DEC-065). */
+export const GLOBAL_HEAT_ATLAS_NAME = "heat-atlas-global-2deg";

@@ -13,7 +13,7 @@ import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
 import { derivedEphemerisFor, ephemerisFor, ephemerisVersion, positionsAt } from "./ephemeris.js";
 import { POLAR_DEM_COVERAGE_LATITUDE, polarDemVersion, polarHorizonFor } from "./polar-dem.js";
-import { computeRealHeatStats, heatAtlasVersion } from "./heat-map.js";
+import { computeRealGlobalHeatStats, computeRealHeatStats, heatAtlasVersion } from "./heat-map.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -490,11 +490,14 @@ export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minL
   const stats =
     computeRealHeatStats({ startMs, windowDays, size, minLat, need, sunVisible, earthVisible, sunPower }) ??
     approxHeatStats({ startMs, windowDays, size, minLat, need });
-  const base = { size, minLat, mode, source: stats.source };
-  if (mode !== "viability") return { ...base, values: stats[mode] };
+  return heatResult({ size, minLat, mode, source: stats.source }, stats, mode);
+}
 
-  const values = new Float32Array(size * size).fill(-1);
-  const points = new Int8Array(size * size).fill(-1);
+/** Valores de la capa pedida; en "viability", los puntos de cada celda con los criterios de DEC-007. */
+function heatResult(base, stats, mode) {
+  if (mode !== "viability") return { ...base, values: stats[mode] };
+  const values = new Float32Array(stats.sun.length).fill(-1);
+  const points = new Int8Array(stats.sun.length).fill(-1);
   for (let c = 0; c < values.length; c++) {
     if (stats.sun[c] < 0) continue;
     const p =
@@ -506,4 +509,20 @@ export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minL
   }
   // Componentes por celda (fracciones de tiempo y potencia media) para leyendas o tooltips.
   return { ...base, values, points, maxPoints: 6, components: { sun: stats.sun, earth: stats.earth, power: stats.power } };
+}
+
+/**
+ * Mapa de calor de toda la Luna (MAP-02, DEC-065): las mismas capas y la
+ * misma política que `computePolarHeatmap`, sobre la grilla equirectangular
+ * del atlas global (LDEM_16; `cols × rows`, fila 0 al norte, columna 0 desde
+ * −180°). Solo con datos reales: devuelve `null` si falta el atlas global, no
+ * hay efemérides o la ventana sale de la cobertura de Horizons (no hay versión
+ * aproximada: fuera del casquete polar la interfaz no pinta nada).
+ */
+export function computeGlobalHeatmap({ startMs, windowDays, mode }) {
+  if (!HEAT_MODES.includes(mode)) throw new RangeError(`modo de mapa de calor desconocido: ${mode}`);
+  const need = { sun: mode !== "earth", earth: mode !== "sun" };
+  const stats = computeRealGlobalHeatStats({ startMs, windowDays, need, sunVisible, earthVisible, sunPower });
+  if (!stats) return null;
+  return heatResult({ cols: stats.cols, rows: stats.rows, mode, source: stats.source }, stats, mode);
 }

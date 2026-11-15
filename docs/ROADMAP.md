@@ -101,6 +101,7 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 | UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ✅ (PR #67, DEC-039) | — |
 | UI-02 (#15): resolución, huecos y cambios asíncronos | ✅ (PR #69, DEC-041) | — |
 | MAP-01 (#16): modo de iluminación calculada en el mapa | ✅ motor (PR #66, DEC-038) e interfaz (PR #68, DEC-040) | — |
+| MAP-02 (#100): mapa de calor en toda la Luna | 🔎 en revisión | Atlas global LOLA de `LDEM_16` (2°); casquete sur detallado; 2D sin cambios (DEC-065) |
 | Textos que contradecían los datos reales | ✅ (PR #70) | — |
 | PERF-01 (#18): worker y caché persistente | ✅ (PR #79, DEC-047) | — |
 | I18N-01 (#17): revisión de traducciones ES/EN | 🔎 en revisión (Lucio, Cata) | Claves equivalentes y terminología unificada (DEC-064) |

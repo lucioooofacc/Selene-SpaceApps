@@ -110,6 +110,9 @@ export default {
       loading: "Approximate map while the LOLA horizons load (periodic model and synthetic horizon).",
       error: "The LOLA horizons could not be loaded: approximate map (periodic model and synthetic horizon).",
       approximate: "Approximate map: the period is outside the JPL Horizons data (Nov 2026 – Dec 2027). Periodic model and synthetic horizon.",
+      global: "Rest of the Moon (3D view): {deg}° cells (~{km} km at the equator) with LOLA horizons from LDEM_16 (~1.9 km/pixel): relief smaller than about 2 km is not resolved.",
+      globalLoading: "Rest of the Moon: loading the global LOLA horizon atlas…",
+      globalError: "Rest of the Moon not computed: the global LOLA horizon atlas could not be loaded.",
     },
   },
   params: {

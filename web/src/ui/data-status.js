@@ -15,6 +15,7 @@ const status = {
   ephemerides: { state: "idle", loaded: [], failed: [] },
   polarDem: { state: "idle", error: null },
   heatAtlas: { state: "idle", error: null },
+  globalHeatAtlas: { state: "idle", error: null }, // MAP-02, DEC-065
 };
 const listeners = new Set();
 
@@ -24,6 +25,7 @@ export function dataStatus() {
     ephemerides: { ...status.ephemerides },
     polarDem: { ...status.polarDem },
     heatAtlas: { ...status.heatAtlas },
+    globalHeatAtlas: { ...status.globalHeatAtlas },
   };
 }
 

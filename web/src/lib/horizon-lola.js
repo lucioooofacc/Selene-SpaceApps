@@ -158,6 +158,49 @@ export function createCylindricalWindowSampler({ dem, counts, window: w, grid, s
 }
 
 /**
+ * Muestreador bilineal sobre una grilla cilíndrica simple GLOBAL completa en
+ * memoria (LDEM_16 + LDEC_16, MAP-02, DEC-065), con el mismo contrato que
+ * `createRasterSampler`. A diferencia de la ventana, la longitud es circular
+ * (el vecino de la última columna es la primera) y en las filas extremas
+ * (a menos de medio píxel del polo) se usa la fila más cercana: así ningún
+ * rayo se corta al cruzar 0° de longitud o pasar cerca de un polo.
+ * @param {{dem: ArrayLike<number>, counts: ArrayLike<number>, grid: object, scalingFactor: number}} args
+ *   `dem` en DN int16 (metros = DN × scalingFactor) y `grid` con `lines`,
+ *   `samples`, `pixelsPerDegree`, `lineProjectionOffset`,
+ *   `sampleProjectionOffset`, `centerLatitude` y `centerLongitude`.
+ */
+export function createGlobalCylindricalSampler({ dem, counts, grid, scalingFactor }) {
+  const { lines, samples } = grid;
+  const n = lines * samples;
+  if (dem.length !== n || counts.length !== n) throw new RangeError(`los rasters deben tener ${n} valores`);
+  const ppd = grid.pixelsPerDegree;
+  const kmPerDn = scalingFactor / 1000;
+  return function sample(lat, lon) {
+    if (!(lat >= -90 && lat <= 90)) return null;
+    const line = Math.min(lines - 1, Math.max(0, grid.lineProjectionOffset - ppd * (lat - grid.centerLatitude)));
+    const lon360 = ((lon % 360) + 360) % 360;
+    let s = grid.sampleProjectionOffset + ppd * (lon360 - grid.centerLongitude);
+    s = ((s % samples) + samples) % samples;
+    const l0 = Math.min(lines - 2, Math.floor(line));
+    const s0 = Math.floor(s) % samples;
+    const s1 = (s0 + 1) % samples;
+    const fl = line - l0;
+    const fs = s - Math.floor(s);
+    const r0 = l0 * samples;
+    const r1 = r0 + samples;
+    const idx = [r0 + s0, r0 + s1, r1 + s0, r1 + s1];
+    const w = [(1 - fl) * (1 - fs), (1 - fl) * fs, fl * (1 - fs), fl * fs];
+    let h = 0;
+    let low = false;
+    for (let k = 0; k < 4; k++) {
+      h += dem[idx[k]] * w[k];
+      if (w[k] > 0 && counts[idx[k]] === 0) low = true;
+    }
+    return { heightKm: h * kmPerDn, lowConfidence: low };
+  };
+}
+
+/**
  * Calcula el perfil de horizonte de un punto.
  * @param {(lat:number, lon:number) => ({heightKm:number, lowConfidence:boolean} | null)} sampler
  * @param {{lat:number, lon:number}} site
