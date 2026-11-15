@@ -1294,3 +1294,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** cambiar `longestDarkHours()` para que cuente la noche hasta el próximo amanecer fuera de la ventana (las baterías solo importan durante la misión y cambiaría resultados el día de la entrega); cambiar el ejemplo a 31 días (seguiría dependiendo de la hora de inicio).
 - **Estado:** vigente.
 
+## DEC-086 — Redacción de los textos de supuestos editables y relevo
+
+- **Contexto / problema:** pendientes de redacción de DEC-083 y DEC-084 (Alfonso, Cata, Lucio). Había una doble negación («nunca no cumple» / «never not met»), una ayuda que se leía al revés («con relevo si se ve menos del 80 %»), una abreviatura poco clara en la tabla de umbrales («menos, con relevo») y una frase que atribuía el relevo a «los planes de Artemis», cuando el criterio de Artemis III supone que no hay relevo (`docs/VALIDACION.md`).
+- **Decisión:** corregir solo la redacción, en ES y EN, sin cambiar reglas ni valores.
+- **Solución aplicada:** `web/src/i18n/es.js` y `en.js`: `relayRule.rule.relay` («como prevén los planes posteriores a Artemis III»), `relayRule.short` («menos (con relevo)» / «≥ 25 % (sin relevo)», con el formato «cumple · al límite»), `relayRule.hint` (requisito en positivo: «a la vista al menos el {comms} % del tiempo; …»), `params.relayHint` y `help.viability.items.7` («nunca llega a «no cumple»»), `help.viability.items.5` y `.6` (frases más claras) y, en inglés, `help.viability.items.2` («at or above»). Los textos armados se revisaron con y sin relevo en los dos idiomas.
+- **Alternativas descartadas:** reescribir la guía entera (riesgo el día de la entrega).
+- **Estado:** vigente. Revisión hecha a pedido de Lucio; Alfonso y Cata pueden ajustarla.
+

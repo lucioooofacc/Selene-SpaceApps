@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (validación del ejemplo de la guía de viabilidad, rama `docs/validar-ejemplo-viabilidad`, DEC-085; antes: revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
+Última actualización: 2026-11-15 (redacción de los textos de viabilidad, rama `i18n/redaccion-viabilidad`, DEC-086; antes: validación del ejemplo de la guía de viabilidad, rama `docs/validar-ejemplo-viabilidad`, DEC-085; antes: revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
 
 ---
 
@@ -152,10 +152,10 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 
 - [x] ~~Que las 24 h de baterías y el 80 % de comunicación mínima de la viabilidad se puedan modificar, y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h. — Lucio · VIAB-02 #142~~ Resuelto 2026-11-15 (rama `feat/umbrales-variables`, DEC-083).
 - [x] ~~Validar el ejemplo de la guía de viabilidad (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos como alternativa a las baterías. — Teo, Facu, Lucio · DEC-083~~ Resuelto 2026-11-15 (rama `docs/validar-ejemplo-viabilidad`, DEC-085, `docs/VALIDACION.md`): cifras y viabilidad correctas, pero las 340 h son la noche dentro de la misión (la entera dura ~356 h); se corrigió el texto en ES/EN. RTG respaldado por los ALSEP con SNAP-27.
-- [ ] Revisar la redacción de los textos nuevos de los supuestos editables (`params.battery`, `params.comms`, sus ayudas, `help.params.items.7`, `help.viability.items.4–6`, ES/EN). — Alfonso, Cata, Lucio · DEC-083
+- [x] ~~Revisar la redacción de los textos nuevos de los supuestos editables (`params.battery`, `params.comms`, sus ayudas, `help.params.items.7`, `help.viability.items.4–6`, ES/EN). — Alfonso, Cata, Lucio · DEC-083~~ Resuelto 2026-11-15 (rama `i18n/redaccion-viabilidad`, DEC-086): punto 5 («noches más largas de lo que aguantan unas baterías de 24 h») y punto 6 (360 h como máximo del campo); el resto quedó igual.
 - [ ] Hay dos decisiones numeradas DEC-082 en `docs/DECISIONES.md` (vista inicial GLOBAL y versión "Emoción" de la demo); renumerar la segunda. — Equipo · detectado en VIAB-02
 
-- [ ] Revisar la redacción de los textos de la opción de relevo (`relayRule.*`, `params.relay`, `params.relayHint`, `map.banner.allLowNoRelay`, `help.viability.items.7`, ES/EN). — Alfonso, Cata, Lucio · DEC-084
+- [x] ~~Revisar la redacción de los textos de la opción de relevo (`relayRule.*`, `params.relay`, `params.relayHint`, `map.banner.allLowNoRelay`, `help.viability.items.7`, ES/EN). — Alfonso, Cata, Lucio · DEC-084~~ Resuelto 2026-11-15 (rama `i18n/redaccion-viabilidad`, DEC-086): «nunca no cumple» pasa a «nunca llega a «no cumple»», `relayRule.hint` se lee como requisito («a la vista al menos el {comms} %…»), `relayRule.short` sigue el formato «cumple · al límite» de la tabla y el relevo se atribuye a los planes posteriores a Artemis III (el criterio de Artemis III supone que no hay relevo).
 
 ## Textos y traducción
 
