@@ -65,5 +65,30 @@ Desde `web/`:
 
 ## Lo que no se valida
 
-- No hay valores publicados de iluminación por sitio integrados para comparar (por ejemplo, Mazarico et al. 2011): **no se inventan**. Queda en `PENDIENTES.md`.
+- No hay una prueba automática contra valores publicados de iluminación por sitio. Se hizo una comparación manual con Gläser et al. (2017) el 15/11/2026: ver la sección siguiente.
 - Los umbrales de viabilidad (DEC-007) son un criterio del equipo, no una magnitud física.
+
+## Revisión de astronomía del 15/11/2026 (DEC-070)
+
+Verificaciones independientes de los puntos de astronomía abiertos en `PENDIENTES.md`, pedidas por Lucio. "Independiente" quiere decir que cada dato se compara con otro producto, otra fuente o una cuenta aparte, no con el mismo código que lo generó. Los scripts fueron exploratorios y no se versionaron; las comparaciones que valen como regresión ya están en `web/tests/validacion/`. Fechas: un año desde el 01/11/2026 o 30 días desde el 01/12/2026, según se indica.
+
+| Punto | Comparación | Resultado | Conclusión |
+| --- | --- | --- | --- |
+| Orientación de la proyección polar (DEC-025) | Altura del suelo de las 7232 celdas del atlas polar (proyección polar, `LDEM_60S_240M`) contra `LDEM_16` (cilíndrica, otro producto) en el centro de cada celda | Diferencia media 1,1 m, RMS 56 m. Con la X invertida, RMS 2490 m | Orientación correcta |
+| Marco de R01 y R23 (DEC-019) | Altura de cada punto contra su entorno en el DEM polar de 480 m (Mean Earth), y contra puntos a 860 m (separación aproximada entre los marcos PA y ME) | R01 supera al 96 % del terreno en 3 km y queda 56 m sobre la media a 860 m: está en la cresta. R23 supera al 64 % y está en la meseta del macizo | Coherente con Mean Earth (el marco sigue sin estar declarado por la fuente) |
+| Marco de IM-1 y Chandrayaan-3 (DEC-019) | Valor de PGDA contra NSSDCA, que declara DE421 Mean Earth | 73 m (IM-1; NSSDCA redondea a 0,01°, ±150 m) y 18 m (Chandrayaan-3) | Coherente con Mean Earth: la diferencia entre PA y ME sería de ~860 m |
+| Horizonte de Chang'e 4 (DEC-061) | Horizonte de la tabla (`LDEM_128` V3.0) contra el calculado en el punto con `LDEM_16` V3.1 | Diferencia media −0,14°, RMS 0,17°. El máximo de cada azimut está a 50–100 km, el borde de Von Kármán | Validado |
+| Borde de banda en −45° (DEC-061) | `LDEM_128` − `LDEM_16` a cada lado de −45° en la ventana de Chang'e 4 | Salto de 0,7 m en el borde frente a 0,4 m lejos de él | Sin artefacto |
+| Horizonte de Apollo 11 (DEC-061) | Igual que Chang'e 4 | Diferencia media −0,82°. El horizonte de la tabla sale de puntos a 0,2–0,5 km, en su mayoría píxeles interpolados (74 % de los azimuts), y el suelo del punto queda 13 m por debajo del de `LDEM_16` | **Artefacto cercano**: el horizonte está unos 0,9° alto. Costo estimado: ~0,5 p. p. de luz por año; la Tierra no cambia (siempre alta) |
+| Iluminación contra la bibliografía | R01 y sus alrededores (hasta 4,8 km, DEM de 480 m), un año | R01: 59,7 % (240 m). Máximo del entorno: 89,9 %, a 480 m al norte de R01. Gläser et al. (2017) dan 77–88 % de iluminación media en las mejores zonas del polo sur, con el máximo en esta cresta | El modelo reproduce la bibliografía. R01 es el centro de un polígono de la tabla de NASA, no el punto más iluminado |
+| Horizonte regional de los puntos propios (DEC-068) | Escenario con el horizonte interpolado del atlas de 2° contra el horizonte exacto del punto con `LDEM_16`, 10 puntos al azar por banda, 30 días | −60° a +60°: luz media 1,1 p. p. (máx. 2,0), Tierra 0. +60° a +75°: luz 2,2 (máx. 6,0), Tierra 2,7 (máx. 23,8). −75° a −60°: luz 3,8 (máx. 9,0), Tierra 14,3 (máx. 100). +75° a +88°: luz 13,9 (máx. 38,6), Tierra 11,3 (máx. 25,5) | **Bueno en latitudes medias; no confiable hacia los polos**, sobre todo para la Tierra cerca del limbo |
+| Terreno del informe fuera del polo (DEC-067) | Alturas de la tabla (`LDEM_128`) contra el horizonte de DEC-061 y contra `LDEM_16` | ≤ 1 m y ≤ 13 m. Pendientes medias de 0,3–0,9° en mares y en el fondo de Von Kármán | Validado |
+| Mapa de calor global (DEC-065) | Ver DEC-065 y la fila de la proyección polar | Latitudes medias ≤ 0,3 p. p. de luz; empalme en −80° sin sesgo; alturas del atlas polar coherentes con `LDEM_16` | Validado |
+| Umbrales de pendiente (DEC-059) | Requisitos de NASA para el HLS de Artemis | Pendiente de aterrizaje < 10° en 100 m (actualización HLS 2024) y tolerancia de inclinación de 8° (informe del Inspector General) | Verde < 5°, dorado 5–10° y rojo ≥ 10° son coherentes. Las pendientes del informe son de escala kilométrica, más suaves que a 100 m |
+| Trayectoria (DEC-059) | Δv del modelo contra Apollo 11 | TLI 3,14 km/s (Apollo 11: ~3,18), captura 0,82 km/s (~0,89 con LOI-1) y descenso mínimo 1,63 km/s (el LM gastó ~2,0 km/s con pérdidas por gravedad, que el modelo excluye y lo dice) | Coherente con una transferencia de energía mínima. Órbitas de 185 km y ~100 km y ~1 día en órbita lunar, como en Apollo |
+| Rasgos científicos (DEC-029) | Cada rasgo contra su cita; las regiones de Artemis III contra el anuncio de NASA del 28/10/2024 | Las nueve regiones de 2024 incluyen Malapert Massif y no la cresta de Shackleton; el código solo marca Malapert | Validado |
+| DE421 contra DE441 al pasar el sitio a Horizons (DEC-024) | Cota del efecto | No se cuantificó la diferencia entre los marcos ME de DE421 y DE441. Aun si fuera de 100 m, la vertical local cambiaría 0,003°, frente a ~0,085° que se mueve el Sol en un paso de 10 min y a la exactitud de las coordenadas (10–115 m) | Aceptable a la escala de la app |
+| EOP predichos después del 13/11/2026 (DEC-024) | Razonamiento sobre el modelo | Los parámetros de orientación de la Tierra (EOP) solo orientan el marco fijo a la Tierra. El observador está en la Luna y Horizons da la posición del centro de la Tierra, que no depende de ellos. Un segundo intercalar movería los tiempos 1 s | Sin efecto a la escala de la app |
+
+Fuentes externas consultadas: anuncio de NASA de las regiones de Artemis III (28/10/2024); actualización del HLS de Artemis (NASA, 2024, NTRS 20240009596); Gläser et al. (2017), iluminación de los polos con DTM de LOLA, citado a través de resúmenes (no se leyó el artículo completo); valores de Δv de Apollo 11 de los informes de misión.
+
