@@ -85,6 +85,8 @@ export const SITES = [
       frameNote: LSDB_FRAME,
       urls: [SOURCE_URLS.lunarSurfaceDataBook],
       featureUrls: [SOURCE_URLS.usgsShackleton],
+      // DOC-02 (DEC-074): por qué la luz de R01 queda por debajo de la bibliografía.
+      noteKey: "quality.siteNote.shackleton",
     },
     confidence: {
       level: "alta",
