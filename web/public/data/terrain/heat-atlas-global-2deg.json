@@ -1,0 +1,40 @@
+{
+  "schema": "selene-heat-atlas-global/v1",
+  "file": "heat-atlas-global-2deg.bin",
+  "sha256": "bad0d5b573cf7142e19e210df579bf70505246f6b17671d1d8c7735588f031a8",
+  "grid": {
+    "cols": 180,
+    "rows": 90,
+    "cellDeg": 2,
+    "azimuths": 72,
+    "azStepDeg": 5,
+    "cells": 16200,
+    "order": "fila 0 al norte (centro 90° − cellDeg/2), columna 0 desde −180°"
+  },
+  "params": {
+    "maxDistanceKm": 300,
+    "stepKm": 0.95,
+    "observerHeightM": 2,
+    "azimuthStepDeg": 5,
+    "algorithm": "selene-lola-horizon/v1"
+  },
+  "encoding": {
+    "horizon": "int16 LE, centésimas de grado, cells × azimuths (celda por celda, azimut desde el norte)",
+    "groundM": "int16 LE, metros sobre la esfera de 1737,4 km, cells",
+    "lowPct": "uint8, % de azimuts cuyo horizonte usa píxeles con count = 0, cells"
+  },
+  "source": {
+    "dataSetId": "LRO-L-LOLA-4-GDR-V1.0",
+    "doi": "10.17189/1520642",
+    "dem": {
+      "productId": "LDEM_16",
+      "productVersion": "V3.1",
+      "md5": "87d937cf968462a61043e1e5b3166d65"
+    },
+    "counts": {
+      "productId": "LDEC_16",
+      "productVersion": "V3.0",
+      "md5": "5d9572b75662d1242aa91f5f6ac917b6"
+    }
+  }
+}
