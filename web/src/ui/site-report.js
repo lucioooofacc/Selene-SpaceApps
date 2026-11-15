@@ -13,6 +13,7 @@ import { needsGlobalDem, siteViability, terrainForSite } from "../lib/site-terra
 import { hohmannTransfer, missionTimeline, moonDistanceAt, R_EARTH, R_MOON } from "../lib/trajectory.js";
 import { getLang, t } from "../i18n/index.js";
 import { dataNote, lolaHtml, lolaTitle, provenanceHtml, qualityHtml, traitsHtml } from "./provenance.js";
+import { attachTimeHover, laneStates } from "./chart-hover.js";
 
 const $ = (id) => document.getElementById(id);
 const num = (v, d = 0) => v.toLocaleString(getLang() === "en" ? "en-US" : "es-UY", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -53,7 +54,10 @@ function kpisHtml(site, scenario, st) {
     <p class="cmp-hint">${t("compare.criteriaNote")} <button type="button" class="help-button help-inline" data-help="viability" aria-haspopup="dialog" aria-expanded="false" aria-label="${t("help.open.viability")}" title="${t("help.open.viability")}">?</button></p>`;
 }
 
-/** Ventanas de luz y de enlace como franjas sobre el período. */
+/**
+ * Ventanas de luz y de enlace como franjas sobre el período. Devuelve el SVG
+ * y la geometría para el cartel de hora (`attachTimeHover`).
+ */
 function windowsSvg(scenario) {
   const W = 1180;
   const rowH = 34;
@@ -63,7 +67,7 @@ function windowsSvg(scenario) {
   const row = (y, windows, color, label) =>
     `<text class="cmp-axis" x="0" y="${y + 22}">${label}</text>
      <rect x="${left}" y="${y}" width="${W - left - 10}" height="${rowH - 6}" rx="4" fill="rgba(255,255,255,0.04)"/>
-     ${windows.map((w) => `<rect x="${x(w.start).toFixed(1)}" y="${y}" width="${Math.max(1.5, x(w.end) - x(w.start)).toFixed(1)}" height="${rowH - 6}" rx="3" fill="${color}"><title>${dateUTC(w.start)} ${timeUTC(w.start)} → ${dateUTC(w.end)} ${timeUTC(w.end)} (${duration((w.end - w.start) / 60000)})</title></rect>`).join("")}`;
+     ${windows.map((w) => `<rect x="${x(w.start).toFixed(1)}" y="${y}" width="${Math.max(1.5, x(w.end) - x(w.start)).toFixed(1)}" height="${rowH - 6}" rx="3" fill="${color}"/>`).join("")}`;
   const days = scenario.windowDays;
   const every = days <= 7 ? 1 : days <= 15 ? 2 : 5;
   let ticks = "";
@@ -71,11 +75,22 @@ function windowsSvg(scenario) {
     const xx = x(scenario.startMs + d * DAY_MS).toFixed(1);
     ticks += `<line x1="${xx}" y1="0" x2="${xx}" y2="${2 * rowH + 4}" class="cmp-grid"/><text class="cmp-axis" x="${xx}" y="${2 * rowH + 20}" text-anchor="middle">${dateUTC(scenario.startMs + d * DAY_MS).split(" ").slice(0, 2).join(" ")}</text>`;
   }
-  return `<svg viewBox="0 0 ${W} ${2 * rowH + 28}" role="img" aria-label="${t("reportWeb.lightHint")}">
+  const html = `<svg viewBox="0 0 ${W} ${2 * rowH + 28}" role="img" aria-label="${t("reportWeb.lightHint")}">
     ${ticks}
     ${row(0, scenario.summary.lightWindows, "var(--sun)", t("sim.sunBody"))}
     ${row(rowH, scenario.summary.linkWindows, "var(--earth)", t("sim.earthBody"))}
   </svg>`;
+  const lane = (top, label, windows, what) => ({ top, height: rowH - 6, label, windows, ...laneStates[what]() });
+  const hover = {
+    width: W,
+    height: 2 * rowH + 28,
+    left,
+    right: W - 10,
+    startMs: scenario.startMs,
+    endMs: scenario.endMs,
+    lanes: [lane(0, t("sim.sunBody"), scenario.summary.lightWindows, "light"), lane(rowH, t("sim.earthBody"), scenario.summary.linkWindows, "link")],
+  };
+  return { html, hover };
 }
 
 function metricsHtml(scenario) {
@@ -203,7 +218,9 @@ export function renderSiteReport({ site, scenario, dates, demState, globalDemSta
   $("rw-note").textContent = dataNote(scenario);
   $("rw-kpis").innerHTML = kpisHtml(site, scenario, st);
   $("rw-terrain").innerHTML = terrainHtml(site, scenario, demState, globalDemState);
-  $("rw-windows").innerHTML = windowsSvg(scenario);
+  const windows = windowsSvg(scenario);
+  $("rw-windows").innerHTML = windows.html;
+  attachTimeHover($("rw-windows"), windows.hover);
   $("rw-metrics").innerHTML = metricsHtml(scenario);
   $("rw-position").innerHTML = positionHtml(st);
   $("rw-dates").innerHTML = datesHtml(dates, scenario.windowDays, scenario.startMs);

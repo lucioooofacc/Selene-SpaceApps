@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (logo nuevo e inglés por defecto, rama `design/logo-idioma-en`).
+Última actualización: 2026-11-15 (aviso de logo con IA, cartel de hora y leyenda del mapa, rama `design/logo-ia-tooltips-mapa`).
 
 ---
 
@@ -81,6 +81,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~En comparar e informe el calendario quedaba debajo de las tarjetas. — Lucio~~ Resuelto 2026-11-15 (rama `fix/calendario-encima`, DEC-060): los controles van en una capa por encima.
 - [x] ~~En comparar e informe se rompieron los selectores de sitio y fecha de arriba (el «?» de la guía ocupaba la primera celda de la grilla y corría los campos). — Lucio~~ Resuelto 2026-11-15 (rama `fix/controles-ayuda`, DEC-073): el «?» va en la esquina, fuera de la grilla.
 - [x] ~~Usar el logo nuevo del equipo y abrir la página en inglés por defecto. — Lucio~~ Resuelto 2026-11-15 (rama `design/logo-idioma-en`, DEC-077).
+- [x] ~~Marcar el logo como imagen generada con IA, cartel con la hora al pasar el mouse por las barras de comparar e informe, y separar el título de la leyenda del mapa de calor de "Noche más larga". — Lucio~~ Resuelto 2026-11-15 (rama `design/logo-ia-tooltips-mapa`, DEC-078).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
