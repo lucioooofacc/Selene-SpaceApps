@@ -12,6 +12,11 @@ import { computeScenario } from "../src/lib/analysis.js";
 import { SITES } from "../src/data/sites.js";
 import { setDataStatus } from "../src/ui/data-status.js";
 import { ephemerisHtml, qualityRows } from "../src/ui/provenance.js";
+import { setLang } from "../src/i18n/index.js";
+
+// Los textos esperados están en español; desde DEC-077 el idioma por defecto es inglés.
+globalThis.document ??= { documentElement: {}, querySelectorAll: () => [] };
+setLang("es");
 
 const DIR = resolve(import.meta.dirname, "../public/data/ephemerides");
 const readSite = (id) => JSON.parse(readFileSync(resolve(DIR, `${id}.json`), "utf8"));
