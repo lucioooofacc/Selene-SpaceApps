@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (tres versiones de la demo en video, rama `docs/demo`).
+Última actualización: 2026-11-15 (la página abre en la pestaña GLOBAL, rama `design/vista-inicial-global`).
 
 ---
 
@@ -83,6 +83,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Usar el logo nuevo del equipo y abrir la página en inglés por defecto. — Lucio~~ Resuelto 2026-11-15 (rama `design/logo-idioma-en`, DEC-077).
 - [x] ~~Marcar el logo como imagen generada con IA, cartel con la hora al pasar el mouse por las barras de comparar e informe, y separar el título de la leyenda del mapa de calor de "Noche más larga". — Lucio~~ Resuelto 2026-11-15 (rama `design/logo-ia-tooltips-mapa`, DEC-078).
 - [x] ~~Al elegir un punto, que la Luna se anime y lleve la vista hasta él. — Lucio~~ Resuelto 2026-11-15 (rama `feat/luna-centrar-punto`, DEC-079).
+- [x] ~~Que la página abra en la pestaña GLOBAL del mapa, no en MAPA DE CALOR. — Lucio~~ Resuelto 2026-11-15 (rama `design/vista-inicial-global`, DEC-082).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
