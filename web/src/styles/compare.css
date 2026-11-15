@@ -724,9 +724,18 @@
   font-size: 14px;
 }
 
+/* La etiqueta reutiliza el estilo de las tarjetas de "Mejores lugares", que la posiciona en absoluto. */
 .rw-requirements .place-verdict {
+  position: static;
   display: inline-block;
   min-width: 96px;
+  margin-right: 8px;
+  text-align: center;
+}
+
+.rw-requirements li {
+  display: flex;
+  align-items: center;
 }
 
 .cmp-criteria td small {
