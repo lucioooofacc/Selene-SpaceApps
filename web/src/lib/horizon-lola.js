@@ -157,6 +157,49 @@ export function createCylindricalWindowSampler({ dem, counts, window: w, grid, s
   };
 }
 
+/** Radio del entorno del que sale la altura del observador en LDEM_128 (TERRAIN-05, DEC-075). */
+export const WINDOW_GROUND_RADIUS_KM = 1;
+
+/**
+ * Altura del suelo del observador en una ventana de LDEM_128 como la mediana
+ * de los píxeles CON mediciones propias (`count > 0`) a menos de `radiusKm`
+ * del punto (TERRAIN-05, DEC-075). En LDEM_128 el píxel del punto suele ser
+ * interpolado y puede quedar decenas de metros por debajo del terreno medido,
+ * lo que eleva todo el horizonte. Devuelve `null` si no hay píxeles medidos.
+ * @returns {{heightKm:number, pixels:number, radiusKm:number} | null}
+ */
+export function windowGroundMedian({ dem, counts, window: w, grid, scalingFactor }, site, radiusKm = WINDOW_GROUND_RADIUS_KM) {
+  const ppd = grid.pixelsPerDegree;
+  const pxKm = (2 * Math.PI * (grid.radiusKm ?? 1737.4)) / (360 * ppd);
+  const cosLat = Math.cos(site.lat * DEG);
+  const line = grid.lineProjectionOffset - ppd * (site.lat - grid.centerLatitude) - w.line0;
+  const lon360 = ((site.lon % 360) + 360) % 360;
+  let s = grid.sampleProjectionOffset + ppd * (lon360 - grid.centerLongitude) - w.sample0;
+  s = ((s % grid.samples) + grid.samples) % grid.samples;
+  const l0 = Math.round(line);
+  const s0 = Math.round(s);
+  const rl = Math.ceil(radiusKm / pxKm);
+  const rs = Math.ceil(radiusKm / (pxKm * Math.max(cosLat, 1e-6)));
+  const values = [];
+  for (let dl = -rl; dl <= rl; dl++) {
+    for (let ds = -rs; ds <= rs; ds++) {
+      const l = l0 + dl;
+      const c = s0 + ds;
+      if (l < 0 || c < 0 || l >= w.lines || c >= w.samples) continue;
+      const dy = dl * pxKm;
+      const dx = ds * pxKm * cosLat;
+      if (dx * dx + dy * dy > radiusKm * radiusKm) continue;
+      const i = l * w.samples + c;
+      if (counts[i] > 0) values.push(dem[i]);
+    }
+  }
+  if (!values.length) return null;
+  values.sort((a, b) => a - b);
+  const mid = values.length >> 1;
+  const dn = values.length % 2 ? values[mid] : (values[mid - 1] + values[mid]) / 2;
+  return { heightKm: (dn * scalingFactor) / 1000, pixels: values.length, radiusKm };
+}
+
 /**
  * Muestreador bilineal sobre una grilla cilíndrica simple GLOBAL completa en
  * memoria (LDEM_16 + LDEC_16, MAP-02, DEC-065), con el mismo contrato que
@@ -204,7 +247,9 @@ export function createGlobalCylindricalSampler({ dem, counts, grid, scalingFacto
  * Calcula el perfil de horizonte de un punto.
  * @param {(lat:number, lon:number) => ({heightKm:number, lowConfidence:boolean} | null)} sampler
  * @param {{lat:number, lon:number}} site
- * @param {Partial<typeof HORIZON_PARAMS> & {radiusKm?: number}} [options]
+ * @param {Partial<typeof HORIZON_PARAMS> & {radiusKm?: number, ground?: {heightKm:number, pixels:number, radiusKm:number}}} [options]
+ *   `ground`: altura del observador ya calculada (por ejemplo, la mediana de
+ *   un entorno, `windowGroundMedian`); si falta, sale del muestreador.
  * @returns perfil con arreglos de longitud 360 / azimuthStepDeg:
  *   `elevationDeg` (máximo del rayo), `distanceKm` (punto que lo define),
  *   `lowConfidence` (ese punto usa píxeles con count = 0) y `coverageKm`
@@ -220,8 +265,9 @@ export function computeHorizonProfile(sampler, site, options = {}) {
     throw new RangeError("parámetros de horizonte inválidos");
   }
 
-  const ground = sampler(site.lat, site.lon);
-  if (!ground) throw new RangeError(`(${site.lat}, ${site.lon}) está fuera de la cobertura del DEM`);
+  const own = sampler(site.lat, site.lon);
+  if (!own) throw new RangeError(`(${site.lat}, ${site.lon}) está fuera de la cobertura del DEM`);
+  const ground = options.ground ? { heightKm: options.ground.heightKm, lowConfidence: false } : own;
   const observerRadiusKm = radiusKm + ground.heightKm + observerHeightM / 1000;
 
   const elevationDeg = new Array(count);
@@ -260,7 +306,13 @@ export function computeHorizonProfile(sampler, site, options = {}) {
   return {
     algorithm: HORIZON_ALGORITHM,
     params: { maxDistanceKm, stepKm, azimuthStepDeg, observerHeightM, minDistanceKm, radiusKm },
-    observer: { lat: site.lat, lon: site.lon, groundHeightKm: ground.heightKm, lowConfidence: ground.lowConfidence },
+    observer: {
+      lat: site.lat,
+      lon: site.lon,
+      groundHeightKm: ground.heightKm,
+      lowConfidence: ground.lowConfidence,
+      ...(options.ground ? { ground: { method: "median-measured", radiusKm: options.ground.radiusKm, pixels: options.ground.pixels } } : {}),
+    },
     elevationDeg,
     distanceKm,
     lowConfidence,

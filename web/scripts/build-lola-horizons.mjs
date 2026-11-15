@@ -39,6 +39,7 @@ import {
   createCylindricalWindowSampler,
   createRasterSampler,
   summarizeProfile,
+  windowGroundMedian,
 } from "../src/lib/horizon-lola.js";
 import { DEFAULT_GLOBAL_OUT } from "./extract-lola-global.mjs";
 import { createHorizon } from "../src/lib/terrain.js";
@@ -48,7 +49,8 @@ import { assertSizes, DEFAULT_RAW } from "./prepare-lola.mjs";
 const WEB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 export const DEFAULT_OUT = resolve(WEB_ROOT, "src/data/terrain/lola-horizons.js");
 
-const round = (x, digits) => (x === null ? null : Math.round(x * 10 ** digits) / 10 ** digits);
+// `+ 0` convierte −0 en 0: el JSON versionado no distingue el signo del cero.
+const round = (x, digits) => (x === null ? null : Math.round(x * 10 ** digits) / 10 ** digits + 0);
 
 /** Lee un raster crudo little-endian completo a un arreglo tipado. */
 export function readRaster(path, type, grid = LOLA_GRID) {
@@ -75,6 +77,7 @@ export function toTableEntry(site, profile) {
       groundHeightM: round(profile.observer.groundHeightKm * 1000, 1),
       heightAboveGroundM: profile.params.observerHeightM,
       lowConfidence: profile.observer.lowConfidence,
+      ...(profile.observer.ground ? { ground: profile.observer.ground } : {}),
     },
     elevationDeg: profile.elevationDeg.map((e) => round(e, 3)),
     distanceKm: profile.distanceKm.map((d) => round(d, 2)),
@@ -136,16 +139,23 @@ export function loadGlobalWindows(dir = DEFAULT_GLOBAL_OUT) {
   return { index, sites };
 }
 
-/** Perfil de horizonte de un sitio desde su ventana de LDEM_128. */
+/**
+ * Perfil de horizonte de un sitio desde su ventana de LDEM_128. La altura del
+ * observador es la mediana de los píxeles medidos a menos de 1 km
+ * (TERRAIN-05, DEC-075): el píxel del punto suele ser interpolado.
+ */
 export function globalProfile(site, win, params = HORIZON_PARAMS) {
-  const sampler = createCylindricalWindowSampler({
+  const radiusKm = LOLA_GLOBAL_PRODUCT.projection.sphereRadiusM / 1000;
+  const raster = {
     dem: win.dem,
     counts: win.counts,
     window: win.window,
-    grid: LOLA_GLOBAL_PRODUCT.grid,
+    grid: { ...LOLA_GLOBAL_PRODUCT.grid, radiusKm },
     scalingFactor: LOLA_GLOBAL_PRODUCT.dem.scalingFactor,
-  });
-  return computeHorizonProfile(sampler, site, { ...params, radiusKm: LOLA_GLOBAL_PRODUCT.projection.sphereRadiusM / 1000 });
+  };
+  const sampler = createCylindricalWindowSampler(raster);
+  const ground = windowGroundMedian(raster, site) ?? undefined;
+  return computeHorizonProfile(sampler, site, { ...params, radiusKm, ground });
 }
 
 /**

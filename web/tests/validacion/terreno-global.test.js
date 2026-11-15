@@ -46,8 +46,10 @@ test("tabla precalculada: los sitios curados fuera del DEM polar, con sus coorde
     assert.equal(entry.lat, site.lat);
     assert.equal(entry.lon, site.lon);
     const fine = createLolaHorizon(site.id).meta.observer.groundHeightM;
-    // Mismo producto y mismo punto que el horizonte de DEC-061: debe dar la misma altura.
-    assert.ok(Math.abs(entry.terrain.heightKm * 1000 - fine) < 1, `${site.id}: altura`);
+    // Mismo producto que el horizonte de DEC-061. Desde DEC-075 el observador del horizonte
+    // usa la mediana de los píxeles medidos a menos de 1 km y la tabla, el píxel del punto:
+    // medido 4,9 m (Chang'e 4) y 4,7 m (Apollo 11). Tolerancia del equipo: 10 m.
+    assert.ok(Math.abs(entry.terrain.heightKm * 1000 - fine) < 10, `${site.id}: altura`);
     assert.ok(entry.terrain.area.points > 20);
     assert.ok(entry.terrain.slopeDeg >= 0 && entry.terrain.area.maxSlope >= entry.terrain.area.meanSlope);
   }

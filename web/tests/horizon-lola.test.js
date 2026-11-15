@@ -16,6 +16,7 @@ import {
   destination,
   elevationAngleDeg,
   summarizeProfile,
+  windowGroundMedian,
 } from "../src/lib/horizon-lola.js";
 import { pixelToLatLon } from "../src/lib/terrain-data.js";
 import { horizonDip } from "../src/lib/terrain.js";
@@ -252,6 +253,27 @@ test("ventana cilíndrica: sobre una esfera lisa el horizonte es la depresión d
   for (const c of p.coverageKm) assert.equal(c, 300);
   // Con 300 km de rayo, el máximo está en la primera muestra: casi la depresión geométrica.
   assert.ok(Math.abs(Math.max(...p.elevationDeg) - -dip) < 0.1);
+});
+
+test("windowGroundMedian: mediana de los píxeles medidos del entorno; ignora los interpolados (DEC-075)", () => {
+  const win = { line0: 170, lines: 20, sample0: 350, samples: 20 };
+  const { dem, counts } = cylWindow(win, () => 100); // 50 m
+  // Punto en el centro del píxel (línea 179, sample 359): interpolado y 40 m más bajo.
+  const i = 9 * 20 + 9;
+  dem[i] = 20;
+  counts[i] = 0;
+  const raster = { dem, counts, window: win, grid: { ...CYL, radiusKm: R }, scalingFactor: 0.5 };
+  const g = windowGroundMedian(raster, { lat: 0.25, lon: 179.75 }, 60); // píxeles de ~15 km
+  assert.equal(g.heightKm, 0.05);
+  assert.ok(g.pixels >= 8);
+  // El perfil usa esa altura y la registra.
+  const sampler = createCylindricalWindowSampler(raster);
+  const p = computeHorizonProfile(sampler, { lat: 0.25, lon: 179.75 }, { maxDistanceKm: 30, stepKm: 5, azimuthStepDeg: 90, radiusKm: R, ground: g });
+  assert.equal(p.observer.groundHeightKm, 0.05);
+  assert.equal(p.observer.lowConfidence, false);
+  assert.deepEqual(p.observer.ground, { method: "median-measured", radiusKm: 60, pixels: g.pixels });
+  // Sin píxeles medidos: null (quien llama usa el píxel del punto).
+  assert.equal(windowGroundMedian({ ...raster, counts: new Int16Array(counts.length) }, { lat: 0.25, lon: 179.75 }, 60), null);
 });
 
 test("createLolaHorizon: una entrada con `source` propio usa ese producto", () => {
