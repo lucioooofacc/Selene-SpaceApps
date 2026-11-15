@@ -103,7 +103,7 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 | MAP-01 (#16): modo de iluminación calculada en el mapa | ✅ motor (PR #66, DEC-038) e interfaz (PR #68, DEC-040) | — |
 | Textos que contradecían los datos reales | ✅ (PR #70) | — |
 | PERF-01 (#18): worker y caché persistente | ✅ (PR #79, DEC-047) | — |
-| I18N-01 (#17): revisión de traducciones ES/EN | ⏳ (Lucio, Cata) | Textos de hoy listados en `PENDIENTES.md` |
+| I18N-01 (#17): revisión de traducciones ES/EN | 🔎 en revisión (Lucio, Cata) | Claves equivalentes y terminología unificada (DEC-064) |
 
 ### Bloc de notas de UI (Lucio, 14/11) ✅
 

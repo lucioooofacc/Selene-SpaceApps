@@ -885,3 +885,16 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `.gitattributes` (nuevo, en la raíz) con `web/tests/fixtures/horizons/*.json -text`. Los archivos del repositorio no cambian (ya estaban con LF); solo se vuelven a extraer en la copia local.
 - **Alternativas descartadas:** normalizar los fines de línea en la prueba antes de calcular el hash (dejaría de verificar el crudo exacto de la API); `*.json -text` para todo el repo (más amplio de lo necesario).
 - **Estado:** vigente.
+
+## DEC-064 — Revisión de traducciones ES/EN (I18N-01)
+
+- **Contexto / problema:** I18N-01 (#17) pide comprobar que `es.js` y `en.js` tengan las mismas claves, terminología y advertencias equivalentes, y que no quede texto visible escrito directo en JS o HTML.
+- **Decisión:** corregir solo lo que cambia el sentido o rompe la coherencia. No se reescribe el estilo: ese es el trabajo de redacción de Alfonso y Cata.
+- **Solución aplicada:**
+  - **Claves:** se compararon con un script (claves aplanadas y marcadores `{x}`). Hay 453 claves en cada idioma, con los mismos marcadores.
+  - **Texto fijo:** `index.html` tenía `aria-label="Mapa"` en la tarjeta del mapa. Ahora usa `data-i18n-attr` con la clave nueva `map.label` ("Mapa" / "Map"). Las referencias bibliográficas de `ui/report.js` quedan en inglés, como se citan.
+  - **Terminología (EN):** el ángulo sobre el horizonte se llama *elevation*, no *height* (`places.dates.earthPeak`, `places.categoryHint.communication`). En `params.avgRange`, "mean terrain" pasa a "mean horizon", porque el valor es la elevación media del horizonte. "Transferred" pasa a "shifted" en las efemérides trasladadas (`sim.bodies.derived`, `dataNote.eph.derived`, `quality.eph.state.derived`, `quality.eph.derivedFrom`, `quality.rowHint.ephemerisDerived`), para no confundirlas con la transferencia de Hohmann del informe. `places.noTraits` usa "features", como el resto de la sección.
+  - **Ortografía:** el inglés queda unificado en la variante estadounidense ("Analyzed", "kilometer-scale"), igual que "color" y "behavior". En español, `sim.drag` pasa a voseo ("Arrastrá"), como el resto de la interfaz.
+- **Alternativas descartadas:** unificar ahora el espacio antes de `%`. Muchas cifras se arman en `web/src/ui/` sin pasar por `i18n`, así que haría falta un cambio de formato fuera del alcance de esta tarea; queda en `PENDIENTES.md`.
+- **Estado:** vigente, pendiente de aprobación de Lucio y Cata en el PR.
+
