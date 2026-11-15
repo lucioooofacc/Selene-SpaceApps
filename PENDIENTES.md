@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (UI-16: ayuda por tarjeta, recorrido guiado y listas sin selección, rama `feat/claridad-interfaz`).
+Última actualización: 2026-11-15 (CORE-04: horizonte LOLA regional en puntos propios, rama `feat/horizonte-atlas-global`).
 
 ---
 
@@ -123,6 +123,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Validar si el horizonte LOLA reducido de los puntos propios se muestra como "aproximado" (criterio actual: error medio 0,02–0,77° frente al de 240 m) o como "real". — Teo, Facu, Lucio · DEC-034
 - [x] ~~TEST-01: separar validaciones contra fuentes reales, formalizar controles físicos, justificar tolerancias y agregar CI.~~ Resuelto 2026-11-14 (rama `test/modelos-cientificos`, #10, DEC-037, `docs/VALIDACION.md`).
 - [x] ~~Horizonte LOLA real para Chang'e 4 y Apollo 11 (hoy sintético: quedan fuera de `LDEM_60S_240M`). Detectado en la auditoría de datos del 14/11/2026. — Sin asignar · TERRAIN-03 #71, DEC-005~~ Resuelto 2026-11-14 (rama `feat/horizonte-lola-global`, TERRAIN-03 #71, DEC-061): horizonte desde `LDEM_128` V3.0 con el algoritmo de DEC-030 y efemérides con la altura LOLA medida.
+- [ ] Validar el horizonte LOLA regional de los puntos propios (interpolado del atlas de 2°), sobre todo entre −75° y −60° y al norte de +75°, donde el relieve pesa más. — Teo, Facu, Lucio · CORE-04 #104, DEC-068
 - [ ] Validar el mapa de calor global (atlas de `LDEM_16`, celdas de 2°) y el empalme con el casquete en −80° (diferencia media +2,1 p. p. de luz). — Teo, Facu, Lucio · MAP-02 #100, DEC-065
 - [ ] Validar los horizontes LOLA de Chang'e 4 y Apollo 11 (DEC-061) y el posible artefacto de borde de banda de `LDEM_128` en −45° (Chang'e 4 está a ~14 km; no se ve escalón en la ventana). — Teo, Facu, Lucio · DEC-061
 - [x] ~~En Windows con `core.autocrlf=true`, los fixtures `web/tests/fixtures/horizons/*.raw.json` se convierten a CRLF y fallan 2 pruebas de hash de `horizons-fixture.test.js` (en la CI pasan). Propuesta: `.gitattributes` con `*.json -text` o al menos `web/tests/fixtures/** -text`. — Desarrollo web · detectado 2026-11-14~~ Resuelto 2026-11-14 (rama `fix/limpieza-post-terrain03`, DEC-062): `.gitattributes` con `web/tests/fixtures/horizons/*.json -text`.

@@ -6,7 +6,7 @@
  * Cada tarjeta muestra, como en el Figma: cobertura de enlace, altura del Sol,
  * altura de la Tierra y luz acumulada.
  */
-import { computeScenario, needsPolarDem, realDataVersion, sampleAt } from "../lib/analysis.js";
+import { computeScenario, needsPolarDem, needsRegionalAtlas, realDataVersion, sampleAt } from "../lib/analysis.js";
 import { loadedData, persist, persisted, runInWorker } from "./compute.js";
 import { rankEntries } from "../lib/ranking.js";
 import { traitsFor } from "../data/site-traits.js";
@@ -103,7 +103,7 @@ function dateEntries(state) {
   if (key === datesKey) return datesResult;
   const data = loadedData();
   const site = currentSiteFor(state);
-  const pk = data.ephemerides && (!needsPolarDem(site) || data.polarDem) ? `dates|${state.siteId}|${state.lat}|${state.lon}|${state.windowDays}` : null;
+  const pk = data.ephemerides && (!needsPolarDem(site) || data.polarDem) && (!needsRegionalAtlas(site) || data.globalHeatAtlas) ? `dates|${state.siteId}|${state.lat}|${state.lon}|${state.windowDays}` : null;
   const stored = pk && persisted(pk);
   if (stored) {
     datesKey = key;

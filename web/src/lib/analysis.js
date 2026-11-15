@@ -13,7 +13,7 @@ import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
 import { derivedEphemerisFor, ephemerisFor, ephemerisVersion, positionsAt } from "./ephemeris.js";
 import { POLAR_DEM_COVERAGE_LATITUDE, polarDemVersion, polarHorizonFor } from "./polar-dem.js";
-import { computeRealGlobalHeatStats, computeRealHeatStats, heatAtlasVersion } from "./heat-map.js";
+import { computeRealGlobalHeatStats, computeRealHeatStats, heatAtlasVersion, regionalHorizonFor } from "./heat-map.js";
 
 export const STEP_MINUTES = 10;
 const STEP_MS = STEP_MINUTES * 60_000;
@@ -141,10 +141,22 @@ const LEVEL_POINTS = { high: 2, mid: 1, low: 0 };
  * 2. LOLA reducido (480/960 m) calculado al momento para puntos al sur de −75°,
  *    si el DEM polar reducido ya está cargado (CORE-03, DEC-034;
  *    `meta.reduced = true`).
- * 3. El sintético de `terrain.js` (DEC-005), sin `source`.
+ * 3. LOLA regional interpolado del atlas global (celdas de 2°, LDEM_16), si
+ *    el atlas ya está cargado (DEC-068; `meta.regional = true`).
+ * 4. El sintético de `terrain.js` (DEC-005), sin `source`: solo mientras
+ *    cargan los datos anteriores o si fallan.
  */
 export function scenarioHorizon(site) {
-  return curatedLolaHorizon(site) ?? polarHorizonFor(site) ?? createHorizon(site);
+  return curatedLolaHorizon(site) ?? polarHorizonFor(site) ?? regionalHorizonFor(site) ?? createHorizon(site);
+}
+
+/**
+ * ¿Este sitio usaría el atlas global para su horizonte si estuviera cargado?
+ * (DEC-068). Todo punto sin horizonte curado: los que están al sur de −75° lo
+ * usan hasta que llega el DEM polar reducido.
+ */
+export function needsRegionalAtlas(site) {
+  return Number.isFinite(site?.lat) && !curatedLolaHorizon(site);
 }
 
 /** Horizonte LOLA de 240 m precalculado, solo para el sitio curado con sus coordenadas. */
