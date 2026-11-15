@@ -42,7 +42,7 @@ export default {
         light: "Fechas de inicio para este sitio con la misma duración ({days} días), entre el {from} y el {to} (datos de JPL Horizons), sin períodos superpuestos, ordenadas por la potencia solar media aprovechable.",
       },
       aria: "Usar el período {range}",
-      sub: "Viabilidad {level} · {met} de {total} requisitos",
+      sub: "Viabilidad {level} · {met}/{total}",
       sunPct: "Porcentaje del período con Sol",
       earthPeak: "Altura máxima de la Tierra en el período",
       noScience: "No aplica a fechas: los rasgos científicos dependen del sitio, no de la fecha.",
