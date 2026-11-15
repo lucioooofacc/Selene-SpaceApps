@@ -7,7 +7,7 @@
 import "./styles/main.css";
 import "./styles/compare.css";
 import "./styles/help.css";
-import { computeScenario, realDataVersion } from "./lib/analysis.js";
+import { computeScenario, realDataVersion, setMissionLimits } from "./lib/analysis.js";
 import { ensurePolarTerrain, loadPolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { SITES } from "./data/sites.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
@@ -16,7 +16,7 @@ import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js
 import { renderComparison } from "./ui/compare.js";
 import { applySettings, initSettings } from "./ui/settings.js";
 import { initHelp, refreshHelp } from "./ui/help.js";
-import { compareUrl, informeUrl, missionUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
+import { compareUrl, informeUrl, missionUrl, parseCompareQuery, parseLimitsQuery, parseSiteParam, siteParam } from "./ui/links.js";
 
 const DESIGN_WIDTH = 1992;
 const $ = (id) => document.getElementById(id);
@@ -87,6 +87,7 @@ function fitStage() {
 
 function init() {
   applySettings();
+  setMissionLimits(parseLimitsQuery(location.search)); // supuestos de viabilidad de la misión (DEC-083)
   setLang(initialLang());
   fitStage();
 

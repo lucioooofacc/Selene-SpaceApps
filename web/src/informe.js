@@ -8,7 +8,7 @@ import "./styles/main.css";
 import "./styles/compare.css";
 import "./styles/report.css";
 import "./styles/help.css";
-import { computeScenario, realDataVersion } from "./lib/analysis.js";
+import { computeScenario, realDataVersion, setMissionLimits } from "./lib/analysis.js";
 import { dateScenarios, pickDistinct } from "./lib/dates.js";
 import { rankEntries } from "./lib/ranking.js";
 import { SITES } from "./data/sites.js";
@@ -17,7 +17,7 @@ import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
 import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js";
 import { ensureGlobalDem, ensurePolarTerrain, loadPolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { dataStatus, onDataStatus } from "./ui/data-status.js";
-import { compareUrl, missionUrl, parseMissionQuery, parseSiteParam, siteParam } from "./ui/links.js";
+import { compareUrl, missionUrl, parseLimitsQuery, parseMissionQuery, parseSiteParam, siteParam } from "./ui/links.js";
 import { initReport } from "./ui/report.js";
 import { applySettings, initSettings } from "./ui/settings.js";
 import { initHelp, refreshHelp } from "./ui/help.js";
@@ -127,6 +127,7 @@ function fitStage() {
 
 function init() {
   applySettings();
+  setMissionLimits(parseLimitsQuery(location.search)); // supuestos de viabilidad de la misión (DEC-083)
   setLang(initialLang());
   fitStage();
   const q = parseMissionQuery(location.search);

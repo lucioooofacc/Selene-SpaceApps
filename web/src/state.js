@@ -3,6 +3,7 @@
  * Los módulos de ui/ leen el estado y llaman a setState; main.js redibuja.
  */
 import { SITES } from "./data/sites.js";
+import { DEFAULT_LIMITS } from "./lib/analysis.js";
 
 export const CUSTOM_ID = "custom";
 const HOUR = 3_600_000;
@@ -28,6 +29,9 @@ const state = {
   mapMode: "3d", // GLOBAL y POLO SUR: "3d" (modelo) | "2d" (imagen NASA), DEC-021
   heatLayer: "elevation", // pestaña ELEVACIÓN: elevation | sun | earth | both | viability (MAP-01, DEC-040)
   customSites: [], // sitios agregados con el botón "+"
+  // Supuestos de viabilidad editables (DEC-083); los valores efectivos viven en lib/analysis.js.
+  batteryHours: DEFAULT_LIMITS.batteryHours, // autonomía de las baterías: noche más larga "al límite"
+  commsMinPct: DEFAULT_LIMITS.commsMinPct, // % mínimo del período con la Tierra visible para "cumple"
 };
 
 const listeners = new Set();
