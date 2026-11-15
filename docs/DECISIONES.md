@@ -1137,3 +1137,23 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La altura del informe (tabla de `site-terrain.js`) sigue siendo la del píxel del punto: difiere ~5 m de la del horizonte. La prueba de terreno acepta hasta 10 m.
 - **Estado:** vigente.
 
+## DEC-076 — Horizonte del punto sobre LDEM_16 cerca de los polos (CORE-05)
+
+- **Contexto / problema:** la revisión de DEC-070 mostró que el horizonte regional de los puntos propios (atlas de 2°, DEC-068) no es confiable hacia los polos: frente al horizonte exacto del punto, la luz difiere hasta 39 p. p. al norte de +75° y la Tierra hasta 100 p. p. entre −75° y −60°.
+- **Decisión (Lucio, 15/11/2026):** para los puntos propios con |lat| ≥ 60° que no cubre el DEM polar reducido (al norte de −75°), calcular el horizonte del punto sobre el DEM global `LDEM_16`, que ya se publica para el terreno del informe (DEC-067). Se baja solo cuando hace falta; mientras carga, se usa el regional.
+- **Solución aplicada:**
+  - `web/src/lib/global-dem.js`: `globalHorizonFor()` (mismo algoritmo que DEC-030; 300 km, paso 0,95 km, 1° de azimut, observador a 2 m), `inPointHorizonBand()`, `POINT_HORIZON_MIN_ABS_LAT = 60`, `GLOBAL_HORIZON_PARAMS`, caché por coordenadas y `globalDemVersion()`.
+  - `web/src/lib/analysis.js`: `scenarioHorizon()` prueba el horizonte del punto antes que el regional; `needsGlobalDemHorizon()`; `realDataVersion()` incluye la versión del DEM global, así que los cachés se renuevan al llegar.
+  - `web/src/ui/ephemerides.js`: `ensurePolarTerrain()` baja el DEM global si algún sitio lo necesita. La carga es una sola y avisa a todos los que la pidieron mientras bajaba (antes, el segundo pedido perdía su aviso).
+  - Worker (`ui/compute.js`, `workers/compute.worker.js`): carga el mismo DEM si la página lo tiene, para que "Mejores fechas" dé lo mismo.
+  - Interfaz (ES/EN): nota de datos, fila de calidad (aproximado, DEC-076), producto en "Datos y fuentes" y rótulo del panorama.
+  - Pruebas: `tests/horizonte-polar-puntos.test.js` (DEM sintético) y `tests/validacion/horizonte-polar-puntos.test.js` (datos reales).
+- **Validación:** en Chandrayaan-3 (−69,4°), el horizonte del punto sobre `LDEM_16` difiere del de 240 m en −0,22° de media (máximo 0,60°); la luz de 30 días da 51,4 % contra 50,7 % y la Tierra 100 % en los dos. El cálculo tarda ~30 ms por punto.
+- **Alternativas descartadas:** solo avisar del error en la interfaz: el dato seguiría mal en la banda donde más importa la Tierra cerca del limbo.
+- **Supuestos y límites:**
+  - El umbral de 60° sale de las bandas medidas en DEC-070; entre −60° y +60° el regional sigue (error medido ≤ 2 p. p.).
+  - `LDEM_16` no resuelve relieve menor a ~2 km: el horizonte del punto se rotula como aproximado.
+  - Un punto propio cerca de los polos baja ~35 MiB, una vez por página. Si falla, sigue el regional.
+  - La única referencia fina en la banda es Chandrayaan-3; al norte de +60° no hay sitio curado para comparar.
+- **Estado:** vigente.
+
