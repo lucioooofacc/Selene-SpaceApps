@@ -154,8 +154,8 @@ La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `
 | Requisito | Cumple | Al límite | No cumple | Base |
 | --- | --- | --- | --- | --- |
 | Luz continua: noche más larga del período | sin noche | hasta B h (24 h por defecto) | más de B h | Artemis III exige Sol durante toda la estadía (NASA, 2022). B es la autonomía de las baterías: **supuesto** del equipo, 24 h para un módulo chico, editable de 0 a 360 h (DEC-083) |
-| Comunicación: % del período con la Tierra visible | `>= C %` (80 % por defecto) | menos de C % | nunca | C es un **supuesto** del equipo, 80 % por defecto, editable de 0 a 100 % (DEC-083). Por debajo se asume un satélite de relevo, como en los planes de Artemis |
-| Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Tolerancia de inclinación de 8° y aterrizaje en menos de 10° en 100 m del HLS (NASA, 2024) |
+| Comunicación: % del período con la Tierra visible | `>= C %` (80 % por defecto) | menos de C % | nunca | C es un **supuesto** del equipo, 80 % por defecto, editable de 0 a 100 % (DEC-083). Por debajo se asume un satélite de relevo. El criterio de NASA para Artemis III asume comunicación directa **sin** relevo y descarta las zonas con la Tierra visible menos del 25 % (NASA, 2024; ver `docs/VALIDACION.md`) |
+| Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Aterrizaje en menos de 10° en 100 m (actualización del HLS, NASA 2024) y tolerancia de inclinación de 8° (informe IG-26-004 de NASA OIG, 2026, según la prensa) |
 
 - La noche más larga se cuenta en las muestras de 10 min del escenario; en el mapa de calor, en el paso de su cálculo (1–2 h).
 - La pendiente usa la del punto con el DEM polar o la tabla de `LDEM_128` (escala kilométrica, más suave que a 100 m). Con `LDEM_16` (escala regional) no se evalúa. Por eso solo cuenta en la comparación y en los informes; el ranking, las fechas, la página principal y el mapa de calor evalúan luz y comunicación.

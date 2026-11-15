@@ -207,7 +207,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **Confianza:** "alta" en los 7 sitios: valores que coinciden con una fuente oficial; las salvedades (marco inferido o no declarado, discrepancia de CNSA) quedan en `confidence.reason` y `frameNote`.
   - `relief` y `elevationKm` siguen siendo parámetros sintéticos (DEC-005). Con el modelo actual, la luz anual de Shackleton pasa de ~96,2 % (−89,9°, 0°) a ~96,3 % (R04). DEC-005 sigue valiendo.
 - **Alternativas descartadas:** convertir los valores entre marcos sin conocer el de origen (se agregaría un error en lugar de quitarlo); deducir la exactitud de la cantidad de decimales (confunde representación con exactitud); usar el valor de CNSA para Chang'e 4 (otra referencia cartográfica); usar el centro USGS del cráter como punto del sitio; citar referencias escritas de memoria sin verificarlas; recortar latitudes fuera de rango en lugar de rechazarlas (ocultaría errores de datos).
-- **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3.
+- **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-020 — Destinos del menú, ortografía y vistas del mapa (decisiones del equipo)
 
@@ -297,7 +297,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Usar `elevationKm` como altura del observador: es un parámetro sintético (DEC-005).
   - Interpolar o poner 0 en faltantes: ocultaría huecos de cobertura.
   - SPICE local: más reproducible a largo plazo pero exige seleccionar y empaquetar kernels; queda como alternativa en `DATA_SOURCES.md`.
-- **Estado:** **vigente** para el adaptador, la adquisición y la caché. Pendiente de validar por astronomía: altura de los sitios, equivalencia MOON_ME/DE421 ↔ MEAN_ME/DE441 y uso de los EOP predichos. La integración en `analysis.js` y la UI queda en CORE-01.
+- **Estado:** **vigente** para el adaptador, la adquisición y la caché. Pendiente de validar por astronomía: altura de los sitios, equivalencia MOON_ME/DE421 ↔ MEAN_ME/DE441 y uso de los EOP predichos. La integración en `analysis.js` y la UI queda en CORE-01. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-025 — Producto LOLA `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (TERRAIN-01)
 
@@ -337,7 +337,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Las alturas son relativas a la esfera de 1737,4 km, no a un geoide; no se aplicó transformación de marco (sitios y producto están en MOON_ME/DE421, DEC-019).
   - Redondeo a 1 mm en los recortes: menor que la resolución float32 a esas alturas y muy por debajo de la exactitud vertical de LOLA.
 - **Alternativas descartadas:** versionar el raster (~345 MiB); remuestrear a lat/lon (agrega error y no hace falta: la lib trabaja en la grilla nativa); aceptar una URL arbitraria en la descarga; tratar `count = 0` como dato medido; usar el producto int16 `LDEM_60S_240M.IMG` (el equipo eligió la versión float).
-- **Estado:** **vigente.** Pendiente de validar por astronomía la orientación (hallazgo del catálogo) y de definir en TERRAIN-02 el radio de recorte y si los recortes reales se versionan para la demo.
+- **Estado:** **vigente.** Pendiente de validar por astronomía la orientación (hallazgo del catálogo) y de definir en TERRAIN-02 el radio de recorte y si los recortes reales se versionan para la demo. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-026 — MAPA DE CALOR con elevación real de LOLA y vista 3D física (UI-11)
 
@@ -373,7 +373,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Contexto / problema:** el equipo pidió (`PENDIENTES.md`) categorías para rankear "Mejores lugares" (interés científico, comunicación terrestre, luz solar aprovechable) y cambiar el título "MAPA DE CALOR", porque la pestaña muestra elevación (DEC-026).
 - **Decisión:**
   - Cuatro categorías: **Global** (orden anterior: puntos de viabilidad, después iluminación), **Ciencia**, **Comunicación** (% del tiempo con la Tierra visible, después la altura máxima de la Tierra) y **Luz** (potencia solar relativa promedio, después los minutos con Sol). Las tres últimas ordenan resultados que el motor ya calcula.
-  - **Interés científico** no existe como dato. Se cuenta cuántos **rasgos con fuente citada** tiene cada sitio (decisión del equipo). Cabeus: hielo de agua y región en sombra permanente (Colaprete et al. 2010). Shackleton: junto a un cráter con fondo en sombra permanente (Zuber et al. 2012; ese trabajo no confirma hielo, así que no se le asigna). Malapert: región candidata de Artemis III (NASA, 28/10/2024). Chandrayaan-3: primeras mediciones in situ cerca del polo sur, con azufre (ISRO 2023). Chang'e 4: posible material del manto y cara oculta en la cuenca SPA (Li et al. 2019). Apollo 11: muestras traídas a la Tierra (NASA JSC). IM-1: sin rasgos cargados. **Pendiente de validar por astronomía; no es una métrica científica** (se aclara en la interfaz).
+  - **Interés científico** no existe como dato. Se cuenta cuántos **rasgos con fuente citada** tiene cada sitio (decisión del equipo). Cabeus: hielo de agua y región en sombra permanente (Colaprete et al. 2010). Shackleton: junto a un cráter con fondo en sombra permanente (Zuber et al. 2012; ese trabajo no confirma hielo, así que no se le asigna). Malapert: región candidata de Artemis III (NASA, 28/10/2024). Chandrayaan-3: primeras mediciones in situ cerca del polo sur, con azufre (ISRO 2023). Chang'e 4: posible material del manto y cara oculta en la cuenca SPA (Li et al. 2019). Apollo 11: muestras traídas a la Tierra (NASA JSC). IM-1: sin rasgos cargados. **Pendiente de validar por astronomía; no es una métrica científica** *(rasgos validados el 15/11/2026 en DEC-070; sigue sin ser una métrica científica)* (se aclara en la interfaz).
   - La pestaña pasa a **ELEVACIÓN / ELEVATION**. El identificador interno sigue siendo `heat` (estado, CSS) para no tocar código ajeno; solo cambia el texto visible.
 - **Solución aplicada:** `web/src/data/site-traits.js` (rasgos y citas, separado de `sites.js` para no modificar el contrato de DATA-01); `web/src/lib/ranking.js` (`rankEntries`, puro, con desempate por nombre); `places.js` con selector tipo radiogroup (clic y flechas) y estado `placesCategory`. En "Ciencia", el subtítulo de cada tarjeta muestra los rasgos (máximo dos líneas, con el texto completo como tooltip). El modal "Datos y fuentes" suma "Interés científico" con las citas. Pruebas en `tests/ranking.test.js`.
 - **Alternativas descartadas:** un puntaje científico ponderado (inventaría pesos); dejar la categoría deshabilitada hasta que astronomía defina criterios.
@@ -408,7 +408,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Hallazgo a validar por astronomía (Teo, Facu, Lucio) — Shackleton R04** (*resuelto en DEC-035: R04 es un centro de polígono; se usa R01*): con la coordenada de DEC-019 (−89,7668°, −171,87°) el DEM ubica el punto sobre la **pared interior** del cráter: la cresta (≈ 1730 m) está a ~2 km hacia el este (azimut 90–110°) y el terreno baja hacia el fondo al oeste-suroeste. Por eso el horizonte llega a ~31° entre 30° y 150° de azimut. No es un artefacto del píxel: ignorando el primer kilómetro el máximo sigue en ~31° (media 12,1°). La orientación del DEM está verificada (DEC-025). El marco de R04 figura como inferido (`sourceFrameVerified: false`); una diferencia MOON_PA/MOON_ME (~0,9 km) no alcanza por sí sola a explicar 2 km. Cuando CORE-01 integre este horizonte, la iluminación de Shackleton bajará respecto del ~90 % del modelo sintético (DEC-005). No se cambió la coordenada (corresponde a DATA-01).
 - **Supuestos:** alturas sobre la esfera de 1737,4 km (sin geoide); 240 m/píxel limita el detalle a menos de ~0,5 km; la interpolación bilineal suaviza bordes en ±1 píxel; observador a 2 m (mástil o antena típica, no un vehículo concreto). Más allá de ~250 km la curvatura hace que el relieve lunar (≲ 10 km) no pueda levantar el horizonte de sitios bajos; 300 km da margen para horizontes negativos en cimas.
 - **Alternativas descartadas:** calcular en el navegador (raster de ~345 MiB); versionar recortes de ±300 km (~25 MB por sitio); aproximar la curvatura con `d²/2R` (la fórmula exacta cuesta lo mismo); modificar `createHorizon()` (cambio de contrato y de resultados que corresponde a CORE-01); horizonte para sitios personalizados (requiere el raster en tiempo de ejecución: pendiente, PERF-01/CORE-01).
-- **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores.
+- **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-031 — El horizonte LOLA real en la interfaz, antes y después de CORE-01 (UI-14)
 
@@ -499,7 +499,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Pruebas en `web/tests/real-points.test.js` con esas tolerancias.
 - **Supuestos y límites:** fuera de −75° (o si el DEM no cargó) el horizonte de un punto propio sigue sintético; fuera del 01/11/2026–01/01/2028, el modelo aproximado. El mapa de calor no cambia (MAP-01). La distancia Tierra–Luna fija agrega < 0,02° a la Tierra.
 - **Alternativas descartadas:** consultar Horizons por punto (el navegador no puede); bajar el raster completo (~345 MiB); un solo nivel de 480 m hasta −75° (~11 MB); recortes nativos por teselas (~44 MB en el repo); tomar el máximo en vez del promedio de cada bloque (corrige el sesgo a ojo, sin respaldo).
-- **Estado:** vigente. Pendiente de validar por astronomía la clasificación "aproximado" del horizonte reducido.
+- **Estado:** vigente. Pendiente de validar por astronomía la clasificación "aproximado" del horizonte reducido. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-035 — Shackleton: R01 Connecting Ridge reemplaza a R04 (DATA-02)
 
@@ -876,7 +876,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - El MD5 de las imágenes no lo publica PDS: es el calculado por el equipo, comprobado en dos descargas.
   - Los puntos propios al norte de −75° siguen con horizonte sintético (fuera de alcance de TERRAIN-03).
 - **Alternativas descartadas:** `LDEM_64` (~474 m/píxel: la mitad de resolución que el polar); SLDEM2015 (±60°: no cubre todos los sitios con un solo producto y suma otro marco de procesamiento); descargar las imágenes enteras (~4,2 GB en disco sin necesidad); pedir rangos HTTP por fila (miles de pedidos y sin MD5 del archivo completo).
-- **Estado:** vigente. Desbloquea DATA-03 (#72). Pendiente de validar por astronomía: los dos horizontes y el posible artefacto de borde de banda en Chang'e 4.
+- **Estado:** vigente. Desbloquea DATA-03 (#72). Pendiente de validar por astronomía: los dos horizontes y el posible artefacto de borde de banda en Chang'e 4. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-062 — Fixtures de JPL Horizons sin conversión de fin de línea
 
@@ -945,7 +945,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Horizonte matemático o sintético fuera del casquete (ver la decisión).
   - Vista 2D equirrectangular (el polo queda muy estirado y cambia el Figma).
   - Guardar la imagen global en localStorage (excede la cuota).
-- **Estado:** vigente. Pendiente de validar por astronomía: la grilla global y el empalme en −80°.
+- **Estado:** vigente. Pendiente de validar por astronomía: la grilla global y el empalme en −80°. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-066 — Ayuda por tarjeta, recorrido guiado y listas que piden lo que falta (UI-16)
 
@@ -985,7 +985,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Un sitio curado con coordenadas editadas pasa a tratarse como punto propio (DEM global).
   - El DEM global agrega 33,6 MiB al repositorio y a la descarga de ese informe (queda anotado en `PENDIENTES.md`).
 - **Alternativas descartadas:** pedir a PDS solo las filas necesarias por rangos HTTP (no permite verificar el MD5 del archivo completo, criterio de DEC-061); una versión del DEM a 8 píxeles/grado (8 MiB, pero con pendientes de tramos de ~8 km); calcular el terreno de los puntos propios con el atlas de horizontes (no guarda alturas vecinas).
-- **Estado:** vigente. Pendiente de validar por astronomía.
+- **Estado:** vigente. Pendiente de validar por astronomía. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-068 — Horizonte LOLA regional para puntos propios fuera del polo sur (CORE-04)
 
@@ -1011,7 +1011,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - El atlas no guarda la distancia ni la confianza por azimut: se informa el % medio de baja confianza de las celdas.
   - El horizonte sintético sigue existiendo como respaldo mientras cargan los datos o si fallan, y en el mapa de calor aproximado.
 - **Alternativas descartadas:** calcular el horizonte exacto del punto con LDEM_16 en la página principal (35 MiB de descarga); tomar la celda más cercana sin interpolar (saltos al mover el punto).
-- **Estado:** vigente. DEC-005 queda como respaldo. Pendiente de validar por astronomía.
+- **Estado:** vigente. DEC-005 queda como respaldo. Pendiente de validar por astronomía. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-069 — La sección inferior pide sitio y fechas en lugar de mostrar un ejemplo (UI-17)
 
@@ -1071,7 +1071,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La página principal, el ranking, las fechas y el mapa de calor no evalúan la pendiente, así que un sitio puede mostrar 1 de 2 requisitos ahí y 2 de 3 en la comparación.
   - Las misiones de más de unos días fuera de las zonas polares más iluminadas salen "baja" por la noche lunar, y es correcto con estos supuestos.
 - **Alternativas descartadas:** mantener la suma de puntos (un sitio podía salir viable sin cumplir un requisito); dejar la comunicación estricta (casi todo "no viable"); volver a los umbrales viejos.
-- **Estado:** vigente. Reemplaza a DEC-007. Las 24 h y el 80 % pasan a ser valores por defecto editables (DEC-083).
+- **Estado:** vigente. Reemplaza a DEC-007. Supuestos revisados el 15/11/2026 contra NASA (`docs/VALIDACION.md`, "Revisión de los supuestos de viabilidad"): quedan decisiones abiertas del equipo en `PENDIENTES.md`. Las 24 h y el 80 % pasan a ser valores por defecto editables (DEC-083).
 
 ## DEC-072 — Capa "Noche más larga" en el mapa de calor
 
