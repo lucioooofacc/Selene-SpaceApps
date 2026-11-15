@@ -153,15 +153,16 @@ La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `
 
 | Requisito | Cumple | Al límite | No cumple | Base |
 | --- | --- | --- | --- | --- |
-| Luz continua: noche más larga del período | sin noche | hasta 24 h | más de 24 h | Artemis III exige Sol durante toda la estadía (NASA, 2022). El límite de 24 h es un **supuesto** del equipo sobre la autonomía de las baterías de un módulo chico |
-| Comunicación: % del período con la Tierra visible | `>= 80 %` | menos de 80 % | nunca | El 80 % es un **supuesto** del equipo. Por debajo se asume un satélite de relevo, como en los planes de Artemis |
+| Luz continua: noche más larga del período | sin noche | hasta B h (24 h por defecto) | más de B h | Artemis III exige Sol durante toda la estadía (NASA, 2022). B es la autonomía de las baterías: **supuesto** del equipo, 24 h para un módulo chico, editable de 0 a 360 h (DEC-083) |
+| Comunicación: % del período con la Tierra visible | `>= C %` (80 % por defecto) | menos de C % | nunca | C es un **supuesto** del equipo, 80 % por defecto, editable de 0 a 100 % (DEC-083). Por debajo se asume un satélite de relevo, como en los planes de Artemis |
 | Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Tolerancia de inclinación de 8° y aterrizaje en menos de 10° en 100 m del HLS (NASA, 2024) |
 
 - La noche más larga se cuenta en las muestras de 10 min del escenario; en el mapa de calor, en el paso de su cálculo (1–2 h).
 - La pendiente usa la del punto con el DEM polar o la tabla de `LDEM_128` (escala kilométrica, más suave que a 100 m). Con `LDEM_16` (escala regional) no se evalúa. Por eso solo cuenta en la comparación y en los informes; el ranking, las fechas, la página principal y el mapa de calor evalúan luz y comunicación.
+- B y C se cambian en «Parámetros de la misión» (`setMissionLimits()` en `lib/analysis.js`), viajan en la URL (`bat`, `com`) y se aplican en todas las páginas. `realDataVersion()` los incluye, así que los cachés se recalculan; el worker los recibe con cada pedido (DEC-083).
 - La potencia relativa media dejó de ser criterio; sigue como métrica.
 - El mapa de calor tiene también la capa "Noche más larga" (DEC-072), con las mismas horas que usa este requisito.
-- **Consecuencia física:** en misiones de más de unos días, cualquier sitio fuera de las zonas polares más iluminadas tiene una noche de hasta 14 días y no cumple la luz continua. Con 30 días, ninguna celda del casquete polar la cumple (la noche más corta medida es de 112 h).
+- **Consecuencia física:** en misiones de más de unos días, cualquier sitio fuera de las zonas polares más iluminadas tiene una noche de hasta 14 días y no cumple la luz continua con 24 h de baterías. Ejemplo medido con JPL Horizons: Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h (~340 h): viabilidad "baja" con 24 h y "media" con 360 h. Con 30 días, ninguna celda del casquete polar la cumple (la noche más corta medida es de 112 h).
 
 ## Limitaciones conocidas
 
