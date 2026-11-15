@@ -62,6 +62,7 @@ export default {
     light: "Luz acumulada en la misión",
   },
   map: {
+    label: "Mapa",
     tabsLabel: "Vista del mapa",
     global: "GLOBAL",
     heat: "MAPA DE CALOR",
@@ -182,7 +183,7 @@ export default {
     forward: "Avanzar una hora",
     speed: "Velocidad",
     speedHint: "1× = 1 h simulada / s",
-    drag: "Arrastra para explorar",
+    drag: "Arrastrá para explorar",
     goto: "Ir a fecha y hora:",
     sunBody: "Sol",
     earthBody: "Tierra",

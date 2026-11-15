@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (DATA-03: sin parámetros sintéticos de relieve en los sitios, rama `data/quitar-relieve-sintetico`).
+Última actualización: 2026-11-15 (DATA-03 sin relieve sintético en los sitios e I18N-01 revisión de traducciones ES/EN).
 
 ---
 
@@ -85,7 +85,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~CORE-01: conectar el horizonte LOLA (y las efemérides Horizons cuando haya series) en `analysis.js`; la interfaz ya pasa de "vista previa" a "en uso" sola. — Facundo · #11, DEC-031~~ Horizonte LOLA conectado (parte A). Resuelto 2026-11-14 (rama `feat/integracion-horizonte-lola`, DEC-032).
 - [x] ~~CORE-01 parte B: efemérides JPL Horizons en `analysis.js` (series nov 2026 – dic 2027, paso 1 h, interpoladas; fuera del rango, modelo aproximado marcado). — Facundo · #11, DEC-024, DEC-032~~ Resuelto 2026-11-14 (rama `feat/efemerides-horizons-calculo`, DEC-033).
 - [x] ~~UI-01: mostrar `scenario.ephemeris` (Horizons / aproximado / mixto, procedencia y cobertura) y el estado de carga de las efemérides. — Lucio · #13, DEC-033~~ Resuelto 2026-11-14 (rama `feat/calidad-datos-efemerides`, DEC-039): bloque "Efemérides del Sol y la Tierra" en "Datos y fuentes" y estados de carga/error/faltante de las efemérides y del DEM LOLA reducido.
-- [ ] Revisar los textos nuevos de `quality.eph.*` y `quality.lola.dem.*` (ES/EN) en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-039
+- [x] ~~Revisar los textos nuevos de `quality.eph.*` y `quality.lola.dem.*` (ES/EN) en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-039~~ Resuelto 2026-11-15 (rama `i18n/revision-cientifica`, DEC-064): "transferred" pasa a "shifted"; el resto es equivalente.
 - [ ] Los metadatos de efemérides (`meta.assumptions`) solo existen en español y no se muestran en la interfaz; decidir si se traducen. — Facundo, Lucio · DEC-039
 - [ ] Validar los rasgos de interés científico de `web/src/data/site-traits.js` (y sumar rasgos de IM-1 si corresponde). — Teo, Facu, Lucio · DEC-029
 - [x] ~~Verificar las coordenadas de los 7 sitios con LROC Quickmap o Moon Trek. — DEC-006~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DATA-01 #9): valores e identidades confirmados por Facu y normalizados a MOON_ME/DE421 (DEC-019). La procedencia sigue abierta en los puntos de abajo.
@@ -113,7 +113,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~MAP-01, interfaz: selector en la pestaña ELEVACIÓN (Elevación / Luz / Tierra / Equilibrado: "Sol y Tierra a la vez" y/o "Viabilidad") que llame a `ensureHeatAtlas()` y `computePolarHeatmap()` y muestre `source` (real / aproximado). — Lucio · #16, DEC-038~~ Resuelto 2026-11-14 (rama `feat/mapa-calor-ui`, DEC-040): capas Elevación / Luz / Tierra / Sol + Tierra / Viabilidad, 2D hasta −80°, leyenda y procedencia en el crédito.
 - [x] ~~UI-02: avisos de "modelo aproximado v1" desactualizados (informe, comparación, tooltip de Parámetros) y sin marca de los tramos aproximados en la línea de tiempo. — Lucio · #15~~ Resuelto 2026-11-14 (rama `design/visualizaciones-datos-reales`, DEC-041).
 - [x] ~~Textos que contradecían el estado actual ("modelo v1", "SINTÉTICO hasta CORE-01", "el cálculo todavía usa el sintético", pie del informe con "reemplazos previstos"). — Desarrollo web · DEPLOY-01 #14~~ Resuelto 2026-11-14 (rama `fix/textos-datos-reales`): corregidos en ES y EN; falta la revisión de estilo de Alfonso y Cata (I18N-01).
-- [ ] Revisar los textos nuevos `dataNote.*`, `sim.bodies.*`, `sim.coverage.*` y `params.dataHint` en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-041
+- [x] ~~Revisar los textos nuevos `dataNote.*`, `sim.bodies.*`, `sim.coverage.*` y `params.dataHint` en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-041~~ Resuelto 2026-11-15 (rama `i18n/revision-cientifica`, DEC-064): equivalentes; solo cambió "transferred" por "shifted".
 - [x] ~~El cálculo de una capa del mapa bloquea 0,2–1 s el hilo principal la primera vez por período; mover a un worker si molesta. — Desarrollo web · PERF-01 #18, DEC-040~~ Resuelto 2026-11-14 (rama `perf/worker-cache`, PERF-01 #18, DEC-047): worker de cálculo y caché persistente.
 - [x] ~~La capa elegida del mapa no se guarda en la URL ni en la configuración (vuelve a Elevación al recargar). — Desarrollo web · DEC-040~~ Resuelto 2026-11-15 (rama `feat/capa-en-url`, DEC-057): viaja en la URL (`layer=`).
 - [ ] Validar la orientación de la proyección polar: la ecuación directa de `dsmap_polar.cat` invierte el signo de X respecto de su inversa; se usó la inversa (comprobado con Shackleton). — Teo, Facu, Lucio · DEC-025
@@ -137,6 +137,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 
 - [x] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
 - [x] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
+- [ ] Espacio antes de `%`: en ES (norma RAE) va con espacio, pero conviven `{pct}%` y `{pct} %` en los dos idiomas y también en cifras armadas en `web/src/ui/` (`places.js`, `status.js`, `compare.js`, `provenance.js`). En inglés lo usual es sin espacio. Unificar por idioma requiere mover el formato a `i18n` (p. ej. una clave `units.percent`). — Lucio, Cata · DEC-064
 
 ## Repositorio y entrega
 
