@@ -79,6 +79,15 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Módulos responsables:** `web/scripts/*-lola.mjs`, `web/src/lib/terrain-data.js`, `web/src/data/terrain/`; `web/src/lib/horizon-lola.js` y `web/scripts/build-lola-horizons.mjs` (horizonte, DEC-030).
 - **Atribución/licencia:** cita oficial del data set (DataCite, consultada el 15/11/2026): *Neumann, G. A. (2011). LRO Moon Laser Altimeter 4 GDR V1.0 [Dataset]. NASA Planetary Data System. https://doi.org/10.17189/1520642*. Los datos del PDS son de NASA y de uso público; se cita el data set en el informe imprimible y en este documento.
 
+### Producto global de baja resolución para el mapa de calor (MAP-02, DEC-065)
+
+- **Directorio:** el mismo que `LDEM_128`.
+- **Producto:** mismo data set y DOI. DEM `LDEM_16` (etiqueta V3.1) y conteos `LDEC_16` (etiqueta V3.0). Bytes y MD5 (calculados por el equipo el 15/11/2026; PDS no los publica) en `web/src/data/terrain/lola-ldem-16.js`.
+- **Formato:** cilíndrica simple, 16 píxeles/grado (~1,895 km/píxel en el ecuador), 2880 × 5760, int16 little-endian; altura = DN × 0,5 m sobre la esfera de 1737,4 km. Cobertura global.
+- **Pipeline:** las dos imágenes (~32 MiB cada una) se bajan a `web/data/raw/ldem16/` (no versionado) → `web/scripts/build-global-heat-atlas.mjs` → `web/public/data/terrain/heat-atlas-global-2deg.{bin,json}` (2,3 MiB, versionado).
+- **Limitaciones:** no resuelve relieve menor a ~2 km; el atlas tiene celdas de 2°.
+- **Atribución/licencia:** la misma cita del data set que `LDEM_128`.
+
 ## NASA PDS Geosciences Node
 
 - **URL oficial:** https://pds-geosciences.wustl.edu/missions/lro/ · citas PDS4: https://pds.nasa.gov/datastandards/citing/

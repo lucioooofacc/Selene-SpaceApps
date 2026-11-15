@@ -47,8 +47,10 @@ flowchart LR
 | `src/lib/ephemeris.js` | Series de JPL Horizons para el cálculo (DEC-033): decodifica `public/data/ephemerides/*.json`, interpola (`positionsAt`), registro en memoria con `ephemerisVersion()` y `ephemerisFor(site)`. Puro, sin red. |
 | `scripts/build-ephemerides.mjs` | Arma `public/data/ephemerides/<id>.json` desde la caché validada de `fetch-horizons.mjs` (7 sitios, nov 2026 – dic 2027, paso 1 h). |
 | `src/ui/ephemerides.js` | Baja en segundo plano las series de los sitios curados y las registra; `main.js`, `ui/places.js` y `compare.js` recalculan al llegar. |
-| `src/lib/heat-map.js` | Mapa de calor real del polo sur (DEC-038): atlas de horizontes por celda, direcciones del Sol y la Tierra por instante y política única de visibilidad. Lo usa `computePolarHeatmap()`. Puro. |
+| `src/lib/heat-map.js` | Mapa de calor real (DEC-038): atlas de horizontes por celda, direcciones del Sol y la Tierra por instante y política única de visibilidad. Lo usan `computePolarHeatmap()` (casquete hasta −80°) y `computeGlobalHeatmap()` (toda la Luna, grilla de 2°, MAP-02, DEC-065). Puro. |
 | `scripts/build-heat-atlas.mjs` | Genera `public/data/terrain/heat-atlas-96.{bin,json}` desde los rasters LOLA verificados (~6,5 min). |
+| `scripts/build-global-heat-atlas.mjs` | Genera `public/data/terrain/heat-atlas-global-2deg.{bin,json}` desde `LDEM_16` + `LDEC_16` verificados (~1 min, DEC-065). |
+| `src/data/terrain/lola-ldem-16.js` | Manifiesto de `LDEM_16`/`LDEC_16` (URL, bytes, MD5, grilla) para el atlas global (DEC-065). |
 | `src/lib/polar-dem.js` | DEM LOLA polar reducido (480 m hasta −80°, 960 m hasta −75°) para el horizonte de puntos propios: decodificación, registro con `polarDemVersion()` y `polarHorizonFor(site)` con caché (DEC-034). Puro. |
 | `scripts/build-lola-polar-reduced.mjs` | Genera `public/data/terrain/lola-polar-<m>m.{bin,json}` desde los rasters LOLA verificados. |
 | `src/lib/horizon-lola.js` | Horizonte topográfico desde el DEM LOLA: rayos sobre círculos máximos con curvatura exacta, calidad (`count = 0`, truncamiento) y `createLolaHorizon(siteId)` → `horizon(az)` con `source = "lola"`. Puro; lo usa `analysis.js` (DEC-030, DEC-032). |

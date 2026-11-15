@@ -148,6 +148,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** cálculo cancelable/cacheado; resolución y cobertura indicadas; sin red en bucles por celda; coherencia con escenarios puntuales.
 - **Fuera de alcance:** mapa global de precisión cartográfica no necesario para la demo.
 
+### MAP-02 — Mapa de calor en toda la superficie lunar
+
+- **Prioridad:** P1 · **Issue:** [#100](https://github.com/lucioooofacc/Selene-SpaceApps/issues/100).
+- **Objetivo:** que las capas calculadas del mapa de calor (luz, Tierra, Sol + Tierra, viabilidad) cubran toda la Luna, no solo el casquete hasta −80°. Decisión del equipo (Lucio, 15/11/2026): horizonte LOLA global desde `LDEM_16` (PDS) fuera del casquete; Luna 3D coloreada entera y vista 2D polar sin cambios.
+- **Rama sugerida:** `feat/mapa-calor-global`.
+- **Dependencias:** MAP-01, TERRAIN-03.
+- **Archivos afectados:** `lib/heat-map.js`, `lib/analysis.js`, `lib/horizon-lola.js`, script del atlas global, `ui/heat-layer.js`, `ui/map.js`, `ui/compute.js`/worker, i18n, pruebas y documentación.
+- **Criterios de aceptación:** atlas global reproducible con MD5 de origen; el casquete sur conserva el atlas de 240 m; resolución y fuente de cada zona indicadas en el crédito; pruebas y build en verde.
+- **Fuera de alcance:** horizonte de alta resolución fuera del polo sur; cambiar la vista 2D.
+
 ### I18N-01 — Revisar traducciones
 
 - **Prioridad:** P1 · **Issue:** [#17](https://github.com/lucioooofacc/Selene-SpaceApps/issues/17).

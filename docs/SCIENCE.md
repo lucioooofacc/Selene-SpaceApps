@@ -156,7 +156,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 - Marco lunar del modelo astronómico y datum aún no formalizados.
 - Resolución temporal fija de 10 minutos y cruces sin refinamiento.
 - Ausencia de incertidumbre, metadatos de calidad y cobertura.
-- El mapa de calor aplica la misma política de visibilidad (DEC-036). Con el atlas LOLA y las efemérides cargados usa datos reales: horizonte LOLA del centro de cada celda (96 × 96 hasta −80°, cada 5°) y Sol y Tierra de Horizons, cada 1–2 h (DEC-038). Si no, el modelo aproximado y el horizonte sintético, informado en `source.kind`.
+- El mapa de calor aplica la misma política de visibilidad (DEC-036). Con el atlas LOLA y las efemérides cargados usa datos reales: horizonte LOLA del centro de cada celda (96 × 96 hasta −80°, cada 5°) y Sol y Tierra de Horizons, cada 1–2 h (DEC-038). Si no, el modelo aproximado y el horizonte sintético, informado en `source.kind`. Fuera del casquete, `computeGlobalHeatmap()` aplica lo mismo sobre una grilla de 2° con horizontes LOLA de `LDEM_16` (~1,9 km/píxel; MAP-02, DEC-065). Solo con datos reales: sin atlas global o fuera de Horizons no se calcula. Coincide con el escenario puntual en latitudes medias (≤ 0,3 p. p. de luz) y no tiene un salto sistemático en −80°.
 - Las métricas de comunicación y potencia son indicadores geométricos, no subsistemas de ingeniería.
 
 ## Sustitución por datos reales
