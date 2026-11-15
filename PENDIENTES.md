@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (supuestos de viabilidad editables, rama `feat/umbrales-variables`; antes, revisión de los supuestos contra NASA, rama `docs/validar-supuestos-viabilidad`).
+Última actualización: 2026-11-15 (opción de satélite de relevo, rama `feat/satelite-relevo`).
 
 ---
 
@@ -141,7 +141,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025~~ Resuelto 2026-11-15 (rama `docs/citas-datos`): Neumann, G. A. (2011), según DataCite; en `DATA_SOURCES.md` y en el informe (los manifiestos JSON conservan el DOI).
 - [x] ~~Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025~~ El panorama marca los tramos de baja confianza y los truncados, y "Datos y fuentes" indica la falta de cobertura. Resuelto 2026-11-14 (PR #53, DEC-031).
 - [x] ~~Validar los dos supuestos de los requisitos de viabilidad (24 h de autonomía de baterías y 80 % de comunicación directa) y si conviene evaluar la pendiente a escala de 100 m. — Teo, Facu, Lucio · VIAB-01 #122, DEC-071~~ Revisado 2026-11-15 (rama `docs/validar-supuestos-viabilidad`, `docs/VALIDACION.md`): luz continua y < 10° en 100 m coinciden con NASA; 24 h y 80 % no tienen fuente y siguen como supuestos. Quedan las decisiones de abajo.
-- [ ] Comunicación en la viabilidad: el criterio de NASA para Artemis III (HLS 2024) asume comunicación directa **sin relevo** y descarta zonas con la Tierra visible < 25 %; la app asume relevo y nunca da "no cumple". Decidir si se mantiene o si < 25 % pasa a "no cumple" (cambia resultados del mapa y del ranking). — Teo, Facu, Lucio · DEC-071, `docs/VALIDACION.md`
+- [x] ~~Comunicación en la viabilidad: el criterio de NASA para Artemis III (HLS 2024) asume comunicación directa **sin relevo** y descarta zonas con la Tierra visible < 25 %; la app asume relevo y nunca da "no cumple". Decidir si se mantiene o si < 25 % pasa a "no cumple" (cambia resultados del mapa y del ranking). — Teo, Facu, Lucio · DEC-071, `docs/VALIDACION.md`~~ Resuelto 2026-11-15 (rama `feat/satelite-relevo`, VIAB-03 #145, DEC-084): casilla «Satélite de relevo»; por defecto se mantiene el relevo y, sin él, menos del 25 % no cumple.
 - [ ] Corregir citas del requisito de pendiente y de baterías: el 8° es del informe IG-26-004 de NASA OIG (2026), no de "NASA, HLS 2024" (texto de viabilidad en `es.js`/`en.js` y comentario de `REQUIREMENTS` en `lib/analysis.js`), y "Odysseus tenía 10–20 h" fue su batería restante tras volcar, no una autonomía de diseño. Coordinar con la rama `feat/umbrales-variables`, que toca esos archivos. — Desarrollo web, Lucio, Cata · DEC-071, `docs/VALIDACION.md`
 - [ ] Pendiente a 100 m (escala que pide NASA): hoy se mide a escala kilométrica. Evaluar el DEM de alta resolución del polo sur de PGDA (producto 78, el que usa NASA) para los sitios polares. Mejora post-entrega. — Teo, Facu, Lucio · DEC-071
 - [x] ~~Horizonte regional de los puntos propios cerca de los polos: frente al horizonte exacto del punto, la luz difiere hasta 39 p. p. al norte de +75° y la Tierra hasta 100 p. p. entre −75° y −60° (puntos cerca del limbo). Opciones: calcular el horizonte del punto con `LDEM_16` cuando |lat| > 60° (requiere bajar el DEM global, 33,6 MiB) o avisarlo con más fuerza en la interfaz. — Teo, Facu, Lucio · CORE-05 #114, DEC-068, DEC-070~~ Resuelto 2026-11-15 (rama `feat/horizonte-polar-puntos`, DEC-076): horizonte del punto sobre `LDEM_16` con |lat| ≥ 60°; en Chandrayaan-3 difiere 0,22° del de 240 m.
@@ -154,6 +154,8 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Validar el ejemplo de la guía de viabilidad (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos como alternativa a las baterías. — Teo, Facu, Lucio · DEC-083
 - [ ] Revisar la redacción de los textos nuevos de los supuestos editables (`params.battery`, `params.comms`, sus ayudas, `help.params.items.7`, `help.viability.items.4–6`, ES/EN). — Alfonso, Cata, Lucio · DEC-083
 - [ ] Hay dos decisiones numeradas DEC-082 en `docs/DECISIONES.md` (vista inicial GLOBAL y versión "Emoción" de la demo); renumerar la segunda. — Equipo · detectado en VIAB-02
+
+- [ ] Revisar la redacción de los textos de la opción de relevo (`relayRule.*`, `params.relay`, `params.relayHint`, `map.banner.allLowNoRelay`, `help.viability.items.7`, ES/EN). — Alfonso, Cata, Lucio · DEC-084
 
 ## Textos y traducción
 

@@ -154,11 +154,12 @@ La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `
 | Requisito | Cumple | Al límite | No cumple | Base |
 | --- | --- | --- | --- | --- |
 | Luz continua: noche más larga del período | sin noche | hasta B h (24 h por defecto) | más de B h | Artemis III exige Sol durante toda la estadía (NASA, 2022). B es la autonomía de las baterías: **supuesto** del equipo, 24 h para un módulo chico, editable de 0 a 360 h (DEC-083) |
-| Comunicación: % del período con la Tierra visible | `>= C %` (80 % por defecto) | menos de C % | nunca | C es un **supuesto** del equipo, 80 % por defecto, editable de 0 a 100 % (DEC-083). Por debajo se asume un satélite de relevo. El criterio de NASA para Artemis III asume comunicación directa **sin** relevo y descarta las zonas con la Tierra visible menos del 25 % (NASA, 2024; ver `docs/VALIDACION.md`) |
+| Comunicación: % del período con la Tierra visible | `>= C %` (80 % por defecto) | menos de C % (sin relevo: de 25 % a C %) | nunca (sin relevo: menos de 25 %) | C es un **supuesto** del equipo, 80 % por defecto, editable de 0 a 100 % (DEC-083). Por defecto se asume un satélite de relevo; la casilla «Satélite de relevo» permite usar el criterio de NASA sin relevo (DEC-084). El criterio de NASA para Artemis III asume comunicación directa **sin** relevo y descarta las zonas con la Tierra visible menos del 25 % (NASA, 2024; ver `docs/VALIDACION.md`) |
 | Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Aterrizaje en menos de 10° en 100 m (actualización del HLS, NASA 2024) y tolerancia de inclinación de 8° (informe IG-26-004 de NASA OIG, 2026, según la prensa) |
 
 - La noche más larga se cuenta en las muestras de 10 min del escenario; en el mapa de calor, en el paso de su cálculo (1–2 h).
 - La pendiente usa la del punto con el DEM polar o la tabla de `LDEM_128` (escala kilométrica, más suave que a 100 m). Con `LDEM_16` (escala regional) no se evalúa. Por eso solo cuenta en la comparación y en los informes; el ranking, las fechas, la página principal y el mapa de calor evalúan luz y comunicación.
+- Sin relevo, menos del 25 % no cumple aunque C sea menor que 25 % (`NO_RELAY_MIN_PCT`, DEC-084).
 - B y C se cambian en «Parámetros de la misión» (`setMissionLimits()` en `lib/analysis.js`), viajan en la URL (`bat`, `com`) y se aplican en todas las páginas. `realDataVersion()` los incluye, así que los cachés se recalculan; el worker los recibe con cada pedido (DEC-083).
 - La potencia relativa media dejó de ser criterio; sigue como métrica.
 - El mapa de calor tiene también la capa "Noche más larga" (DEC-072), con las mismas horas que usa este requisito.
