@@ -30,7 +30,9 @@ const VIEWS = {
   polar: { lat: -90, lon: 0, dist: 5.25 },
   heat: { lat: -90, lon: 0, dist: 5.25 }, // mapa físico (elevación LOLA), centrado en el polo sur
   compare: { lat: 0, lon: 0, dist: 4.1 }, // comparación (DEC-054): Luna entera en un recuadro de 620 px
-  heatCalc: { lat: -90, lon: 0, dist: 2.1 }, // capas calculadas hasta −80° (DEC-050): más cerca para que el casquete llene la vista
+  // Capas calculadas: desde MAP-02 (DEC-065) cubren toda la Luna; Luna entera inclinada hacia el polo sur,
+  // donde está el casquete detallado (antes, DEC-050: cámara cerca del casquete hasta −80°).
+  heatCalc: { lat: -60, lon: 0, dist: 5.25 },
 };
 
 let threePromise = null;

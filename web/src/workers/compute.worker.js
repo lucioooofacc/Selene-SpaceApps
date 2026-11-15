@@ -9,13 +9,13 @@
  * cargado (`need`), para que los resultados coincidan con los de la página.
  */
 import { loadEphemerides } from "../lib/ephemeris.js";
-import { decodeHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
+import { decodeGlobalHeatAtlas, decodeHeatAtlas, registerGlobalHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
-import { computePolarHeatmap } from "../lib/analysis.js";
+import { computeGlobalHeatmap, computePolarHeatmap } from "../lib/analysis.js";
 import { dateScenarios } from "../lib/dates.js";
 import { SITES } from "../data/sites.js";
 
-const loaded = { ephemerides: null, heatAtlas: null, polarDem: null }; // promesas
+const loaded = { ephemerides: null, heatAtlas: null, globalHeatAtlas: null, polarDem: null }; // promesas
 
 async function fetchOk(url, kind) {
   const res = await fetch(url);
@@ -40,6 +40,14 @@ function ensure(base, need) {
     })();
     jobs.push(loaded.heatAtlas);
   }
+  if (need.globalHeatAtlas) {
+    loaded.globalHeatAtlas ??= (async () => {
+      const b = `${base}data/terrain/heat-atlas-global-2deg`; // mismo nombre que ui/ephemerides.js
+      const [meta, bin] = await Promise.all([fetchOk(`${b}.json`, "json"), fetchOk(`${b}.bin`)]);
+      registerGlobalHeatAtlas(decodeGlobalHeatAtlas(bin, meta));
+    })();
+    jobs.push(loaded.globalHeatAtlas);
+  }
   if (need.polarDem) {
     loaded.polarDem ??= (async () => {
       const levels = await Promise.all(
@@ -62,7 +70,11 @@ const slimSummary = ({ communication, illumination, sunMinutes, power, peakEarth
 const TASKS = {
   heat(args) {
     const map = computePolarHeatmap(args);
-    return { result: { size: map.size, values: map.values, source: map.source }, transfer: [map.values.buffer] };
+    // Resto de la Luna (MAP-02, DEC-065): solo con el atlas global cargado.
+    const g = computeGlobalHeatmap(args);
+    const global = g && { cols: g.cols, rows: g.rows, values: g.values, source: g.source };
+    const transfer = [map.values.buffer, ...(global ? [global.values.buffer] : [])];
+    return { result: { size: map.size, values: map.values, source: map.source, global }, transfer };
   },
   dates({ site, windowDays }) {
     const res = dateScenarios(site, windowDays);

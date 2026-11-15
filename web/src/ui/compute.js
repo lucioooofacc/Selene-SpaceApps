@@ -50,7 +50,12 @@ function getWorker() {
 export function loadedData() {
   const st = dataStatus();
   const ok = (s) => s === "ready" || s === "partial";
-  return { ephemerides: ok(st.ephemerides.state), heatAtlas: st.heatAtlas.state === "ready", polarDem: st.polarDem.state === "ready" };
+  return {
+    ephemerides: ok(st.ephemerides.state),
+    heatAtlas: st.heatAtlas.state === "ready",
+    globalHeatAtlas: st.globalHeatAtlas.state === "ready",
+    polarDem: st.polarDem.state === "ready",
+  };
 }
 
 /** @returns {Promise<any> | null} */
