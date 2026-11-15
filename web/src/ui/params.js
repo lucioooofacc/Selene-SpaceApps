@@ -14,7 +14,7 @@ import { dateButtonLabel, initCalendar } from "./calendar.js";
 import { minutesLabel } from "./places.js";
 import { dateUTC, deg, pct } from "../lib/format.js";
 import { DAY_MS } from "../lib/astro.js";
-import { STEP_MINUTES } from "../lib/analysis.js";
+import { STEP_MINUTES, cleanLimit } from "../lib/analysis.js";
 import { windowStats } from "../lib/stats.js";
 
 const $ = (id) => document.getElementById(id);
@@ -79,6 +79,19 @@ export function initParams() {
   $("lat-input").addEventListener("change", onCoord);
   $("lon-input").addEventListener("change", onCoord);
 
+  // Supuestos de viabilidad (DEC-083): el motor valida y acota; un valor vacío vuelve al vigente.
+  const onLimit = (input, key) => {
+    const value = cleanLimit(key, input.value);
+    if (value == null) input.value = String(getState()[key]);
+    else {
+      input.value = String(value);
+      setState({ [key]: value });
+    }
+  };
+  $("battery-input").addEventListener("change", (e) => onLimit(e.target, "batteryHours"));
+  $("comms-input").addEventListener("change", (e) => onLimit(e.target, "commsMinPct"));
+  $("relay-input").addEventListener("change", (e) => setState({ relay: e.target.checked }));
+
   initCalendar();
 }
 
@@ -100,6 +113,9 @@ export function renderParamsFields(state) {
 
   if (document.activeElement !== $("lat-input")) $("lat-input").value = state.lat.toFixed(2);
   if (document.activeElement !== $("lon-input")) $("lon-input").value = state.lon.toFixed(2);
+  if (document.activeElement !== $("battery-input")) $("battery-input").value = String(state.batteryHours);
+  if (document.activeElement !== $("comms-input")) $("comms-input").value = String(state.commsMinPct);
+  $("relay-input").checked = state.relay;
   $("date-button").textContent = dateButtonLabel(state);
 }
 

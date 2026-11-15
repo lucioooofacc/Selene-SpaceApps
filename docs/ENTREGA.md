@@ -6,10 +6,10 @@ Borrador para cerrar la entrega del **domingo 15/11/2026 antes de las 23:59** ([
 
 | Criterio (docs/TASKS.md) | Estado | Notas |
 | --- | --- | --- |
-| `npm test` y `npm run build` sin errores | ✅ sobre `main` `c7b5353` (15/11): 218 pruebas, 215 pasan, 0 fallan, 3 omitidas porque no están los rasters LOLA. El build termina sin errores, con un solo aviso de tamaño por el bloque de three.js (736 kB, 187 kB comprimido). | Node 24.18, `npm ci`. Repetir sobre el commit final si entra otro PR. |
-| URL pública | ✅ https://selene-space-apps.vercel.app | `/`, `/compare.html` e `/informe.html` responden 200. El check "Vercel" de `c7b5353` dice "Deployment has completed". |
+| `npm test` y `npm run build` sin errores | ✅ sobre `main` `7e08114` (15/11): 226 pruebas, 223 pasan, 0 fallan, 3 omitidas porque no están los rasters LOLA. El build termina sin errores, con un solo aviso de tamaño por el bloque de three.js (736 kB, 187 kB comprimido). | Node 24.18, `npm ci`. Repetir sobre el commit final si entra otro PR. |
+| URL pública | ✅ https://selene-space-apps.vercel.app | `/`, `/compare.html` e `/informe.html` responden 200. El check "Vercel" de `7e08114` dice "Deployment has completed". |
 | Revisión en escritorio (≥ 1200 px), ES y EN | ⏳ Equipo | Hay que hacerla a mano en el navegador: recorrer misión, comparación, informe (web e impreso), "Datos y fuentes" y las capas del mapa en 2D y 3D. |
-| Enlaces, fuentes e idiomas verificados | ✅ automático (15/11) · ⏳ lectura humana | Idiomas: `es.js` y `en.js` tienen las mismas 619 claves, ninguna vacía. La revisión de traducciones (I18N-01, #17) está cerrada. Enlaces: se probaron los 42 URL de `web/src`, los HTML, `README.md`, `docs/DATA_SOURCES.md` y este archivo, y todos los reales responden. CNSA es lento pero responde 200. El DOI de Science y la página de JPL bloquean clientes automáticos, pero abren en un navegador. No son enlaces para seguir: `localhost`, la plantilla `doi.org/${product.doi}` y los dominios de Google Fonts. |
+| Enlaces, fuentes e idiomas verificados | ✅ automático (15/11) · ⏳ lectura humana | Idiomas: `es.js` y `en.js` tienen las mismas 640 claves, ninguna vacía. La revisión de traducciones (I18N-01, #17) está cerrada. Enlaces: se probaron los 42 URL de `web/src`, los HTML, `README.md`, `docs/DATA_SOURCES.md` y este archivo, y todos los reales responden. CNSA es lento pero responde 200. El DOI de Science y la página de JPL bloquean clientes automáticos, pero abren en un navegador. No son enlaces para seguir: `localhost`, la plantilla `doi.org/${product.doi}` y los dominios de Google Fonts. |
 | Commit o tag de entrega registrado | ⏳ Equipo | Propuesta abajo. |
 
 ## Texto propuesto para el formulario: datos y recursos de la NASA

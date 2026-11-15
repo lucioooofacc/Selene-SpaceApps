@@ -12,11 +12,12 @@ import { REQUIREMENTS } from "../lib/analysis.js";
 import { siteViability } from "../lib/site-terrain.js";
 import { DAY_MS } from "../lib/astro.js";
 import { compareScenarios } from "../lib/compare.js";
-import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
+import { coord, dateUTC, deg, duration, pct } from "../lib/format.js";
 import { getLang, t } from "../i18n/index.js";
 import { dataNote, provenanceHtml, qualityHtml } from "./provenance.js";
 import { renderCompareGlobe } from "./compare-globe.js";
 import { lolaForScenario } from "./lola.js";
+import { attachTimeHover, laneStates } from "./chart-hover.js";
 
 const $ = (id) => document.getElementById(id);
 const COLORS = { a: "var(--gold)", b: "var(--earth)" };
@@ -81,7 +82,10 @@ function metricsTable(cmp, names) {
     </table>`;
 }
 
-/** Ventanas de luz y enlace de los dos sitios sobre la duración de la misión. */
+/**
+ * Ventanas de luz y enlace de los dos sitios sobre la duración de la misión.
+ * Devuelve el SVG y la geometría para el cartel de hora (`attachTimeHover`).
+ */
 function windowsChart(scA, scB, names) {
   const W = 1760;
   const LEFT = 180;
@@ -111,7 +115,7 @@ function windowsChart(scA, scB, names) {
       const rects = lane.sc.summary[lane.key]
         .map(
           (w) =>
-            `<rect x="${x(w.start).toFixed(1)}" y="${y}" width="${Math.max(1, x(w.end) - x(w.start)).toFixed(1)}" height="${LANE - 12}" rx="3" fill="${lane.color}"><title>${dateUTC(w.start)} ${timeUTC(w.start)} – ${dateUTC(w.end)} ${timeUTC(w.end)} UTC</title></rect>`,
+            `<rect x="${x(w.start).toFixed(1)}" y="${y}" width="${Math.max(1, x(w.end) - x(w.start)).toFixed(1)}" height="${LANE - 12}" rx="3" fill="${lane.color}"/>`,
         )
         .join("");
       // Nombre corto en el carril ("Sitio A · Luz"); el nombre completo queda como tooltip.
@@ -120,7 +124,22 @@ function windowsChart(scA, scB, names) {
     })
     .join("");
 
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t("compare.windowsAria")}">${ticks}${body}</svg>`;
+  const hover = {
+    width: W,
+    height: H,
+    left: LEFT,
+    right: W,
+    startMs,
+    endMs,
+    lanes: lanes.map((lane, i) => ({
+      top: i * LANE + 6,
+      height: LANE - 12,
+      label: `${names[lane.slot]} · ${t(`compare.${lane.what}`)}`,
+      windows: lane.sc.summary[lane.key],
+      ...laneStates[lane.what](),
+    })),
+  };
+  return { html: `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t("compare.windowsAria")}">${ticks}${body}</svg>`, hover };
 }
 
 /** Perfil del horizonte de los dos sitios (elevación del relieve según el azimut). */
@@ -218,7 +237,9 @@ export function renderComparison({ a, b, scA, scB }) {
     ? t("compare.summary", { name: names[winner], wins: cmp.wins[winner], total: cmp.rows.length })
     : t("compare.summaryTie");
   $("cmp-metrics").innerHTML = metricsTable(cmp, names);
-  $("cmp-windows").innerHTML = windowsChart(scA, scB, names);
+  const windows = windowsChart(scA, scB, names);
+  $("cmp-windows").innerHTML = windows.html;
+  attachTimeHover($("cmp-windows"), windows.hover);
   $("cmp-horizon").innerHTML = horizonChart(scA, scB);
   $("cmp-horizon-legend").innerHTML =
     ["a", "b"].map((slot) => `<span><i style="background:${COLORS[slot]}"></i>${names[slot]}</span>`).join("") +

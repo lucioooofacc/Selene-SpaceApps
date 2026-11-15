@@ -9,10 +9,14 @@
  * (las fechas solo si el usuario las eligió).
  * Un sitio es el id de un sitio curado o "pt:lat,lon" para un punto del mapa;
  * un sitio propio con nombre agrega "~Nombre" (DEC-049): "pt:lat,lon~Nombre".
+ * Las tres páginas suman "&bat=<h>&com=<%>&relay=<1|0>" si los supuestos de
+ * viabilidad no son los de por defecto (DEC-083, DEC-084), para que el enlace
+ * dé el mismo resultado.
  */
 import { SITES } from "../data/sites.js";
 import { t } from "../i18n/index.js";
 import { CUSTOM_ID, getSite } from "../state.js";
+import { cleanLimit, limitsAreDefault, missionLimits } from "../lib/analysis.js";
 
 const pad = (n) => String(n).padStart(2, "0");
 const isoDay = (ms) => {
@@ -47,9 +51,32 @@ export function parseSiteParam(value) {
   return { id: value, lat, lon, custom: true, label, name: label ?? t("compare.point", { lat: lat.toFixed(2), lon: lon.toFixed(2) }) };
 }
 
+/** Supuestos de viabilidad vigentes en la URL (DEC-083): solo si no son los de por defecto. */
+function addLimits(q) {
+  if (limitsAreDefault()) return q;
+  const { batteryHours, commsMinPct, relay } = missionLimits();
+  q.set("bat", String(batteryHours));
+  q.set("com", String(commsMinPct));
+  q.set("relay", relay ? "1" : "0");
+  return q;
+}
+
+/** Supuestos de viabilidad de la URL: { batteryHours?, commsMinPct?, relay? } con los válidos (DEC-083, DEC-084). */
+export function parseLimitsQuery(search) {
+  const q = new URLSearchParams(search);
+  const out = {};
+  const bat = q.has("bat") ? cleanLimit("batteryHours", q.get("bat")) : null;
+  const com = q.has("com") ? cleanLimit("commsMinPct", q.get("com")) : null;
+  if (bat != null) out.batteryHours = bat;
+  if (com != null) out.commsMinPct = com;
+  const relay = q.has("relay") ? cleanLimit("relay", q.get("relay")) : null;
+  if (relay != null) out.relay = relay;
+  return out;
+}
+
 export function compareUrl({ a, b, startMs, windowDays }) {
   const q = new URLSearchParams({ a: siteParam(a), b: siteParam(b), start: isoDay(startMs), days: String(windowDays) });
-  return `./compare.html?${q}`;
+  return `./compare.html?${addLimits(q)}`;
 }
 
 /** Fechas de la URL: { startMs, windowDays } válidos o null (día UTC exacto, 1 a 30 días). */
@@ -85,7 +112,7 @@ export function missionQuery({ site, startMs, windowDays, dateChosen, heatLayer 
     q.set("days", String(windowDays));
   }
   if (URL_LAYERS.includes(heatLayer)) q.set("layer", heatLayer);
-  return `?${q}`;
+  return `?${addLimits(q)}`;
 }
 
 export function missionUrl(selection, hash = "") {

@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <title>SELENE</title>
-    <link rel="icon" href="./figma/logo.png" type="image/png" />
+    <link rel="icon" href="./favicon.png" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,7 +21,9 @@
     <div class="stage" id="stage">
       <!-- Vista 6: encabezado -->
       <header class="header">
-        <img class="header-logo" src="./figma/logo.png" alt="" width="80" height="64" />
+        <img class="header-logo" src="./logo.png" alt="" width="64" height="64" />
+        <!-- El logo fue generado con IA: se aclara a la vista (DEC-078) -->
+        <p class="header-logo-note" data-i18n="app.aiLogo"></p>
         <p class="header-brand">SELENE</p>
         <nav class="header-nav" data-i18n-attr="aria-label:nav.label">
           <a href="#mision" data-i18n="nav.mission"></a>
@@ -157,8 +159,22 @@
                 <span class="params-label" data-i18n="params.lon"></span>
                 <input id="lon-input" type="number" min="-180" max="180" step="0.01" />
               </label>
+              <!-- Supuestos de viabilidad editables (DEC-083) -->
+              <label class="params-limit" data-i18n-attr="title:params.batteryHint">
+                <span class="params-label" data-i18n="params.battery"></span>
+                <input id="battery-input" type="number" min="0" max="360" step="1" inputmode="numeric" />
+              </label>
+              <label class="params-limit" data-i18n-attr="title:params.commsHint">
+                <span class="params-label" data-i18n="params.comms"></span>
+                <input id="comms-input" type="number" min="0" max="100" step="1" inputmode="numeric" />
+              </label>
             </div>
             <span class="params-label params-label-duration" data-i18n="params.duration"></span>
+            <!-- Supuesto de viabilidad: satélite de relevo (DEC-084) -->
+            <label class="params-relay" data-i18n-attr="title:params.relayHint">
+              <input type="checkbox" id="relay-input" />
+              <span data-i18n="params.relay"></span>
+            </label>
             <div class="params-date">
               <button type="button" class="params-date-button" id="date-button" aria-haspopup="dialog" aria-expanded="false"></button>
               <div class="calendar" id="calendar" role="dialog" hidden></div>

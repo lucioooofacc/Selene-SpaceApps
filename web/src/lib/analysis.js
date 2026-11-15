@@ -21,28 +21,119 @@ const STEP_MS = STEP_MINUTES * 60_000;
 /** Días extra calculados después de la ventana para encontrar el próximo amanecer/ocaso. */
 const LOOKAHEAD_DAYS = 32;
 
-/** Umbrales de viabilidad. Documentados en DEC-007; ajustables por el equipo. */
 /**
  * Requisitos de misión para la viabilidad (VIAB-01, DEC-071; reemplaza los
  * umbrales de DEC-007). Cada uno tiene tres niveles: "high" = cumple,
  * "mid" = al límite, "low" = no cumple.
  * - light: noche más larga del período, en horas. Cumple sin noche, como
  *   exige Artemis III (Sol continuo toda la estadía, NASA 2022); al límite
- *   hasta 24 h (SUPUESTO del equipo: autonomía de baterías de un módulo chico;
- *   Odysseus tenía 10–20 h); no cumple con noches más largas.
+ *   hasta 24 h (SUPUESTO del equipo sobre la autonomía de baterías de un
+ *   módulo chico; la NASA no publica un valor, y las "10–20 h" de IM-1
+ *   Odysseus fueron su batería restante tras volcar, no una autonomía de
+ *   diseño); no cumple con noches más largas.
  * - communication: % del período con la Tierra visible. Cumple desde 80 %
  *   (enlace directo casi permanente; SUPUESTO del equipo, no hay un umbral
  *   publicado). Por debajo queda al límite y nunca "no cumple": se asume un
  *   satélite de relevo, como en los planes de Artemis (decisión de Lucio).
+ *   Sin relevo (opción de DEC-084), menos del 25 % no cumple.
  * - slope: pendiente del terreno en grados, solo donde hay datos. Cumple
- *   por debajo de 8° (tolerancia de inclinación del HLS), al límite por
- *   debajo de 10° (pendiente de aterrizaje del HLS en 100 m, NASA 2024).
+ *   por debajo de 8° (tolerancia de inclinación del HLS, informe IG-26-004
+ *   de la Oficina del Inspector General de la NASA, 2026), al límite por
+ *   debajo de 10° (pendiente de aterrizaje en 100 m, actualización del HLS,
+ *   NASA 2024).
  */
 export const REQUIREMENTS = Object.freeze({
   light: Object.freeze({ unit: "h", meets: 0, limit: 24, better: "lower", source: "assumed-partial" }),
   communication: Object.freeze({ unit: "%", meets: 80, limit: 0, better: "higher", source: "assumed-relay" }),
   slope: Object.freeze({ unit: "°", meets: 8, limit: 10, better: "lower", strict: true, source: "nasa-hls-2024" }),
 });
+
+/**
+ * Supuestos del equipo que se pueden cambiar desde "Parámetros de la misión"
+ * (DEC-083): la autonomía de las baterías (límite de `light`, en horas) y la
+ * comunicación mínima (`meets` de `communication`, en %) y si se asume un
+ * satélite de relevo (DEC-084). Los valores por defecto son los de DEC-071.
+ * La pendiente sale de la NASA y no se cambia.
+ */
+export const DEFAULT_LIMITS = Object.freeze({
+  batteryHours: REQUIREMENTS.light.limit,
+  commsMinPct: REQUIREMENTS.communication.meets,
+  relay: true,
+});
+
+/**
+ * Sin satélite de relevo (DEC-084): criterio de NASA para Artemis III (HLS
+ * 2024, comunicación directa con la Tierra, "assume no comm relay is
+ * available"), que descarta las zonas con la Tierra visible menos del 25 %
+ * del tiempo. Por debajo de este valor la comunicación "no cumple".
+ */
+export const NO_RELAY_MIN_PCT = 25;
+
+/** Rango admitido de cada supuesto: 0 a 360 h (una noche lunar) y 0 a 100 %, en enteros. */
+export const LIMIT_RANGES = Object.freeze({
+  batteryHours: Object.freeze({ min: 0, max: 360 }),
+  commsMinPct: Object.freeze({ min: 0, max: 100 }),
+});
+
+let limits = { ...DEFAULT_LIMITS };
+let effective = REQUIREMENTS;
+
+/** Entero dentro del rango del supuesto (o booleano para `relay`), o null si no es válido. */
+export function cleanLimit(key, value) {
+  if (key === "relay") {
+    if (value === true || value === "1" || value === 1) return true;
+    if (value === false || value === "0" || value === 0) return false;
+    return null;
+  }
+  const n = typeof value === "string" && value.trim() === "" ? NaN : Number(value);
+  if (!Number.isFinite(n)) return null;
+  const { min, max } = LIMIT_RANGES[key];
+  return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+/** Supuestos vigentes: { batteryHours, commsMinPct }. */
+export function missionLimits() {
+  return { ...limits };
+}
+
+/**
+ * Cambia los supuestos vigentes (lo inválido o ausente queda como estaba).
+ * Devuelve true si cambió algo. Los cachés de escenarios lo notan porque
+ * `realDataVersion()` incluye `limitsVersion()`.
+ */
+export function setMissionLimits(patch = {}) {
+  const next = { ...limits };
+  for (const key of Object.keys(DEFAULT_LIMITS)) {
+    const v = cleanLimit(key, patch[key]);
+    if (v != null) next[key] = v;
+  }
+  if (Object.keys(DEFAULT_LIMITS).every((key) => next[key] === limits[key])) return false;
+  limits = next;
+  effective = limitsAreDefault()
+    ? REQUIREMENTS
+    : Object.freeze({
+        ...REQUIREMENTS,
+        light: Object.freeze({ ...REQUIREMENTS.light, limit: limits.batteryHours }),
+        communication: Object.freeze({
+          ...REQUIREMENTS.communication,
+          meets: limits.commsMinPct,
+          limit: limits.relay ? 0 : NO_RELAY_MIN_PCT,
+          source: limits.relay ? "assumed-relay" : "nasa-hls-2024-dte",
+        }),
+      });
+  return true;
+}
+
+/** Requisitos con los supuestos vigentes (mismas claves que REQUIREMENTS). */
+export function currentRequirements() {
+  return effective;
+}
+
+/** true si los supuestos son los de DEC-071. */
+export const limitsAreDefault = () => Object.keys(DEFAULT_LIMITS).every((key) => limits[key] === DEFAULT_LIMITS[key]);
+
+/** Identificador de los supuestos vigentes, para las claves de caché. */
+export const limitsVersion = () => `b${limits.batteryHours}c${limits.commsMinPct}r${limits.relay ? 1 : 0}`;
 
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
@@ -149,8 +240,9 @@ function refineAll(flags, times, visibleAt) {
  * luz (0 h de noche cumple) y estricto para la pendiente (< 8° cumple).
  */
 export function requirementLevel(key, value) {
-  const r = REQUIREMENTS[key];
-  if (r.better === "higher") return value >= r.meets ? "high" : value >= r.limit ? "mid" : "low";
+  const r = effective[key];
+  // "Mayor es mejor": por debajo de `limit` no cumple aunque `meets` sea menor (sin relevo, DEC-084).
+  if (r.better === "higher") return value < r.limit ? "low" : value >= r.meets ? "high" : "mid";
   const within = (x, bound) => (r.strict ? x < bound : x <= bound);
   return within(value, r.meets) ? "high" : within(value, r.limit) ? "mid" : "low";
 }
@@ -252,11 +344,12 @@ export function needsPolarDem(site) {
 }
 
 /**
- * Versión de los datos reales cargados (efemérides, DEM polar, atlas y DEM global). Cambia cuando
- * llega algo nuevo: los cachés de escenarios la incluyen en su clave.
+ * Versión de los datos reales cargados (efemérides, DEM polar, atlas y DEM global) y de los
+ * supuestos de viabilidad (DEC-083). Cambia cuando llega algo nuevo o cambian las baterías o la
+ * comunicación mínima: los cachés de escenarios la incluyen en su clave.
  */
 export function realDataVersion() {
-  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}.${globalDemVersion()}`;
+  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}.${globalDemVersion()}.${limitsVersion()}`;
 }
 
 /**

@@ -116,6 +116,18 @@ Política única (CORE-02, DEC-036), la misma en `computeScenario()`, `sampleAt(
 
 La visibilidad geométrica de la Tierra **no garantiza comunicación**. No incorpora enlace de radio, potencia, ganancia, orientación de antena, banda, ruido, propagación, ocultaciones por infraestructura ni disponibilidad de estaciones terrestres.
 
+## Forma de los recorridos en el panorama
+
+El panorama (`web/src/ui/panorama.js`) dibuja los recorridos del Sol y de la Tierra en una proyección rectangular: azimut (0°–360°) en el eje horizontal y elevación en el vertical. La vertical está exagerada unas 3,5 veces (`VERTICAL_EXAGGERATION`: 12 px/° contra 1240/360 ≈ 3,44 px/° en horizontal), y la elevación se recorta en `SKY_MAX_EL` = 31°. Por encima de ese valor el cuerpo se dibuja pegado al borde superior.
+
+Con la rotación lunar (un giro por mes sinódico, ≈ 29,5 días), cada cuerpo recorre un círculo alrededor del polo celeste lunar. Ese círculo forma con el horizonte un ángulo de **90° − |latitud|**, y de ese ángulo sale la forma que se ve:
+
+- **Cerca del ecuador:** el círculo es casi perpendicular al horizonte y pasa cerca del cenit. El Sol sube por el este (azimut ≈ 90°) y baja por el oeste (≈ 270°) con el azimut casi constante, así que se ve como líneas verticales. Por encima de los 31° la trayectoria queda recortada como una línea horizontal en el borde superior. La Tierra está casi fija en el cielo y solo se desplaza unos grados por la libración, así que también se ve casi recta o recortada.
+- **Cerca de los polos:** el círculo es casi paralelo al horizonte. El Sol recorre los 360° de azimut rasante, y su elevación oscila aproximadamente como `δ + c·cos(A − A₀)`. Ahí `c` es la colatitud del sitio (90° − |lat|), `A` es el azimut y `δ` es la declinación del Sol respecto del ecuador lunar, que varía poco porque el ecuador lunar está inclinado 1,54° respecto de la eclíptica. A 85° S la amplitud es de unos ±5°, y con la exageración vertical se ve como una onda. La Tierra, también cerca del horizonte, oscila por la libración en latitud (≈ ±6,7°) y en longitud (≈ ±7,9°).
+- **En latitudes intermedias** se ven arcos, una transición entre las dos formas.
+
+Estas formas salen de la geometría y de la proyección, no de errores en los datos. Las posiciones son las mismas que usa el resto de la página (Horizons o el modelo aproximado), y el panorama no hace cálculos propios.
+
 ## Muestreo y ventanas operativas
 
 `computeScenario()` muestrea a intervalos de 10 minutos. La cantidad de pasos de la ventana se redondea y se agregan 32 días de anticipación para buscar el próximo cambio de visibilidad mostrado en la UI.
@@ -141,15 +153,17 @@ La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `
 
 | Requisito | Cumple | Al límite | No cumple | Base |
 | --- | --- | --- | --- | --- |
-| Luz continua: noche más larga del período | sin noche | hasta 24 h | más de 24 h | Artemis III exige Sol durante toda la estadía (NASA, 2022). El límite de 24 h es un **supuesto** del equipo sobre la autonomía de las baterías de un módulo chico |
-| Comunicación: % del período con la Tierra visible | `>= 80 %` | menos de 80 % | nunca | El 80 % es un **supuesto** del equipo. Por debajo se asume un satélite de relevo, como en los planes de Artemis |
-| Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Tolerancia de inclinación de 8° y aterrizaje en menos de 10° en 100 m del HLS (NASA, 2024) |
+| Luz continua: noche más larga del período | sin noche | hasta B h (24 h por defecto) | más de B h | Artemis III exige Sol durante toda la estadía (NASA, 2022). B es la autonomía de las baterías: **supuesto** del equipo, 24 h para un módulo chico, editable de 0 a 360 h (DEC-083) |
+| Comunicación: % del período con la Tierra visible | `>= C %` (80 % por defecto) | menos de C % (sin relevo: de 25 % a C %) | nunca (sin relevo: menos de 25 %) | C es un **supuesto** del equipo, 80 % por defecto, editable de 0 a 100 % (DEC-083). Por defecto se asume un satélite de relevo; la casilla «Satélite de relevo» permite usar el criterio de NASA sin relevo (DEC-084). El criterio de NASA para Artemis III asume comunicación directa **sin** relevo y descarta las zonas con la Tierra visible menos del 25 % (NASA, 2024; ver `docs/VALIDACION.md`) |
+| Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Aterrizaje en menos de 10° en 100 m (actualización del HLS, NASA 2024) y tolerancia de inclinación de 8° (informe IG-26-004 de NASA OIG, 2026, según la prensa) |
 
 - La noche más larga se cuenta en las muestras de 10 min del escenario; en el mapa de calor, en el paso de su cálculo (1–2 h).
 - La pendiente usa la del punto con el DEM polar o la tabla de `LDEM_128` (escala kilométrica, más suave que a 100 m). Con `LDEM_16` (escala regional) no se evalúa. Por eso solo cuenta en la comparación y en los informes; el ranking, las fechas, la página principal y el mapa de calor evalúan luz y comunicación.
+- Sin relevo, menos del 25 % no cumple aunque C sea menor que 25 % (`NO_RELAY_MIN_PCT`, DEC-084).
+- B y C se cambian en «Parámetros de la misión» (`setMissionLimits()` en `lib/analysis.js`), viajan en la URL (`bat`, `com`) y se aplican en todas las páginas. `realDataVersion()` los incluye, así que los cachés se recalculan; el worker los recibe con cada pedido (DEC-083).
 - La potencia relativa media dejó de ser criterio; sigue como métrica.
 - El mapa de calor tiene también la capa "Noche más larga" (DEC-072), con las mismas horas que usa este requisito.
-- **Consecuencia física:** en misiones de más de unos días, cualquier sitio fuera de las zonas polares más iluminadas tiene una noche de hasta 14 días y no cumple la luz continua. Con 30 días, ninguna celda del casquete polar la cumple (la noche más corta medida es de 112 h).
+- **Consecuencia física:** en misiones de más de unos días, cualquier sitio fuera de las zonas polares más iluminadas tiene una noche de hasta 14 días y no cumple la luz continua con 24 h de baterías. Ejemplo medido con JPL Horizons: Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h (~340 h): viabilidad "baja" con 24 h y "media" con 360 h. Con 30 días, ninguna celda del casquete polar la cumple (la noche más corta medida es de 112 h).
 
 ## Limitaciones conocidas
 

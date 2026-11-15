@@ -207,7 +207,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - **Confianza:** "alta" en los 7 sitios: valores que coinciden con una fuente oficial; las salvedades (marco inferido o no declarado, discrepancia de CNSA) quedan en `confidence.reason` y `frameNote`.
   - `relief` y `elevationKm` siguen siendo parámetros sintéticos (DEC-005). Con el modelo actual, la luz anual de Shackleton pasa de ~96,2 % (−89,9°, 0°) a ~96,3 % (R04). DEC-005 sigue valiendo.
 - **Alternativas descartadas:** convertir los valores entre marcos sin conocer el de origen (se agregaría un error en lugar de quitarlo); deducir la exactitud de la cantidad de decimales (confunde representación con exactitud); usar el valor de CNSA para Chang'e 4 (otra referencia cartográfica); usar el centro USGS del cráter como punto del sitio; citar referencias escritas de memoria sin verificarlas; recortar latitudes fuera de rango en lugar de rechazarlas (ocultaría errores de datos).
-- **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3.
+- **Estado:** **vigente.** Pendiente de validar por astronomía: el marco inferido de R04/R23 y el no declarado de IM-1/Chandrayaan-3. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-020 — Destinos del menú, ortografía y vistas del mapa (decisiones del equipo)
 
@@ -297,7 +297,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Usar `elevationKm` como altura del observador: es un parámetro sintético (DEC-005).
   - Interpolar o poner 0 en faltantes: ocultaría huecos de cobertura.
   - SPICE local: más reproducible a largo plazo pero exige seleccionar y empaquetar kernels; queda como alternativa en `DATA_SOURCES.md`.
-- **Estado:** **vigente** para el adaptador, la adquisición y la caché. Pendiente de validar por astronomía: altura de los sitios, equivalencia MOON_ME/DE421 ↔ MEAN_ME/DE441 y uso de los EOP predichos. La integración en `analysis.js` y la UI queda en CORE-01.
+- **Estado:** **vigente** para el adaptador, la adquisición y la caché. Pendiente de validar por astronomía: altura de los sitios, equivalencia MOON_ME/DE421 ↔ MEAN_ME/DE441 y uso de los EOP predichos. La integración en `analysis.js` y la UI queda en CORE-01. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-025 — Producto LOLA `LDEM_60S_240M_FLOAT` V2.1 + `LDEC_60S_240M` (TERRAIN-01)
 
@@ -337,7 +337,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Las alturas son relativas a la esfera de 1737,4 km, no a un geoide; no se aplicó transformación de marco (sitios y producto están en MOON_ME/DE421, DEC-019).
   - Redondeo a 1 mm en los recortes: menor que la resolución float32 a esas alturas y muy por debajo de la exactitud vertical de LOLA.
 - **Alternativas descartadas:** versionar el raster (~345 MiB); remuestrear a lat/lon (agrega error y no hace falta: la lib trabaja en la grilla nativa); aceptar una URL arbitraria en la descarga; tratar `count = 0` como dato medido; usar el producto int16 `LDEM_60S_240M.IMG` (el equipo eligió la versión float).
-- **Estado:** **vigente.** Pendiente de validar por astronomía la orientación (hallazgo del catálogo) y de definir en TERRAIN-02 el radio de recorte y si los recortes reales se versionan para la demo.
+- **Estado:** **vigente.** Pendiente de validar por astronomía la orientación (hallazgo del catálogo) y de definir en TERRAIN-02 el radio de recorte y si los recortes reales se versionan para la demo. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-026 — MAPA DE CALOR con elevación real de LOLA y vista 3D física (UI-11)
 
@@ -373,7 +373,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Contexto / problema:** el equipo pidió (`PENDIENTES.md`) categorías para rankear "Mejores lugares" (interés científico, comunicación terrestre, luz solar aprovechable) y cambiar el título "MAPA DE CALOR", porque la pestaña muestra elevación (DEC-026).
 - **Decisión:**
   - Cuatro categorías: **Global** (orden anterior: puntos de viabilidad, después iluminación), **Ciencia**, **Comunicación** (% del tiempo con la Tierra visible, después la altura máxima de la Tierra) y **Luz** (potencia solar relativa promedio, después los minutos con Sol). Las tres últimas ordenan resultados que el motor ya calcula.
-  - **Interés científico** no existe como dato. Se cuenta cuántos **rasgos con fuente citada** tiene cada sitio (decisión del equipo). Cabeus: hielo de agua y región en sombra permanente (Colaprete et al. 2010). Shackleton: junto a un cráter con fondo en sombra permanente (Zuber et al. 2012; ese trabajo no confirma hielo, así que no se le asigna). Malapert: región candidata de Artemis III (NASA, 28/10/2024). Chandrayaan-3: primeras mediciones in situ cerca del polo sur, con azufre (ISRO 2023). Chang'e 4: posible material del manto y cara oculta en la cuenca SPA (Li et al. 2019). Apollo 11: muestras traídas a la Tierra (NASA JSC). IM-1: sin rasgos cargados. **Pendiente de validar por astronomía; no es una métrica científica** (se aclara en la interfaz).
+  - **Interés científico** no existe como dato. Se cuenta cuántos **rasgos con fuente citada** tiene cada sitio (decisión del equipo). Cabeus: hielo de agua y región en sombra permanente (Colaprete et al. 2010). Shackleton: junto a un cráter con fondo en sombra permanente (Zuber et al. 2012; ese trabajo no confirma hielo, así que no se le asigna). Malapert: región candidata de Artemis III (NASA, 28/10/2024). Chandrayaan-3: primeras mediciones in situ cerca del polo sur, con azufre (ISRO 2023). Chang'e 4: posible material del manto y cara oculta en la cuenca SPA (Li et al. 2019). Apollo 11: muestras traídas a la Tierra (NASA JSC). IM-1: sin rasgos cargados. **Pendiente de validar por astronomía; no es una métrica científica** *(rasgos validados el 15/11/2026 en DEC-070; sigue sin ser una métrica científica)* (se aclara en la interfaz).
   - La pestaña pasa a **ELEVACIÓN / ELEVATION**. El identificador interno sigue siendo `heat` (estado, CSS) para no tocar código ajeno; solo cambia el texto visible.
 - **Solución aplicada:** `web/src/data/site-traits.js` (rasgos y citas, separado de `sites.js` para no modificar el contrato de DATA-01); `web/src/lib/ranking.js` (`rankEntries`, puro, con desempate por nombre); `places.js` con selector tipo radiogroup (clic y flechas) y estado `placesCategory`. En "Ciencia", el subtítulo de cada tarjeta muestra los rasgos (máximo dos líneas, con el texto completo como tooltip). El modal "Datos y fuentes" suma "Interés científico" con las citas. Pruebas en `tests/ranking.test.js`.
 - **Alternativas descartadas:** un puntaje científico ponderado (inventaría pesos); dejar la categoría deshabilitada hasta que astronomía defina criterios.
@@ -408,7 +408,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Hallazgo a validar por astronomía (Teo, Facu, Lucio) — Shackleton R04** (*resuelto en DEC-035: R04 es un centro de polígono; se usa R01*): con la coordenada de DEC-019 (−89,7668°, −171,87°) el DEM ubica el punto sobre la **pared interior** del cráter: la cresta (≈ 1730 m) está a ~2 km hacia el este (azimut 90–110°) y el terreno baja hacia el fondo al oeste-suroeste. Por eso el horizonte llega a ~31° entre 30° y 150° de azimut. No es un artefacto del píxel: ignorando el primer kilómetro el máximo sigue en ~31° (media 12,1°). La orientación del DEM está verificada (DEC-025). El marco de R04 figura como inferido (`sourceFrameVerified: false`); una diferencia MOON_PA/MOON_ME (~0,9 km) no alcanza por sí sola a explicar 2 km. Cuando CORE-01 integre este horizonte, la iluminación de Shackleton bajará respecto del ~90 % del modelo sintético (DEC-005). No se cambió la coordenada (corresponde a DATA-01).
 - **Supuestos:** alturas sobre la esfera de 1737,4 km (sin geoide); 240 m/píxel limita el detalle a menos de ~0,5 km; la interpolación bilineal suaviza bordes en ±1 píxel; observador a 2 m (mástil o antena típica, no un vehículo concreto). Más allá de ~250 km la curvatura hace que el relieve lunar (≲ 10 km) no pueda levantar el horizonte de sitios bajos; 300 km da margen para horizontes negativos en cimas.
 - **Alternativas descartadas:** calcular en el navegador (raster de ~345 MiB); versionar recortes de ±300 km (~25 MB por sitio); aproximar la curvatura con `d²/2R` (la fórmula exacta cuesta lo mismo); modificar `createHorizon()` (cambio de contrato y de resultados que corresponde a CORE-01); horizonte para sitios personalizados (requiere el raster en tiempo de ejecución: pendiente, PERF-01/CORE-01).
-- **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores.
+- **Estado:** vigente. Pendiente de validar por astronomía el hallazgo de Shackleton R04 y de comparar contra horizontes publicados (p. ej. Mazarico et al. 2011) si el equipo consigue los valores. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-031 — El horizonte LOLA real en la interfaz, antes y después de CORE-01 (UI-14)
 
@@ -499,7 +499,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Pruebas en `web/tests/real-points.test.js` con esas tolerancias.
 - **Supuestos y límites:** fuera de −75° (o si el DEM no cargó) el horizonte de un punto propio sigue sintético; fuera del 01/11/2026–01/01/2028, el modelo aproximado. El mapa de calor no cambia (MAP-01). La distancia Tierra–Luna fija agrega < 0,02° a la Tierra.
 - **Alternativas descartadas:** consultar Horizons por punto (el navegador no puede); bajar el raster completo (~345 MiB); un solo nivel de 480 m hasta −75° (~11 MB); recortes nativos por teselas (~44 MB en el repo); tomar el máximo en vez del promedio de cada bloque (corrige el sesgo a ojo, sin respaldo).
-- **Estado:** vigente. Pendiente de validar por astronomía la clasificación "aproximado" del horizonte reducido.
+- **Estado:** vigente. Pendiente de validar por astronomía la clasificación "aproximado" del horizonte reducido. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-035 — Shackleton: R01 Connecting Ridge reemplaza a R04 (DATA-02)
 
@@ -876,7 +876,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - El MD5 de las imágenes no lo publica PDS: es el calculado por el equipo, comprobado en dos descargas.
   - Los puntos propios al norte de −75° siguen con horizonte sintético (fuera de alcance de TERRAIN-03).
 - **Alternativas descartadas:** `LDEM_64` (~474 m/píxel: la mitad de resolución que el polar); SLDEM2015 (±60°: no cubre todos los sitios con un solo producto y suma otro marco de procesamiento); descargar las imágenes enteras (~4,2 GB en disco sin necesidad); pedir rangos HTTP por fila (miles de pedidos y sin MD5 del archivo completo).
-- **Estado:** vigente. Desbloquea DATA-03 (#72). Pendiente de validar por astronomía: los dos horizontes y el posible artefacto de borde de banda en Chang'e 4.
+- **Estado:** vigente. Desbloquea DATA-03 (#72). Pendiente de validar por astronomía: los dos horizontes y el posible artefacto de borde de banda en Chang'e 4. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-062 — Fixtures de JPL Horizons sin conversión de fin de línea
 
@@ -945,7 +945,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Horizonte matemático o sintético fuera del casquete (ver la decisión).
   - Vista 2D equirrectangular (el polo queda muy estirado y cambia el Figma).
   - Guardar la imagen global en localStorage (excede la cuota).
-- **Estado:** vigente. Pendiente de validar por astronomía: la grilla global y el empalme en −80°.
+- **Estado:** vigente. Pendiente de validar por astronomía: la grilla global y el empalme en −80°. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-066 — Ayuda por tarjeta, recorrido guiado y listas que piden lo que falta (UI-16)
 
@@ -985,7 +985,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Un sitio curado con coordenadas editadas pasa a tratarse como punto propio (DEM global).
   - El DEM global agrega 33,6 MiB al repositorio y a la descarga de ese informe (queda anotado en `PENDIENTES.md`).
 - **Alternativas descartadas:** pedir a PDS solo las filas necesarias por rangos HTTP (no permite verificar el MD5 del archivo completo, criterio de DEC-061); una versión del DEM a 8 píxeles/grado (8 MiB, pero con pendientes de tramos de ~8 km); calcular el terreno de los puntos propios con el atlas de horizontes (no guarda alturas vecinas).
-- **Estado:** vigente. Pendiente de validar por astronomía.
+- **Estado:** vigente. Pendiente de validar por astronomía. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-068 — Horizonte LOLA regional para puntos propios fuera del polo sur (CORE-04)
 
@@ -1011,7 +1011,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - El atlas no guarda la distancia ni la confianza por azimut: se informa el % medio de baja confianza de las celdas.
   - El horizonte sintético sigue existiendo como respaldo mientras cargan los datos o si fallan, y en el mapa de calor aproximado.
 - **Alternativas descartadas:** calcular el horizonte exacto del punto con LDEM_16 en la página principal (35 MiB de descarga); tomar la celda más cercana sin interpolar (saltos al mover el punto).
-- **Estado:** vigente. DEC-005 queda como respaldo. Pendiente de validar por astronomía.
+- **Estado:** vigente. DEC-005 queda como respaldo. Pendiente de validar por astronomía. *(Validado el 15/11/2026: ver DEC-070 y `docs/VALIDACION.md`.)*
 
 ## DEC-069 — La sección inferior pide sitio y fechas en lugar de mostrar un ejemplo (UI-17)
 
@@ -1071,7 +1071,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La página principal, el ranking, las fechas y el mapa de calor no evalúan la pendiente, así que un sitio puede mostrar 1 de 2 requisitos ahí y 2 de 3 en la comparación.
   - Las misiones de más de unos días fuera de las zonas polares más iluminadas salen "baja" por la noche lunar, y es correcto con estos supuestos.
 - **Alternativas descartadas:** mantener la suma de puntos (un sitio podía salir viable sin cumplir un requisito); dejar la comunicación estricta (casi todo "no viable"); volver a los umbrales viejos.
-- **Estado:** vigente. Reemplaza a DEC-007.
+- **Estado:** vigente. Reemplaza a DEC-007. Supuestos revisados el 15/11/2026 contra NASA (`docs/VALIDACION.md`, "Revisión de los supuestos de viabilidad"): quedan decisiones abiertas del equipo en `PENDIENTES.md`. Las 24 h y el 80 % pasan a ser valores por defecto editables (DEC-083).
 
 ## DEC-072 — Capa "Noche más larga" en el mapa de calor
 
@@ -1157,3 +1157,127 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La única referencia fina en la banda es Chandrayaan-3; al norte de +60° no hay sitio curado para comparar.
 - **Estado:** vigente.
 
+## DEC-077 — Logo nuevo e inglés como idioma por defecto
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: usar el logo nuevo del equipo (`logo.jpeg`, guardado en la raíz) y que la página abra en inglés.
+- **Decisión:** reemplazar el logo del Figma por el nuevo en las tres páginas y en el ícono de la pestaña, y abrir en inglés salvo que el visitante ya haya elegido un idioma. Cambia DEC-014 (réplica del Figma) solo en el logo, por pedido explícito.
+- **Solución aplicada:**
+  - `web/public/logo.png` (256 px) y `web/public/favicon.png` (64 px): recorte circular del original con fondo transparente (el original tiene esquinas blancas que se veían sobre el encabezado oscuro).
+  - `index.html`, `compare.html`, `informe.html`: logo de 64 × 64, favicon nuevo y `lang="en"`.
+  - `web/src/styles/main.css`: `.header-logo` cuadrado, con el mismo centro que el de 80 × 64 del Figma.
+  - `web/src/i18n/index.js`: `initialLang()` devuelve el idioma guardado o, si no hay, `"en"` (antes seguía el idioma del navegador). El botón de idioma sigue igual.
+  - `tests/data-status.test.js`: fija el español porque sus textos esperados están en español.
+- **Alternativas descartadas:** seguir el idioma del navegador: el jurado de Space Apps es internacional y un navegador en español abriría la página en español.
+- **Supuestos y límites:** quien ya eligió español (queda guardado en el navegador) la sigue viendo en español. `web/public/figma/logo.png` queda en el repositorio sin uso.
+- **Estado:** vigente.
+
+## DEC-078 — Aviso de logo con IA, cartel de hora en las ventanas y leyenda del mapa
+
+- **Contexto / problema:** pedidos de Lucio del 15/11/2026:
+  - Aclarar que el logo (DEC-077) es una imagen generada con IA, chico pero a la vista.
+  - En los gráficos de ventanas de comparar e informe, mostrar un cartel propio con la hora donde está el mouse (antes solo había el `<title>` nativo de cada barra).
+  - El título de la leyenda del mapa de calor quedaba pegado a "Noche más larga".
+- **Decisión y solución aplicada:**
+  - Logo: rótulo `app.aiLogo` ("AI GENERATED IMAGE" / "IMAGEN GENERADA CON IA") debajo del logo en las tres páginas (`.header-logo-note`, 11 px, color atenuado, en un renglón). El logo sube 6 px para dejarle lugar.
+  - Cartel de hora: `web/src/ui/chart-hover.js` (`attachTimeHover`). Una línea punteada sigue al cursor y un cartel muestra la fecha y hora UTC de ese punto y, sobre un carril, si hay luz o enlace en ese instante (`chartTip.*`, ES/EN). `windowsChart()` (`ui/compare.js`) y `windowsSvg()` (`ui/site-report.js`) devuelven el SVG y su geometría. Se quitan los `<title>` de las barras para que no aparezcan dos carteles. La posición se calcula en fracciones del gráfico, así que funciona con el `zoom` del stage. No calcula nada astronómico: usa las ventanas que ya calculó `lib/`.
+  - Leyenda del mapa: `.map-legend` baja de 340 a 376 px (mismo borde inferior) y el título se ancla por abajo, así crece hacia arriba con 1 a 3 renglones sin pisar la barra ni los botones de capa (que terminan en 304 px).
+- **Alternativas descartadas:** dejar el `<title>` nativo: tarda en aparecer, no sigue al cursor y solo da el inicio y fin de cada barra.
+- **Supuestos y límites:** el cartel es solo con mouse; el gráfico mantiene su descripción accesible (`aria-label`). La hora es la del punto del eje bajo el cursor, con la resolución del ancho del gráfico (en 30 días, unos 25 min por píxel).
+- **Estado:** vigente.
+
+## DEC-079 — La Luna 3D gira hasta el sitio elegido
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: al elegir un punto, que la Luna se anime y lleve la vista hasta él. Antes la vista 3D quedaba donde estaba y el sitio podía quedar del otro lado.
+- **Decisión:** al cambiar el sitio elegido (lista, selector, botones rápidos, marcador o clic en la Luna), la vista 3D gira por el camino más corto hasta dejarlo en el centro, con un leve alejamiento a mitad de camino para que se lea el giro.
+- **Solución aplicada:**
+  - `web/src/ui/moon3d.js`: `flyTo(lat, lon)`. Curva ease-in-out, 0,7 a 1,3 s según el ángulo, alejamiento de hasta 15 % de la distancia (sin pasar el máximo). El arrastre, la rueda, el teclado y el cambio de pestaña cancelan el vuelo. Con movimiento reducido (`prefers-reduced-motion` o el ajuste de la página) salta directo, sin animación.
+  - `web/src/ui/map.js`: `renderMap()` recuerda el último sitio y llama a `flyTo()` cuando cambia. Al abrir la página solo se registra: la vista no se mueve sola.
+- **Alternativas descartadas:** animar también en 2D: la imagen 2D es fija y el sitio ya se ve marcado.
+- **Supuestos y límites:** solo en la página principal; la Luna de la comparación ya encuadra los dos sitios (DEC-054). En las pestañas del polo y del mapa de calor también gira hasta el sitio, dejando el polo descentrado hasta que se cambie de pestaña.
+- **Estado:** vigente.
+
+
+## DEC-080 — Demo en video: motion graphic con voz generada por IA
+
+- **Contexto / problema:** la entrega exige una demo (video de hasta 30 s o hasta 7 diapositivas, en inglés o con subtítulos en inglés). Los integrantes son menores y no pueden aparecer ni hablar en el video.
+- **Decisión:** video motion graphic de ≤ 30 s, 1920×1080, con voz en off en inglés generada con ElevenLabs, subtítulos en inglés siempre visibles y capturas reales de la web. Sigue el guion de `video/script.md` (estructura de la guía de Space Apps: equipo → desafío → nombre y lema → idea y datos de la NASA → futuro).
+- **Solución aplicada:**
+  - `video/demo/` (Remotion 4, fuera de `web/`): una línea de tiempo en segundos de la voz; las escenas y los efectos se enganchan a palabras de la alineación forzada de ElevenLabs (`src/voz-tiempos.json`).
+  - Voz: `eleven_v4`, voz "Liam". Los apellidos se dicen en español (pedido de Lucio, 15/11/2026): se genera una toma aparte con la misma voz y `language_code: "es"` ("Barbato, Duarte, Fachín, Péiren, Ligüera y Santana": Fa-CHÍN y PÉI-ren confirmados por Lucio; el acento de Peirén y el "y" se corrigieron en DEC-082) y se empalma entre "We are" y "team Hubble 27" de la toma en inglés. Los subtítulos muestran la grafía real y "and". Los silencios entre frases se acortan con ffmpeg y se acelera 4 % sin cambiar el tono para entrar en 30 s. Música (ElevenLabs Music) y efectos (ElevenLabs Sound Effects) generados con scripts.
+  - Capturas de la web en inglés con `scripts/capturas.mjs` (Shackleton, 14–27/11/2026; comparación Shackleton vs. Malapert). La Luna girando usa la textura LROC del CGI Moon Kit (NASA SVS) que ya usa la web.
+  - En pantalla: "AI-GENERATED VOICE · ELEVENLABS".
+- **Ajustes al guion (para entrar en 30 s):** "to optimize lunar landing operations and compares these potential sites with data such as JPL Horizons, LOLA from NASA" → "to find the best lunar landing sites, comparing them with NASA data like JPL Horizons and LOLA"; el cierre pasa a "Comparing sites quickly shortens mission planning, helping us find new answers to the unknown, and making life easier for all of us". La pregunta en pantalla se escribe "What can SELENE do for people, the world, and beyond?". Pendiente de validar por redacción y guion (Alfonso, Cata, Teo, Martín).
+- **Alternativas descartadas:** diapositivas (menos impacto visual); grabar pantalla con voz propia (no pueden aparecer ni hablar); voz en español con subtítulos (el guion ya estaba en inglés y evita depender de los subtítulos).
+- **Supuestos y límites:** la Luna girando es ilustrativa (textura desplazada en un círculo, no una proyección exacta). El empalme de los apellidos se verificó por volumen, no de oído: conviene escucharlo. Con los apellidos en español el video dura 29,7 s.
+- **Estado:** pendiente de validar.
+
+## DEC-081 — Dos versiones más de la demo: "Emoción" y "Ensayo"
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: además de la v1 (DEC-080), una versión con más emoción y otra con el estilo del video-ensayo hecho para Inglés ("One minute for change"), para elegir cuál se entrega.
+- **Decisión:** dos composiciones nuevas en `video/demo/`, con el mismo texto que la v1 (mismos datos y mismo orden del guion) y distinta interpretación y lenguaje visual. Las dos en 1920×1080 (la del ensayo original era vertical; se pasa a horizontal porque se sube a YouTube para Space Apps).
+- **Solución aplicada:**
+  - `scripts/voz.mjs` y `scripts/musica.mjs` aceptan la versión (`v1`, `emocion`, `ensayo`); la configuración de cada voz está en `scripts/texto-voz.mjs`. `src/anim.ts` crea una línea de tiempo por voz (`crearLinea`) y las escenas compartidas la leen por contexto (`src/linea.tsx`); la v1 no cambia.
+  - **Emoción** (`DemoEmocion`, `src/emocion/`): voz Liam más actuada, música orquestal épica con crescendo hacia la revelación, amanecer sobre el horizonte lunar, franjas de cine que se abren con "SELENE", destello y chispas, luces cálidas, web con leve inclinación 3D y salida de la Tierra (foto Apollo 17, NASA) en el cierre.
+  - **Ensayo** (`DemoEnsayo`, `src/ensayo/`): subtítulos serif de hasta 3 palabras con itálica dorada en palabras clave; una foto de archivo de la NASA en blanco y negro por apellido; placa roja "Team Hubble 27"; placa de papel con sello "COMPLEX" y resaltador; foto de Orion junto a la Luna (Artemis I) que recupera el color con "SELENE"; buscador que se tipea; muro curvo con capturas reales y tarjetas con datos reales de la web (Shackleton, 14–27/11/2026: 336 h de luz acumulada, Tierra a la vista 73 %); JPL Horizons y LOLA con resaltador; ráfaga de fotos a color y créditos.
+  - Voz siempre ~18 dB por encima de la música, que sube en las pausas (preferencia de Lucio del video de Inglés).
+- **Alternativas descartadas:** voces de narrador George, Brian y Matilda para el ensayo: hablan más lento y no entraban en 30 s sin acelerarlas demasiado; se usó Liam con un tono más reflexivo. Formato vertical para el ensayo: Space Apps se ve en horizontal.
+- **Supuestos y límites:** las fotos son de images.nasa.gov (dominio público; créditos en `video/demo/public/ensayo/fotos/creditos.json` y en los créditos del video). Las voces se verificaron transcribiéndolas con ElevenLabs (sin palabras de más ni indicaciones leídas), no de oído. El "COMPLEX" del sello y los textos de las tarjetas son agregados visuales; los datos de las tarjetas salen de la web. Pendiente de validar por redacción, guion y edición.
+- **Estado:** pendiente de validar.
+
+
+## DEC-082 — La página abre en la pestaña GLOBAL del mapa
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: al entrar a la página, la vista del mapa por defecto era MAPA DE CALOR (como en el Figma, DEC-014 y DEC-040) y preferían que fuera GLOBAL.
+- **Decisión:** la vista inicial del mapa pasa a ser GLOBAL. Las otras pestañas no cambian.
+- **Solución aplicada:** `web/src/state.js`: `mapView` arranca en `"global"`. Un enlace con capa calculada (`?layer=…`, DEC-057) sigue abriendo en MAPA DE CALOR con esa capa (`web/src/main.js`, `stateFromUrl()`).
+- **Alternativas descartadas:** guardar la última pestaña en la configuración (`localStorage`): no se pidió y cambiaría la vista inicial de forma distinta para cada persona.
+- **Estado:** vigente. Se aparta del Figma (DEC-014) en la pestaña inicial, por pedido del equipo.
+
+## DEC-082 — Se entrega la versión "Emoción"; Peirén aguda y "and Santana"
+
+- **Contexto / problema:** el 15/11/2026 el equipo eligió la versión "Emoción" (DEC-081). Lucio corrigió dos cosas de los apellidos: el apellido es **Peirén**, con tilde y acento en la última sílaba (antes se pronunciaba PÉI-ren), y antes de Santana la voz decía "y" en español en lugar de "and".
+- **Decisión:** la voz dice "Barbato, Duarte, Fachín, Peirén, Ligüera" en español, "and" en inglés y "Santana" en español. En pantalla y en los subtítulos aparece "Peirén".
+- **Solución aplicada:**
+  - `video/demo/scripts/texto-voz.mjs`: los apellidos van en dos tomas en español (`NOMBRES_ES` hasta Ligüera y `SANTANA_ES`). Se quita la corrección "y" → "and" de los subtítulos.
+  - `video/demo/scripts/voz.mjs`: el "and" se corta de la toma en inglés con la alineación forzada y se intercala: We are + Barbato…Ligüera + and + Santana + team Hubble 27…. Nueva opción `--solo-nombres` para regenerar solo los apellidos.
+  - "Peirén" en las escenas de las tres versiones (`E1Equipo`, `E1Amanecer`, créditos del ensayo).
+  - Se regeneró la voz de "Emoción" y se renderizó `out/selene-demo-emocion.mp4` (29,7 s, −15,5 LUFS).
+- **Verificación:** transcripción con ElevenLabs: "…Liguera and Santana. Team Hubble 27"; la toma en español se transcribe "Peirén". No se escuchó de oído.
+- **Supuestos y límites:** las voces de v1 y del ensayo no se regeneraron (siguen diciendo PÉI-ren e "y"); si se vuelven a usar, correr `node --env-file=<.env> scripts/voz.mjs <versión> --solo-nombres`.
+- **Estado:** vigente.
+
+## DEC-083 — Supuestos de viabilidad editables: baterías y comunicación mínima (VIAB-02)
+
+- **Contexto / problema:** propuesta de Lucio del 15/11/2026: la viabilidad (DEC-071) depende de dos supuestos del equipo, las 24 h de autonomía de las baterías y el 80 % de comunicación mínima, y estaban fijos en el código. Pidió que se puedan modificar y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h.
+- **Decisión** (Lucio): dos campos en «Parámetros de la misión» que se aplican en todas las páginas. Los valores por defecto siguen siendo 24 h y 80 %. La pendiente (NASA, HLS) no se puede editar.
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: `DEFAULT_LIMITS`, `LIMIT_RANGES` (0–360 h, el largo de una noche lunar; 0–100 %), `cleanLimit()`, `setMissionLimits()`, `missionLimits()`, `currentRequirements()`, `limitsAreDefault()` y `limitsVersion()`. `requirementLevel()` usa los requisitos vigentes. `REQUIREMENTS` queda como referencia con los valores de DEC-071. `realDataVersion()` suma `limitsVersion()`, así que todos los cachés de escenarios, ranking, fechas y mapa se recalculan al cambiar un valor.
+  - Worker (`ui/compute.js`, `workers/compute.worker.js`): cada pedido lleva los supuestos y el worker los aplica antes de calcular. Las claves persistentes `heat4` y `dates2` incluyen `limitsVersion()`.
+  - Interfaz: campos «Baterías (h)» y «Com. mín. (%)» en la fila de latitud y longitud (`index.html`, `ui/params.js`, `styles/main.css`). La fila pasa de 2 a 4 columnas (108/112/86/86 px) porque al pie del panel quedaban 6 px libres. Un valor vacío o inválido vuelve al vigente; uno fuera de rango se acota.
+  - Estado y URL: `state.js` (`batteryHours`, `commsMinPct`), `main.js` y `ui/links.js`: los parámetros `bat` y `com` se escriben solo si no son los de por defecto y los leen la misión, la comparación y el informe. La comparación y el informe los usan, pero no tienen campos para editarlos.
+  - Textos: `t()` completa `{battery}` y `{comms}` con los valores vigentes (`i18n/index.js`). Se actualizaron ES/EN: umbrales de la comparación, nota de criterios, ayuda del resumen, «Datos y fuentes», cartel del mapa, ayuda de parámetros (punto 7 nuevo) y guía de viabilidad (puntos 4, 5 y 6: misiones largas y ejemplo).
+- **Ejemplo de la guía:** medido en el navegador con JPL Horizons: Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h (~340 h). Con 24 h la luz no cumple y la viabilidad es "baja"; con 360 h queda "media". La guía aclara que 360 h no es realista con baterías solas: haría falta otra fuente, como un generador de radioisótopos (afirmación general, sin un valor de referencia).
+- **Validación:** `web/tests/supuestos-viabilidad.test.js` (valores por defecto, límites con valores nuevos, rangos e inválidos, versión de caché, URL y textos). 221 pruebas pasan y el build funciona. En el navegador (1992 px de diseño, escalado): la tarjeta y el resumen cambian, la capa de viabilidad del mapa se recalcula en el worker y el cartel "ninguna zona es viable" desaparece con 360 h, la comparación respeta `bat`/`com`, y las etiquetas entran en ES y EN.
+- **Supuestos y límites:**
+  - Los valores son supuestos del equipo; la interfaz los marca así (explicación al pasar el mouse sobre los campos, guía y notas).
+  - Se guardan solo en la URL, no en `localStorage`: así un enlace compartido da el mismo resultado. Al abrir la página sin parámetros vuelven 24 h y 80 %.
+  - Se aparta del Figma (DEC-014) en la fila de coordenadas, por pedido del equipo.
+- **Alternativas descartadas:** pasar los supuestos como argumento a cada función del motor (cambia muchos contratos el día de la entrega); campos en el modal de configuración o en la guía (Lucio eligió el panel de parámetros); agregar una fila nueva al panel (no hay lugar sin achicar las tarjetas).
+- **Estado:** vigente. Complementa DEC-071 (sus valores pasan a ser los de por defecto).
+
+## DEC-084 — Opción de satélite de relevo sí/no (VIAB-03)
+
+- **Contexto / problema:** la revisión contra NASA (`docs/VALIDACION.md`, PR #141) encontró que el criterio de NASA para Artemis III (HLS 2024) supone comunicación directa con la Tierra, sin relevo ("assume no comm relay is available"), y descarta las zonas con la Tierra visible menos del 25 % del tiempo. La app suponía siempre un relevo (DEC-071) y la comunicación nunca daba "no cumple". Quedó como decisión abierta en `PENDIENTES.md`.
+- **Decisión** (Lucio, 15/11/2026): agregar la opción «Satélite de relevo» sí/no. Por defecto queda marcada, como en DEC-071.
+  - **Con relevo:** desde C % cumple; por debajo, al límite.
+  - **Sin relevo:** desde C % cumple; de 25 % a C %, al límite; menos de 25 %, no cumple. Si C es menor que 25 %, el 25 % sigue mandando para "no cumple".
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: `relay` en `DEFAULT_LIMITS`, `NO_RELAY_MIN_PCT = 25`, `cleanLimit("relay", …)` y `limitsVersion()` con `r1`/`r0`. Sin relevo, `communication.limit` pasa a 25. `requirementLevel()` revisa primero el "no cumple" en los de "mayor es mejor"; con relevo (`limit` 0) el resultado no cambia.
+  - Interfaz: casilla «Satélite de relevo» a la derecha de la etiqueta «Duración de misión (UTC)» (`index.html`, `ui/params.js`, `styles/main.css`); la fila de coordenadas ya no tenía lugar. Estado `relay` (`state.js`, `main.js`); URL `relay=0|1` junto con `bat` y `com` (`ui/links.js`).
+  - Textos: `t()` completa `{commsRule}`, `{commsShort}` y `{commsHint}` con los fragmentos `relayRule.*` según la opción. Se usan en el umbral de la comparación, la nota de criterios, la ayuda del resumen y la guía. Hay un cartel del mapa propio para cuando no hay relevo (`map.banner.allLowNoRelay`), un punto 7 nuevo en la guía de viabilidad y una ayuda para la casilla.
+- **Validación:** `web/tests/supuestos-viabilidad.test.js` (límites con y sin relevo, C menor que 25 %, URL y textos). 223 pruebas pasan y el build funciona. En el navegador: Shackleton, 7 días desde el 01/12/2026 (0 % de Tierra visible), pasa de MEDIA a BAJA y la tarjeta de comunicación de VIABLE a INVIABLE al desmarcar la casilla.
+- **Supuestos y límites:**
+  - El 25 % es el corte que usa NASA para descartar zonas en los mapas de Artemis III, no un requisito de enlace formal.
+  - Sin relevo, gran parte del polo sur sale no viable, porque las semanas con Sol continuo suelen ser semanas sin la Tierra a la vista (el problema que llevó al relevo en DEC-071).
+- **Alternativas descartadas:** cambiar el valor por defecto a "sin relevo" (Lucio pidió una opción); un desplegable en la fila de coordenadas (no hay lugar sin achicar las etiquetas).
+- **Estado:** vigente. Complementa DEC-071 y DEC-083.

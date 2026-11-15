@@ -192,6 +192,48 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     return hit ? vectorToLatLon(hit.point.x, hit.point.y, hit.point.z) : null;
   }
 
+  // ---- Vuelo hasta un punto (DEC-079) ----
+  // Al elegir un sitio, la Luna gira por el camino más corto hasta dejarlo en el
+  // centro, con un leve alejamiento a mitad de camino para que se lea el giro.
+  // Con movimiento reducido (prefers-reduced-motion o el ajuste de la página) salta directo.
+  let flight = 0;
+  const wrapLon = (lon) => ((((lon + 180) % 360) + 360) % 360) - 180;
+  const easeInOut = (p) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
+  function cancelFlight() {
+    cancelAnimationFrame(flight);
+    flight = 0;
+  }
+  function flyTo(lat, lon) {
+    cancelFlight();
+    const reduced = document.documentElement.dataset.motion === "reduced";
+    const from = { lat: view.lat, lon: view.lon, dist: view.dist };
+    const dLat = lat - from.lat;
+    const dLon = wrapLon(lon - from.lon);
+    // Ángulo aproximado del giro: define la duración (0,7–1,3 s) y cuánto se aleja.
+    const angle = Math.hypot(dLat, dLon * Math.cos(((from.lat + lat) / 2) * DEG));
+    if (reduced || angle < 0.5) {
+      view.lat = lat;
+      view.lon = wrapLon(lon);
+      requestRender();
+      onMove?.();
+      return;
+    }
+    const duration = 700 + 600 * Math.min(1, angle / 120);
+    const lift = Math.min(DIST.max - from.dist, from.dist * 0.15 * Math.min(1, angle / 90));
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - start) / duration);
+      const e = easeInOut(p);
+      view.lat = from.lat + dLat * e;
+      view.lon = wrapLon(from.lon + dLon * e);
+      view.dist = from.dist + Math.max(0, lift) * Math.sin(Math.PI * p);
+      render();
+      onMove?.();
+      flight = p < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    flight = requestAnimationFrame(tick);
+  }
+
   function rotate(dLon, dLat) {
     view.lon = ((((view.lon + dLon + 180) % 360) + 360) % 360) - 180;
     view.lat = Math.max(-90, Math.min(90, view.lat + dLat));
@@ -212,6 +254,7 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
   let suppressClick = false;
   container.addEventListener("pointerdown", (event) => {
     if (event.button !== 0 || container.dataset.mode === "2d") return;
+    cancelFlight(); // el usuario toma el control
     const onPin = Boolean(event.target.closest?.(".pin"));
     if (event.target !== canvas && !onPin) return;
     drag = { x: event.clientX, y: event.clientY, moved: 0, onPin };
@@ -262,6 +305,7 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     (event) => {
       if (container.dataset.mode && container.dataset.mode !== "3d") return;
       event.preventDefault();
+      cancelFlight();
       zoom(event.deltaY > 0 ? 1.08 : 1 / 1.08);
     },
     { passive: false },
@@ -283,6 +327,7 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     };
     if (!keys[event.key] || event.target !== container) return;
     event.preventDefault();
+    cancelFlight();
     keys[event.key]();
   }
   container.addEventListener("keydown", onKey);
@@ -294,15 +339,19 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
   return {
     /** Cambia a la vista inicial de una pestaña ("global" o "polar"). */
     setView(name) {
+      cancelFlight();
       Object.assign(view, VIEWS[name] ?? VIEWS.global);
       requestRender();
     },
     /** Centra la vista en un punto sin cambiar el acercamiento. */
     centerOn(lat, lon) {
+      cancelFlight();
       view.lat = lat;
       view.lon = lon;
       requestRender();
     },
+    /** Gira la Luna con una animación hasta dejar el punto en el centro (DEC-079). */
+    flyTo,
     /**
      * Cambia la superficie: "color" (LROC) o "physical" con el canvas de
      * elevación coloreada (equirectangular, centrado en 0°).
@@ -319,6 +368,7 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     resize,
     dispose() {
       observer.disconnect();
+      cancelFlight();
       container.removeEventListener("keydown", onKey);
       cancelAnimationFrame(frame);
       renderer.dispose();

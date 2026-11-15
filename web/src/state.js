@@ -3,6 +3,7 @@
  * Los módulos de ui/ leen el estado y llaman a setState; main.js redibuja.
  */
 import { SITES } from "./data/sites.js";
+import { DEFAULT_LIMITS } from "./lib/analysis.js";
 
 export const CUSTOM_ID = "custom";
 const HOUR = 3_600_000;
@@ -22,12 +23,16 @@ const state = {
   timeMs: DEFAULT_START + 15.5 * HOUR, // T+15:30, como en el Figma
   playing: false,
   speed: 1, // horas simuladas por segundo real
-  mapView: "heat", // "global" | "heat" | "polar"
+  mapView: "global", // "global" | "heat" | "polar"; abre en GLOBAL (DEC-082)
   placesCategory: "overall", // ranking de "Mejores lugares": overall | science | communication | light (UI-13)
   placesMode: "sites", // panel de ranking: "sites" (mejores lugares) | "dates" (mejores fechas, DEC-046)
   mapMode: "3d", // GLOBAL y POLO SUR: "3d" (modelo) | "2d" (imagen NASA), DEC-021
   heatLayer: "elevation", // pestaña ELEVACIÓN: elevation | sun | earth | both | viability (MAP-01, DEC-040)
   customSites: [], // sitios agregados con el botón "+"
+  // Supuestos de viabilidad editables (DEC-083); los valores efectivos viven en lib/analysis.js.
+  batteryHours: DEFAULT_LIMITS.batteryHours, // autonomía de las baterías: noche más larga "al límite"
+  commsMinPct: DEFAULT_LIMITS.commsMinPct, // % mínimo del período con la Tierra visible para "cumple"
+  relay: DEFAULT_LIMITS.relay, // satélite de relevo: sin él, menos del 25 % no cumple (DEC-084)
 };
 
 const listeners = new Set();

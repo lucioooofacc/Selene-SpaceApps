@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (validación automática de la entrega, DEPLOY-01 #14, rama `chore/despliegue-final`; antes: tamaño del DEM global descartado, rama `docs/pendiente-dem-global`).
+Última actualización: 2026-11-15 (validación automática de la entrega, DEPLOY-01 #14, rama `chore/despliegue-final`; antes: opción de satélite de relevo, rama `feat/satelite-relevo`).
 
 ---
 
@@ -80,6 +80,10 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Luna animada de fondo y tarjetas semitransparentes. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
 - [x] ~~En comparar e informe el calendario quedaba debajo de las tarjetas. — Lucio~~ Resuelto 2026-11-15 (rama `fix/calendario-encima`, DEC-060): los controles van en una capa por encima.
 - [x] ~~En comparar e informe se rompieron los selectores de sitio y fecha de arriba (el «?» de la guía ocupaba la primera celda de la grilla y corría los campos). — Lucio~~ Resuelto 2026-11-15 (rama `fix/controles-ayuda`, DEC-073): el «?» va en la esquina, fuera de la grilla.
+- [x] ~~Usar el logo nuevo del equipo y abrir la página en inglés por defecto. — Lucio~~ Resuelto 2026-11-15 (rama `design/logo-idioma-en`, DEC-077).
+- [x] ~~Marcar el logo como imagen generada con IA, cartel con la hora al pasar el mouse por las barras de comparar e informe, y separar el título de la leyenda del mapa de calor de "Noche más larga". — Lucio~~ Resuelto 2026-11-15 (rama `design/logo-ia-tooltips-mapa`, DEC-078).
+- [x] ~~Al elegir un punto, que la Luna se anime y lleve la vista hasta él. — Lucio~~ Resuelto 2026-11-15 (rama `feat/luna-centrar-punto`, DEC-079).
+- [x] ~~Que la página abra en la pestaña GLOBAL del mapa, no en MAPA DE CALOR. — Lucio~~ Resuelto 2026-11-15 (rama `design/vista-inicial-global`, DEC-082).
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
@@ -136,12 +140,22 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).
 - [x] ~~Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025~~ Resuelto 2026-11-15 (rama `docs/citas-datos`): Neumann, G. A. (2011), según DataCite; en `DATA_SOURCES.md` y en el informe (los manifiestos JSON conservan el DOI).
 - [x] ~~Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025~~ El panorama marca los tramos de baja confianza y los truncados, y "Datos y fuentes" indica la falta de cobertura. Resuelto 2026-11-14 (PR #53, DEC-031).
-- [ ] Validar los dos supuestos de los requisitos de viabilidad (24 h de autonomía de baterías y 80 % de comunicación directa) y si conviene evaluar la pendiente a escala de 100 m. — Teo, Facu, Lucio · VIAB-01 #122, DEC-071
+- [x] ~~Validar los dos supuestos de los requisitos de viabilidad (24 h de autonomía de baterías y 80 % de comunicación directa) y si conviene evaluar la pendiente a escala de 100 m. — Teo, Facu, Lucio · VIAB-01 #122, DEC-071~~ Revisado 2026-11-15 (rama `docs/validar-supuestos-viabilidad`, `docs/VALIDACION.md`): luz continua y < 10° en 100 m coinciden con NASA; 24 h y 80 % no tienen fuente y siguen como supuestos. Quedan las decisiones de abajo.
+- [x] ~~Comunicación en la viabilidad: el criterio de NASA para Artemis III (HLS 2024) asume comunicación directa **sin relevo** y descarta zonas con la Tierra visible < 25 %; la app asume relevo y nunca da "no cumple". Decidir si se mantiene o si < 25 % pasa a "no cumple" (cambia resultados del mapa y del ranking). — Teo, Facu, Lucio · DEC-071, `docs/VALIDACION.md`~~ Resuelto 2026-11-15 (rama `feat/satelite-relevo`, VIAB-03 #145, DEC-084): casilla «Satélite de relevo»; por defecto se mantiene el relevo y, sin él, menos del 25 % no cumple.
+- [x] ~~Corregir citas del requisito de pendiente y de baterías: el 8° es del informe IG-26-004 de NASA OIG (2026), no de "NASA, HLS 2024" (texto de viabilidad en `es.js`/`en.js` y comentario de `REQUIREMENTS` en `lib/analysis.js`), y "Odysseus tenía 10–20 h" fue su batería restante tras volcar, no una autonomía de diseño. Coordinar con la rama `feat/umbrales-variables`, que toca esos archivos. — Desarrollo web, Lucio, Cata · DEC-071, `docs/VALIDACION.md`~~ Resuelto 2026-11-15 (rama `fix/citas-viabilidad`): comentario de `REQUIREMENTS` y nota de viabilidad en ES/EN.
+- [ ] Pendiente a 100 m (escala que pide NASA): hoy se mide a escala kilométrica. Evaluar el DEM de alta resolución del polo sur de PGDA (producto 78, el que usa NASA) para los sitios polares. Mejora post-entrega. — Teo, Facu, Lucio · DEC-071
 - [x] ~~Horizonte regional de los puntos propios cerca de los polos: frente al horizonte exacto del punto, la luz difiere hasta 39 p. p. al norte de +75° y la Tierra hasta 100 p. p. entre −75° y −60° (puntos cerca del limbo). Opciones: calcular el horizonte del punto con `LDEM_16` cuando |lat| > 60° (requiere bajar el DEM global, 33,6 MiB) o avisarlo con más fuerza en la interfaz. — Teo, Facu, Lucio · CORE-05 #114, DEC-068, DEC-070~~ Resuelto 2026-11-15 (rama `feat/horizonte-polar-puntos`, DEC-076): horizonte del punto sobre `LDEM_16` con |lat| ≥ 60°; en Chandrayaan-3 difiere 0,22° del de 240 m.
 - [x] ~~Horizonte de Apollo 11: los píxeles interpolados de `LDEM_128` a menos de 0,5 km lo elevan ~0,9° (~0,5 p. p. de luz por año). Opciones: ignorar los primeros cientos de metros del rayo cuando los píxeles son interpolados, o tomar la altura del observador de un entorno. Cambiar el algoritmo afecta a todos los sitios. — Teo, Facu, Lucio · TERRAIN-05 #115, DEC-061, DEC-070~~ Resuelto 2026-11-15 (rama `fix/horizonte-pixeles-interpolados`, DEC-075): la altura del observador en `LDEM_128` es la mediana de los píxeles medidos a 1 km; Apollo 11 pasa de 0,82° a 0,28° de diferencia con `LDEM_16`.
 - [x] ~~La iluminación de Shackleton cambia mucho en pocos cientos de metros (R01: 60 %; a 480 m al norte: 90 %, como en la bibliografía). Decidir si se aclara en la interfaz o en el texto de la entrega, para que el 60 % no se lea como un error. — Teo, Facu, Lucio · DOC-02 #116, DEC-035, DEC-070~~ Resuelto 2026-11-15 (rama `docs/explicar-shackleton`, DEC-074): nota en la procedencia del sitio (ES/EN) y en `docs/ENTREGA.md`.
 - [x] ~~Arrastrar para girar la Luna 3D no funciona si el arrastre empieza encima de un marcador. — Desarrollo web · PR #112~~ Resuelto 2026-11-15 (rama `fix/arrastre-sobre-marcadores`): el arrastre también gira la Luna cuando empieza sobre un marcador, y un clic corto sigue eligiendo el sitio.
 - [x] ~~Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007~~ Resuelto 2026-11-15 (rama `feat/viabilidad-requisitos`, VIAB-01 #122, DEC-071): requisitos de misión (luz continua, comunicación con relevo y pendiente donde hay datos); la viabilidad es la del peor requisito.
+
+- [x] ~~Que las 24 h de baterías y el 80 % de comunicación mínima de la viabilidad se puedan modificar, y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h. — Lucio · VIAB-02 #142~~ Resuelto 2026-11-15 (rama `feat/umbrales-variables`, DEC-083).
+- [ ] Validar el ejemplo de la guía de viabilidad (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos como alternativa a las baterías. — Teo, Facu, Lucio · DEC-083
+- [ ] Revisar la redacción de los textos nuevos de los supuestos editables (`params.battery`, `params.comms`, sus ayudas, `help.params.items.7`, `help.viability.items.4–6`, ES/EN). — Alfonso, Cata, Lucio · DEC-083
+- [ ] Hay dos decisiones numeradas DEC-082 en `docs/DECISIONES.md` (vista inicial GLOBAL y versión "Emoción" de la demo); renumerar la segunda. — Equipo · detectado en VIAB-02
+
+- [ ] Revisar la redacción de los textos de la opción de relevo (`relayRule.*`, `params.relay`, `params.relayHint`, `map.banner.allLowNoRelay`, `help.viability.items.7`, ES/EN). — Alfonso, Cata, Lucio · DEC-084
 
 ## Textos y traducción
 
@@ -161,3 +175,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Declarar en la entrega los datos de la NASA usados (JPL Horizons, LOLA, LROC). — Equipo · Borrador del texto para el formulario en `docs/ENTREGA.md` (2026-11-15, rama `docs/citas-datos`).
 - [ ] Revisión manual en escritorio (≥ 1200 px), en ES y en EN, sobre https://selene-space-apps.vercel.app. Las pruebas, el build, el despliegue, los enlaces y las claves de idioma ya se verificaron de forma automática. — Equipo · DEPLOY-01 #14, `docs/ENTREGA.md`
 - [ ] Crear y subir el tag de entrega (propuesta: `entrega-2026-11-15`) sobre el commit final de `main`, y anotar el hash y la hora de envío del formulario en #14. — Equipo · DEPLOY-01 #14
+- [ ] Revisar la demo en video (`video/demo/out/selene-demo-final.mp4`): pronunciación de los apellidos, ajustes de texto al guion y la pregunta en pantalla. — Alfonso, Cata (texto), Teo, Martín (guion), Lucio, Facu (edición) · DEC-080
+- [ ] Subir la demo a YouTube o Drive con enlace público y pegarlo en el formulario antes del 15/11 23:59. — Lucio, Facu · DEC-080
+- [ ] Confirmar si el logo (`logo.jpeg`) es dibujo de Teo o imagen generada con IA: la web lo marca "AI GENERATED IMAGE" (DEC-077) y el video no lo marca. — Teo · DEC-080
+- [x] ~~Elegir cuál de las tres versiones de la demo se entrega (`video/demo/out/`: `selene-demo-final.mp4`, `selene-demo-emocion.mp4`, `selene-demo-ensayo.mp4`) y revisar los agregados visuales de la v3 (sello "COMPLEX", textos de las tarjetas). — Equipo · DEC-081~~ Se entrega "Emoción" (`selene-demo-emocion.mp4`). Resuelto 2026-11-15 (rama `fix/demo-apellidos`, DEC-082).

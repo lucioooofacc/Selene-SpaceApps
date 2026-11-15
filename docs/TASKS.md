@@ -158,6 +158,26 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** cada umbral cita su fuente o se marca como supuesto; la viabilidad global es la del peor requisito; la misma regla en sitios, ranking, fechas, mapa, comparación e informes; pruebas y build en verde.
 - **Fuera de alcance:** pendiente a 100 m; perfiles de misión elegibles.
 
+### VIAB-02 — Supuestos de viabilidad editables
+
+- **Prioridad:** P1 · **Issue:** [#142](https://github.com/lucioooofacc/Selene-SpaceApps/issues/142).
+- **Objetivo:** que la autonomía de las baterías (24 h) y la comunicación mínima (80 %) de DEC-071 se puedan cambiar desde «Parámetros de la misión», y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h. Propuesta de Lucio del 15/11/2026 (DEC-083).
+- **Rama sugerida:** `feat/umbrales-variables`.
+- **Dependencias:** VIAB-01.
+- **Archivos afectados:** `lib/analysis.js`, worker y su cliente, `ui/params.js`, `ui/links.js`, `ui/heat-layer.js`, `ui/places.js`, `main.js`, `compare.js`, `informe.js`, `state.js`, i18n, `index.html`, estilos y pruebas.
+- **Criterios de aceptación:** los mismos valores en misión, mapa, ranking, fechas, comparación e informe; los cachés se invalidan; los valores viajan en la URL; los textos muestran los valores vigentes; pruebas y build en verde.
+- **Fuera de alcance:** editar la pendiente; editar los supuestos desde la comparación o el informe.
+
+### VIAB-03 — Opción de satélite de relevo
+
+- **Prioridad:** P1 · **Issue:** [#145](https://github.com/lucioooofacc/Selene-SpaceApps/issues/145).
+- **Objetivo:** elegir si se asume un satélite de relevo. Sin relevo se usa el criterio de NASA para Artemis III (menos del 25 % con la Tierra visible no cumple). Pedido de Lucio del 15/11/2026 (DEC-084).
+- **Rama sugerida:** `feat/satelite-relevo`.
+- **Dependencias:** VIAB-02.
+- **Archivos afectados:** `lib/analysis.js`, `ui/links.js`, `ui/params.js`, `ui/map.js`, `main.js`, `state.js`, i18n, `index.html`, estilos y pruebas.
+- **Criterios de aceptación:** por defecto, con relevo y los mismos resultados que antes; sin relevo, menos del 25 % no cumple en todas las páginas; la opción viaja en la URL; los textos explican la regla vigente; pruebas y build en verde.
+- **Fuera de alcance:** editar el 25 %.
+
 ### CORE-05 — Horizonte de los puntos propios cerca de los polos
 
 - **Prioridad:** P2 · **Issue:** [#114](https://github.com/lucioooofacc/Selene-SpaceApps/issues/114).
