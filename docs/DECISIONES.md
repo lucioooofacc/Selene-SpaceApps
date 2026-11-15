@@ -1086,3 +1086,22 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** el paso del mapa es de 1–2 h, más grueso que los 10 min del escenario.
 - **Estado:** vigente.
 
+## DEC-073 — Guía en comparar e informe, explicación de la viabilidad y cartel del mapa
+
+- **Contexto / problema:** pedidos de Lucio del 15/11/2026:
+  - Que comparar e informe también tengan guía.
+  - Que se explique en algún lado cómo se calcula la viabilidad (DEC-071).
+  - Que el mapa diga por qué la capa de viabilidad sale toda baja.
+  - Que la guía refleje los cambios recientes.
+- **Decisión:** reutilizar la ayuda y el recorrido de DEC-066 en las tres páginas y sumar un tema "Cómo se calcula la viabilidad", al que se llega desde donde aparece la viabilidad.
+- **Solución aplicada:**
+  - `web/src/ui/help.js`: `initHelp()` recibe los temas, la clave del recorrido y la bienvenida de cada página. La página principal usa `MAIN_TOPICS`, que suma el tema de viabilidad sobre el resumen del período.
+  - Comparar (`compare.html`, `src/compare.js`): «?» en los controles, la ubicación, las métricas, las ventanas, el horizonte y los requisitos, más «Guía» en el menú. El recorrido tiene 7 pasos y no se abre solo, porque la página siempre llega con una selección.
+  - Informe (`informe.html`, `src/informe.js`): lo mismo para los controles, el resumen, el terreno, la luz, las fechas y la trayectoria, con un «?» de viabilidad junto a la lista de requisitos (`ui/site-report.js`).
+  - Tema "Cómo se calcula la viabilidad" (`help.viability`, ES/EN): los tres requisitos con sus límites y fuentes, qué es supuesto del equipo y por qué en misiones largas suele salir baja. Se abre desde el resumen del período (`ui/status.js`), la tabla de requisitos de la comparación, el informe y el cartel del mapa.
+  - Cartel del mapa (`index.html`, `ui/map.js`, `ui/heat-layer.js`): si en la capa de viabilidad todas las celdas quedan en "no cumple", aparece un cartel que explica que todas tienen alguna noche de más de 24 h y sugiere una misión más corta, la capa "Noche más larga" o "Mejores fechas". Va arriba, sobre el norte, para no tapar el polo sur. El dato `allLow` se guarda con la capa, también en la caché persistente.
+  - Guía de la página principal: el resumen del período habla de requisitos de misión y la ayuda del mapa nombra las capas nuevas.
+- **Validación:** en el navegador se recorrieron las dos guías nuevas: cada paso resalta su sección y la tarjeta no se sale de la pantalla. El cartel aparece con 30 días y su «?» abre la explicación. 207 pruebas pasan.
+- **Supuestos y límites:** el cartel solo aparece si todas las celdas son "baja". Con una sola celda "al límite" no se muestra.
+- **Estado:** vigente.
+

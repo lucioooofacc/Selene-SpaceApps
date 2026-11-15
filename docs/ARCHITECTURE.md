@@ -47,7 +47,7 @@ flowchart LR
 | `src/lib/ephemeris.js` | Series de JPL Horizons para el cálculo (DEC-033): decodifica `public/data/ephemerides/*.json`, interpola (`positionsAt`), registro en memoria con `ephemerisVersion()` y `ephemerisFor(site)`. Puro, sin red. |
 | `scripts/build-ephemerides.mjs` | Arma `public/data/ephemerides/<id>.json` desde la caché validada de `fetch-horizons.mjs` (7 sitios, nov 2026 – dic 2027, paso 1 h). |
 | `src/ui/ephemerides.js` | Baja en segundo plano las series de los sitios curados y las registra; `main.js`, `ui/places.js` y `compare.js` recalculan al llegar. |
-| `src/ui/help.js` | Ayuda por tarjeta (botones «?») y recorrido guiado (UI-16, DEC-066). Solo muestra textos de `help.*`; no calcula. |
+| `src/ui/help.js` | Ayuda por tarjeta (botones «?») y recorrido guiado en las tres páginas (UI-16, DEC-066, DEC-073); cada página pasa sus temas a `initHelp()`. Solo muestra textos de `help.*`; no calcula. |
 | `src/lib/heat-map.js` | Mapa de calor real (DEC-038): atlas de horizontes por celda, direcciones del Sol y la Tierra por instante y política única de visibilidad. Lo usan `computePolarHeatmap()` (casquete hasta −80°) y `computeGlobalHeatmap()` (toda la Luna, grilla de 2°, MAP-02, DEC-065). Puro. |
 | `scripts/build-heat-atlas.mjs` | Genera `public/data/terrain/heat-atlas-96.{bin,json}` desde los rasters LOLA verificados (~6,5 min). |
 | `src/lib/global-dem.js` | DEM LOLA global `LDEM_16` para el terreno de puntos fuera del polo sur (TERRAIN-04, DEC-067): decodifica, registra y muestrea. Puro. |
