@@ -1264,3 +1264,20 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Se aparta del Figma (DEC-014) en la fila de coordenadas, por pedido del equipo.
 - **Alternativas descartadas:** pasar los supuestos como argumento a cada función del motor (cambia muchos contratos el día de la entrega); campos en el modal de configuración o en la guía (Lucio eligió el panel de parámetros); agregar una fila nueva al panel (no hay lugar sin achicar las tarjetas).
 - **Estado:** vigente. Complementa DEC-071 (sus valores pasan a ser los de por defecto).
+
+## DEC-084 — Opción de satélite de relevo sí/no (VIAB-03)
+
+- **Contexto / problema:** la revisión contra NASA (`docs/VALIDACION.md`, PR #141) encontró que el criterio de NASA para Artemis III (HLS 2024) supone comunicación directa con la Tierra, sin relevo ("assume no comm relay is available"), y descarta las zonas con la Tierra visible menos del 25 % del tiempo. La app suponía siempre un relevo (DEC-071) y la comunicación nunca daba "no cumple". Quedó como decisión abierta en `PENDIENTES.md`.
+- **Decisión** (Lucio, 15/11/2026): agregar la opción «Satélite de relevo» sí/no. Por defecto queda marcada, como en DEC-071.
+  - **Con relevo:** desde C % cumple; por debajo, al límite.
+  - **Sin relevo:** desde C % cumple; de 25 % a C %, al límite; menos de 25 %, no cumple. Si C es menor que 25 %, el 25 % sigue mandando para "no cumple".
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: `relay` en `DEFAULT_LIMITS`, `NO_RELAY_MIN_PCT = 25`, `cleanLimit("relay", …)` y `limitsVersion()` con `r1`/`r0`. Sin relevo, `communication.limit` pasa a 25. `requirementLevel()` revisa primero el "no cumple" en los de "mayor es mejor"; con relevo (`limit` 0) el resultado no cambia.
+  - Interfaz: casilla «Satélite de relevo» a la derecha de la etiqueta «Duración de misión (UTC)» (`index.html`, `ui/params.js`, `styles/main.css`); la fila de coordenadas ya no tenía lugar. Estado `relay` (`state.js`, `main.js`); URL `relay=0|1` junto con `bat` y `com` (`ui/links.js`).
+  - Textos: `t()` completa `{commsRule}`, `{commsShort}` y `{commsHint}` con los fragmentos `relayRule.*` según la opción. Se usan en el umbral de la comparación, la nota de criterios, la ayuda del resumen y la guía. Hay un cartel del mapa propio para cuando no hay relevo (`map.banner.allLowNoRelay`), un punto 7 nuevo en la guía de viabilidad y una ayuda para la casilla.
+- **Validación:** `web/tests/supuestos-viabilidad.test.js` (límites con y sin relevo, C menor que 25 %, URL y textos). 223 pruebas pasan y el build funciona. En el navegador: Shackleton, 7 días desde el 01/12/2026 (0 % de Tierra visible), pasa de MEDIA a BAJA y la tarjeta de comunicación de VIABLE a INVIABLE al desmarcar la casilla.
+- **Supuestos y límites:**
+  - El 25 % es el corte que usa NASA para descartar zonas en los mapas de Artemis III, no un requisito de enlace formal.
+  - Sin relevo, gran parte del polo sur sale no viable, porque las semanas con Sol continuo suelen ser semanas sin la Tierra a la vista (el problema que llevó al relevo en DEC-071).
+- **Alternativas descartadas:** cambiar el valor por defecto a "sin relevo" (Lucio pidió una opción); un desplegable en la fila de coordenadas (no hay lugar sin achicar las etiquetas).
+- **Estado:** vigente. Complementa DEC-071 y DEC-083.

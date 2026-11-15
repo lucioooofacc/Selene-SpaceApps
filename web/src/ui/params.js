@@ -90,6 +90,7 @@ export function initParams() {
   };
   $("battery-input").addEventListener("change", (e) => onLimit(e.target, "batteryHours"));
   $("comms-input").addEventListener("change", (e) => onLimit(e.target, "commsMinPct"));
+  $("relay-input").addEventListener("change", (e) => setState({ relay: e.target.checked }));
 
   initCalendar();
 }
@@ -114,6 +115,7 @@ export function renderParamsFields(state) {
   if (document.activeElement !== $("lon-input")) $("lon-input").value = state.lon.toFixed(2);
   if (document.activeElement !== $("battery-input")) $("battery-input").value = String(state.batteryHours);
   if (document.activeElement !== $("comms-input")) $("comms-input").value = String(state.commsMinPct);
+  $("relay-input").checked = state.relay;
   $("date-button").textContent = dateButtonLabel(state);
 }
 

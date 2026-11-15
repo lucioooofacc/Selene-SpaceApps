@@ -32,6 +32,7 @@ const state = {
   // Supuestos de viabilidad editables (DEC-083); los valores efectivos viven en lib/analysis.js.
   batteryHours: DEFAULT_LIMITS.batteryHours, // autonomía de las baterías: noche más larga "al límite"
   commsMinPct: DEFAULT_LIMITS.commsMinPct, // % mínimo del período con la Tierra visible para "cumple"
+  relay: DEFAULT_LIMITS.relay, // satélite de relevo: sin él, menos del 25 % no cumple (DEC-084)
 };
 
 const listeners = new Set();

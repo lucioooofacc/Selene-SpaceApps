@@ -424,7 +424,7 @@ export function renderMap(state) {
   const calcResult = calc ? cachedHeatLayer(state.heatLayer, state.startMs, state.windowDays, palette()) : null;
   const allLow = state.heatLayer === "viability" && Boolean(calcResult?.allLow);
   $("map-banner").hidden = !allLow;
-  if (allLow) $("map-banner-text").textContent = t("map.banner.allLow", { days: state.windowDays });
+  if (allLow) $("map-banner-text").textContent = t(state.relay ? "map.banner.allLow" : "map.banner.allLowNoRelay", { days: state.windowDays });
   $("map-credit").hidden = false;
   $("map-credit").textContent = calc
     ? calcCredit(cachedHeatLayer(state.heatLayer, state.startMs, state.windowDays, palette()))

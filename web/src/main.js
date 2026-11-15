@@ -96,8 +96,8 @@ subscribe((state, changed) => {
   const has = (...keys) => keys.some((k) => changed.has(k));
   // Supuestos de viabilidad (DEC-083): cambian la viabilidad en todo (tarjetas, mapa, ranking,
   // fechas y enlaces). realDataVersion() los incluye, así que los cachés se recalculan solos.
-  if (has("batteryHours", "commsMinPct")) {
-    setMissionLimits({ batteryHours: state.batteryHours, commsMinPct: state.commsMinPct });
+  if (has("batteryHours", "commsMinPct", "relay")) {
+    setMissionLimits({ batteryHours: state.batteryHours, commsMinPct: state.commsMinPct, relay: state.relay });
     syncUrl(state);
     renderAll();
     refreshHelp();

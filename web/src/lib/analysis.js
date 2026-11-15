@@ -35,6 +35,7 @@ const LOOKAHEAD_DAYS = 32;
  *   (enlace directo casi permanente; SUPUESTO del equipo, no hay un umbral
  *   publicado). Por debajo queda al límite y nunca "no cumple": se asume un
  *   satélite de relevo, como en los planes de Artemis (decisión de Lucio).
+ *   Sin relevo (opción de DEC-084), menos del 25 % no cumple.
  * - slope: pendiente del terreno en grados, solo donde hay datos. Cumple
  *   por debajo de 8° (tolerancia de inclinación del HLS, informe IG-26-004
  *   de la Oficina del Inspector General de la NASA, 2026), al límite por
@@ -50,13 +51,23 @@ export const REQUIREMENTS = Object.freeze({
 /**
  * Supuestos del equipo que se pueden cambiar desde "Parámetros de la misión"
  * (DEC-083): la autonomía de las baterías (límite de `light`, en horas) y la
- * comunicación mínima (`meets` de `communication`, en %). Los valores por
- * defecto son los de DEC-071. La pendiente sale de la NASA y no se cambia.
+ * comunicación mínima (`meets` de `communication`, en %) y si se asume un
+ * satélite de relevo (DEC-084). Los valores por defecto son los de DEC-071.
+ * La pendiente sale de la NASA y no se cambia.
  */
 export const DEFAULT_LIMITS = Object.freeze({
   batteryHours: REQUIREMENTS.light.limit,
   commsMinPct: REQUIREMENTS.communication.meets,
+  relay: true,
 });
+
+/**
+ * Sin satélite de relevo (DEC-084): criterio de NASA para Artemis III (HLS
+ * 2024, comunicación directa con la Tierra, "assume no comm relay is
+ * available"), que descarta las zonas con la Tierra visible menos del 25 %
+ * del tiempo. Por debajo de este valor la comunicación "no cumple".
+ */
+export const NO_RELAY_MIN_PCT = 25;
 
 /** Rango admitido de cada supuesto: 0 a 360 h (una noche lunar) y 0 a 100 %, en enteros. */
 export const LIMIT_RANGES = Object.freeze({
@@ -67,8 +78,13 @@ export const LIMIT_RANGES = Object.freeze({
 let limits = { ...DEFAULT_LIMITS };
 let effective = REQUIREMENTS;
 
-/** Entero dentro del rango del supuesto, o null si no es un número. */
+/** Entero dentro del rango del supuesto (o booleano para `relay`), o null si no es válido. */
 export function cleanLimit(key, value) {
+  if (key === "relay") {
+    if (value === true || value === "1" || value === 1) return true;
+    if (value === false || value === "0" || value === 0) return false;
+    return null;
+  }
   const n = typeof value === "string" && value.trim() === "" ? NaN : Number(value);
   if (!Number.isFinite(n)) return null;
   const { min, max } = LIMIT_RANGES[key];
@@ -91,13 +107,20 @@ export function setMissionLimits(patch = {}) {
     const v = cleanLimit(key, patch[key]);
     if (v != null) next[key] = v;
   }
-  if (next.batteryHours === limits.batteryHours && next.commsMinPct === limits.commsMinPct) return false;
+  if (Object.keys(DEFAULT_LIMITS).every((key) => next[key] === limits[key])) return false;
   limits = next;
-  effective = Object.freeze({
-    ...REQUIREMENTS,
-    light: Object.freeze({ ...REQUIREMENTS.light, limit: limits.batteryHours }),
-    communication: Object.freeze({ ...REQUIREMENTS.communication, meets: limits.commsMinPct }),
-  });
+  effective = limitsAreDefault()
+    ? REQUIREMENTS
+    : Object.freeze({
+        ...REQUIREMENTS,
+        light: Object.freeze({ ...REQUIREMENTS.light, limit: limits.batteryHours }),
+        communication: Object.freeze({
+          ...REQUIREMENTS.communication,
+          meets: limits.commsMinPct,
+          limit: limits.relay ? 0 : NO_RELAY_MIN_PCT,
+          source: limits.relay ? "assumed-relay" : "nasa-hls-2024-dte",
+        }),
+      });
   return true;
 }
 
@@ -107,11 +130,10 @@ export function currentRequirements() {
 }
 
 /** true si los supuestos son los de DEC-071. */
-export const limitsAreDefault = () =>
-  limits.batteryHours === DEFAULT_LIMITS.batteryHours && limits.commsMinPct === DEFAULT_LIMITS.commsMinPct;
+export const limitsAreDefault = () => Object.keys(DEFAULT_LIMITS).every((key) => limits[key] === DEFAULT_LIMITS[key]);
 
 /** Identificador de los supuestos vigentes, para las claves de caché. */
-export const limitsVersion = () => `b${limits.batteryHours}c${limits.commsMinPct}`;
+export const limitsVersion = () => `b${limits.batteryHours}c${limits.commsMinPct}r${limits.relay ? 1 : 0}`;
 
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
@@ -219,7 +241,8 @@ function refineAll(flags, times, visibleAt) {
  */
 export function requirementLevel(key, value) {
   const r = effective[key];
-  if (r.better === "higher") return value >= r.meets ? "high" : value >= r.limit ? "mid" : "low";
+  // "Mayor es mejor": por debajo de `limit` no cumple aunque `meets` sea menor (sin relevo, DEC-084).
+  if (r.better === "higher") return value < r.limit ? "low" : value >= r.meets ? "high" : "mid";
   const within = (x, bound) => (r.strict ? x < bound : x <= bound);
   return within(value, r.meets) ? "high" : within(value, r.limit) ? "mid" : "low";
 }
