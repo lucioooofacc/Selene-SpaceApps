@@ -15,6 +15,8 @@
 import { bodyVectorsAt, localFrame } from "./ephemeris.js";
 
 export const HEAT_ATLAS_SCHEMA = "selene-heat-atlas/v1";
+/** Atlas de toda la Luna en grilla equirectangular (MAP-02, DEC-065). */
+export const GLOBAL_HEAT_ATLAS_SCHEMA = "selene-heat-atlas-global/v1";
 const MISSING = -32768;
 const MOON_RADIUS_KM = 1737.4;
 const DEG = Math.PI / 180;
@@ -29,14 +31,24 @@ export function cellCenter(x, y, size, minLat) {
 }
 
 /**
- * Decodifica el atlas: horizontes int16 en centésimas de grado (72 por celda,
- * −32768 fuera del disco), altura del suelo int16 en m y % de azimuts de baja
- * confianza (uint8) por celda.
+ * Centro de la celda (x, y) de la grilla global equirectangular de `cols × rows`
+ * (MAP-02, DEC-065): fila 0 al norte, columna 0 desde −180° de longitud, como
+ * la textura de la Luna 3D.
  */
-export function decodeHeatAtlas(buffer, meta) {
-  if (meta?.schema !== HEAT_ATLAS_SCHEMA) throw new Error(`esquema de atlas inesperado: ${meta?.schema}`);
-  const { size, azimuths } = meta.grid;
-  const cells = size * size;
+export function globalCellCenter(x, y, cols, rows) {
+  return { lat: 90 - ((y + 0.5) * 180) / rows, lon: -180 + ((x + 0.5) * 360) / cols };
+}
+
+/** Decodifica el atlas global: misma codificación que el polar, `cols × rows` celdas. */
+export function decodeGlobalHeatAtlas(buffer, meta) {
+  if (meta?.schema !== GLOBAL_HEAT_ATLAS_SCHEMA) throw new Error(`esquema de atlas global inesperado: ${meta?.schema}`);
+  const { cols, rows, azimuths } = meta.grid;
+  const decoded = decodeCells(buffer, cols * rows, azimuths);
+  return Object.freeze({ meta, cols, rows, azimuths, ...decoded });
+}
+
+/** Horizontes (centésimas de grado → grados, −32768 → NaN), altura del suelo y % de baja confianza. */
+function decodeCells(buffer, cells, azimuths) {
   if (buffer.byteLength !== cells * azimuths * 2 + cells * 2 + cells) {
     throw new Error("el atlas no tiene el tamaño esperado");
   }
@@ -53,10 +65,23 @@ export function decodeHeatAtlas(buffer, meta) {
     groundM[c] = view.getInt16(off + c * 2, true);
     lowPct[c] = view.getUint8(off + cells * 2 + c);
   }
-  return Object.freeze({ meta, size, minLat: meta.grid.minLat, azimuths, horizon, groundM, lowPct });
+  return { horizon, groundM, lowPct };
+}
+
+/**
+ * Decodifica el atlas: horizontes int16 en centésimas de grado (72 por celda,
+ * −32768 fuera del disco), altura del suelo int16 en m y % de azimuts de baja
+ * confianza (uint8) por celda.
+ */
+export function decodeHeatAtlas(buffer, meta) {
+  if (meta?.schema !== HEAT_ATLAS_SCHEMA) throw new Error(`esquema de atlas inesperado: ${meta?.schema}`);
+  const { size, azimuths } = meta.grid;
+  const decoded = decodeCells(buffer, size * size, azimuths);
+  return Object.freeze({ meta, size, minLat: meta.grid.minLat, azimuths, ...decoded });
 }
 
 let atlas = null;
+let globalAtlas = null;
 let version = 0;
 
 export function registerHeatAtlas(decoded) {
@@ -66,6 +91,19 @@ export function registerHeatAtlas(decoded) {
 export function clearHeatAtlas() {
   atlas = null;
   version++;
+}
+/** Registra el atlas de toda la Luna (MAP-02, DEC-065). */
+export function registerGlobalHeatAtlas(decoded) {
+  globalAtlas = decoded;
+  version++;
+}
+export function clearGlobalHeatAtlas() {
+  globalAtlas = null;
+  version++;
+}
+/** Atlas global registrado, o null. */
+export function globalHeatAtlas() {
+  return globalAtlas;
 }
 export function heatAtlasVersion() {
   return version;
@@ -99,6 +137,56 @@ export function heatStepMinutes(windowDays) {
 export function computeRealHeatStats({ startMs, windowDays, size, minLat, stepMinutes = heatStepMinutes(windowDays), need, sunVisible, earthVisible, sunPower }) {
   const a = heatAtlasFor(size, minLat);
   if (!a) return null;
+  const series = bodySeries(startMs, windowDays, stepMinutes, need);
+  if (!series) return null;
+  const out = atlasStats(a, size * size, (c) => cellCenter(c % size, Math.floor(c / size), size, minLat), series, { sunVisible, earthVisible, sunPower });
+  return {
+    ...out,
+    size,
+    minLat,
+    source: {
+      kind: "real",
+      ephemeris: "jpl-horizons",
+      ephemerisFrom: series.refId,
+      horizon: "lola-atlas",
+      cellKm: Math.round(((2 * (90 + minLat) * DEG * MOON_RADIUS_KM) / size) * 10) / 10,
+      stepMinutes,
+      atlas: a.meta.source,
+    },
+  };
+}
+
+/**
+ * Lo mismo que `computeRealHeatStats` sobre el atlas global equirectangular
+ * (MAP-02, DEC-065): `cols × rows` celdas, fila 0 al norte. `null` si falta el
+ * atlas global, no hay efemérides o la ventana sale de su cobertura.
+ */
+export function computeRealGlobalHeatStats({ startMs, windowDays, stepMinutes = heatStepMinutes(windowDays), need, sunVisible, earthVisible, sunPower }) {
+  const a = globalAtlas;
+  if (!a) return null;
+  const series = bodySeries(startMs, windowDays, stepMinutes, need);
+  if (!series) return null;
+  const { cols, rows } = a;
+  const out = atlasStats(a, cols * rows, (c) => globalCellCenter(c % cols, Math.floor(c / cols), cols, rows), series, { sunVisible, earthVisible, sunPower });
+  return {
+    ...out,
+    cols,
+    rows,
+    source: {
+      kind: "real",
+      ephemeris: "jpl-horizons",
+      ephemerisFrom: series.refId,
+      horizon: "lola-global-atlas",
+      cellDeg: a.meta.grid.cellDeg,
+      cellKm: Math.round(a.meta.grid.cellDeg * DEG * MOON_RADIUS_KM),
+      stepMinutes,
+      atlas: a.meta.source,
+    },
+  };
+}
+
+/** Vectores del Sol y la Tierra (planos) en cada instante, o null si alguno sale de la cobertura. */
+function bodySeries(startMs, windowDays, stepMinutes, need) {
   const steps = Math.max(1, Math.round((windowDays * 1440) / stepMinutes));
   const bodies = [];
   for (let k = 0; k < steps; k++) {
@@ -118,9 +206,16 @@ export function computeRealHeatStats({ startMs, windowDays, size, minLat, stepMi
     }
     return out;
   };
-  const S = need.sun ? flat((b) => [b.sunDir, b.sunRadius]) : null;
-  const T = need.earth ? flat((b) => [b.earthPos, b.earthRadius]) : null;
-  const cells = size * size;
+  return {
+    n,
+    refId: bodies[0].refId,
+    S: need.sun ? flat((b) => [b.sunDir, b.sunRadius]) : null,
+    T: need.earth ? flat((b) => [b.earthPos, b.earthRadius]) : null,
+  };
+}
+
+/** Fracciones de visibilidad y potencia media por celda de un atlas (−1 donde no hay horizonte). */
+function atlasStats(a, cells, centerOf, { n, S, T }, { sunVisible, earthVisible, sunPower }) {
   const mk = (on) => (on ? new Float32Array(cells).fill(-1) : null);
   const out = { sun: mk(S), earth: mk(T), both: mk(S && T), power: mk(S) };
   const azStep = 360 / a.azimuths;
@@ -138,55 +233,39 @@ export function computeRealHeatStats({ startMs, windowDays, size, minLat, stepMi
     return { el, margin: el - hz };
   };
 
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const c = y * size + x;
-      const base = c * a.azimuths;
-      if (Number.isNaN(a.horizon[base])) continue;
-      const center = cellCenter(x, y, size, minLat);
-      const f = localFrame(center.lat, center.lon);
-      // Para la Tierra, vector desde la celda (paralaje); para el Sol, la dirección.
-      const r = MOON_RADIUS_KM + a.groundM[c] / 1000;
-      let sunHits = 0;
-      let earthHits = 0;
-      let bothHits = 0;
-      let powerSum = 0;
-      for (let k = 0; k < n; k++) {
-        let sunUp = false;
-        let earthUp = false;
-        if (S) {
-          const v = look(S.x[k], S.y[k], S.z[k], f, base);
-          sunUp = sunVisible(v.margin);
-          powerSum += sunPower(v.margin, S.r[k], center.lat, v.el);
-        }
-        if (T) {
-          const v = look(T.x[k] - f.up[0] * r, T.y[k] - f.up[1] * r, T.z[k] - f.up[2] * r, f, base);
-          earthUp = earthVisible(v.margin, T.r[k]);
-        }
-        sunHits += sunUp;
-        earthHits += earthUp;
-        bothHits += sunUp && earthUp;
+  for (let c = 0; c < cells; c++) {
+    const base = c * a.azimuths;
+    if (Number.isNaN(a.horizon[base])) continue;
+    const center = centerOf(c);
+    const f = localFrame(center.lat, center.lon);
+    // Para la Tierra, vector desde la celda (paralaje); para el Sol, la dirección.
+    const r = MOON_RADIUS_KM + a.groundM[c] / 1000;
+    let sunHits = 0;
+    let earthHits = 0;
+    let bothHits = 0;
+    let powerSum = 0;
+    for (let k = 0; k < n; k++) {
+      let sunUp = false;
+      let earthUp = false;
+      if (S) {
+        const v = look(S.x[k], S.y[k], S.z[k], f, base);
+        sunUp = sunVisible(v.margin);
+        powerSum += sunPower(v.margin, S.r[k], center.lat, v.el);
       }
-      if (out.sun) out.sun[c] = sunHits / n;
-      if (out.earth) out.earth[c] = earthHits / n;
-      if (out.both) out.both[c] = bothHits / n;
-      if (out.power) out.power[c] = powerSum / n;
+      if (T) {
+        const v = look(T.x[k] - f.up[0] * r, T.y[k] - f.up[1] * r, T.z[k] - f.up[2] * r, f, base);
+        earthUp = earthVisible(v.margin, T.r[k]);
+      }
+      sunHits += sunUp;
+      earthHits += earthUp;
+      bothHits += sunUp && earthUp;
     }
+    if (out.sun) out.sun[c] = sunHits / n;
+    if (out.earth) out.earth[c] = earthHits / n;
+    if (out.both) out.both[c] = bothHits / n;
+    if (out.power) out.power[c] = powerSum / n;
   }
-  return {
-    ...out,
-    size,
-    minLat,
-    source: {
-      kind: "real",
-      ephemeris: "jpl-horizons",
-      ephemerisFrom: bodies[0].refId,
-      horizon: "lola-atlas",
-      cellKm: Math.round(((2 * (90 + minLat) * DEG * MOON_RADIUS_KM) / size) * 10) / 10,
-      stepMinutes,
-      atlas: a.meta.source,
-    },
-  };
+  return out;
 }
 
 /** Compatibilidad: mapa de un solo cuerpo (`mode` "sun" | "earth"), o `null`. */
