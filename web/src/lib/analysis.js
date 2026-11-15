@@ -21,11 +21,27 @@ const STEP_MS = STEP_MINUTES * 60_000;
 const LOOKAHEAD_DAYS = 32;
 
 /** Umbrales de viabilidad. Documentados en DEC-007; ajustables por el equipo. */
-export const THRESHOLDS = {
-  illumination: { high: 65, mid: 35 }, // % del tiempo con Sol visible
-  power: { high: 0.35, mid: 0.15 }, // potencia relativa promedio (0-1)
-  communication: { high: 50, mid: 20 }, // % del tiempo con Tierra visible
-};
+/**
+ * Requisitos de misión para la viabilidad (VIAB-01, DEC-071; reemplaza los
+ * umbrales de DEC-007). Cada uno tiene tres niveles: "high" = cumple,
+ * "mid" = al límite, "low" = no cumple.
+ * - light: noche más larga del período, en horas. Cumple sin noche, como
+ *   exige Artemis III (Sol continuo toda la estadía, NASA 2022); al límite
+ *   hasta 24 h (SUPUESTO del equipo: autonomía de baterías de un módulo chico;
+ *   Odysseus tenía 10–20 h); no cumple con noches más largas.
+ * - communication: % del período con la Tierra visible. Cumple desde 80 %
+ *   (enlace directo casi permanente; SUPUESTO del equipo, no hay un umbral
+ *   publicado). Por debajo queda al límite y nunca "no cumple": se asume un
+ *   satélite de relevo, como en los planes de Artemis (decisión de Lucio).
+ * - slope: pendiente del terreno en grados, solo donde hay datos. Cumple
+ *   por debajo de 8° (tolerancia de inclinación del HLS), al límite por
+ *   debajo de 10° (pendiente de aterrizaje del HLS en 100 m, NASA 2024).
+ */
+export const REQUIREMENTS = Object.freeze({
+  light: Object.freeze({ unit: "h", meets: 0, limit: 24, better: "lower", source: "assumed-partial" }),
+  communication: Object.freeze({ unit: "%", meets: 80, limit: 0, better: "higher", source: "assumed-relay" }),
+  slope: Object.freeze({ unit: "°", meets: 8, limit: 10, better: "lower", strict: true, source: "nasa-hls-2024" }),
+});
 
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
@@ -126,13 +142,60 @@ function refineAll(flags, times, visibleAt) {
   return out;
 }
 
-function level(value, { high, mid }) {
-  if (value >= high) return "high";
-  if (value >= mid) return "mid";
-  return "low";
+/**
+ * Nivel de un requisito (DEC-071): "high" (cumple), "mid" (al límite) o
+ * "low" (no cumple). En los de "menor es mejor", `meets` es inclusivo para la
+ * luz (0 h de noche cumple) y estricto para la pendiente (< 8° cumple).
+ */
+export function requirementLevel(key, value) {
+  const r = REQUIREMENTS[key];
+  if (r.better === "higher") return value >= r.meets ? "high" : value >= r.limit ? "mid" : "low";
+  const within = (x, bound) => (r.strict ? x < bound : x <= bound);
+  return within(value, r.meets) ? "high" : within(value, r.limit) ? "mid" : "low";
 }
 
-const LEVEL_POINTS = { high: 2, mid: 1, low: 0 };
+const LEVEL_RANK = { low: 0, mid: 1, high: 2 };
+
+/**
+ * Viabilidad a partir de los requisitos evaluados: la global es la del peor
+ * (si uno no se cumple, el sitio no es viable, como en una misión real) y
+ * `met` cuenta los que se cumplen del todo.
+ * @param {Record<string, number>} values  valor de cada requisito presente
+ */
+export function viabilityFrom(values) {
+  const criteria = {};
+  for (const [key, value] of Object.entries(values)) {
+    if (Number.isFinite(value)) criteria[key] = { value, level: requirementLevel(key, value) };
+  }
+  const levels = Object.values(criteria).map((c) => c.level);
+  const overall = levels.reduce((worst, l) => (LEVEL_RANK[l] < LEVEL_RANK[worst] ? l : worst), "high");
+  return { criteria, met: levels.filter((l) => l === "high").length, total: levels.length, overall };
+}
+
+/**
+ * Viabilidad con la pendiente del terreno sumada como requisito (DEC-071).
+ * Solo para pendientes de escala kilométrica o más fina (DEM polar o LDEM_128);
+ * con `slopeDeg` no finito devuelve la viabilidad sin cambios.
+ */
+export function withSlope(viability, slopeDeg) {
+  if (!Number.isFinite(slopeDeg)) return viability;
+  const values = Object.fromEntries(Object.entries(viability.criteria).map(([k, c]) => [k, c.value]));
+  return viabilityFrom({ ...values, slope: slopeDeg });
+}
+
+/** Orden de los niveles de viabilidad, para comparar (mayor es mejor). */
+export const viabilityRank = (v) => LEVEL_RANK[v.overall];
+
+/** Noche más larga (horas) de una serie de visibilidad del Sol en las muestras [0, n). */
+function longestDarkHours(vis, n, stepMinutes) {
+  let best = 0;
+  let run = 0;
+  for (let i = 0; i < n; i++) {
+    run = vis[i] ? 0 : run + 1;
+    if (run > best) best = run;
+  }
+  return (best * stepMinutes) / 60;
+}
 
 /**
  * Horizonte del escenario, en orden de preferencia:
@@ -287,13 +350,9 @@ export function computeScenario(site, startMs, windowDays) {
   const lightWindows = computeWindows(s.sunVis, 0, windowSteps, s.times, s.sunCross);
   const linkWindows = computeWindows(s.earthVis, 0, windowSteps, s.times, s.earthCross);
 
-  const criteria = {
-    illumination: { value: illumination, level: level(illumination, THRESHOLDS.illumination) },
-    power: { value: power, level: level(power, THRESHOLDS.power) },
-    communication: { value: communication, level: level(communication, THRESHOLDS.communication) },
-  };
-  const points = Object.values(criteria).reduce((sum, c) => sum + LEVEL_POINTS[c.level], 0);
-  const overall = points >= 5 ? "high" : points >= 3 ? "mid" : "low";
+  // Viabilidad por requisitos de misión (DEC-071). La pendiente se suma donde hay datos de terreno (withSlope).
+  const longestNightH = longestDarkHours(s.sunVis, windowSteps, STEP_MINUTES);
+  const viability = viabilityFrom({ light: longestNightH, communication });
 
   return {
     site,
@@ -324,10 +383,11 @@ export function computeScenario(site, startMs, windowDays) {
       linkMinutes: earthSteps * STEP_MINUTES,
       peakSun,
       peakEarth,
+      longestNightH,
       lightWindows,
       linkWindows,
     },
-    viability: { criteria, points, maxPoints: 6, overall },
+    viability,
   };
 }
 
@@ -436,8 +496,9 @@ function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
   const stepMs = (windowDays * DAY_MS) / samples;
   const cells = size * size;
   const mk = (on) => (on ? new Float32Array(cells).fill(-1) : null);
-  const out = { sun: mk(need.sun), earth: mk(need.earth), both: mk(need.sun && need.earth), power: mk(need.sun) };
+  const out = { sun: mk(need.sun), earth: mk(need.earth), both: mk(need.sun && need.earth), power: mk(need.sun), night: mk(need.sun) };
   const span = 90 + minLat; // grados desde el polo hasta el borde
+  const stepH = stepMs / 3_600_000;
 
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
@@ -453,6 +514,8 @@ function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
       let earthHits = 0;
       let bothHits = 0;
       let powerSum = 0;
+      let darkRun = 0;
+      let darkMax = 0;
       for (let k = 0; k < samples; k++) {
         const t = startMs + k * stepMs;
         let sunUp = false;
@@ -471,8 +534,11 @@ function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
         sunHits += sunUp;
         earthHits += earthUp;
         bothHits += sunUp && earthUp;
+        darkRun = sunUp ? 0 : darkRun + 1;
+        if (darkRun > darkMax) darkMax = darkRun;
       }
       const c = y * size + x;
+      if (out.night) out.night[c] = darkMax * stepH;
       if (out.sun) out.sun[c] = sunHits / samples;
       if (out.earth) out.earth[c] = earthHits / samples;
       if (out.both) out.both[c] = bothHits / samples;
@@ -488,10 +554,10 @@ function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
  * - `"earth"`: fracción con la Tierra visible;
  * - `"both"`: fracción con el Sol y la Tierra visibles a la vez (energía y
  *   comunicación al mismo tiempo);
- * - `"viability"`: puntos de viabilidad 0–6 de cada celda con los mismos
- *   criterios y umbrales que los sitios y el ranking "Global" (DEC-007);
- *   `values` = puntos / 6, `points` trae el entero y `components` las
- *   fracciones de luz y Tierra y la potencia media de cada celda.
+ * - `"viability"`: viabilidad de cada celda con los mismos requisitos que
+ *   los sitios y el ranking "Global" (DEC-071), sin la pendiente: `values` =
+ *   0 (no cumple), 0,5 (al límite) o 1 (cumple); `levels` trae el nivel y
+ *   `components` la noche más larga (h) y las fracciones de luz y Tierra.
  * Con el atlas LOLA y las efemérides cargados usa datos reales; si no, o si la
  * ventana sale de la cobertura de Horizons, el modelo aproximado y el
  * horizonte sintético. `source.kind` indica cuál ("real" | "approximate").
@@ -505,22 +571,18 @@ export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minL
   return heatResult({ size, minLat, mode, source: stats.source }, stats, mode);
 }
 
-/** Valores de la capa pedida; en "viability", los puntos de cada celda con los criterios de DEC-007. */
+/** Valores de la capa pedida; en "viability", el nivel de cada celda con los requisitos de DEC-071. */
 function heatResult(base, stats, mode) {
   if (mode !== "viability") return { ...base, values: stats[mode] };
   const values = new Float32Array(stats.sun.length).fill(-1);
-  const points = new Int8Array(stats.sun.length).fill(-1);
+  const levels = new Array(stats.sun.length).fill(null);
   for (let c = 0; c < values.length; c++) {
     if (stats.sun[c] < 0) continue;
-    const p =
-      LEVEL_POINTS[level(100 * stats.sun[c], THRESHOLDS.illumination)] +
-      LEVEL_POINTS[level(stats.power[c], THRESHOLDS.power)] +
-      LEVEL_POINTS[level(100 * stats.earth[c], THRESHOLDS.communication)];
-    points[c] = p;
-    values[c] = p / 6;
+    const v = viabilityFrom({ light: stats.night[c], communication: 100 * stats.earth[c] });
+    levels[c] = v.overall;
+    values[c] = viabilityRank(v) / 2;
   }
-  // Componentes por celda (fracciones de tiempo y potencia media) para leyendas o tooltips.
-  return { ...base, values, points, maxPoints: 6, components: { sun: stats.sun, earth: stats.earth, power: stats.power } };
+  return { ...base, values, levels, components: { night: stats.night, sun: stats.sun, earth: stats.earth } };
 }
 
 /**

@@ -9,7 +9,7 @@ import { STEP_MINUTES } from "../lib/analysis.js";
 import { scenarioMetrics } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, rangeUTC, timeUTC } from "../lib/format.js";
 import { windowStats } from "../lib/stats.js";
-import { needsGlobalDem, terrainForSite } from "../lib/site-terrain.js";
+import { needsGlobalDem, siteViability, terrainForSite } from "../lib/site-terrain.js";
 import { hohmannTransfer, missionTimeline, moonDistanceAt, R_EARTH, R_MOON } from "../lib/trajectory.js";
 import { getLang, t } from "../i18n/index.js";
 import { dataNote, lolaHtml, lolaTitle, provenanceHtml, qualityHtml, traitsHtml } from "./provenance.js";
@@ -25,20 +25,32 @@ function formatValue(kind, value) {
   return deg(value);
 }
 
+/** Valor de un requisito para mostrar (DEC-071). */
+function requirementValue(key, value) {
+  if (key === "light") return t("compare.value.light", { h: num(value) });
+  if (key === "communication") return t("compare.value.communication", { pct: pct(value) });
+  return t("compare.value.slope", { deg: num(value, 1) });
+}
+
 /** Cifras clave del sitio en el período. */
-function kpisHtml(scenario, st) {
-  const v = scenario.viability;
+function kpisHtml(site, scenario, st) {
+  // Requisitos de misión con la pendiente sumada si hay datos de terreno (DEC-071).
+  const v = siteViability(site, scenario);
   const s = scenario.summary;
   const kpi = (label, value, hint) => `<div class="rw-kpi" title="${hint ?? ""}"><dt>${label}</dt><dd>${value}</dd></div>`;
   return `
     <dl class="rw-kpi-grid">
-      <div class="rw-kpi rw-kpi-main"><dt>${t("compare.viability")}</dt><dd><span class="status-tag ${TONE[v.overall]}">${t(`compare.level.${v.overall}`)} · ${v.points}/${v.maxPoints}</span></dd></div>
+      <div class="rw-kpi rw-kpi-main"><dt>${t("compare.viability")}</dt><dd><span class="status-tag ${TONE[v.overall]}">${t(`compare.level.${v.overall}`)} · ${t("compare.points", { met: v.met, total: v.total })}</span></dd></div>
       ${kpi(t("compare.metric.illumination"), pct(s.illumination))}
       ${kpi(t("compare.metric.communication"), pct(s.communication))}
       ${kpi(t("periodCard.both"), pct(st.bothFraction * 100), t("periodCard.hint.both"))}
       ${kpi(t("periodCard.night"), duration(st.longestNightMin), t("periodCard.hint.night"))}
       ${kpi(t("periodCard.blackout"), duration(st.longestBlackoutMin), t("periodCard.hint.blackout"))}
-    </dl>`;
+    </dl>
+    <ul class="rw-requirements">${Object.entries(v.criteria)
+      .map(([key, c]) => `<li><span class="place-verdict place-verdict-${c.level}">${t(`compare.req.${c.level}`)}</span> ${t(`compare.requirement.${key}`)} · ${requirementValue(key, c.value)}</li>`)
+      .join("")}</ul>
+    <p class="cmp-hint">${t("compare.criteriaNote")}</p>`;
 }
 
 /** Ventanas de luz y de enlace como franjas sobre el período. */
@@ -165,9 +177,10 @@ function datesHtml(result, windowDays, startMs) {
     .map(({ startMs: s, scenario }) => {
       const v = scenario.viability;
       const current = s === startMs;
+      // Las fechas comparan luz y comunicación; la pendiente no cambia con la fecha.
       return `<li ${current ? 'aria-current="true"' : ""}><button type="button" data-start="${s}">
         <span class="rw-date-range">${rangeUTC(s, s + (windowDays - 1) * DAY_MS)}</span>
-        <span class="place-verdict place-verdict-${v.overall}">${t(`compare.level.${v.overall}`)} · ${v.points}/${v.maxPoints}</span>
+        <span class="place-verdict place-verdict-${v.overall}">${t(`compare.level.${v.overall}`)} · ${v.met}/${v.total}</span>
         <span class="rw-date-stats">☀ ${pct(scenario.summary.illumination)} · ⟟ ${pct(scenario.summary.communication)}</span>
       </button></li>`;
     })
@@ -188,7 +201,7 @@ export function renderSiteReport({ site, scenario, dates, demState, globalDemSta
     days: scenario.windowDays,
   })}`;
   $("rw-note").textContent = dataNote(scenario);
-  $("rw-kpis").innerHTML = kpisHtml(scenario, st);
+  $("rw-kpis").innerHTML = kpisHtml(site, scenario, st);
   $("rw-terrain").innerHTML = terrainHtml(site, scenario, demState, globalDemState);
   $("rw-windows").innerHTML = windowsSvg(scenario);
   $("rw-metrics").innerHTML = metricsHtml(scenario);

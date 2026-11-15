@@ -116,13 +116,12 @@ test("la cara oculta no ve la Tierra y la visible sí (cerca del ecuador)", () =
   assert.equal(map.values[1 * 8 + 0], 0);
 });
 
-test("viabilidad global: puntos 0–6 con los mismos umbrales", () => {
+test("viabilidad global: nivel por requisitos (DEC-071)", () => {
   loadAll();
   registerGlobalHeatAtlas(flatGlobalAtlas(8, 4, 0));
   const map = computeGlobalHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: 3, mode: "viability" });
-  assert.equal(map.maxPoints, 6);
   for (let c = 0; c < 32; c++) {
-    assert.ok(map.points[c] >= 0 && map.points[c] <= 6);
-    assert.ok(Math.abs(map.values[c] - map.points[c] / 6) < 1e-6);
+    assert.ok(["low", "mid", "high"].includes(map.levels[c]));
+    assert.equal(map.values[c], { low: 0, mid: 0.5, high: 1 }[map.levels[c]]);
   }
 });

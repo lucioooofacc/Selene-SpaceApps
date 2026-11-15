@@ -45,7 +45,7 @@ Desde `web/`:
 | Horizonte LOLA reducido (`real-points`) | Horizonte LOLA de 240 m | Error medio por sitio (ver DEC-034) | R01 0,38°, Malapert 0,19°, Cabeus 0,02°, IM-1 0,77°. |
 | Política de visibilidad (`visibility`) | Geometría exacta del disco | 1e-4 | Área del segmento circular; mapa de calor y escenario coinciden celda a celda. |
 | Mapa de calor real (`heat-map`) | Traslado de efemérides de CORE-03 en el centro de la celda | ≤ 1 muestra de diferencia | Mismo cálculo por dos caminos. |
-| Modos `both` y `viability` (`heat-map`) | Componentes del mismo cálculo y umbrales de DEC-007 | Exacta | `both` ≤ mín(luz, Tierra) y ≥ luz + Tierra − 1; puntos iguales a los de los sitios. |
+| Modos `both` y `viability` (`heat-map`) | Componentes del mismo cálculo y requisitos de DEC-071 | Exacta | `both` ≤ mín(luz, Tierra) y ≥ luz + Tierra − 1; puntos iguales a los de los sitios. |
 | Cruces refinados (`crossings`, SCIENCE-02) | Paso de 10 min del mismo escenario | Cada cruce dentro del intervalo de 10 min que lo encierra; bisección hasta 5 s | 46 cruces (7 sitios, 30 días desde 01/01/2027): adelanto medio 4,5 min y máximo 9,7 min respecto de la muestra; ventanas ordenadas y dentro del período; el estado instantáneo cambia en el cruce refinado. |
 
 ## Incertidumbre conocida
@@ -66,7 +66,7 @@ Desde `web/`:
 ## Lo que no se valida
 
 - No hay una prueba automática contra valores publicados de iluminación por sitio. Se hizo una comparación manual con Gläser et al. (2017) el 15/11/2026: ver la sección siguiente.
-- Los umbrales de viabilidad (DEC-007) son un criterio del equipo, no una magnitud física.
+- Dos valores de los requisitos de viabilidad (DEC-071) son supuestos del equipo, no requisitos publicados: las 24 h de autonomía de las baterías y el 80 % de comunicación directa.
 
 ## Revisión de astronomía del 15/11/2026 (DEC-070)
 

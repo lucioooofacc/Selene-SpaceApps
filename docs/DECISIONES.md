@@ -68,7 +68,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Contexto / problema:** hace falta una conclusión simple y explicable para el público y para planificadores.
 - **Decisión:** tres criterios, cada uno con nivel alto (2 pts), medio (1) o bajo (0): iluminación (% de tiempo con Sol visible; ≥ 65 / ≥ 35), potencia relativa promedio (≥ 0,35 / ≥ 0,15) y comunicación (% de tiempo con Tierra visible; ≥ 50 / ≥ 20). Total sobre 6: ≥ 5 = alta, ≥ 3 = media.
 - **Solución aplicada:** `THRESHOLDS` en `web/src/lib/analysis.js`. Paneles verticales en latitudes de |60°| o más (potencia ∝ cos de la elevación) y horizontales en el resto (∝ sen de la elevación).
-- **Estado:** vigente; los umbrales son ajustables por el equipo.
+- **Estado:** **reemplazada por DEC-071** (15/11/2026): requisitos de misión en lugar de puntos.
 
 ## DEC-008 — Mapa de calor calculado y vista global
 
@@ -1036,4 +1036,40 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La iluminación de Shackleton cambia mucho en pocos cientos de metros: R01 da 60 % y un punto a 480 m da 90 %.
 - **Alternativas descartadas:** cambiar ahora los modelos para corregir los hallazgos (son cambios científicos que conviene decidir con el equipo); marcar los marcos como "declarados" (no lo están).
 - **Estado:** vigente. Los hallazgos abiertos quedan para decisión del equipo.
+
+## DEC-071 — Viabilidad por requisitos de misión (VIAB-01)
+
+- **Contexto / problema:** la viabilidad (DEC-007) sumaba puntos con umbrales del equipo sin fuente (luz ≥ 65/35 %, potencia ≥ 0,35/0,15, Tierra ≥ 50/20 %). Lucio pidió basarla en algo más real (15/11/2026).
+- **Decisión** (Lucio, entre tres bases propuestas): requisitos de misión, como los que usó NASA para elegir las regiones de Artemis III. Se descartaron calibrar los umbrales viejos con la bibliografía y un perfil de misión elegible.
+  - **Luz continua:** cumple sin noche, al límite hasta 24 h, no cumple con más.
+  - **Comunicación:** cumple con la Tierra visible al menos el 80 % del período.
+  - **Pendiente:** cumple por debajo de 8°, al límite por debajo de 10°, no cumple con más; solo donde hay datos de terreno.
+  - La viabilidad global es la del peor requisito, y los puntos 0–6 pasan a "requisitos cumplidos".
+  - **Ajuste posterior (Lucio):** el diseño aprobado tenía "comunicación al límite desde 30 %, no cumple por debajo". Con eso casi todos los sitios y celdas salían "no viable": en el polo, las semanas con Sol continuo suelen ser semanas sin Tierra a la vista. Se decidió asumir un satélite de relevo, como en los planes de Artemis: por debajo del 80 % la comunicación queda "al límite" y nunca "no cumple".
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`:
+    - `REQUIREMENTS`, `requirementLevel()`, `viabilityFrom()`, `withSlope()` y `viabilityRank()`.
+    - `computeScenario()` calcula `summary.longestNightH` y la viabilidad con luz y comunicación.
+    - La capa `viability` del mapa usa la noche más larga de cada celda (`night`, calculada en `lib/heat-map.js` y en el modelo aproximado). Sus valores son 0, 0,5 o 1 y `levels` trae el nivel.
+  - `web/src/lib/site-terrain.js`: `slopeForViability()` y `siteViability()` suman la pendiente cuando el terreno sale del DEM polar o de la tabla de `LDEM_128`. Con `LDEM_16` no se evalúa, porque es de escala regional.
+  - `web/src/lib/ranking.js`: el orden "Global" y el desempate de "Ciencia" usan el nivel global y después los requisitos cumplidos.
+  - Interfaz:
+    - Las tarjetas de la ventana de análisis usan el requisito y lo explican al pasar el mouse por el veredicto.
+    - El resumen del período, las mejores fechas, la comparación (tabla de requisitos con su valor y la pendiente si hay datos), el informe imprimible y el informe web (lista de requisitos y nota con las fuentes) muestran la viabilidad nueva.
+    - La leyenda de la capa va de "Baja" a "Alta".
+    - Se cambiaron unos 20 textos en ES y EN.
+    - La comparación baja el DEM polar reducido para tener la pendiente de los sitios polares.
+  - Las claves de la caché persistente pasan a `heat4` y `dates2`.
+- **Resultados** (escenarios desde el 01/12/2026):
+  - 7 días: Shackleton queda "media" (sin noche, comunicación con relevo); los otros seis, "baja" (noches de 26 a 168 h).
+  - En la comparación con pendiente, Shackleton cumple 2 de 3 requisitos (1,1°) y Apollo 11 también 2 de 3, pero no cumple la luz.
+  - Mapa polar, 7 días: 1588 celdas al límite en diciembre y 796 en junio de 2027. Con 30 días, todas "baja".
+- **Validación:** `tests/viabilidad.test.js` (límites de cada requisito, el peor manda y pendiente). Se adaptaron `analysis`, `dates`, `ranking`, `heat-map`, `heat-map-global` y `validacion/mapa-calor` (esta compara una semana en lugar de 30 días). 206 pruebas pasan.
+- **Supuestos y límites:**
+  - Las 24 h de baterías y el 80 % de comunicación son supuestos del equipo, marcados así en la interfaz (nota de la comparación y del informe, "Datos y fuentes") y en el código.
+  - La pendiente es de escala kilométrica, más suave que la de 100 m que pide el HLS: puede dar "cumple" en una zona que a 100 m no cumpliría.
+  - La página principal, el ranking, las fechas y el mapa de calor no evalúan la pendiente, así que un sitio puede mostrar 1 de 2 requisitos ahí y 2 de 3 en la comparación.
+  - Las misiones de más de unos días fuera de las zonas polares más iluminadas salen "baja" por la noche lunar, y es correcto con estos supuestos.
+- **Alternativas descartadas:** mantener la suma de puntos (un sitio podía salir viable sin cumplir un requisito); dejar la comunicación estricta (casi todo "no viable"); volver a los umbrales viejos.
+- **Estado:** vigente. Reemplaza a DEC-007.
 

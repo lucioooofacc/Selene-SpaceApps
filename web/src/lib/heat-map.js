@@ -270,6 +270,7 @@ function bodySeries(startMs, windowDays, stepMinutes, need) {
   };
   return {
     n,
+    stepMinutes,
     refId: bodies[0].refId,
     S: need.sun ? flat((b) => [b.sunDir, b.sunRadius]) : null,
     T: need.earth ? flat((b) => [b.earthPos, b.earthRadius]) : null,
@@ -277,9 +278,10 @@ function bodySeries(startMs, windowDays, stepMinutes, need) {
 }
 
 /** Fracciones de visibilidad y potencia media por celda de un atlas (−1 donde no hay horizonte). */
-function atlasStats(a, cells, centerOf, { n, S, T }, { sunVisible, earthVisible, sunPower }) {
+function atlasStats(a, cells, centerOf, { n, stepMinutes, S, T }, { sunVisible, earthVisible, sunPower }) {
   const mk = (on) => (on ? new Float32Array(cells).fill(-1) : null);
-  const out = { sun: mk(S), earth: mk(T), both: mk(S && T), power: mk(S) };
+  // night: noche más larga de la celda en horas (requisito de luz continua, DEC-071).
+  const out = { sun: mk(S), earth: mk(T), both: mk(S && T), power: mk(S), night: mk(S) };
   const azStep = 360 / a.azimuths;
 
   // Elevación y margen sobre el horizonte del atlas de un vector visto desde la celda.
@@ -306,6 +308,8 @@ function atlasStats(a, cells, centerOf, { n, S, T }, { sunVisible, earthVisible,
     let earthHits = 0;
     let bothHits = 0;
     let powerSum = 0;
+    let darkRun = 0;
+    let darkMax = 0;
     for (let k = 0; k < n; k++) {
       let sunUp = false;
       let earthUp = false;
@@ -321,7 +325,10 @@ function atlasStats(a, cells, centerOf, { n, S, T }, { sunVisible, earthVisible,
       sunHits += sunUp;
       earthHits += earthUp;
       bothHits += sunUp && earthUp;
+      darkRun = sunUp ? 0 : darkRun + 1;
+      if (darkRun > darkMax) darkMax = darkRun;
     }
+    if (out.night) out.night[c] = (darkMax * stepMinutes) / 60;
     if (out.sun) out.sun[c] = sunHits / n;
     if (out.earth) out.earth[c] = earthHits / n;
     if (out.both) out.both[c] = bothHits / n;

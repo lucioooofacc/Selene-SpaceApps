@@ -137,15 +137,18 @@ El promedio del escenario es una razón conceptual `[0,1]`. **No es potencia el�
 
 La calidad de enlace es una heurística que aumenta con el margen terrestre sobre el horizonte. La comunicación resumida es el porcentaje de muestras con alguna parte de la Tierra visible.
 
-La viabilidad asigna 0, 1 o 2 puntos por criterio:
+La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `lib/analysis.js`). Cada requisito queda en "cumple", "al límite" o "no cumple", y la viabilidad global es la del peor requisito evaluado.
 
-| Criterio | Medio | Alto |
-| --- | ---: | ---: |
-| Iluminación | `>= 35 %` | `>= 65 %` |
-| Potencia relativa media | `>= 0,15` | `>= 0,35` |
-| Visibilidad terrestre | `>= 20 %` | `>= 50 %` |
+| Requisito | Cumple | Al límite | No cumple | Base |
+| --- | --- | --- | --- | --- |
+| Luz continua: noche más larga del período | sin noche | hasta 24 h | más de 24 h | Artemis III exige Sol durante toda la estadía (NASA, 2022). El límite de 24 h es un **supuesto** del equipo sobre la autonomía de las baterías de un módulo chico |
+| Comunicación: % del período con la Tierra visible | `>= 80 %` | menos de 80 % | nunca | El 80 % es un **supuesto** del equipo. Por debajo se asume un satélite de relevo, como en los planes de Artemis |
+| Pendiente del terreno (solo donde hay datos) | `< 8°` | `< 10°` | `>= 10°` | Tolerancia de inclinación de 8° y aterrizaje en menos de 10° en 100 m del HLS (NASA, 2024) |
 
-Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos definidos por el equipo, no criterios certificados de misión.
+- La noche más larga se cuenta en las muestras de 10 min del escenario; en el mapa de calor, en el paso de su cálculo (1–2 h).
+- La pendiente usa la del punto con el DEM polar o la tabla de `LDEM_128` (escala kilométrica, más suave que a 100 m). Con `LDEM_16` (escala regional) no se evalúa. Por eso solo cuenta en la comparación y en los informes; el ranking, las fechas, la página principal y el mapa de calor evalúan luz y comunicación.
+- La potencia relativa media dejó de ser criterio; sigue como métrica.
+- **Consecuencia física:** en misiones de más de unos días, cualquier sitio fuera de las zonas polares más iluminadas tiene una noche de hasta 14 días y no cumple la luz continua. Con 30 días, ninguna celda del casquete polar la cumple (la noche más corta medida es de 112 h).
 
 ## Limitaciones conocidas
 

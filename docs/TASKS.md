@@ -148,6 +148,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** cálculo cancelable/cacheado; resolución y cobertura indicadas; sin red en bucles por celda; coherencia con escenarios puntuales.
 - **Fuera de alcance:** mapa global de precisión cartográfica no necesario para la demo.
 
+### VIAB-01 — Viabilidad por requisitos de misión
+
+- **Prioridad:** P1 · **Issue:** [#122](https://github.com/lucioooofacc/Selene-SpaceApps/issues/122).
+- **Objetivo:** reemplazar los umbrales de viabilidad sin fuente (DEC-007) por requisitos de misión: luz continua, comunicación con la Tierra y pendiente del terreno donde hay datos. Diseño aprobado por Lucio el 15/11/2026 (DEC-071).
+- **Rama sugerida:** `feat/viabilidad-requisitos`.
+- **Dependencias:** TERRAIN-04 (pendiente fuera del polo).
+- **Archivos afectados:** `lib/analysis.js`, `lib/heat-map.js`, `lib/ranking.js`, `lib/site-terrain.js`, módulos de `ui/` que muestran la viabilidad, `compare.js`, i18n y pruebas.
+- **Criterios de aceptación:** cada umbral cita su fuente o se marca como supuesto; la viabilidad global es la del peor requisito; la misma regla en sitios, ranking, fechas, mapa, comparación e informes; pruebas y build en verde.
+- **Fuera de alcance:** pendiente a 100 m; perfiles de misión elegibles.
+
 ### CORE-05 — Horizonte de los puntos propios cerca de los polos
 
 - **Prioridad:** P2 · **Issue:** [#114](https://github.com/lucioooofacc/Selene-SpaceApps/issues/114).

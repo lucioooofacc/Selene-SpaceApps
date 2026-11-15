@@ -27,8 +27,8 @@ const keyFor = (layer, startMs, windowDays, palette) => `${layer}|${startMs}|${w
 /** Clave persistente: solo tiene sentido con todos los datos reales del mapa cargados. */
 const persistKey = (layer, startMs, windowDays, palette) => {
   const data = loadedData();
-  // heat3: suavizada (DEC-051) y con el resto de la Luna (MAP-02, DEC-065).
-  return data.ephemerides && data.heatAtlas && data.globalHeatAtlas ? `heat3|${layer}|${startMs}|${windowDays}|${palette}` : null;
+  // heat4: suavizada (DEC-051), con el resto de la Luna (MAP-02, DEC-065) y viabilidad por requisitos (DEC-071).
+  return data.ephemerides && data.heatAtlas && data.globalHeatAtlas ? `heat4|${layer}|${startMs}|${windowDays}|${palette}` : null;
 };
 
 function remember(key, result) {

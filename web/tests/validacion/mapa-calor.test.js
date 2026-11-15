@@ -101,11 +101,13 @@ test("producto real: celdas del atlas reproducidas exactamente", { skip: !hasRea
 });
 
 test("modos combinados: más tiempo con Sol y Tierra a la vez y más viabilidad en el verano austral", () => {
-  // Medido (30 días): 'both' 10,1 % en dic 2026 frente a 7,6 % en jun 2027;
-  // viabilidad media 44,8 % (puntos/6) frente a 33,9 %.
-  for (const mode of ["both", "viability"]) {
-    const dec = computePolarHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: 30, mode });
-    const jun = computePolarHeatmap({ startMs: Date.UTC(2027, 5, 1), windowDays: 30, mode });
+  // Medido: 'both' (30 días) 10,1 % en dic 2026 frente a 7,6 % en jun 2027.
+  // Viabilidad por requisitos (DEC-071, 7 días): 1588 celdas al límite en dic
+  // frente a 796 en jun. En 30 días ninguna celda cumple la luz continua (la
+  // noche más corta es de 112 h), así que se compara una semana.
+  for (const [mode, days] of [["both", 30], ["viability", 7]]) {
+    const dec = computePolarHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: days, mode });
+    const jun = computePolarHeatmap({ startMs: Date.UTC(2027, 5, 1), windowDays: days, mode });
     assert.equal(dec.source.kind, "real");
     assert.ok(mean(dec) > mean(jun), `${mode}: ${mean(dec)} vs ${mean(jun)}`);
   }

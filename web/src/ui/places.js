@@ -103,7 +103,7 @@ function dateEntries(state) {
   if (key === datesKey) return datesResult;
   const data = loadedData();
   const site = currentSiteFor(state);
-  const pk = data.ephemerides && (!needsPolarDem(site) || data.polarDem) && (!needsRegionalAtlas(site) || data.globalHeatAtlas) ? `dates|${state.siteId}|${state.lat}|${state.lon}|${state.windowDays}` : null;
+  const pk = data.ephemerides && (!needsPolarDem(site) || data.polarDem) && (!needsRegionalAtlas(site) || data.globalHeatAtlas) ? `dates2|${state.siteId}|${state.lat}|${state.lon}|${state.windowDays}` : null;
   const stored = pk && persisted(pk);
   if (stored) {
     datesKey = key;
@@ -158,7 +158,7 @@ function renderDates(state) {
       return `
       <li class="place" data-start="${startMs}" tabindex="0" ${current ? 'aria-current="true"' : ""} aria-label="${t("places.dates.aria", { range })}">
         <p class="place-name place-name-date">${range}</p>
-        <p class="place-verdict place-verdict-${v.overall}">${t("places.dates.sub", { level: t(`compare.level.${v.overall}`), points: v.points, max: v.maxPoints })}</p>
+        <p class="place-verdict place-verdict-${v.overall}">${t("places.dates.sub", { level: t(`compare.level.${v.overall}`), met: v.met, total: v.total })}</p>
         <div class="place-stats">
           <span class="icon-box" title="${t("places.comm")}">${icon("antenna")}</span>
           <span class="value">${pct(s.communication)}</span>

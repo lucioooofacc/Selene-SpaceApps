@@ -127,8 +127,8 @@ export function renderPeriodSummary(scenario) {
       <h3 class="status-name" id="period-title">${t("periodCard.title")}</h3>
       <span class="status-tag ${TONE[v.overall]}" title="${t("periodCard.hint.viability")}">${t("periodCard.viability", {
         level: t(`compare.level.${v.overall}`),
-        points: v.points,
-        max: v.maxPoints,
+        met: v.met,
+        total: v.total,
       })}</span>
     </div>
     <dl class="period-stats">

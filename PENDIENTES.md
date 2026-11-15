@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (supuestos de efemérides traducidos, numeración de decisiones y textos de ayuda revisados).
+Última actualización: 2026-11-15 (viabilidad por requisitos de misión, rama `feat/viabilidad-requisitos`).
 
 ---
 
@@ -135,11 +135,12 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).
 - [x] ~~Copiar la cita completa (autores y año) del DOI 10.17189/1520642 en el manifiesto y en `DATA_SOURCES.md`. — Equipo · DEC-025~~ Resuelto 2026-11-15 (rama `docs/citas-datos`): Neumann, G. A. (2011), según DataCite; en `DATA_SOURCES.md` y en el informe (los manifiestos JSON conservan el DOI).
 - [x] ~~Cuando el horizonte use LOLA, mostrar en la interfaz los píxeles con `count = 0` como interpolados (confianza baja) y Chang'e 4/Apollo 11 como sin cobertura. — Desarrollo web · DEC-025~~ El panorama marca los tramos de baja confianza y los truncados, y "Datos y fuentes" indica la falta de cobertura. Resuelto 2026-11-14 (PR #53, DEC-031).
+- [ ] Validar los dos supuestos de los requisitos de viabilidad (24 h de autonomía de baterías y 80 % de comunicación directa) y si conviene evaluar la pendiente a escala de 100 m. — Teo, Facu, Lucio · VIAB-01 #122, DEC-071
 - [ ] Horizonte regional de los puntos propios cerca de los polos: frente al horizonte exacto del punto, la luz difiere hasta 39 p. p. al norte de +75° y la Tierra hasta 100 p. p. entre −75° y −60° (puntos cerca del limbo). Opciones: calcular el horizonte del punto con `LDEM_16` cuando |lat| > 60° (requiere bajar el DEM global, 33,6 MiB) o avisarlo con más fuerza en la interfaz. — Teo, Facu, Lucio · CORE-05 #114, DEC-068, DEC-070
 - [ ] Horizonte de Apollo 11: los píxeles interpolados de `LDEM_128` a menos de 0,5 km lo elevan ~0,9° (~0,5 p. p. de luz por año). Opciones: ignorar los primeros cientos de metros del rayo cuando los píxeles son interpolados, o tomar la altura del observador de un entorno. Cambiar el algoritmo afecta a todos los sitios. — Teo, Facu, Lucio · TERRAIN-05 #115, DEC-061, DEC-070
 - [ ] La iluminación de Shackleton cambia mucho en pocos cientos de metros (R01: 60 %; a 480 m al norte: 90 %, como en la bibliografía). Decidir si se aclara en la interfaz o en el texto de la entrega, para que el 60 % no se lea como un error. — Teo, Facu, Lucio · DOC-02 #116, DEC-035, DEC-070
 - [x] ~~Arrastrar para girar la Luna 3D no funciona si el arrastre empieza encima de un marcador. — Desarrollo web · PR #112~~ Resuelto 2026-11-15 (rama `fix/arrastre-sobre-marcadores`): el arrastre también gira la Luna cuando empieza sobre un marcador, y un clic corto sigue eligiendo el sitio.
-- [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
+- [x] ~~Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007~~ Resuelto 2026-11-15 (rama `feat/viabilidad-requisitos`, VIAB-01 #122, DEC-071): requisitos de misión (luz continua, comunicación con relevo y pendiente donde hay datos); la viabilidad es la del peor requisito.
 
 ## Textos y traducción
 
