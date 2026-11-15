@@ -34,13 +34,7 @@ let lastPanelsAt = 0;
 function ensureScenario(state) {
   const key = `${state.siteId}|${state.lat}|${state.lon}|${state.startMs}|${state.windowDays}|${realDataVersion()}`;
   if (key === scenarioKey) return;
-  const saved = getSite(state.siteId);
   const site = { id: state.siteId, lat: state.lat, lon: state.lon };
-  // Si el usuario editó las coordenadas de un sitio curado, ya no aplican sus parámetros de relieve.
-  if (saved && saved.lat === state.lat && saved.lon === state.lon) {
-    site.relief = saved.relief;
-    site.elevationKm = saved.elevationKm;
-  }
   scenario = computeScenario(site, state.startMs, state.windowDays);
   scenarioKey = key;
   // Puntos propios al sur de −75°: horizonte LOLA reducido al llegar el DEM (DEC-034).
