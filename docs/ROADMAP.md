@@ -7,7 +7,7 @@ Este documento dice **en qué estado está SELENE, qué se está viendo ahora y 
 - `PENDIENTES.md`: la lista detallada de lo que falta.
 - `docs/DECISIONES.md`: por qué se hizo cada cosa (DEC-xxx).
 
-**Actualizado:** 14/11/2026, noche (día 1 de la hackathon). **Entrega:** domingo 15/11/2026 a las 23:59. Después no se puede modificar nada.
+**Actualizado:** 15/11/2026 (día 2 de la hackathon). **Entrega:** domingo 15/11/2026 a las 23:59. Después no se puede modificar nada.
 **Sitio publicado:** https://selene-space-apps.vercel.app (se actualiza solo con cada integración a `main`).
 
 Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖ descartado u opcional.
@@ -21,11 +21,11 @@ Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖
 | 0 | Base: réplica del Figma, repo y despliegue | ✅ | Equipo |
 | 1 | Interfaz completa y pulida | ✅ | Lucio |
 | 2 | Datos reales en el motor | ✅ | Facundo |
-| 3 | Validación científica | 🔄 (TEST-01 y SCIENCE-02 hechos; TERRAIN-03 integrado; quedan revisiones de astronomía) | Teo, Facu, Lucio |
-| 4 | Visualizaciones con los datos reales | ✅ (falta I18N-01) | Lucio (con Facundo) |
+| 3 | Validación científica | 🔄 (TEST-01, SCIENCE-02, TERRAIN-03 y DATA-03 hechos; quedan las revisiones de astronomía de `PENDIENTES.md`) | Teo, Facu, Lucio |
+| 4 | Visualizaciones con los datos reales | ✅ | Lucio (con Facundo) |
 | 5 | Entrega final | ⏳ | Equipo |
 
-**Hoy estamos entre las etapas 3 y 5:** la interfaz muestra los datos reales con su procedencia (UI-01, UI-02), el mapa de calor calcula luz, Tierra y viabilidad reales (MAP-01), el cálculo pesado corre en un worker (PERF-01) y los cruces de Sol y Tierra están refinados (SCIENCE-02). También se aplicó el bloc de notas de UI de Lucio (DEC-042 a DEC-046). Falta la revisión de astronomía y, si hay tiempo, DATA-03 (etapa 3), la revisión de traducciones (I18N-01) y la entrega (etapa 5).
+**Hoy (15/11/2026) estamos en la etapa 5:** todo lo planificado está integrado y publicado. El 15/11 se sumaron el mapa de calor en toda la Luna (MAP-02, DEC-065), la ayuda por tarjeta y el recorrido guiado (UI-16, DEC-066), el horizonte LOLA regional para los puntos propios (CORE-04, DEC-068) y la sección inferior que pide sitio y fechas (UI-17, DEC-069), además de DATA-03 e I18N-01. Está en curso el terreno del informe en toda la Luna (TERRAIN-04). Quedan las revisiones de astronomía y de redacción anotadas en `PENDIENTES.md` y la entrega (DEPLOY-01, #14).
 
 ---
 
@@ -65,7 +65,7 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 | CORE-03 (#59): datos reales para puntos del mapa | ✅ (PR #60) | Sol y Tierra de Horizons trasladados a cualquier punto; horizonte LOLA reducido (480/960 m) al sur de −75°, marcado aproximado (DEC-034) |
 | DATA-02 (#61): Shackleton R04 → R01 | ✅ (PR #62) | R04 era el centro de un polígono en la pared del cráter; R01 Connecting Ridge (DEC-035) |
 | TERRAIN-03 (#71): horizonte LOLA real para Chang'e 4 y Apollo 11 | ✅ (PR #96) | Desde `LDEM_128` V3.0 con el algoritmo de DEC-030; efemérides con la altura LOLA medida (DEC-061) |
-| DATA-03 (#72): quitar `relief`/`elevationKm` de los sitios curados | 🔎 en revisión | Campos quitados; los 7 sitios usan LOLA y los resultados no cambian (DEC-063) |
+| DATA-03 (#72): quitar `relief`/`elevationKm` de los sitios curados | ✅ (PR #98) | Campos quitados; los 7 sitios usan LOLA y los resultados no cambian (DEC-063) |
 
 **Qué cambió con los datos reales** (media anual, Sol y Tierra de Horizons + horizonte LOLA):
 
@@ -101,10 +101,16 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 | UI-01 resto (#13): fuente, fecha y cobertura de efemérides y horizonte; estados de carga y error | ✅ (PR #67, DEC-039) | — |
 | UI-02 (#15): resolución, huecos y cambios asíncronos | ✅ (PR #69, DEC-041) | — |
 | MAP-01 (#16): modo de iluminación calculada en el mapa | ✅ motor (PR #66, DEC-038) e interfaz (PR #68, DEC-040) | — |
-| MAP-02 (#100): mapa de calor en toda la Luna | 🔎 en revisión | Atlas global LOLA de `LDEM_16` (2°); casquete sur detallado; 2D sin cambios (DEC-065) |
+| MAP-02 (#100): mapa de calor en toda la Luna | ✅ (PR #101) | Atlas global LOLA de `LDEM_16` (2°); casquete sur detallado; 2D sin cambios (DEC-065) |
+| UI-16 (#102): ayuda por tarjeta, recorrido guiado y listas sin selección | ✅ (PR #103) | DEC-066 |
+| CORE-04 (#104): horizonte LOLA regional en puntos propios | ✅ (PR #105) | El sintético queda solo como respaldo (DEC-068) |
+| UI-17 (#106): la sección inferior pide sitio y fechas | ✅ (PR #107) | DEC-069 |
+| UI-16 (#102): ayuda por tarjeta, recorrido guiado y listas sin selección | ✅ (PR #103) | DEC-066 |
+| CORE-04 (#104): horizonte LOLA regional en puntos propios | ✅ (PR #105) | El sintético queda solo como respaldo (DEC-068) |
+| UI-17 (#106): la sección inferior pide sitio y fechas | ✅ (PR #107) | DEC-069 |
 | Textos que contradecían los datos reales | ✅ (PR #70) | — |
 | PERF-01 (#18): worker y caché persistente | ✅ (PR #79, DEC-047) | — |
-| I18N-01 (#17): revisión de traducciones ES/EN | 🔎 en revisión (Lucio, Cata) | Claves equivalentes y terminología unificada (DEC-064) |
+| I18N-01 (#17): revisión de traducciones ES/EN | ✅ (PR #99) | Claves equivalentes y terminología unificada (DEC-064) |
 
 ### Bloc de notas de UI (Lucio, 14/11) ✅
 

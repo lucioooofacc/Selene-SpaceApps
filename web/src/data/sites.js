@@ -239,8 +239,6 @@ export const POINT_TYPES = Object.freeze(["lander", "impact", "study-point"]);
 /** Niveles admitidos en `confidence.level`. */
 export const CONFIDENCE_LEVELS = Object.freeze(["alta", "media", "baja"]);
 
-export const CUSTOM_SITE_ID = "custom";
-
 export function findSite(id) {
   return SITES.find((site) => site.id === id) ?? null;
 }

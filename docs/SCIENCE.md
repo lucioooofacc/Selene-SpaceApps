@@ -149,13 +149,13 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 
 ## Limitaciones conocidas
 
-- Dentro del 01/11/2026 – 01/01/2028 y para los sitios curados se usan efemérides de Horizons (DEC-033); fuera de ese rango, en sitios propios y en el mapa de calor, el modelo periódico aproximado. Los radios angulares siguen constantes.
+- Dentro del 01/11/2026 – 01/01/2028 se usan efemérides de Horizons: las propias de cada sitio curado (DEC-033) y, para los puntos propios y el mapa de calor, las de un sitio curado trasladadas al punto (DEC-034, DEC-038). Fuera de ese rango se usa el modelo periódico aproximado, rotulado como tal. Los radios angulares salen de Horizons en cada instante (DEC-036).
 - Altura del observador en las series Horizons: suelo LOLA + 2 m en los 7 sitios curados (DEC-033; Chang'e 4 y Apollo 11 desde `LDEM_128`, DEC-061).
-- Horizonte sintético calibrado conceptualmente, no topografía medida. El pipeline de elevación LOLA existe (DEC-025) pero el horizonte todavía no lo usa.
+- Horizonte: LOLA de 240 m en los 7 sitios curados (DEC-030, DEC-061), LOLA reducido en los puntos propios al sur de −75° (DEC-034) y LOLA regional del atlas de 2° en el resto (DEC-068). El sintético (DEC-005) queda como respaldo mientras cargan los datos o si fallan.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. Los sitios ya no tienen parámetros sintéticos de relieve (DEC-063).
 - Marco lunar del modelo astronómico y datum aún no formalizados.
-- Resolución temporal fija de 10 minutos y cruces sin refinamiento.
-- Ausencia de incertidumbre, metadatos de calidad y cobertura.
+- Resolución temporal fija de 10 minutos; los cruces de Sol y Tierra se refinan entre muestras (SCIENCE-02, DEC-048).
+- Sin barras de incertidumbre en los resultados. La procedencia, la calidad y la cobertura de cada dato se muestran en "Datos y fuentes" (DEC-039).
 - El mapa de calor aplica la misma política de visibilidad (DEC-036). Con el atlas LOLA y las efemérides cargados usa datos reales: horizonte LOLA del centro de cada celda (96 × 96 hasta −80°, cada 5°) y Sol y Tierra de Horizons, cada 1–2 h (DEC-038). Si no, el modelo aproximado y el horizonte sintético, informado en `source.kind`. Fuera del casquete, `computeGlobalHeatmap()` aplica lo mismo sobre una grilla de 2° con horizontes LOLA de `LDEM_16` (~1,9 km/píxel; MAP-02, DEC-065). Solo con datos reales: sin atlas global o fuera de Horizons no se calcula. Coincide con el escenario puntual en latitudes medias (≤ 0,3 p. p. de luz) y no tiene un salto sistemático en −80°.
 - Las métricas de comunicación y potencia son indicadores geométricos, no subsistemas de ingeniería.
 

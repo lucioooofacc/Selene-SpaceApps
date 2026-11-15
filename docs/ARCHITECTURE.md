@@ -89,7 +89,7 @@ flowchart LR
 6. Durante la reproducción se actualizan panorama y línea de tiempo en cada cuadro; los paneles textuales se limitan aproximadamente a ocho actualizaciones por segundo.
 7. Los cambios de mapa, reproducción o idioma actualizan únicamente sus consumidores principales.
 
-`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` sigue en `lib/analysis.js` (cubierto por las pruebas), pero la interfaz actual no lo usa: la pestaña MAPA DE CALOR muestra la elevación LOLA precomputada (DEC-026). Un modo de iluminación calculada queda para MAP-01.
+`computeScenario()` es síncrono y puede ser costoso. `computePolarHeatmap()` y `computeGlobalHeatmap()` (`lib/analysis.js`) alimentan las capas calculadas de la pestaña MAPA DE CALOR (DEC-040, DEC-065) y corren en un worker cuando se puede (PERF-01, DEC-047); la capa de elevación es una imagen LOLA precomputada (DEC-026).
 
 ## Contratos públicos
 

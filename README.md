@@ -45,9 +45,9 @@ El sitio se publica en Vercel desde `main` (cada integración a `main` actualiza
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
 
-El build es estático y multipágina (`index.html` y `compare.html`, con rutas relativas). Las texturas de NASA de `web/public/nasa/` se copian tal cual; las de elevación LOLA se regeneran con `node web/scripts/build-lola-maps.mjs /ruta/a/ldem_16.tif` (ver `docs/DATA_SOURCES.md`).
+El build es estático y multipágina (`index.html`, `compare.html` e `informe.html`, con rutas relativas). Las texturas de NASA de `web/public/nasa/` se copian tal cual; las de elevación LOLA se regeneran con `node web/scripts/build-lola-maps.mjs /ruta/a/ldem_16.tif` (ver `docs/DATA_SOURCES.md`).
 
-Las pruebas actuales cubren invariantes matemáticas y el comportamiento aproximado/sintético implementado. Las futuras validaciones contra datos NASA deben mantenerse separadas y conservar la procedencia de sus fixtures.
+Las pruebas (`npm test`) cubren las invariantes matemáticas del motor y, en `web/tests/validacion/`, la coherencia con los datos de la NASA versionados (efemérides de JPL Horizons y productos LOLA), que conservan la procedencia de sus fixtures. Algunas validaciones necesitan los rasters LOLA completos y se omiten si no están descargados.
 
 ## Cómo trabajar
 
