@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (validación automática de la entrega, DEPLOY-01 #14, rama `chore/despliegue-final`; antes: opción de satélite de relevo, rama `feat/satelite-relevo`).
+Última actualización: 2026-11-15 (revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
 
 ---
 
@@ -173,8 +173,9 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Migrar el proyecto a `Selene-SpaceApps` sin co-autores en el historial.~~ Resuelto 2026-11-14 (DEC-018).
 - [x] ~~Publicar el build (`npm run build`) en un enlace público para el formulario de Space Apps (GitHub Pages, Netlify o Drive). Hay una vista previa privada en un artifact de claude.ai (hay que compartirla desde su menú). — Desarrollo web~~ Publicado en https://selene-space-apps.vercel.app (Vercel, desde `main`). Resuelto 2026-11-14 (rama `docs/sincronizar-despliegue`, #44).
 - [ ] Declarar en la entrega los datos de la NASA usados (JPL Horizons, LOLA, LROC). — Equipo · Borrador del texto para el formulario en `docs/ENTREGA.md` (2026-11-15, rama `docs/citas-datos`).
-- [ ] Revisión manual en escritorio (≥ 1200 px), en ES y en EN, sobre https://selene-space-apps.vercel.app. Las pruebas, el build, el despliegue, los enlaces y las claves de idioma ya se verificaron de forma automática. — Equipo · DEPLOY-01 #14, `docs/ENTREGA.md`
-- [ ] Crear y subir el tag de entrega (propuesta: `entrega-2026-11-15`) sobre el commit final de `main`, y anotar el hash y la hora de envío del formulario en #14. — Equipo · DEPLOY-01 #14
+- [x] ~~Revisión manual en escritorio (≥ 1200 px), en ES y en EN, sobre https://selene-space-apps.vercel.app. Las pruebas, el build, el despliegue, los enlaces y las claves de idioma ya se verificaron de forma automática. — Equipo · DEPLOY-01 #14, `docs/ENTREGA.md`~~ Hecha el 2026-11-15 (rama `docs/cierre-deploy-01`). Faltó probar la impresión del informe, el panel "Datos y fuentes" y las otras capas del mapa.
+- [x] ~~Crear y subir el tag de entrega (propuesta: `entrega-2026-11-15`) sobre el commit final de `main`, y anotar el hash y la hora de envío del formulario en #14. — Equipo · DEPLOY-01 #14~~ Tag creado el 2026-11-15 sobre el merge de la rama `docs/cierre-deploy-01`, con el hash anotado en #14.
+- [ ] Anotar en #14 la hora de envío del formulario. Si entra otro PR a `main` antes de enviar, mover el tag `entrega-2026-11-15` al commit final. — Equipo · DEPLOY-01 #14
 - [ ] Revisar la demo en video (`video/demo/out/selene-demo-final.mp4`): pronunciación de los apellidos, ajustes de texto al guion y la pregunta en pantalla. — Alfonso, Cata (texto), Teo, Martín (guion), Lucio, Facu (edición) · DEC-080
 - [ ] Subir la demo a YouTube o Drive con enlace público y pegarlo en el formulario antes del 15/11 23:59. — Lucio, Facu · DEC-080
 - [ ] Confirmar si el logo (`logo.jpeg`) es dibujo de Teo o imagen generada con IA: la web lo marca "AI GENERATED IMAGE" (DEC-077) y el video no lo marca. — Teo · DEC-080
