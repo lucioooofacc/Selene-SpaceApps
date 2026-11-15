@@ -40,7 +40,7 @@ function kpisHtml(site, scenario, st) {
   const kpi = (label, value, hint) => `<div class="rw-kpi" title="${hint ?? ""}"><dt>${label}</dt><dd>${value}</dd></div>`;
   return `
     <dl class="rw-kpi-grid">
-      <div class="rw-kpi rw-kpi-main"><dt>${t("compare.viability")}</dt><dd><span class="status-tag ${TONE[v.overall]}">${t(`compare.level.${v.overall}`)} · ${t("compare.points", { met: v.met, total: v.total })}</span></dd></div>
+      <div class="rw-kpi rw-kpi-main"><dt>${t("compare.viability")}</dt><dd><span class="status-tag ${TONE[v.overall]}" title="${t("compare.points", { met: v.met, total: v.total })}">${t(`compare.level.${v.overall}`)} · ${v.met}/${v.total}</span></dd></div>
       ${kpi(t("compare.metric.illumination"), pct(s.illumination))}
       ${kpi(t("compare.metric.communication"), pct(s.communication))}
       ${kpi(t("periodCard.both"), pct(st.bothFraction * 100), t("periodCard.hint.both"))}
