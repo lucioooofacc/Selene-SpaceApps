@@ -6,13 +6,13 @@ export default {
   // Communication rule depending on the relay satellite (DEC-084); used by t() in {commsRule}, {commsShort} and {commsHint}.
   relayRule: {
     rule: {
-      relay: "below that it is borderline, because a relay satellite is assumed, as in the Artemis plans",
-      direct: "without a relay satellite, between 25% and that value it is borderline and below 25% it is not met (NASA criterion for Artemis III, 2024)",
+      relay: "below that it is borderline, because a relay satellite is assumed, as planned for the missions after Artemis III",
+      direct: "without a relay satellite, between 25% and that value it is borderline, and below 25% it is not met (NASA criterion for Artemis III, 2024)",
     },
-    short: { relay: "less, with relay", direct: "≥ 25%, no relay" },
+    short: { relay: "less (with relay)", direct: "≥ 25% (no relay)" },
     hint: {
-      relay: "with a relay if it is visible less than {comms}% of the time",
-      direct: "no relay: not met if it is visible less than 25% of the time",
+      relay: "in view at least {comms}% of the time, or else through a relay satellite",
+      direct: "in view at least {comms}% of the time; without a relay satellite, less than 25% is not met",
     },
   },
   app: {
@@ -157,7 +157,7 @@ export default {
     batteryHint: "Battery autonomy in hours (team assumption, 24 h by default): the longest night the mission can withstand. From 0 to 360 h.",
     commsHint: "Minimum communication (team assumption, 80% by default): share of the period with the Earth in view for communication to be met. What happens below it depends on the “Relay satellite” box. From 0 to 100%.",
     relay: "Relay satellite",
-    relayHint: "With a relay satellite (team assumption, default): below the minimum communication it is borderline and never not met. Without a relay: NASA criterion for Artemis III (2024), which assumes direct communication with the Earth and discards areas with the Earth in view less than 25% of the time: below 25% it is not met.",
+    relayHint: "With a relay satellite (team assumption, default): below the minimum communication it is borderline and never reaches “not met”. Without a relay: NASA criterion for Artemis III (2024), which assumes direct communication with the Earth and discards areas where the Earth is in view less than 25% of the time.",
     choose: "Choose",
     window: "Analysis window",
     light: "Accumulated light",
@@ -649,12 +649,12 @@ export default {
       intro: "Viability tells whether a mission at that site and on those dates would meet three basic requirements, and it is given by the worst of them: if one is not met, the site is not viable.",
       items: {
         1: "Continuous light: the longest night of the period is checked. It is met if there is no night, as Artemis III requires for the whole stay; it is borderline if nights do not exceed the battery autonomy (now {battery} h); and it is not met if they are longer.",
-        2: "Communication: the share of the time with the Earth in view is checked. It is met from the minimum communication (now {comms}%); {commsRule}.",
+        2: "Communication: the share of the time with the Earth in view is checked. It is met at or above the minimum communication (now {comms}%); {commsRule}.",
         3: "Terrain slope: it is met below 8° and borderline below 10°, the limits of the Artemis landing system. It is only evaluated in the comparison and the report, where terrain data are available.",
         4: "Battery autonomy and minimum communication are team assumptions (24 h and 80% by default) and can be changed in “Mission parameters”, next to latitude and longitude. Everything is recalculated with the new values: the cards, the map's viability layer, the ranking, the dates, the comparison and the report. The slope comes from requirements published by NASA and cannot be changed.",
-        5: "Long missions: a lunar day lasts about 29.5 Earth days, so away from the poles each night lasts about 14.8 days (~354 h). That is why, in missions longer than a week, almost the whole Moon has nights longer than 24 h batteries and viability comes out low. The map's “Longest night” layer and “Best dates” help to find better windows.",
-        7: "Relay satellite: by default one is assumed, so with little Earth in view communication is borderline and never not met. If the box is unchecked, the NASA criterion for Artemis III (2024) is used, which assumes direct communication with the Earth: below 25% of the time with the Earth in view it is not met and the site is not viable. At the south pole this rules out many areas, because the weeks with continuous sunlight are usually weeks without the Earth in view.",
-        6: "Example: a 30-day mission at Apollo 11, near the equator, starting on 14/11/2026, goes through almost a whole lunar night: the Sun sets on 29/11 and does not rise again until 14/12, after the mission ends, so the longest night within the mission lasts 14 days and 4 hours (about 340 h; the whole night lasts about 356 h). With 24 h batteries, light is “not met” and the site is not viable even if everything else is fine: the batteries would run out on the first day of the night. If the autonomy is raised to 360 h, the maximum allowed and a little more than a whole lunar night, the same mission becomes “borderline”. That autonomy is not realistic with batteries alone; in practice another power source would be needed, such as a radioisotope generator. That is why autonomy is an assumption worth testing with different values.",
+        5: "Long missions: a lunar day lasts about 29.5 Earth days, so away from the poles each night lasts about 14.8 days (~354 h). That is why, in missions longer than a week, almost the whole Moon has nights longer than 24 h batteries can last, and viability comes out low. The map's “Longest night” layer and “Best dates” help to find better windows.",
+        7: "Relay satellite: by default one is assumed, so with little Earth in view communication is borderline and never reaches “not met”. If the box is unchecked, the NASA criterion for Artemis III (2024) is used, which assumes direct communication with the Earth: below 25% of the time with the Earth in view it is not met and the site is not viable. At the south pole this rules out many areas, because the weeks with continuous sunlight are usually weeks without the Earth in view.",
+        6: "Example: a 30-day mission at Apollo 11, near the equator, starting on 14/11/2026, goes through almost a whole lunar night: the Sun sets on 29/11 and does not rise again until 14/12, after the mission ends, so the longest night within the mission lasts 14 days and 4 hours (about 340 h; the whole night lasts about 356 h). With 24 h batteries, light is “not met” and the site is not viable even if everything else is fine: the batteries would run out on the first day of the night. If the autonomy is raised to 360 h (the field’s maximum, a little more than a whole lunar night), the same mission becomes “borderline”. That autonomy is not realistic with batteries alone; in practice another power source would be needed, such as a radioisotope generator. That is why autonomy is an assumption worth testing with different values.",
       },
     },
     cmpControls: {
