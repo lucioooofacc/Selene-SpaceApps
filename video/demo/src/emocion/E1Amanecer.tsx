@@ -7,7 +7,7 @@ import {Horizonte} from './Horizonte';
 // 0:00 — Amanecer sobre el horizonte lunar; los apellidos aparecen con brillo cuando la voz los dice.
 const APELLIDOS: [string, string][] = [
   ['Barbato', 'barbato'], ['Duarte', 'duarte'], ['Facchin', 'facchin'],
-  ['Peiren', 'peiren'], ['Ligüera', 'liguera'], ['Santana', 'santana'],
+  ['Peirén', 'peiren'], ['Ligüera', 'liguera'], ['Santana', 'santana'],
 ];
 
 export const E1Amanecer = ({t}: {t: number}) => {

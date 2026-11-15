@@ -1203,7 +1203,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Decisión:** video motion graphic de ≤ 30 s, 1920×1080, con voz en off en inglés generada con ElevenLabs, subtítulos en inglés siempre visibles y capturas reales de la web. Sigue el guion de `video/script.md` (estructura de la guía de Space Apps: equipo → desafío → nombre y lema → idea y datos de la NASA → futuro).
 - **Solución aplicada:**
   - `video/demo/` (Remotion 4, fuera de `web/`): una línea de tiempo en segundos de la voz; las escenas y los efectos se enganchan a palabras de la alineación forzada de ElevenLabs (`src/voz-tiempos.json`).
-  - Voz: `eleven_v4`, voz "Liam". Los apellidos se dicen en español (pedido de Lucio, 15/11/2026): se genera una toma aparte con la misma voz y `language_code: "es"` ("Barbato, Duarte, Fachín, Péiren, Ligüera y Santana": Fa-CHÍN y PÉI-ren confirmados por Lucio) y se empalma entre "We are" y "team Hubble 27" de la toma en inglés. Los subtítulos muestran la grafía real y "and". Los silencios entre frases se acortan con ffmpeg y se acelera 4 % sin cambiar el tono para entrar en 30 s. Música (ElevenLabs Music) y efectos (ElevenLabs Sound Effects) generados con scripts.
+  - Voz: `eleven_v4`, voz "Liam". Los apellidos se dicen en español (pedido de Lucio, 15/11/2026): se genera una toma aparte con la misma voz y `language_code: "es"` ("Barbato, Duarte, Fachín, Péiren, Ligüera y Santana": Fa-CHÍN y PÉI-ren confirmados por Lucio; el acento de Peirén y el "y" se corrigieron en DEC-082) y se empalma entre "We are" y "team Hubble 27" de la toma en inglés. Los subtítulos muestran la grafía real y "and". Los silencios entre frases se acortan con ffmpeg y se acelera 4 % sin cambiar el tono para entrar en 30 s. Música (ElevenLabs Music) y efectos (ElevenLabs Sound Effects) generados con scripts.
   - Capturas de la web en inglés con `scripts/capturas.mjs` (Shackleton, 14–27/11/2026; comparación Shackleton vs. Malapert). La Luna girando usa la textura LROC del CGI Moon Kit (NASA SVS) que ya usa la web.
   - En pantalla: "AI-GENERATED VOICE · ELEVENLABS".
 - **Ajustes al guion (para entrar en 30 s):** "to optimize lunar landing operations and compares these potential sites with data such as JPL Horizons, LOLA from NASA" → "to find the best lunar landing sites, comparing them with NASA data like JPL Horizons and LOLA"; el cierre pasa a "Comparing sites quickly shortens mission planning, helping us find new answers to the unknown, and making life easier for all of us". La pregunta en pantalla se escribe "What can SELENE do for people, the world, and beyond?". Pendiente de validar por redacción y guion (Alfonso, Cata, Teo, Martín).
@@ -1232,3 +1232,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Solución aplicada:** `web/src/state.js`: `mapView` arranca en `"global"`. Un enlace con capa calculada (`?layer=…`, DEC-057) sigue abriendo en MAPA DE CALOR con esa capa (`web/src/main.js`, `stateFromUrl()`).
 - **Alternativas descartadas:** guardar la última pestaña en la configuración (`localStorage`): no se pidió y cambiaría la vista inicial de forma distinta para cada persona.
 - **Estado:** vigente. Se aparta del Figma (DEC-014) en la pestaña inicial, por pedido del equipo.
+
+## DEC-082 — Se entrega la versión "Emoción"; Peirén aguda y "and Santana"
+
+- **Contexto / problema:** el 15/11/2026 el equipo eligió la versión "Emoción" (DEC-081). Lucio corrigió dos cosas de los apellidos: el apellido es **Peirén**, con tilde y acento en la última sílaba (antes se pronunciaba PÉI-ren), y antes de Santana la voz decía "y" en español en lugar de "and".
+- **Decisión:** la voz dice "Barbato, Duarte, Fachín, Peirén, Ligüera" en español, "and" en inglés y "Santana" en español. En pantalla y en los subtítulos aparece "Peirén".
+- **Solución aplicada:**
+  - `video/demo/scripts/texto-voz.mjs`: los apellidos van en dos tomas en español (`NOMBRES_ES` hasta Ligüera y `SANTANA_ES`). Se quita la corrección "y" → "and" de los subtítulos.
+  - `video/demo/scripts/voz.mjs`: el "and" se corta de la toma en inglés con la alineación forzada y se intercala: We are + Barbato…Ligüera + and + Santana + team Hubble 27…. Nueva opción `--solo-nombres` para regenerar solo los apellidos.
+  - "Peirén" en las escenas de las tres versiones (`E1Equipo`, `E1Amanecer`, créditos del ensayo).
+  - Se regeneró la voz de "Emoción" y se renderizó `out/selene-demo-emocion.mp4` (29,7 s, −15,5 LUFS).
+- **Verificación:** transcripción con ElevenLabs: "…Liguera and Santana. Team Hubble 27"; la toma en español se transcribe "Peirén". No se escuchó de oído.
+- **Supuestos y límites:** las voces de v1 y del ensayo no se regeneraron (siguen diciendo PÉI-ren e "y"); si se vuelven a usar, correr `node --env-file=<.env> scripts/voz.mjs <versión> --solo-nombres`.
+- **Estado:** vigente.
+

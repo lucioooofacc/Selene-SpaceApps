@@ -31,9 +31,11 @@ node scripts/fotos-nasa.mjs                       # fotos de dominio público de
 node scripts/capturas.mjs                         # capturas de la web (necesita `cd web && npx vite --port 5179`)
 ```
 
+- **Versión que se entrega: "Emoción"** (`out/selene-demo-emocion.mp4`, DEC-082).
 - Texto, voz e interpretación de cada versión: `scripts/texto-voz.mjs`. Los apellidos se generan aparte con la
-  misma voz (`language_code: "es"`, tildes para marcar el acento: Fachín, Péiren) y se empalman entre "We are" y
-  "team Hubble 27". Los subtítulos usan la grafía real.
+  misma voz (`language_code: "es"`, tildes para marcar el acento: Fachín, Peirén) y se intercalan con la toma en
+  inglés: "We are" + Barbato…Ligüera + "and" (en inglés) + Santana + "team Hubble 27". Los subtítulos usan la
+  grafía real. `scripts/voz.mjs <versión> --solo-nombres` regenera solo los apellidos.
 - Las escenas se enganchan a palabras de la voz (`palabra('sunlight')`). Cada versión tiene su línea de tiempo
   (`crearLinea` en `src/anim.ts`); las escenas compartidas la leen con `useLinea()` (`src/linea.tsx`).
 - La duración se calcula desde la voz y nunca pasa de 29,6 s (límite de Space Apps: 30 s).

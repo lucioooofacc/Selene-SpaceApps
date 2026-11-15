@@ -1,7 +1,8 @@
 // Texto de la voz en off (basado en video/script.md), igual en las tres versiones; cambia la interpretación.
 // Las indicaciones entre corchetes las interpreta eleven_v4 y no las lee.
 // La toma en inglés se genera entera y después se reemplazan los apellidos por una toma en español
-// (misma voz, language_code "es") para que se pronuncien bien: Fa-CHÍN, PÉI-ren, Li-GÜE-ra.
+// (misma voz, language_code "es") para que se pronuncien bien: Fa-CHÍN, Pei-RÉN, Li-GÜE-ra. El "and" antes de
+// Santana se toma de la toma en inglés (no "y").
 const FRASES = [
   'We are Barbato, Duarte, Fakeen, Peiren, Leegwera and Santana: team Hubble 27.',
   'We chose Challenge Four for its complexity and potential for innovation.',
@@ -11,14 +12,15 @@ const FRASES = [
 ];
 const conTags = (tags) => FRASES.map((f, i) => `${tags[i]} ${f}`).join(' ');
 
-// Apellidos en español; las tildes marcan dónde va el acento al pronunciar.
-export const NOMBRES_ES = 'Barbato, Duarte, Fachín, Péiren, Ligüera y Santana.';
+// Apellidos en español (dos tomas: los cinco primeros y Santana); las tildes marcan el acento.
+export const NOMBRES_ES = 'Barbato, Duarte, Fachín, Peirén, Ligüera.';
+export const SANTANA_ES = 'Santana.';
 
 // Texto final (inglés + apellidos en español), sin indicaciones, para la alineación
-export const TEXTO_FINAL = FRASES.join(' ').replace(/Barbato.*?Santana:/, NOMBRES_ES);
+export const TEXTO_FINAL = FRASES.join(' ').replace(/Barbato.*?Santana:/, 'Barbato, Duarte, Fachín, Peirén, Ligüera and Santana.');
 
 // Palabra dicha → cómo se escribe en los subtítulos
-export const CORRECCIONES = {Fachín: 'Facchin', Péiren: 'Peiren', y: 'and'};
+export const CORRECCIONES = {Fachín: 'Facchin'};
 
 const LIAM = 'TX3LPaxmHKxFdv7VOQHJ'; // joven, inglés americano (multilingüe)
 
