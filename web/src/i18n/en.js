@@ -366,7 +366,7 @@ export default {
       slope: "{deg}° (kilometer scale)",
     },
     criteriaNote:
-      "Viability is that of the worst requirement: if one is not met, the site is not viable. Continuous light: Artemis III requires sunlight for the whole stay (NASA, 2022); the {battery} h limit is the battery autonomy (team assumption: 24 h, editable). Communication: {comms}% is a team assumption (80% by default, editable); below it a relay satellite is assumed. Slope: maximum tilt of 8° and landing below 10° (NASA, HLS 2024); only evaluated where terrain data exist.",
+      "Viability is that of the worst requirement: if one is not met, the site is not viable. Continuous light: Artemis III requires sunlight for the whole stay (NASA, 2022); the {battery} h limit is the battery autonomy (team assumption: 24 h, editable). Communication: {comms}% is a team assumption (80% by default, editable); below it a relay satellite is assumed. Slope: maximum tilt of 8° (NASA Inspector General, 2026) and landing below 10° over 100 m (NASA, HLS 2024); only evaluated where terrain data exist.",
   },
   report: {
     title: "Planned mission report",
