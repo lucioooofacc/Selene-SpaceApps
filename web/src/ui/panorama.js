@@ -459,7 +459,7 @@ export function renderPanorama(scenario, sample, { full = false } = {}) {
     const marks = lola.horizon ? qualityMarks(lola.horizon) : "";
     $("pano-quality").innerHTML = marks;
     const source =
-      scenario.horizon.source !== "lola" ? "sim.horizonSynthetic" : scenario.horizon.meta?.regional ? "sim.horizonRegional" : "sim.horizonLola";
+      scenario.horizon.source !== "lola" ? "sim.horizonSynthetic" : scenario.horizon.meta?.regional ? "sim.horizonRegional" : scenario.horizon.meta?.global ? "sim.horizonGlobal" : "sim.horizonLola";
     // Renglón "Relieve" de la leyenda: fuente y escala, más los avisos del horizonte LOLA si aplican.
     const notes = [
       t("sim.legend.reliefValue", { source: t(source), exag: VERTICAL_EXAGGERATION.toFixed(1).replace(".", t("units.decimal")) }),

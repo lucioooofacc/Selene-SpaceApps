@@ -11,11 +11,12 @@
 import { loadEphemerides } from "../lib/ephemeris.js";
 import { decodeGlobalHeatAtlas, decodeHeatAtlas, registerGlobalHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
+import { decodeGlobalDem, registerGlobalDem } from "../lib/global-dem.js";
 import { computeGlobalHeatmap, computePolarHeatmap } from "../lib/analysis.js";
 import { dateScenarios } from "../lib/dates.js";
 import { SITES } from "../data/sites.js";
 
-const loaded = { ephemerides: null, heatAtlas: null, globalHeatAtlas: null, polarDem: null }; // promesas
+const loaded = { ephemerides: null, heatAtlas: null, globalHeatAtlas: null, polarDem: null, globalDem: null }; // promesas
 
 async function fetchOk(url, kind) {
   const res = await fetch(url);
@@ -60,6 +61,15 @@ function ensure(base, need) {
       registerPolarDem(levels);
     })();
     jobs.push(loaded.polarDem);
+  }
+  // Horizonte del punto cerca de los polos (CORE-05, DEC-076): el mismo DEM global que la página.
+  if (need.globalDem) {
+    loaded.globalDem ??= (async () => {
+      const b = `${base}data/terrain/lola-global-16ppd`; // mismo nombre que ui/ephemerides.js
+      const [meta, bin] = await Promise.all([fetchOk(`${b}.json`, "json"), fetchOk(`${b}.bin`)]);
+      registerGlobalDem(decodeGlobalDem(bin, meta));
+    })();
+    jobs.push(loaded.globalDem);
   }
   return Promise.all(jobs);
 }
