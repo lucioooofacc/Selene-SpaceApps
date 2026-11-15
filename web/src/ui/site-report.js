@@ -13,7 +13,7 @@ import { siteTerrain } from "../lib/site-terrain.js";
 import { polarDemResolutionM, polarDemSample } from "../lib/polar-dem.js";
 import { hohmannTransfer, missionTimeline, moonDistanceAt, R_EARTH, R_MOON } from "../lib/trajectory.js";
 import { getLang, t } from "../i18n/index.js";
-import { dataNote, lolaHtml, provenanceHtml, qualityHtml, traitsHtml } from "./provenance.js";
+import { dataNote, lolaHtml, lolaTitle, provenanceHtml, qualityHtml, traitsHtml } from "./provenance.js";
 
 const $ = (id) => document.getElementById(id);
 const num = (v, d = 0) => v.toLocaleString(getLang() === "en" ? "en-US" : "es-UY", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -88,7 +88,7 @@ function positionHtml(st) {
 /** Terreno: LOLA reducido alrededor del sitio y horizonte del escenario. */
 function terrainHtml(site, scenario, demState) {
   const terrain = siteTerrain(polarDemSample, site, { stepKm: (polarDemResolutionM() ?? 480) * 2 / 1000 });
-  const horizon = `<h3>${t("quality.lola.title")}</h3>${lolaHtml(scenario)}`;
+  const horizon = `<h3>${lolaTitle(scenario)}</h3>${lolaHtml(scenario)}`;
   if (!terrain) {
     const key = demState === "loading" ? "loading" : site.lat <= -75 ? "error" : "outside";
     return `<p class="prov-none">${t(`reportWeb.terrain.${key}`)}</p>${horizon}`;
