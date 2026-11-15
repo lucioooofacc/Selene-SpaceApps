@@ -183,6 +183,25 @@ function unpackGlobal({ cols, rows, q }) {
   return { cols, rows, values };
 }
 
+/**
+ * ¿Todas las celdas con dato quedaron en el nivel más bajo? En la capa de
+ * viabilidad eso quiere decir que todas tienen noches de más de 24 h (la
+ * comunicación nunca queda en "no cumple", DEC-071): el mapa lo explica con un
+ * cartel (DEC-073).
+ */
+function allLowest(...grids) {
+  let any = false;
+  for (const values of grids) {
+    if (!values) continue;
+    for (const v of values) {
+      if (v < 0) continue;
+      if (v > 0) return false;
+      any = true;
+    }
+  }
+  return any;
+}
+
 /** Resultado de la capa listo para mostrar: imagen polar y, si hay, la global. */
 function layerResult(map, global, palette, layer) {
   const packed = global ? packGlobal(global) : null;
@@ -195,6 +214,7 @@ function layerResult(map, global, palette, layer) {
     globalUrl: g ? colorizeGlobal(g.values, g.cols, g.rows, palette) : null,
     globalSource: global?.source ?? null,
     globalPacked: packed,
+    allLow: layer === "viability" && allLowest(map.values, global?.values),
   };
 }
 
@@ -230,7 +250,7 @@ export async function heatLayerAsync(layer, startMs, windowDays, palette) {
     return computeHeatLayer(layer, startMs, windowDays, palette);
   }
   if (pk && result.source?.kind === "real" && result.globalUrl) {
-    persist(pk, { url: result.url, source: result.source, globalPacked: result.globalPacked, globalSource: result.globalSource });
+    persist(pk, { url: result.url, source: result.source, globalPacked: result.globalPacked, globalSource: result.globalSource, allLow: result.allLow });
   }
   return result;
 }

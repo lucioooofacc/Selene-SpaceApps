@@ -50,7 +50,7 @@ function kpisHtml(site, scenario, st) {
     <ul class="rw-requirements">${Object.entries(v.criteria)
       .map(([key, c]) => `<li><span class="place-verdict place-verdict-${c.level}">${t(`compare.req.${c.level}`)}</span> ${t(`compare.requirement.${key}`)} · ${requirementValue(key, c.value)}</li>`)
       .join("")}</ul>
-    <p class="cmp-hint">${t("compare.criteriaNote")}</p>`;
+    <p class="cmp-hint">${t("compare.criteriaNote")} <button type="button" class="help-button help-inline" data-help="viability" aria-haspopup="dialog" aria-expanded="false" aria-label="${t("help.open.viability")}" title="${t("help.open.viability")}">?</button></p>`;
 }
 
 /** Ventanas de luz y de enlace como franjas sobre el período. */

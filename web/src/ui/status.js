@@ -125,6 +125,7 @@ export function renderPeriodSummary(scenario) {
   $("period-card").innerHTML = `
     <div class="status-head">
       <h3 class="status-name" id="period-title">${t("periodCard.title")}</h3>
+      <button type="button" class="help-button help-inline" data-help="viability" aria-haspopup="dialog" aria-expanded="false" aria-label="${t("help.open.viability")}" title="${t("help.open.viability")}">?</button>
       <span class="status-tag ${TONE[v.overall]}" title="${t("periodCard.hint.viability")}">${t("periodCard.viability", {
         level: t(`compare.level.${v.overall}`),
         met: v.met,

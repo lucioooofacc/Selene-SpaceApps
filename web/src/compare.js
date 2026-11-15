@@ -6,6 +6,7 @@
  */
 import "./styles/main.css";
 import "./styles/compare.css";
+import "./styles/help.css";
 import { computeScenario, realDataVersion } from "./lib/analysis.js";
 import { ensurePolarTerrain, loadPolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { SITES } from "./data/sites.js";
@@ -14,6 +15,7 @@ import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
 import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js";
 import { renderComparison } from "./ui/compare.js";
 import { applySettings, initSettings } from "./ui/settings.js";
+import { initHelp, refreshHelp } from "./ui/help.js";
 import { compareUrl, informeUrl, missionUrl, parseCompareQuery, parseSiteParam, siteParam } from "./ui/links.js";
 
 const DESIGN_WIDTH = 1992;
@@ -112,6 +114,7 @@ function init() {
     setLang(getLang() === "es" ? "en" : "es");
     relabelPoints();
     render();
+    refreshHelp();
   });
   initCalendar();
   subscribe((_, changed) => {
@@ -123,6 +126,21 @@ function init() {
       relabelPoints();
       render();
     },
+  });
+
+  // Guía de la página (DEC-073): «?» en cada sección y recorrido desde «Guía» (no se abre solo).
+  initHelp({
+    tourKey: "selene-tour-compare-seen",
+    welcome: "help.tourCompare",
+    topics: [
+      { id: "cmpControls", target: ".cmp-controls" },
+      { id: "cmpSites", target: "#cmp-sites" },
+      { id: "cmpGlobe", target: ".cmp-globe-panel" },
+      { id: "cmpMetrics", target: 'section[aria-labelledby="cmp-metrics-title"]' },
+      { id: "cmpWindows", target: 'section[aria-labelledby="cmp-windows-title"]' },
+      { id: "cmpHorizon", target: 'section[aria-labelledby="cmp-horizon-title"]' },
+      { id: "viability", target: 'section[aria-labelledby="cmp-criteria-title"]' },
+    ],
   });
 
   render();

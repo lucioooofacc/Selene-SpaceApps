@@ -103,6 +103,9 @@ export default {
       night: "Noche más larga del período",
     },
     layerUnit: { hours: "{n} h" },
+    banner: {
+      allLow: "Con una misión de {days} días ninguna zona es viable: en todas hay alguna noche de más de 24 h, más de lo que se estima que aguantan las baterías. Probá una misión más corta, la capa «Noche más larga» para ver dónde las noches son más cortas, o «Mejores fechas».",
+    },
     layerLegendAria: "Leyenda de {name}: de {min} a {max}.",
     layerAlt: {
       sun: "Mapa calculado del polo sur hasta 80° S: porcentaje del período de la misión con el Sol visible",
@@ -580,11 +583,138 @@ export default {
   help: {
     close: "Cerrar la ayuda",
     open: {
+      cmpControls: "Cómo elegir los sitios y las fechas a comparar",
+      cmpSites: "Cómo leer la cabecera de cada sitio",
+      cmpGlobe: "Cómo leer la ubicación de los sitios",
+      cmpMetrics: "Cómo leer las métricas de la misión",
+      cmpWindows: "Cómo leer las ventanas de luz y de enlace",
+      cmpHorizon: "Cómo leer el perfil del horizonte",
+      rwControls: "Cómo elegir el sitio y las fechas del informe",
+      rwSummary: "Cómo leer el resumen del período",
+      rwTerrain: "Cómo leer el terreno",
+      rwLight: "Cómo leer la luz y la comunicación",
+      rwDates: "Cómo usar las mejores fechas",
+      rwTraj: "Cómo leer la trayectoria Tierra–Luna",
+      viability: "Cómo se calcula la viabilidad",
       places: "Cómo leer la lista de mejores lugares y fechas",
       map: "Cómo usar el mapa",
       params: "Cómo definir la misión y leer sus resultados",
       panorama: "Cómo leer el panorama y la línea de tiempo",
       status: "Cómo leer las tarjetas de energía y comunicación",
+    },
+    tourCompare: {
+      welcomeTitle: "Comparación detallada",
+      welcome: "Esta página pone dos sitios uno al lado del otro con las mismas fechas, para ver cuál conviene y por qué. El recorrido te muestra qué dice cada sección.",
+    },
+    tourReport: {
+      welcomeTitle: "Informe del sitio",
+      welcome: "Este informe junta todo lo que SELENE sabe de un sitio en las fechas elegidas: viabilidad, terreno, luz y comunicación, mejores fechas y cómo se llegaría desde la Tierra. El recorrido te muestra qué dice cada sección.",
+    },
+    viability: {
+      title: "Cómo se calcula la viabilidad",
+      intro: "La viabilidad dice si una misión en ese sitio y en esas fechas cumpliría tres requisitos básicos, y la da el peor de ellos: si uno no se cumple, el sitio no es viable.",
+      items: {
+        1: "Luz continua: se mira la noche más larga del período. Cumple si no hay noche, como exige Artemis III para toda la estadía; queda al límite si las noches no pasan de 24 h, que es lo que se estima que aguantan las baterías de un módulo chico; y no cumple si son más largas.",
+        2: "Comunicación: se mira qué porcentaje del tiempo se ve la Tierra. Cumple desde el 80 %; por debajo queda al límite, porque se asume un satélite de relevo, como en los planes de Artemis.",
+        3: "Pendiente del terreno: cumple por debajo de 8° y queda al límite por debajo de 10°, los límites del módulo de alunizaje de Artemis. Solo se evalúa en la comparación y en el informe, donde hay datos de terreno.",
+        4: "Las 24 h de baterías y el 80 % de comunicación son supuestos del equipo; los demás valores salen de requisitos publicados por la NASA.",
+        5: "En misiones de más de una semana casi toda la Luna tiene noches de más de 24 h, por eso la viabilidad suele salir baja. La capa «Noche más larga» del mapa y «Mejores fechas» ayudan a encontrar ventanas mejores.",
+      },
+    },
+    cmpControls: {
+      title: "Sitios y fechas",
+      intro: "Acá elegís los dos sitios que querés comparar, A y B, y el período de la misión, que es el mismo para los dos.",
+      items: {
+        1: "Los sitios pueden ser de la lista o puntos elegidos en el mapa de la página principal.",
+        2: "El botón con las dos flechas intercambia A y B.",
+        3: "Cada cambio se guarda en la dirección de la página, así que podés compartir el enlace.",
+      },
+    },
+    cmpSites: {
+      title: "Cabecera de cada sitio",
+      intro: "Cada tarjeta muestra el sitio, sus coordenadas y su viabilidad en el período elegido, con la cantidad de requisitos de misión que cumple.",
+      items: {
+        1: "«Procedencia del sitio» indica de qué fuente oficial salen las coordenadas y qué tan confiables son.",
+        2: "El color de la línea de arriba (dorado para A y celeste para B) es el mismo que identifica a cada sitio en todos los gráficos.",
+      },
+    },
+    cmpGlobe: {
+      title: "Ubicación de los sitios",
+      intro: "La Luna en 3D muestra dónde está cada sitio y el camino más corto entre los dos sobre la superficie.",
+      items: {
+        1: "Se puede girar arrastrando o con las flechas, y acercar con la rueda o con + y −.",
+        2: "Al costado están la distancia entre los sitios, sus coordenadas y cuánta luz y Tierra tiene cada uno en el período.",
+      },
+    },
+    cmpMetrics: {
+      title: "Métricas de la misión",
+      intro: "La tabla compara nueve cifras de la misión y marca qué sitio tiene ventaja en cada una; arriba se resume cuál gana en más métricas.",
+      items: {
+        1: "La iluminación y la cobertura de comunicación son el porcentaje del período con el Sol o la Tierra por encima del relieve.",
+        2: "Las ventanas más largas dicen cuánto tiempo seguido hay luz o enlace.",
+        3: "Si la diferencia es muy chica, la métrica se marca como empate.",
+      },
+    },
+    cmpWindows: {
+      title: "Ventanas de luz y de enlace",
+      intro: "Cada barra es un tramo continuo con el Sol a la vista (luz) o con la Tierra a la vista (enlace) a lo largo del período, para los dos sitios.",
+      items: {
+        1: "Los huecos entre barras son noches o cortes de comunicación.",
+        2: "Al pasar el mouse por una barra aparece su horario en UTC.",
+      },
+    },
+    cmpHorizon: {
+      title: "Perfil del horizonte",
+      intro: "El gráfico muestra qué tan alto está el relieve en cada dirección, visto desde cada sitio.",
+      items: {
+        1: "Cuanto más alto es el horizonte en una dirección, más tarda en salir el Sol o la Tierra por ahí.",
+        2: "Las líneas llenas son el horizonte que usa el cálculo; las punteadas, si aparecen, son el de las coordenadas originales de un sitio editado.",
+      },
+    },
+    rwControls: {
+      title: "Sitio y fechas",
+      intro: "Acá elegís el sitio del informe y el período de la misión; todo lo demás se recalcula al cambiarlos.",
+      items: {
+        1: "El botón «Imprimir / guardar PDF» arma una versión del informe para papel.",
+      },
+    },
+    rwSummary: {
+      title: "Resumen del período",
+      intro: "La primera tarjeta da la viabilidad del sitio en esas fechas, y las demás, las cifras clave del período.",
+      items: {
+        1: "Debajo aparece cada requisito de misión con su resultado: cumple, al límite o no cumple.",
+        2: "La noche más larga dice cuánto tienen que aguantar las baterías, y el corte de comunicación más largo, cuánto tiempo seguido no se ve la Tierra.",
+      },
+    },
+    rwTerrain: {
+      title: "Terreno",
+      intro: "Esta sección describe el suelo alrededor del sitio con datos de altura de la sonda LRO: altura, pendientes y rugosidad.",
+      items: {
+        1: "La pendiente es clave para alunizar: el módulo de Artemis necesita menos de 8 a 10°.",
+        2: "La nota de abajo dice de qué mapa salen los datos y a qué escala, porque la resolución cambia según la zona de la Luna.",
+      },
+    },
+    rwLight: {
+      title: "Luz y comunicación",
+      intro: "Las franjas muestran cuándo se ve el Sol y cuándo se ve la Tierra a lo largo del período, y la tabla resume las métricas de la misión.",
+      items: {
+        1: "Al pasar el mouse por una franja aparece su horario en UTC.",
+      },
+    },
+    rwDates: {
+      title: "Mejores fechas",
+      intro: "Son las cinco fechas de inicio más convenientes para este sitio con la misma duración de misión, sin períodos que se superpongan.",
+      items: {
+        1: "Al hacer clic en una fecha, el informe se recalcula con ese período.",
+      },
+    },
+    rwTraj: {
+      title: "Trayectoria Tierra–Luna",
+      intro: "Es una estimación del viaje desde una órbita baja alrededor de la Tierra hasta la órbita lunar, para llegar a tiempo al inicio de la misión.",
+      items: {
+        1: "El Δv es el cambio de velocidad que tiene que dar la nave en cada maniobra; sirve para estimar el combustible.",
+        2: "Es la transferencia de menor energía; las misiones tripuladas suelen ir más rápido y gastar algo más.",
+      },
     },
     tour: {
       step: "Paso {n} de {total}",
@@ -645,7 +775,7 @@ export default {
         1: "«Energía solar» indica cuánta potencia entregan los paneles según la altura del Sol y cuánto lo tapa el relieve.",
         2: "«Comunicación» indica qué tan firme es el enlace directo con la Tierra según su altura sobre el horizonte.",
         3: "«Lectura del momento» explica en palabras la situación actual y cuánto falta para el próximo cambio.",
-        4: "«Resumen del período» da la viabilidad general y los tramos más largos de noche, de luz y sin comunicación.",
+        4: "«Resumen del período» da la viabilidad según los requisitos de misión, con cuántos se cumplen, y los tramos más largos de noche, de luz y sin comunicación; su botón «?» explica cómo se calcula.",
       },
     },
   },

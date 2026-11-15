@@ -27,6 +27,8 @@
           <a href="./index.html" data-mission-link data-i18n="nav.mission"></a>
           <a href="./compare.html" data-compare-link data-i18n="nav.compare"></a>
           <a href="./informe.html" aria-current="page" data-i18n="nav.report"></a>
+          <!-- Recorrido guiado (UI-16, DEC-066) -->
+          <button type="button" id="tour-button" data-i18n="nav.guide"></button>
         </nav>
         <div class="header-actions">
           <button type="button" class="icon-button" id="lang-toggle" data-i18n-attr="aria-label:nav.language;title:nav.language">
@@ -52,6 +54,7 @@
         </div>
 
         <section class="cmp-controls rw-controls" data-i18n-attr="aria-label:compare.controls">
+          <button type="button" class="help-button help-inline" data-help="rwControls" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.rwControls;title:help.open.rwControls">?</button>
           <label class="cmp-field">
             <span class="params-label" data-i18n="params.site"></span>
             <span class="params-select">
@@ -71,7 +74,8 @@
         <p class="cmp-note" id="rw-note" aria-live="polite"></p>
 
         <section class="cmp-panel" aria-labelledby="rw-summary-title">
-          <div class="cmp-panel-head"><h2 id="rw-summary-title" data-i18n="reportWeb.summary"></h2></div>
+          <div class="cmp-panel-head"><h2 id="rw-summary-title" data-i18n="reportWeb.summary"></h2>
+            <button type="button" class="help-button help-inline" data-help="rwSummary" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.rwSummary;title:help.open.rwSummary">?</button></div>
           <div class="rw-kpis" id="rw-kpis"></div>
         </section>
 
@@ -85,7 +89,8 @@
             </div>
           </section>
           <section class="cmp-panel" aria-labelledby="rw-terrain-title">
-            <div class="cmp-panel-head"><h2 id="rw-terrain-title" data-i18n="reportWeb.terrain.title"></h2></div>
+            <div class="cmp-panel-head"><h2 id="rw-terrain-title" data-i18n="reportWeb.terrain.title"></h2>
+            <button type="button" class="help-button help-inline" data-help="rwTerrain" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.rwTerrain;title:help.open.rwTerrain">?</button></div>
             <div id="rw-terrain"></div>
           </section>
         </div>
@@ -93,6 +98,7 @@
         <section class="cmp-panel" aria-labelledby="rw-light-title">
           <div class="cmp-panel-head">
             <h2 id="rw-light-title" data-i18n="reportWeb.light"></h2>
+            <button type="button" class="help-button help-inline" data-help="rwLight" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.rwLight;title:help.open.rwLight">?</button>
             <p class="cmp-hint" data-i18n="reportWeb.lightHint"></p>
           </div>
           <div class="cmp-chart" id="rw-windows"></div>
@@ -105,7 +111,8 @@
             <div id="rw-position"></div>
           </section>
           <section class="cmp-panel" aria-labelledby="rw-dates-title">
-            <div class="cmp-panel-head"><h2 id="rw-dates-title" data-i18n="places.mode.dates"></h2></div>
+            <div class="cmp-panel-head"><h2 id="rw-dates-title" data-i18n="places.mode.dates"></h2>
+            <button type="button" class="help-button help-inline" data-help="rwDates" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.rwDates;title:help.open.rwDates">?</button></div>
             <div id="rw-dates"></div>
           </section>
         </div>
@@ -113,6 +120,7 @@
         <section class="cmp-panel" aria-labelledby="rw-traj-title">
           <div class="cmp-panel-head">
             <h2 id="rw-traj-title" data-i18n="reportWeb.traj.title"></h2>
+            <button type="button" class="help-button help-inline" data-help="rwTraj" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.rwTraj;title:help.open.rwTraj">?</button>
             <p class="cmp-hint" data-i18n="reportWeb.traj.hint"></p>
           </div>
           <div class="rw-traj" id="rw-traj"></div>

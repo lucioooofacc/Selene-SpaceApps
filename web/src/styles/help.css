@@ -277,3 +277,62 @@
 .behavior[data-empty] > .help-button {
   display: none;
 }
+
+/* ---------- «?» en línea (títulos de comparar e informe, resumen del período) ---------- */
+.help-button.help-inline {
+  position: static;
+  flex: none;
+  vertical-align: middle;
+}
+
+/* Pegado al título; el texto de ayuda de la sección, si hay, queda a la derecha. */
+.cmp-panel-head .help-button.help-inline {
+  margin: 0 auto 0 -12px;
+}
+
+.status-head .help-button.help-inline {
+  margin: 0 auto 0 8px;
+}
+
+.cmp-controls {
+  position: relative;
+}
+
+.cmp-controls > .help-button {
+  right: 12px;
+  top: 10px;
+}
+
+/* ---------- Cartel de la capa de viabilidad (DEC-073) ---------- */
+.map-banner {
+  position: absolute;
+  left: 50%;
+  top: 176px; /* arriba, sobre el norte: abajo tapaba el polo sur y sus sitios */
+  z-index: 3;
+  transform: translateX(-50%);
+  width: 560px;
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--gold);
+  border-radius: var(--r-md);
+  background: var(--panel-solid);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text);
+}
+
+.map-banner[hidden] {
+  display: none;
+}
+
+.map-banner p {
+  margin: 0;
+}
+
+.map-banner .help-button {
+  position: static;
+  flex: none;
+}

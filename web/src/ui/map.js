@@ -414,6 +414,11 @@ export function renderMap(state) {
   );
   placeAccent();
   // El crédito va después de pedir la imagen: así refleja la capa ya calculada.
+  // Capa de viabilidad toda baja: se explica por qué en lugar de dejar el mapa en rojo sin más (DEC-073).
+  const calcResult = calc ? cachedHeatLayer(state.heatLayer, state.startMs, state.windowDays, palette()) : null;
+  const allLow = state.heatLayer === "viability" && Boolean(calcResult?.allLow);
+  $("map-banner").hidden = !allLow;
+  if (allLow) $("map-banner-text").textContent = t("map.banner.allLow", { days: state.windowDays });
   $("map-credit").hidden = false;
   $("map-credit").textContent = calc
     ? calcCredit(cachedHeatLayer(state.heatLayer, state.startMs, state.windowDays, palette()))

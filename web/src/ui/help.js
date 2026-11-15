@@ -8,21 +8,27 @@
  *   misma explicación paso a paso. Se abre solo la primera vez (se recuerda
  *   en localStorage) y se repite desde «Guía» en el menú.
  *
- * Los textos viven en i18n (`help.*`). Este módulo no calcula nada.
+ * Cada página pasa sus temas a `initHelp()` (la principal usa los de
+ * abajo; comparar e informe, los suyos). Los textos viven en i18n
+ * (`help.*`). Este módulo no calcula nada.
  * Todo se ubica dentro de `#stage`, en píxeles del diseño (el stage se
  * escala con `zoom`), así que no depende del ancho de la ventana.
  */
 import { t } from "../i18n/index.js";
 
-/** Temas en el orden del recorrido, con la zona que resalta cada uno. */
-const TOPICS = [
+/** Temas de la página principal en el orden del recorrido, con la zona que resalta cada uno. */
+export const MAIN_TOPICS = Object.freeze([
   { id: "params", target: ".params" },
   { id: "map", target: ".map-card" },
   { id: "places", target: ".places" },
   { id: "panorama", target: ".behavior-left" },
   { id: "status", target: ".behavior-right" },
-];
-const TOUR_KEY = "selene-tour-seen";
+  { id: "viability", target: "#period-card" },
+]);
+
+let TOPICS = MAIN_TOPICS;
+let TOUR_KEY = "selene-tour-seen";
+let WELCOME = "help.tour"; // claves `<WELCOME>.welcomeTitle` y `<WELCOME>.welcome`
 const MAX_ITEMS = 8;
 
 const stage = () => document.getElementById("stage");
@@ -135,8 +141,8 @@ function showStep(step) {
   const last = step === total - 1;
   card.innerHTML = `
     <p class="help-step">${t("help.tour.step", { n: step + 1, total })}</p>
-    <h3 id="help-tour-title">${topic ? t(`help.${topic.id}.title`) : t("help.tour.welcomeTitle")}</h3>
-    ${topic ? body(topic.id) : `<p class="help-intro">${t("help.tour.welcome")}</p>`}
+    <h3 id="help-tour-title">${topic ? t(`help.${topic.id}.title`) : t(`${WELCOME}.welcomeTitle`)}</h3>
+    ${topic ? body(topic.id) : `<p class="help-intro">${t(`${WELCOME}.welcome`)}</p>`}
     <div class="help-actions">
       <button type="button" class="help-skip" data-tour="skip">${t("help.tour.skip")}</button>
       <span>
@@ -195,7 +201,10 @@ export function startTour() {
  * Conecta los botones «?», el enlace «Guía» y el teclado. Con `autoStart`,
  * abre el recorrido la primera vez que se entra a la página.
  */
-export function initHelp({ autoStart = false } = {}) {
+export function initHelp({ autoStart = false, topics = MAIN_TOPICS, tourKey = "selene-tour-seen", welcome = "help.tour" } = {}) {
+  TOPICS = topics;
+  TOUR_KEY = tourKey;
+  WELCOME = welcome;
   document.addEventListener("click", (event) => {
     const button = event.target.closest("[data-help]");
     if (button) return openHelp(button);
