@@ -8,8 +8,13 @@ export function deg(value, { sign = true, digits = 1 } = {}) {
   return `${sign && value >= 0 ? "+" : ""}${fixed}°`;
 }
 
+/**
+ * Porcentaje con el formato del idioma: "82 %" y coma decimal en español
+ * (norma de la RAE), "82%" y punto decimal en inglés (`units.percent`).
+ */
 export function pct(value, digits = 0) {
-  return `${value.toFixed(digits)} %`;
+  const n = new Intl.NumberFormat(locale(), { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+  return t("units.percent", { n });
 }
 
 /** Duración en minutos → "3 d 4 h", "5 h 20 min", "45 min". */

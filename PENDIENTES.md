@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (arrastre sobre marcadores, rama `fix/arrastre-sobre-marcadores`).
+Última actualización: 2026-11-15 (espacio antes de %, rama `i18n/porcentajes`).
 
 ---
 
@@ -146,7 +146,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
 - [x] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
 - [ ] Revisar la redacción de los textos de ayuda y del recorrido (`help.*`, ES/EN). — Alfonso, Cata, Lucio · UI-16 #102, DEC-066
-- [ ] Espacio antes de `%`: en ES (norma RAE) va con espacio, pero conviven `{pct}%` y `{pct} %` en los dos idiomas y también en cifras armadas en `web/src/ui/` (`places.js`, `status.js`, `compare.js`, `provenance.js`). En inglés lo usual es sin espacio. Unificar por idioma requiere mover el formato a `i18n` (p. ej. una clave `units.percent`). — Lucio, Cata · DEC-064
+- [x] ~~Espacio antes de `%`: en ES (norma RAE) va con espacio, pero conviven `{pct}%` y `{pct} %` en los dos idiomas y también en cifras armadas en `web/src/ui/` (`places.js`, `status.js`, `compare.js`, `provenance.js`). En inglés lo usual es sin espacio. Unificar por idioma requiere mover el formato a `i18n` (p. ej. una clave `units.percent`). — Lucio, Cata · DEC-064~~ Resuelto 2026-11-15 (rama `i18n/porcentajes`): `pct()` de `lib/format.js` usa la clave `units.percent` ("{n} %" en ES, "{n}%" en EN) y el formato numérico del idioma; los porcentajes armados en `web/src/ui/` y los textos de i18n siguen esa regla.
 
 ## Repositorio y entrega
 

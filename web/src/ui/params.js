@@ -12,7 +12,7 @@ import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { dateButtonLabel, initCalendar } from "./calendar.js";
 import { minutesLabel } from "./places.js";
-import { dateUTC, deg } from "../lib/format.js";
+import { dateUTC, deg, pct } from "../lib/format.js";
 import { DAY_MS } from "../lib/astro.js";
 import { STEP_MINUTES } from "../lib/analysis.js";
 import { windowStats } from "../lib/stats.js";
@@ -26,7 +26,7 @@ const CHIP_SITES = ["shackleton", "malapert", "cabeus", "apollo11"];
 const PARAM_ICON_SIZE = { bulb: [14, 14], sun: [16, 16], antenna: [18, 12], earth: [18, 18] };
 
 const SEGMENTS_BY_LEVEL = { high: 3, mid: 2, low: 1 };
-const PERCENT_BY_SEGMENTS = { 1: "33%", 2: "66%", 3: "100%" };
+const PERCENT_BY_SEGMENTS = { 1: 33, 2: 66, 3: 100 };
 
 /**
  * Tarjeta de misión (VIABLE/INVIABLE).
@@ -47,7 +47,7 @@ function criterionCard({ icon, name, value, segments, period, periodTitle }) {
       </span>
       <div class="segments ${cls}" aria-hidden="true">
         ${[1, 2, 3].map((n) => `<i class="${n <= segments ? "on" : ""}"></i>`).join("")}
-        <span>${PERCENT_BY_SEGMENTS[segments]}</span>
+        <span>${pct(PERCENT_BY_SEGMENTS[segments])}</span>
       </div>
       <span class="criterion-line" aria-hidden="true"></span>
     </article>`;

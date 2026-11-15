@@ -25,6 +25,7 @@ export default {
     E: "E",
     W: "W",
     decimal: ".",
+    percent: "{n}%",
   },
   places: {
     title: "Best places to land",
@@ -149,7 +150,7 @@ export default {
     },
     avgSubtitle: "{from} – {to} · not a single instant",
     avgElevation: "mean elevation",
-    avgVisible: "Visible {pct} %",
+    avgVisible: "Visible {pct}%",
     avgVisibleTitle: "Share of the period with the body above the terrain",
     avgRange: "min {min} · max {max} · mean horizon {hz}",
     notViable: "NOT VIABLE",
@@ -350,7 +351,7 @@ export default {
     periodLine: "Analyzed period: from {start} 00:00 to {end} 24:00 UTC ({days} days).",
     refsTitle: "Data references",
     windowsTitle: "Light and link windows",
-    avgLine: "mean elevation {mean} (min {min}, max {max}); visible {pct} % of the period.",
+    avgLine: "mean elevation {mean} (min {min}, max {max}); visible {pct}% of the period.",
     runs: "Longest night: {night}. Longest continuous light: {light}. Longest communication gap: {blackout}.",
     more: "… and {n} more windows.",
     sources:
@@ -411,9 +412,9 @@ export default {
       roughness: "Roughness (height deviation)",
       relief: "relief",
       note: {
-        polar: "Computed with the polar LOLA DEM at {res}/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low} % of the points use low-confidence LOLA cells. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
-        fine: "Computed with the global LOLA DEM LDEM_128 at {res}/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low} % of the points use pixels interpolated by the LOLA team. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
-        global: "Computed with the global LOLA DEM LDEM_16 at {res}/pixel: these are regional-scale slopes (spans of about 4 km) that give context but cannot be used to assess a landing zone, because smaller relief is not resolved. {low} % of the points use pixels interpolated by the LOLA team.",
+        polar: "Computed with the polar LOLA DEM at {res}/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low}% of the points use low-confidence LOLA cells. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
+        fine: "Computed with the global LOLA DEM LDEM_128 at {res}/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low}% of the points use pixels interpolated by the LOLA team. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
+        global: "Computed with the global LOLA DEM LDEM_16 at {res}/pixel: these are regional-scale slopes (spans of about 4 km) that give context but cannot be used to assess a landing zone, because smaller relief is not resolved. {low}% of the points use pixels interpolated by the LOLA team.",
       },
       loading: "Loading the LOLA terrain of the area…",
       error: "The LOLA terrain of the area could not be loaded.",
@@ -446,7 +447,7 @@ export default {
     eph: {
       real: "Sun and Earth: NASA/JPL Horizons ephemerides",
       derived: "Sun and Earth: JPL Horizons shifted from the nearest curated site",
-      mixed: "Sun and Earth: JPL Horizons for {pct} % of the period and the approximate model for the rest",
+      mixed: "Sun and Earth: JPL Horizons for {pct}% of the period and the approximate model for the rest",
       loading: "Sun and Earth: approximate model while the JPL Horizons ephemerides load",
       error: "Sun and Earth: approximate model (the JPL Horizons ephemerides could not be loaded)",
       approx: "Sun and Earth: approximate model (period outside the JPL Horizons ephemerides, Nov 2026 – Dec 2027)",
