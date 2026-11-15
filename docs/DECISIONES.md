@@ -1185,3 +1185,14 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** el cartel es solo con mouse; el gráfico mantiene su descripción accesible (`aria-label`). La hora es la del punto del eje bajo el cursor, con la resolución del ancho del gráfico (en 30 días, unos 25 min por píxel).
 - **Estado:** vigente.
 
+## DEC-079 — La Luna 3D gira hasta el sitio elegido
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: al elegir un punto, que la Luna se anime y lleve la vista hasta él. Antes la vista 3D quedaba donde estaba y el sitio podía quedar del otro lado.
+- **Decisión:** al cambiar el sitio elegido (lista, selector, botones rápidos, marcador o clic en la Luna), la vista 3D gira por el camino más corto hasta dejarlo en el centro, con un leve alejamiento a mitad de camino para que se lea el giro.
+- **Solución aplicada:**
+  - `web/src/ui/moon3d.js`: `flyTo(lat, lon)`. Curva ease-in-out, 0,7 a 1,3 s según el ángulo, alejamiento de hasta 15 % de la distancia (sin pasar el máximo). El arrastre, la rueda, el teclado y el cambio de pestaña cancelan el vuelo. Con movimiento reducido (`prefers-reduced-motion` o el ajuste de la página) salta directo, sin animación.
+  - `web/src/ui/map.js`: `renderMap()` recuerda el último sitio y llama a `flyTo()` cuando cambia. Al abrir la página solo se registra: la vista no se mueve sola.
+- **Alternativas descartadas:** animar también en 2D: la imagen 2D es fija y el sitio ya se ve marcado.
+- **Supuestos y límites:** solo en la página principal; la Luna de la comparación ya encuadra los dos sitios (DEC-054). En las pestañas del polo y del mapa de calor también gira hasta el sitio, dejando el polo descentrado hasta que se cambie de pestaña.
+- **Estado:** vigente.
+

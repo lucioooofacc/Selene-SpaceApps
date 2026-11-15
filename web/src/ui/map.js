@@ -38,6 +38,7 @@ const NASA_COLOR = "./nasa/lroc_color_4k.jpg";
 let moon3d = null; // vista 3D (se crea la primera vez que se usa)
 let moon3dLoading = null;
 let moon3dView = null;
+let moon3dFocus = null; // último sitio al que se llevó la vista 3D (DEC-079)
 let polarUrl = null; // imagen polar 2D reproyectada
 
 const uses3d = (state) => state.mapMode === "3d";
@@ -385,6 +386,11 @@ export function renderMap(state) {
     const viewName = calc ? "heatCalc" : view;
     if (moon3dView !== viewName) moon3d.setView(viewName);
     moon3dView = viewName;
+    // Al elegir un sitio (lista, selector, marcador o clic en la Luna), la vista gira hasta él (DEC-079).
+    // La primera vez solo se registra: al abrir la página no se mueve sola.
+    const focus = state.siteChosen ? `${state.siteId}|${state.lat}|${state.lon}` : null;
+    if (focus && moon3dFocus !== null && focus !== moon3dFocus) moon3d.flyTo(state.lat, state.lon);
+    moon3dFocus = focus ?? moon3dFocus ?? "";
     if (calc) {
       // Capa calculada: textura con la grilla sobre el polo (se calcula si hace falta).
       const result = calcImage(state);
