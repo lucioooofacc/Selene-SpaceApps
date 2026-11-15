@@ -948,3 +948,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Guardar la imagen global en localStorage (excede la cuota).
 - **Estado:** vigente. Pendiente de validar por astronomía: la grilla global y el empalme en −80°.
 
+## DEC-066 — Ayuda por tarjeta, recorrido guiado y listas que piden lo que falta (UI-16)
+
+- **Contexto / problema:** notas de Lucio del 15/11/2026. La página se entiende si uno conoce el proyecto, pero no dice qué es cada tarjeta ni cómo se lee. Además, "Mejores lugares" mostraba un top 5 aunque no hubiera fechas elegidas (con el período por defecto) y "Mejores fechas" lo mostraba sin sitio elegido (con el sitio por defecto). Por último, la nota del panorama juntaba cuatro datos distintos en un bloque de texto corrido.
+- **Decisión** (Lucio, entre tres propuestas): ayuda en cada tarjeta **y** recorrido guiado; se descartó numerar las zonas y agregar una página de guía. Los textos van en una oración corrida o en un punteo, sin frases cortadas.
+- **Solución aplicada:**
+  - **Listas sin selección** (`web/src/ui/places.js`): sin `dateChosen`, "Mejores lugares" pide las fechas; sin `siteChosen`, "Mejores fechas" pide el sitio. Así no se presenta como resultado un período o un sitio que nadie eligió.
+  - **Ayuda por tarjeta** (`web/src/ui/help.js`, `web/src/styles/help.css`, `web/index.html`): un botón «?» en Mejores lugares, mapa, parámetros, panorama y tarjetas de estado. Abre un panel con una oración de introducción y un punteo. Se cierra con Escape, con su botón o con un clic afuera.
+  - **Recorrido guiado:** una bienvenida y las cinco zonas en el orden de uso (parámetros, mapa, lugares, panorama, estado), con la zona resaltada y el mismo texto de la ayuda. Se abre solo la primera vez (se recuerda en `localStorage`, clave `selene-tour-seen`) y se repite desde «Guía» en el menú. No se abre solo si la página llega con una selección en la URL o para imprimir.
+  - **Leyenda del panorama** (`web/src/ui/panorama.js`): cuatro renglones con etiqueta (Vista, Sol y Tierra, Relieve, Recorridos) y una muestra de la línea punteada de cada cuerpo. Reemplaza las claves `sim.caption`, `sim.bodies.*`, `sim.relief` y `sim.orbits` por `sim.legend.*`.
+  - Todo se ubica dentro de `#stage`, en píxeles del diseño. Textos en `help.*` (ES/EN).
+- **Supuestos y límites:** estos elementos no están en el Figma (excepción a DEC-014 decidida por Lucio). "Mejores fechas" sigue usando la duración por defecto si no hay fechas elegidas, y lo dice en su texto.
+- **Alternativas descartadas:** solo `title` en los títulos (no se ve en pantallas táctiles ni con teclado); un video o una página aparte (saca al usuario de la herramienta).
+- **Estado:** vigente.
+

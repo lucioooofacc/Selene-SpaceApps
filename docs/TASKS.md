@@ -314,6 +314,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 
 ## P2 — Opcionales
 
+### UI-16 — Claridad para quien no conoce el proyecto
+
+- **Prioridad:** P1 · **Issue:** [#102](https://github.com/lucioooofacc/Selene-SpaceApps/issues/102).
+- **Objetivo:** que alguien externo entienda la página. Notas de Lucio (15/11/2026): sin fechas no se muestra el top 5 de lugares y sin sitio no se muestra el de fechas; ayuda en cada tarjeta y recorrido guiado; leyenda del panorama con un renglón por dato.
+- **Rama sugerida:** `feat/claridad-interfaz`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `index.html`, `ui/help.js`, `styles/help.css`, `ui/places.js`, `ui/panorama.js`, `main.js`, i18n.
+- **Criterios de aceptación:** ayuda y recorrido operables con teclado y en ES/EN; textos en oraciones naturales; nada de datos por defecto presentados como elección del usuario; pruebas y build en verde.
+- **Fuera de alcance:** rediseñar la distribución del Figma.
+
 ### PERF-01 — Worker y caché persistente
 
 - **Prioridad:** P2 · **Issue:** [#18](https://github.com/lucioooofacc/Selene-SpaceApps/issues/18).
