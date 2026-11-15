@@ -93,19 +93,22 @@ export default {
     legendTitle: "Elevation (km)",
     legendAria: "Elevation legend: from {min} km to {max} km relative to the mean lunar radius.",
     layerLabel: "South pole map layer",
-    layer: { elevation: "Elevation", sun: "Light", earth: "Earth", both: "Sun + Earth", viability: "Viability" },
+    layer: { elevation: "Elevation", sun: "Light", earth: "Earth", both: "Sun + Earth", viability: "Viability", night: "Longest night" },
     layerLegend: {
       sun: "Light (% of time)",
       earth: "Earth visible (% of time)",
       both: "Sun and Earth at once (%)",
       viability: "Viability (mission requirements)",
+      night: "Longest night of the period",
     },
+    layerUnit: { hours: "{n} h" },
     layerLegendAria: "{name} legend: from {min} to {max}.",
     layerAlt: {
       sun: "Computed south pole map down to 80° S: percentage of the mission period with the Sun visible",
       earth: "Computed south pole map down to 80° S: percentage of the mission period with the Earth visible",
       both: "Computed south pole map down to 80° S: percentage of the period with the Sun and the Earth visible at once",
       viability: "Computed south pole map down to 80° S: viability of each area with the ranking mission requirements",
+      night: "Computed south pole map down to 80° S: longest night of each area over the mission period, in hours",
     },
     layerCredit: {
       computing: "Computing the map for the mission period…",
@@ -608,7 +611,7 @@ export default {
       intro: "The map shows where each site is and lets you choose any other point on the Moon by clicking the surface.",
       items: {
         1: "GLOBAL and SOUTH POLE show the Moon as imaged by the LRO spacecraft, whole or centered on the south pole.",
-        2: "HEAT MAP colors the surface by the layer you choose on the left, which can be terrain elevation, the share of the period with light, with the Earth visible, with both at once, or the viability according to the mission requirements.",
+        2: "HEAT MAP colors the surface by the layer you choose on the left, which can be terrain elevation, the share of the period with light, with the Earth visible, with both at once, the viability according to the mission requirements, or the longest night of the period.",
         3: "The 3D and 2D buttons switch between the globe you can rotate and the flat map.",
         4: "The “+” button saves the point you chose as a custom site, with any name you like.",
       },

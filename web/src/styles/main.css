@@ -864,7 +864,7 @@ button {
   position: absolute;
   left: 16px;
   top: 128px;
-  width: 100px;
+  width: 124px; /* entra "Noche más larga" en un renglón (DEC-072) */
   display: grid;
   gap: 4px;
 }
@@ -875,6 +875,7 @@ button {
 
 .heat-layers button {
   height: 26px;
+  white-space: nowrap;
   padding: 0 6px;
   background: var(--field);
   border: 1px solid var(--border-field);

@@ -241,10 +241,17 @@ function ensureMoon3d() {
   return moon3dLoading;
 }
 
-/** Leyenda de una capa calculada: % del tiempo (0–100) o nivel de viabilidad (baja a alta, DEC-071). */
-function renderCalcLegend(layer) {
+/** Extremos de la leyenda: % del tiempo, nivel de viabilidad (DEC-071) u horas de noche (arriba lo mejor, DEC-072). */
+function legendRange(layer, windowDays) {
+  if (layer === "viability") return [t("compare.level.low"), t("compare.level.high")];
+  if (layer === "night") return [t("map.layerUnit.hours", { n: Math.min(360, windowDays * 24) }), t("map.layerUnit.hours", { n: 0 })];
+  return [pct(0), pct(100)];
+}
+
+/** Leyenda de una capa calculada. */
+function renderCalcLegend(layer, windowDays) {
   const legend = $("map-legend");
-  const [min, max] = layer === "viability" ? [t("compare.level.low"), t("compare.level.high")] : [pct(0), pct(100)];
+  const [min, max] = legendRange(layer, windowDays);
   legend.innerHTML = `
     <span class="map-legend-title">${t(`map.layerLegend.${layer}`)}</span>
     <span class="map-legend-bar" style="background:${paletteGradient(palette())}"></span>
@@ -258,7 +265,7 @@ function renderLegend(view, is3d, state) {
   const legend = $("map-legend");
   legend.hidden = view !== "heat";
   if (legend.hidden) return;
-  if (calcLayer(state)) return renderCalcLegend(state.heatLayer);
+  if (calcLayer(state)) return renderCalcLegend(state.heatLayer, state.windowDays);
   const { minKm, maxKm } = is3d ? LOLA_MAPS.global : LOLA_MAPS.polar;
   const km = (v) => `${v > 0 ? "+" : ""}${v.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "es-UY")}`;
   legend.innerHTML = `

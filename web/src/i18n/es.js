@@ -94,19 +94,22 @@ export default {
     legendTitle: "Elevación (km)",
     legendAria: "Leyenda de elevación: de {min} km a {max} km respecto del radio lunar medio.",
     layerLabel: "Capa del mapa del polo sur",
-    layer: { elevation: "Elevación", sun: "Luz", earth: "Tierra", both: "Sol + Tierra", viability: "Viabilidad" },
+    layer: { elevation: "Elevación", sun: "Luz", earth: "Tierra", both: "Sol + Tierra", viability: "Viabilidad", night: "Noche más larga" },
     layerLegend: {
       sun: "Luz (% del tiempo)",
       earth: "Tierra visible (% del tiempo)",
       both: "Sol y Tierra a la vez (%)",
       viability: "Viabilidad (requisitos de misión)",
+      night: "Noche más larga del período",
     },
+    layerUnit: { hours: "{n} h" },
     layerLegendAria: "Leyenda de {name}: de {min} a {max}.",
     layerAlt: {
       sun: "Mapa calculado del polo sur hasta 80° S: porcentaje del período de la misión con el Sol visible",
       earth: "Mapa calculado del polo sur hasta 80° S: porcentaje del período de la misión con la Tierra visible",
       both: "Mapa calculado del polo sur hasta 80° S: porcentaje del período con el Sol y la Tierra visibles a la vez",
       viability: "Mapa calculado del polo sur hasta 80° S: viabilidad de cada zona con los requisitos de misión del ranking",
+      night: "Mapa calculado del polo sur hasta 80° S: noche más larga de cada zona en el período de la misión, en horas",
     },
     layerCredit: {
       computing: "Calculando el mapa para el período de la misión…",
@@ -609,7 +612,7 @@ export default {
       intro: "El mapa muestra dónde está cada sitio y permite elegir cualquier otro punto de la Luna con un clic sobre la superficie.",
       items: {
         1: "GLOBAL y POLO SUR muestran la Luna fotografiada por la sonda LRO, entera o centrada en el polo sur.",
-        2: "MAPA DE CALOR colorea la superficie según la capa que elijas a la izquierda, que puede ser la elevación del terreno, el porcentaje del período con luz, con la Tierra visible, con las dos cosas a la vez o la viabilidad según los requisitos de misión.",
+        2: "MAPA DE CALOR colorea la superficie según la capa que elijas a la izquierda, que puede ser la elevación del terreno, el porcentaje del período con luz, con la Tierra visible, con las dos cosas a la vez, la viabilidad según los requisitos de misión o la noche más larga del período.",
         3: "Los botones 3D y 2D cambian entre el globo que se puede girar y el mapa plano.",
         4: "El botón «+» guarda el punto que elegiste como un sitio propio, con el nombre que quieras.",
       },

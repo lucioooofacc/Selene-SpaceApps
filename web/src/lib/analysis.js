@@ -483,7 +483,10 @@ export function sampleAt(scenario, ms) {
  * Devuelve una matriz size×size en proyección azimutal equidistante.
  */
 /** Modos del mapa de calor (MAP-01, DEC-038). */
-export const HEAT_MODES = Object.freeze(["sun", "earth", "both", "viability"]);
+export const HEAT_MODES = Object.freeze(["sun", "earth", "both", "viability", "night"]);
+
+/** Tope de la capa "night" (h): la noche lunar dura ~14,8 días; más no puede haber. */
+const NIGHT_CAP_H = 360;
 
 /** Potencia relativa de una muestra: fracción visible del disco × orientación del panel. */
 function sunPower(margin, radius, lat, elevation) {
@@ -554,6 +557,10 @@ function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
  * - `"earth"`: fracción con la Tierra visible;
  * - `"both"`: fracción con el Sol y la Tierra visibles a la vez (energía y
  *   comunicación al mismo tiempo);
+ * - `"night"`: noche más larga de cada celda (h, requisito de luz continua,
+ *   DEC-072). `values` = 1 − noche / tope, con tope = la duración del período
+ *   (máx. 360 h): más claro es mejor, igual que en las otras capas; `nightH`
+ *   trae las horas y `capH` el tope.
  * - `"viability"`: viabilidad de cada celda con los mismos requisitos que
  *   los sitios y el ranking "Global" (DEC-071), sin la pendiente: `values` =
  *   0 (no cumple), 0,5 (al límite) o 1 (cumple); `levels` trae el nivel y
@@ -564,15 +571,21 @@ function approxHeatStats({ startMs, windowDays, size, minLat, need }) {
  */
 export function computePolarHeatmap({ startMs, windowDays, mode, size = 96, minLat = -80 }) {
   if (!HEAT_MODES.includes(mode)) throw new RangeError(`modo de mapa de calor desconocido: ${mode}`);
-  const need = { sun: mode !== "earth", earth: mode !== "sun" };
+  const need = { sun: mode !== "earth", earth: mode !== "sun" && mode !== "night" };
   const stats =
     computeRealHeatStats({ startMs, windowDays, size, minLat, need, sunVisible, earthVisible, sunPower }) ??
     approxHeatStats({ startMs, windowDays, size, minLat, need });
-  return heatResult({ size, minLat, mode, source: stats.source }, stats, mode);
+  return heatResult({ size, minLat, mode, source: stats.source }, stats, mode, windowDays);
 }
 
 /** Valores de la capa pedida; en "viability", el nivel de cada celda con los requisitos de DEC-071. */
-function heatResult(base, stats, mode) {
+function heatResult(base, stats, mode, windowDays) {
+  if (mode === "night") {
+    const capH = Math.min(NIGHT_CAP_H, windowDays * 24);
+    const values = new Float32Array(stats.night.length).fill(-1);
+    for (let c = 0; c < values.length; c++) if (stats.night[c] >= 0) values[c] = 1 - Math.min(stats.night[c], capH) / capH;
+    return { ...base, values, nightH: stats.night, capH };
+  }
   if (mode !== "viability") return { ...base, values: stats[mode] };
   const values = new Float32Array(stats.sun.length).fill(-1);
   const levels = new Array(stats.sun.length).fill(null);
@@ -595,8 +608,8 @@ function heatResult(base, stats, mode) {
  */
 export function computeGlobalHeatmap({ startMs, windowDays, mode }) {
   if (!HEAT_MODES.includes(mode)) throw new RangeError(`modo de mapa de calor desconocido: ${mode}`);
-  const need = { sun: mode !== "earth", earth: mode !== "sun" };
+  const need = { sun: mode !== "earth", earth: mode !== "sun" && mode !== "night" };
   const stats = computeRealGlobalHeatStats({ startMs, windowDays, need, sunVisible, earthVisible, sunPower });
   if (!stats) return null;
-  return heatResult({ cols: stats.cols, rows: stats.rows, mode, source: stats.source }, stats, mode);
+  return heatResult({ cols: stats.cols, rows: stats.rows, mode, source: stats.source }, stats, mode, windowDays);
 }
