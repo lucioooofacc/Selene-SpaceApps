@@ -1025,3 +1025,18 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** pedir a PDS solo las filas necesarias por rangos HTTP (no permite verificar el MD5 del archivo completo, criterio de DEC-061); una versión del DEM a 8 píxeles/grado (8 MiB, pero con pendientes de tramos de ~8 km); calcular el terreno de los puntos propios con el atlas de horizontes (no guarda alturas vecinas).
 - **Estado:** vigente. Pendiente de validar por astronomía.
 
+## DEC-070 — Revisión de astronomía de los puntos abiertos (15/11/2026)
+
+- **Contexto / problema:** `PENDIENTES.md` tenía 14 puntos de astronomía sin validar (marcos, horizontes, proyección, terreno, umbrales, trayectoria, rasgos). Lucio pidió validarlos el 15/11/2026.
+- **Decisión:** comparar cada dato con otro producto, otra fuente o una cuenta independiente y cerrar los puntos que pasen; los que no, anotarlos con el error medido. No se cambió ningún modelo científico en esta revisión.
+- **Solución aplicada:** resultados en `docs/VALIDACION.md` ("Revisión de astronomía del 15/11/2026"). Además se toman tres decisiones menores, reversibles:
+  - El horizonte LOLA reducido de los puntos propios **sigue rotulado "aproximado"**: su error medio de hasta 0,77° supera al radio del Sol (~0,27°), así que puede cambiar si el Sol se ve.
+  - La discrepancia de ~415 m de Chang'e 4 entre NSSDCA y CNSA **no se muestra en la interfaz**. Está en DEC-019 y en `sites.js`, las dos fuentes están enlazadas en "Datos y fuentes" y el horizonte del sitio sale del borde de Von Kármán, a 50–100 km: correrse 415 m no lo cambia a la escala de la app.
+  - El marco de R01, R23, IM-1 y Chandrayaan-3 queda confirmado como Mean Earth **por coherencia**. Se mantiene `sourceFrameVerified: false` y la interfaz sigue diciendo "inferido, no declarado", porque ninguna de esas fuentes lo declara.
+- **Hallazgos que quedan abiertos** (en `PENDIENTES.md`):
+  - El horizonte regional de los puntos propios (DEC-068) es bueno entre −60° y +60°, pero hacia los polos puede errar mucho, sobre todo en la Tierra cerca del limbo.
+  - El horizonte de Apollo 11 (DEC-061) está ~0,9° alto por píxeles interpolados a menos de 0,5 km (~0,5 p. p. de luz por año).
+  - La iluminación de Shackleton cambia mucho en pocos cientos de metros: R01 da 60 % y un punto a 480 m da 90 %.
+- **Alternativas descartadas:** cambiar ahora los modelos para corregir los hallazgos (son cambios científicos que conviene decidir con el equipo); marcar los marcos como "declarados" (no lo están).
+- **Estado:** vigente. Los hallazgos abiertos quedan para decisión del equipo.
+
