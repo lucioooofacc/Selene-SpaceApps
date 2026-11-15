@@ -8,6 +8,7 @@
  */
 import "./styles/main.css";
 import "./styles/report.css";
+import "./styles/help.css";
 import { computeScenario, realDataVersion, sampleAt } from "./lib/analysis.js";
 import { ensurePolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
@@ -22,6 +23,7 @@ import { initParams, renderCriteria, renderParamsFields } from "./ui/params.js";
 import { refreshCalendar } from "./ui/calendar.js";
 import { initPeriodSummary, renderInsight, renderPeriodSummary, renderStatus } from "./ui/status.js";
 import { renderPanorama } from "./ui/panorama.js";
+import { initHelp, refreshHelp } from "./ui/help.js";
 import { initTimeline, renderCoverage, renderPlayback, renderTicks, renderTime } from "./ui/timeline.js";
 
 const DESIGN_WIDTH = 1992;
@@ -139,6 +141,7 @@ function init() {
   document.getElementById("lang-toggle").addEventListener("click", () => {
     setLang(getLang() === "es" ? "en" : "es");
     renderAll();
+    refreshHelp();
   });
 
   window.addEventListener("resize", () => {
@@ -151,7 +154,16 @@ function init() {
   renderAll();
   initReport(() => scenario);
   initQualityDialog(() => ({ site: getSite(getState().siteId), scenario }));
-  initSettings({ onLanguage: renderAll, onMapMode: (mapMode) => setState({ mapMode }) });
+  initSettings({
+    onLanguage: () => {
+      renderAll();
+      refreshHelp();
+    },
+    onMapMode: (mapMode) => setState({ mapMode }),
+  });
+  // Ayuda por tarjeta y recorrido (UI-16, DEC-066). El recorrido no se abre solo si la
+  // página llega con una selección en la URL (enlace compartido) o para imprimir el informe.
+  initHelp({ autoStart: !location.search && !location.hash });
 }
 
 init();

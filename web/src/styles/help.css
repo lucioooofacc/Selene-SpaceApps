@@ -1,0 +1,260 @@
+/*
+ * Ayuda por tarjeta y recorrido guiado (UI-16, DEC-066). No están en el
+ * Figma: usan los tokens y el estilo del botón «i» de "Datos y fuentes".
+ */
+
+/* ---------- Botón «?» ---------- */
+.help-button {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border-field);
+  background: var(--field);
+  color: var(--muted-2);
+  font: 700 15px/1 var(--font);
+  cursor: pointer;
+}
+
+.help-button:hover,
+.help-button[aria-expanded="true"] {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.help-button:focus-visible,
+.help-pop button:focus-visible,
+#tour-button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* En "Parámetros" convive con el botón «i» (a su izquierda). */
+.params > .help-button {
+  right: 44px;
+  top: 6px;
+}
+
+/* En la sección inferior: junto al título y sobre la columna de tarjetas. */
+.behavior > .help-button {
+  right: 40px;
+  top: 40px;
+}
+
+.behavior-right {
+  position: relative;
+}
+
+.behavior-right > .help-button {
+  right: 0;
+  top: -22px;
+}
+
+/* ---------- Enlace «Guía» del menú ---------- */
+#tour-button {
+  border: 0;
+  border-left: 1px solid var(--text);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 24px;
+  line-height: 28px;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+#tour-button:hover {
+  color: var(--gold);
+}
+
+/* ---------- Panel de ayuda ---------- */
+.help-pop {
+  position: absolute;
+  z-index: 80;
+  width: 440px;
+  padding: 18px 20px 16px;
+  border: 1px solid var(--gold);
+  border-radius: var(--r-md);
+  background: var(--panel-solid);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6);
+  color: var(--text);
+  text-align: left;
+}
+
+.help-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.help-pop h3 {
+  font-family: var(--font-title);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.help-close {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--field-solid);
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.help-intro {
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.help-items {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #c9c5bc;
+}
+
+.help-items li::marker {
+  color: var(--gold);
+}
+
+/* ---------- Recorrido ---------- */
+.help-ring {
+  position: absolute;
+  z-index: 79;
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  /* Oscurece todo lo que queda fuera de la zona resaltada. */
+  box-shadow: 0 0 0 4000px rgba(2, 4, 8, 0.72);
+  pointer-events: none;
+  transition: left 220ms ease, top 220ms ease, width 220ms ease, height 220ms ease;
+}
+
+.help-ring[hidden] {
+  display: block;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 0;
+  border: 0;
+}
+
+.help-tour {
+  width: 460px;
+}
+
+.help-step {
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.help-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.help-actions button {
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-field);
+  background: var(--field-solid);
+  color: var(--text);
+  font: 700 14px/1 var(--font);
+  cursor: pointer;
+}
+
+.help-actions .help-skip {
+  border-color: transparent;
+  background: none;
+  color: var(--muted-2);
+  padding-left: 0;
+}
+
+.help-actions .help-next {
+  margin-left: 8px;
+  border-color: var(--sun);
+  background: var(--sun);
+  color: #1a1206;
+}
+
+/* ---------- Leyenda del panorama ---------- */
+.pano-legend {
+  position: absolute;
+  right: 20px;
+  top: 112px;
+  width: 430px;
+  margin: 0;
+  padding: 10px 14px;
+  display: grid;
+  gap: 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(5, 8, 15, 0.72);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.pano-legend > div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  column-gap: 10px;
+}
+
+.pano-legend dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.pano-legend dd {
+  margin: 0;
+  color: #c3c8d1;
+}
+
+.pano-swatch {
+  display: inline-block;
+  width: 26px;
+  margin: 0 6px 3px 0;
+  border-top: 2px dashed;
+  vertical-align: middle;
+}
+
+.pano-swatch-sun {
+  border-color: var(--sun);
+}
+
+.pano-swatch-earth {
+  margin-left: 12px;
+  border-color: var(--earth);
+}
+
+@media print {
+  .help-button,
+  .help-pop,
+  .help-ring,
+  #tour-button {
+    display: none;
+  }
+}

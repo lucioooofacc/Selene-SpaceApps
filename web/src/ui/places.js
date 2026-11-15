@@ -123,7 +123,15 @@ function dateEntries(state) {
   return undefined;
 }
 
+/** Lista vacía con un pedido claro de lo que falta elegir (UI-16, DEC-066). */
+function renderNeeds(key) {
+  $("places-list").innerHTML = `<li class="places-empty" role="status">${t(key)}</li>`;
+  $("places-hint").textContent = "";
+}
+
 function renderDates(state) {
+  // Sin sitio elegido no hay de qué buscar fechas: se pide, en lugar de usar el sitio por defecto.
+  if (!state.siteChosen) return renderNeeds("places.dates.needSite");
   const result = dateEntries(state);
   const category = dateCategory(state.placesCategory);
   if (result === undefined) {
@@ -247,6 +255,8 @@ export function renderPlaces(state) {
     button.title = off ? t("places.dates.noScience") : "";
   });
   if (dates) return renderDates(state);
+  // Sin fechas elegidas no hay período que comparar: se piden, en lugar de usar el período por defecto.
+  if (!state.dateChosen) return renderNeeds("places.needDate");
   $("places-categories").title = state.placesCategory === "science" ? t("places.scienceNote") : "";
   // Criterio de orden a la vista (DEC-042): antes solo estaba en el código.
   $("places-hint").textContent = t(`places.categoryHint.${state.placesCategory}`);
