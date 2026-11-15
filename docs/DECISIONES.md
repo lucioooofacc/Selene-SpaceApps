@@ -1118,3 +1118,22 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** los números (59,7 % en R01, 89,9 % a 480 m) son los de la revisión de DEC-070 para un año. La cita de Gläser et al. se tomó de resúmenes (ver `docs/VALIDACION.md`).
 - **Estado:** vigente.
 
+## DEC-075 — Altura del observador de un entorno en LDEM_128 (TERRAIN-05)
+
+- **Contexto / problema:** la revisión de DEC-070 encontró que el horizonte de Apollo 11 (`LDEM_128`, DEC-061) estaba ~0,8° más alto que el de `LDEM_16`. El píxel del punto es interpolado (`count = 0`) y deja el suelo 13 m por debajo del terreno medido, así que el observador "ve" el entorno cercano más alto de lo que es.
+- **Decisión (Lucio, 15/11/2026):** en el muestreador de `LDEM_128` (Apollo 11 y Chang'e 4), la altura del observador es la mediana de los píxeles con mediciones propias a menos de 1 km. Los sitios polares (`LDEM_60S_240M`) no cambian.
+- **Solución aplicada:**
+  - `web/src/lib/horizon-lola.js`: `windowGroundMedian()` y `WINDOW_GROUND_RADIUS_KM = 1`. `computeHorizonProfile()` acepta `ground` (altura ya calculada) y la registra en `observer.ground` (`method: "median-measured"`, radio y cantidad de píxeles). Sin píxeles medidos se usa el píxel del punto, como antes.
+  - `web/scripts/build-lola-horizons.mjs`: `globalProfile()` usa esa altura. El redondeo convierte −0 en 0 para que la tabla se reproduzca exacta desde el JSON.
+  - `web/src/data/terrain/lola-horizons.js`: regeneradas solo las entradas de `LDEM_128` (`--global-only`).
+  - Pruebas: unitaria con grilla sintética (`tests/horizon-lola.test.js`) y validación de Apollo 11 contra `LDEM_16` (`tests/validacion/horizonte-lola-global.test.js`).
+- **Resultados (medidos el 15/11/2026, un año desde el 15/11/2026):**
+  - Apollo 11: suelo −1934,9 → −1930,2 m (34 píxeles medidos). Diferencia media contra `LDEM_16` 0,82° → 0,28° (máximo 1,32° → 0,74°). Luz 51,15 → 51,32 %. Tierra sin cambios (100 %).
+  - Chang'e 4: suelo −5930,4 → −5925,5 m. Diferencia media 0,14° → 0,09°. Luz 48,48 → 48,62 %. Tierra sin cambios (0 %).
+  - Tolerancia del equipo para la prueba: media < 0,4° y máximo < 1°. `LDEM_16` (1,9 km) no resuelve el relieve cercano, así que no se espera cero.
+- **Alternativas descartadas:** ignorar los primeros ~500 m del rayo cuando los píxeles son interpolados. Combinado con la mediana, solo baja la media de 0,28° a 0,22°, y cambia el rayo en lugar del dato que causa el error.
+- **Supuestos y límites:**
+  - El radio de 1 km es del equipo: con 0,5 km Apollo 11 tiene solo 5 píxeles medidos y con 2 km el resultado es parecido (0,32°).
+  - La altura del informe (tabla de `site-terrain.js`) sigue siendo la del píxel del punto: difiere ~5 m de la del horizonte. La prueba de terreno acepta hasta 10 m.
+- **Estado:** vigente.
+
