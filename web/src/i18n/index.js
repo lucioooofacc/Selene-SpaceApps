@@ -11,7 +11,7 @@ import en from "./en.js";
 
 const dictionaries = { es, en };
 const STORAGE_KEY = "selene.lang";
-let current = "es";
+let current = "en";
 
 function read(dict, key) {
   return key.split(".").reduce((node, part) => (node == null ? undefined : node[part]), dict);
@@ -35,9 +35,10 @@ export function initialLang() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved && dictionaries[saved]) return saved;
   } catch {
-    /* almacenamiento bloqueado: usar idioma del navegador */
+    /* almacenamiento bloqueado: idioma por defecto */
   }
-  return navigator.language?.toLowerCase().startsWith("es") ? "es" : "en";
+  // Inglés por defecto (DEC-077): el jurado de Space Apps es internacional. El español queda a un clic.
+  return "en";
 }
 
 export function setLang(lang) {
