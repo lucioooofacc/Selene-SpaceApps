@@ -8,11 +8,12 @@
  *  - Perfil del horizonte de cada sitio (sintético hasta TERRAIN-02).
  *  - Niveles por criterio con sus umbrales.
  */
-import { THRESHOLDS } from "../lib/analysis.js";
+import { REQUIREMENTS } from "../lib/analysis.js";
+import { siteViability } from "../lib/site-terrain.js";
 import { DAY_MS } from "../lib/astro.js";
 import { compareScenarios } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
-import { t } from "../i18n/index.js";
+import { getLang, t } from "../i18n/index.js";
 import { dataNote, provenanceHtml, qualityHtml } from "./provenance.js";
 import { renderCompareGlobe } from "./compare-globe.js";
 import { lolaForScenario } from "./lola.js";
@@ -28,7 +29,7 @@ function formatValue(kind, value) {
 }
 
 function siteHeader(slot, site, scenario) {
-  const v = scenario.viability;
+  const v = siteViability(site, scenario);
   return `
     <article class="cmp-site cmp-site-${slot}">
       <p class="cmp-slot"><i style="background:${COLORS[slot]}"></i>${t(`compare.slot.${slot}`)}</p>
@@ -37,7 +38,7 @@ function siteHeader(slot, site, scenario) {
       <div class="cmp-verdict cmp-level-${v.overall}">
         <span>${t("compare.viability")}</span>
         <strong>${t(`compare.level.${v.overall}`)}</strong>
-        <em>${t("compare.points", { points: v.points, max: v.maxPoints })}</em>
+        <em>${t("compare.points", { met: v.met, total: v.total })}</em>
       </div>
       <details class="cmp-prov">
         <summary>${t("quality.provenance")}</summary>
@@ -164,19 +165,28 @@ function horizonChart(scA, scB) {
   </svg>`;
 }
 
-function criteriaTable(scA, scB, names) {
-  const fmt = { illumination: (v) => pct(v), power: (v) => v.toFixed(2), communication: (v) => pct(v) };
-  const rows = Object.keys(THRESHOLDS)
+/** Valor de un requisito para mostrar en la tabla. */
+function requirementValue(key, value) {
+  if (key === "light") return t("compare.value.light", { h: Math.round(value) });
+  if (key === "communication") return t("compare.value.communication", { pct: pct(value) });
+  const deg1 = value.toLocaleString(getLang() === "en" ? "en-US" : "es-UY", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  return t("compare.value.slope", { deg: deg1 });
+}
+
+/** Tabla de requisitos de misión (DEC-071): nivel y valor de cada sitio; la pendiente, si algún sitio la tiene. */
+function criteriaTable(vA, vB, names) {
+  const keys = Object.keys(REQUIREMENTS).filter((key) => vA.criteria[key] || vB.criteria[key]);
+  const rows = keys
     .map((key) => {
-      const th = THRESHOLDS[key];
-      const cell = (sc) => {
-        const c = sc.viability.criteria[key];
-        return `<td><span class="cmp-chip cmp-level-${c.level}">${t(`compare.level.${c.level}`)}</span></td>`;
+      const cell = (v) => {
+        const c = v.criteria[key];
+        if (!c) return `<td>—</td>`;
+        return `<td><span class="cmp-chip cmp-level-${c.level}">${t(`compare.req.${c.level}`)}</span> <small>${requirementValue(key, c.value)}</small></td>`;
       };
       return `<tr>
-        <th scope="row">${t(`compare.criterion.${key}`)}</th>
-        <td class="cmp-th">${t("compare.thresholds", { high: fmt[key](th.high), mid: fmt[key](th.mid) })}</td>
-        ${cell(scA)}${cell(scB)}
+        <th scope="row">${t(`compare.requirement.${key}`)}</th>
+        <td class="cmp-th">${t(`compare.thresholdText.${key}`)}</td>
+        ${cell(vA)}${cell(vB)}
       </tr>`;
     })
     .join("");
@@ -213,7 +223,7 @@ export function renderComparison({ a, b, scA, scB }) {
   $("cmp-horizon-legend").innerHTML =
     ["a", "b"].map((slot) => `<span><i style="background:${COLORS[slot]}"></i>${names[slot]}</span>`).join("") +
     ([scA, scB].some((sc) => lolaForScenario(sc).mode === "preview") ? `<span class="cmp-legend-dash">${t("compare.lolaPreview")}</span>` : "");
-  $("cmp-criteria").innerHTML = criteriaTable(scA, scB, names);
+  $("cmp-criteria").innerHTML = criteriaTable(siteViability(a, scA), siteViability(b, scB), names);
   $("cmp-quality").innerHTML = qualityHtml(a, scA);
   renderCompareGlobe({ a, b, scA, scB, names });
   // Origen de los datos de cada sitio (UI-02): pueden diferir (curado vs. punto propio).

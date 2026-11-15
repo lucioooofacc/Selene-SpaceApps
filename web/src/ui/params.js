@@ -25,6 +25,9 @@ const CHIP_SITES = ["shackleton", "malapert", "cabeus", "apollo11"];
 /** Tamaño de cada ícono en su proporción original (ver places.js). */
 const PARAM_ICON_SIZE = { bulb: [14, 14], sun: [16, 16], antenna: [18, 12], earth: [18, 18] };
 
+/** Número con el formato del idioma y sin decimales (horas de noche). */
+const num = (v) => Math.round(v).toLocaleString(document.documentElement.lang === "en" ? "en-US" : "es-UY");
+
 const SEGMENTS_BY_LEVEL = { high: 3, mid: 2, low: 1 };
 const PERCENT_BY_SEGMENTS = { 1: 33, 2: 66, 3: 100 };
 
@@ -32,7 +35,7 @@ const PERCENT_BY_SEGMENTS = { 1: 33, 2: 66, 3: 100 };
  * Tarjeta de misión (VIABLE/INVIABLE).
  * @param {string} periodTitle  explicación completa del período (tooltip y lector de pantalla).
  */
-function criterionCard({ icon, name, value, segments, period, periodTitle }) {
+function criterionCard({ icon, name, value, segments, period, periodTitle, requirement }) {
   const ok = segments >= 2;
   const cls = ok ? "ok" : "ko";
   const label = ok ? "params.viable" : "params.notViable";
@@ -42,7 +45,7 @@ function criterionCard({ icon, name, value, segments, period, periodTitle }) {
       <p class="criterion-name">${name}</p>
       <span class="criterion-period criterion-period-${period}" title="${periodTitle}">${t(`params.period.${period}`)}<span class="sr-only"> · ${periodTitle}</span></span>
       <p class="criterion-value">${value}</p>
-      <span class="verdict ${cls}">
+      <span class="verdict ${cls}" title="${requirement}">
         <img src="./figma/dot-${ok ? "green" : "red"}.svg" alt="" width="10" height="10" />${t(label)}
       </span>
       <div class="segments ${cls}" aria-hidden="true">
@@ -151,7 +154,9 @@ export function renderCriteria(scenario) {
       icon: "bulb",
       name: t("params.light"),
       value: minutesLabel(scenario.summary.sunMinutes),
-      segments: SEGMENTS_BY_LEVEL[criteria.illumination.level],
+      segments: SEGMENTS_BY_LEVEL[criteria.light.level],
+      // El veredicto sigue el requisito de luz continua (DEC-071), no las horas de luz.
+      requirement: `${t("compare.requirement.light")}: ${t("compare.value.light", { h: num(criteria.light.value) })} · ${t(`compare.req.${criteria.light.level}`)}`,
     }),
     criterionCard({
       ...mission,
@@ -159,6 +164,7 @@ export function renderCriteria(scenario) {
       name: t("params.comm"),
       value: t("params.coverage", { pct: Math.round(scenario.summary.communication) }),
       segments: SEGMENTS_BY_LEVEL[criteria.communication.level],
+      requirement: `${t("compare.requirement.communication")}: ${t(`compare.req.${criteria.communication.level}`)}`,
     }),
     `<h3 class="criteria-subtitle" title="${avgTitle}">${t("params.avgTitle")}<small>${t("params.avgSubtitle", range)}</small></h3>`,
     averageCard({ icon: "sun", name: t("params.sun"), body: stats.sun, periodTitle: avgTitle }),

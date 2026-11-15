@@ -2,21 +2,26 @@
  * Orden de "Mejores lugares para alunizar" por categoría (UI-13, DEC-029).
  *
  * Solo ordena resultados que ya calcula `computeScenario`; no agrega fórmulas.
- *  - overall: puntos de viabilidad (DEC-007) y, a igualdad, % de iluminación.
+ *  - overall: viabilidad por requisitos (DEC-071: el peor requisito manda),
+ *    después la cantidad de requisitos cumplidos y, a igualdad, % de iluminación.
  *  - science: cantidad de rasgos científicos citados (data/site-traits.js) y,
- *    a igualdad, puntos de viabilidad. No es una métrica científica.
+ *    a igualdad, viabilidad. No es una métrica científica.
  *  - communication: % del tiempo con la Tierra visible y, a igualdad, altura
  *    máxima de la Tierra.
  *  - light: potencia solar relativa promedio ("luz aprovechable") y, a
  *    igualdad, minutos con Sol.
  */
+import { viabilityRank } from "./analysis.js";
+
 export const CATEGORIES = ["overall", "science", "communication", "light"];
 
+/** Mejor viabilidad primero: nivel global y, a igualdad, requisitos cumplidos. */
+const byViability = (a, b) =>
+  viabilityRank(b.scenario.viability) - viabilityRank(a.scenario.viability) || b.scenario.viability.met - a.scenario.viability.met;
+
 const COMPARE = {
-  overall: (a, b) =>
-    b.scenario.viability.points - a.scenario.viability.points ||
-    b.scenario.summary.illumination - a.scenario.summary.illumination,
-  science: (a, b) => b.traits - a.traits || b.scenario.viability.points - a.scenario.viability.points,
+  overall: (a, b) => byViability(a, b) || b.scenario.summary.illumination - a.scenario.summary.illumination,
+  science: (a, b) => b.traits - a.traits || byViability(a, b),
   communication: (a, b) =>
     b.scenario.summary.communication - a.scenario.summary.communication ||
     b.scenario.summary.peakEarth - a.scenario.summary.peakEarth,

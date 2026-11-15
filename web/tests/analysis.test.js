@@ -26,7 +26,9 @@ test("calcula porcentajes, métricas y ventanas en rangos válidos", () => {
   assert.ok(summary.power >= 0 && summary.power <= 1);
   assert.ok(summary.peakSun >= -90 && summary.peakSun <= 90);
   assert.ok(summary.peakEarth >= -90 && summary.peakEarth <= 90);
-  assert.ok(viability.points >= 0 && viability.points <= viability.maxPoints);
+  assert.ok(viability.met >= 0 && viability.met <= viability.total);
+  assert.deepEqual(Object.keys(viability.criteria), ["light", "communication"]);
+  assert.ok(summary.longestNightH >= 0 && summary.longestNightH <= 48);
   assert.ok(["low", "mid", "high"].includes(viability.overall));
   assertOrderedWindows(summary.lightWindows, scenario.startMs, scenario.endMs);
   assertOrderedWindows(summary.linkWindows, scenario.startMs, scenario.endMs);

@@ -7,6 +7,7 @@
  * solo al imprimir. La UI no calcula: todo sale del escenario y de
  * lib/compare.js.
  */
+import { siteViability } from "../lib/site-terrain.js";
 import { DAY_MS } from "../lib/astro.js";
 import { scenarioMetrics } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, timeUTC } from "../lib/format.js";
@@ -58,7 +59,8 @@ function windowsList(windows, titleKey) {
 export function renderReport(scenario) {
   const site = getSite(scenario.site.id);
   const name = site ? site.name : t("map.observed");
-  const v = scenario.viability;
+  // Con la pendiente sumada si el sitio tiene datos de terreno (DEC-071).
+  const v = siteViability(scenario.site, scenario);
   const st = windowStats(scenario, STEP_MINUTES);
   const generated = new Intl.DateTimeFormat(getLang() === "es" ? "es-UY" : "en-US", {
     dateStyle: "long",
@@ -70,7 +72,7 @@ export function renderReport(scenario) {
     .map((m) => `<li><strong>${t(`compare.metric.${m.key}`)}:</strong> ${formatValue(m.kind, m.value)}. <span class="rep-note">${t(`compare.metricHint.${m.key}`)}</span></li>`)
     .join("");
   const criteria = Object.entries(v.criteria)
-    .map(([key, c]) => `${t(`compare.criterion.${key}`)}: ${t(`compare.level.${c.level}`).toLowerCase()}`)
+    .map(([key, c]) => `${t(`compare.requirement.${key}`)}: ${t(`compare.req.${c.level}`).toLowerCase()}`)
     .join("; ");
   const avg = (key, body) =>
     `<li><strong>${t(`params.${key}`)}:</strong> ${t("report.avgLine", {
@@ -100,7 +102,7 @@ export function renderReport(scenario) {
 
     <section>
       <h2>2. ${t("compare.viability")}</h2>
-      <p><strong>${t(`compare.level.${v.overall}`)}</strong> (${t("compare.points", { points: v.points, max: v.maxPoints })}). ${criteria}.</p>
+      <p><strong>${t(`compare.level.${v.overall}`)}</strong> (${t("compare.points", { met: v.met, total: v.total })}). ${criteria}.</p>
     </section>
 
     <section>

@@ -11,7 +11,8 @@ const entries = SITES.map((site) => ({ site, scenario: computeScenario(site, sta
 
 test("cada categoría ordena de mayor a menor por su métrica principal", () => {
   const metric = {
-    overall: (e) => e.scenario.viability.points,
+    // Nivel global y, a igualdad, requisitos cumplidos (DEC-071): una sola cifra ordenable.
+    overall: (e) => ({ low: 0, mid: 1, high: 2 })[e.scenario.viability.overall] * 10 + e.scenario.viability.met,
     science: (e) => e.traits,
     communication: (e) => e.scenario.summary.communication,
     light: (e) => e.scenario.summary.power,

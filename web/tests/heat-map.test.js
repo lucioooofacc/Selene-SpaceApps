@@ -107,8 +107,8 @@ test("fuera del rango de Horizons: vuelve al aproximado", () => {
   assert.equal(computeRealHeatmap({ startMs: Date.UTC(2029, 0, 1), windowDays: 2, mode: "sun", size: 8, minLat: -80, sunVisible, earthVisible }), null);
 });
 
-test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los umbrales de los sitios", async () => {
-  const { THRESHOLDS, HEAT_MODES } = await import("../src/lib/analysis.js");
+test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los requisitos de los sitios", async () => {
+  const { HEAT_MODES, viabilityFrom } = await import("../src/lib/analysis.js");
   assert.deepEqual(HEAT_MODES, ["sun", "earth", "both", "viability"]);
   assert.throws(() => computePolarHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: 2, mode: "otro", size: 8, minLat: -80 }), RangeError);
   for (const real of [false, true]) {
@@ -124,10 +124,9 @@ test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los umbrales de
     const both = computePolarHeatmap({ ...o, mode: "both" });
     const via = computePolarHeatmap({ ...o, mode: "viability" });
     assert.equal(both.source.kind, real ? "real" : "approximate");
-    const level = (v, { high, mid }) => (v >= high ? 2 : v >= mid ? 1 : 0);
     for (let c = 0; c < 64; c++) {
       if (sun.values[c] < 0) {
-        assert.equal(via.points[c], -1);
+        assert.equal(via.levels[c], null);
         continue;
       }
       const s = sun.values[c];
@@ -136,10 +135,10 @@ test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los umbrales de
       assert.ok(both.values[c] >= s + e - 1 - 1e-6, `celda ${c}`);
       assert.equal(via.components.sun[c], s);
       assert.equal(via.components.earth[c], e);
-      const expected =
-        level(100 * s, THRESHOLDS.illumination) + level(via.components.power[c], THRESHOLDS.power) + level(100 * e, THRESHOLDS.communication);
-      assert.equal(via.points[c], expected);
-      assert.ok(Math.abs(via.values[c] - expected / 6) < 1e-6);
+      // Mismo cálculo que un sitio (DEC-071): noche más larga y % con la Tierra.
+      const expected = viabilityFrom({ light: via.components.night[c], communication: 100 * e }).overall;
+      assert.equal(via.levels[c], expected);
+      assert.equal(via.values[c], { low: 0, mid: 0.5, high: 1 }[expected]);
     }
   }
 });

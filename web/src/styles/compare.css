@@ -713,3 +713,24 @@
   gap: 14px 24px;
 }
 
+
+/* Requisitos de misión en el informe web (DEC-071) */
+.rw-requirements {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.rw-requirements .place-verdict {
+  display: inline-block;
+  min-width: 96px;
+}
+
+.cmp-criteria td small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted-2);
+}

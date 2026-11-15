@@ -17,6 +17,7 @@ import { destination } from "./horizon-lola.js";
 import { POLAR_DEM_COVERAGE_LATITUDE, polarDemResolutionM, polarDemSample } from "./polar-dem.js";
 import { globalDemResolutionKm, globalDemSample } from "./global-dem.js";
 import { SITE_TERRAIN } from "../data/terrain/site-terrain.js";
+import { withSlope } from "./analysis.js";
 
 const RADIUS_KM = 1737.4;
 
@@ -119,4 +120,21 @@ export function terrainForSite(site) {
   const globalRes = globalDemResolutionKm();
   const global = globalRes ? siteTerrain(globalDemSample, site, GLOBAL_TERRAIN_PARAMS) : null;
   return global ? { source: "global", resolutionM: globalRes * 1000, terrain: global } : null;
+}
+
+/**
+ * Pendiente del sitio para el requisito de viabilidad (DEC-071): la del punto
+ * (o la media del entorno si falta) cuando el terreno sale del DEM polar o de
+ * la tabla de LDEM_128, de escala kilométrica. Con el DEM global (escala
+ * regional, ~4 km) o sin datos devuelve null: no se evalúa.
+ */
+export function slopeForViability(site) {
+  const found = terrainForSite(site);
+  if (!found || found.source === "global") return null;
+  return found.terrain.slopeDeg ?? found.terrain.area.meanSlope;
+}
+
+/** Viabilidad del escenario con la pendiente sumada cuando hay datos de terreno (DEC-071). */
+export function siteViability(site, scenario) {
+  return withSlope(scenario.viability, slopeForViability(site));
 }

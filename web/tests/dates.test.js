@@ -28,7 +28,8 @@ test("candidatas diarias dentro de la cobertura, todas con datos de Horizons", (
   // El orden "Global" reutiliza el ranking de los lugares.
   const ranked = rankEntries(res.items.map((it) => ({ site: { name: String(it.startMs) }, scenario: it.scenario, traits: 0 })), "overall", 5);
   assert.equal(ranked.length, 5);
-  assert.ok(ranked[0].scenario.viability.points >= ranked[4].scenario.viability.points);
+  const rank = { low: 0, mid: 1, high: 2 };
+  assert.ok(rank[ranked[0].scenario.viability.overall] >= rank[ranked[4].scenario.viability.overall]);
 });
 
 import { pickDistinct } from "../src/lib/dates.js";
