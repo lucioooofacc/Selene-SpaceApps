@@ -230,9 +230,13 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     if (p) onPick(p.lat, p.lon);
   });
   canvas.addEventListener("pointercancel", () => (drag = null));
-  canvas.addEventListener(
+  // La rueda se escucha en el contenedor y no solo en el canvas: los marcadores de los
+  // sitios son elementos HTML encima del canvas y, con el cursor sobre uno, la rueda
+  // desplazaba la página en lugar de acercar. En 2D (data-mode) la página se desplaza normal.
+  container.addEventListener(
     "wheel",
     (event) => {
+      if (container.dataset.mode && container.dataset.mode !== "3d") return;
       event.preventDefault();
       zoom(event.deltaY > 0 ? 1.08 : 1 / 1.08);
     },
