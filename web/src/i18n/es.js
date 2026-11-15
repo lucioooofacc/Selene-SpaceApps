@@ -4,6 +4,18 @@
  * agregala también en en.js.
  */
 export default {
+  // Regla de comunicación según el satélite de relevo (DEC-084); la usa t() en {commsRule}, {commsShort} y {commsHint}.
+  relayRule: {
+    rule: {
+      relay: "por debajo queda al límite, porque se asume un satélite de relevo, como en los planes de Artemis",
+      direct: "sin satélite de relevo, entre el 25 % y ese valor queda al límite y por debajo del 25 % no cumple (criterio de NASA para Artemis III, 2024)",
+    },
+    short: { relay: "menos, con relevo", direct: "≥ 25 %, sin relevo" },
+    hint: {
+      relay: "con relevo si se ve menos del {comms} % del tiempo",
+      direct: "sin relevo: no cumple si se ve menos del 25 % del tiempo",
+    },
+  },
   app: {
     documentTitle: "SELENE",
     aiLogo: "IMAGEN GENERADA CON IA",
@@ -112,6 +124,7 @@ export default {
     layerUnit: { hours: "{n} h" },
     banner: {
       allLow: "Con una misión de {days} días ninguna zona es viable: en todas hay alguna noche de más de {battery} h, más de lo que aguantan las baterías elegidas en «Parámetros de la misión». Probá una misión más corta, la capa «Noche más larga» para ver dónde las noches son más cortas, o «Mejores fechas».",
+      allLowNoRelay: "Con una misión de {days} días ninguna zona es viable con estos requisitos: en todas hay alguna noche de más de {battery} h o, sin satélite de relevo, la Tierra se ve menos del 25 % del tiempo. Probá marcar «Satélite de relevo», una misión más corta, la capa «Noche más larga» o «Mejores fechas».",
     },
     layerLegendAria: "Leyenda de {name}: de {min} a {max}.",
     layerAlt: {
@@ -143,7 +156,9 @@ export default {
     battery: "Baterías (h)",
     comms: "Com. mín. (%)",
     batteryHint: "Autonomía de las baterías en horas (supuesto del equipo, 24 h por defecto): la noche más larga que la misión puede aguantar. De 0 a 360 h.",
-    commsHint: "Comunicación mínima (supuesto del equipo, 80 % por defecto): porcentaje del período con la Tierra visible para que la comunicación cumpla. Por debajo se asume un satélite de relevo. De 0 a 100 %.",
+    commsHint: "Comunicación mínima (supuesto del equipo, 80 % por defecto): porcentaje del período con la Tierra visible para que la comunicación cumpla. Qué pasa por debajo depende de la casilla «Satélite de relevo». De 0 a 100 %.",
+    relay: "Satélite de relevo",
+    relayHint: "Con satélite de relevo (supuesto del equipo, por defecto): por debajo de la comunicación mínima queda al límite y nunca no cumple. Sin relevo: criterio de NASA para Artemis III (2024), que supone comunicación directa con la Tierra y descarta las zonas con la Tierra visible menos del 25 % del tiempo: por debajo del 25 % no cumple.",
     choose: "Elegir",
     window: "Ventana de análisis",
     light: "Luz acumulada",
@@ -357,7 +372,7 @@ export default {
     },
     thresholdText: {
       light: "sin noche · hasta {battery} h",
-      communication: "≥ {comms} % · menos, con relevo",
+      communication: "≥ {comms} % · {commsShort}",
       slope: "< 8° · < 10°",
     },
     req: { high: "Cumple", mid: "Al límite", low: "No cumple" },
@@ -367,7 +382,7 @@ export default {
       slope: "{deg}° (escala kilométrica)",
     },
     criteriaNote:
-      "La viabilidad es la del peor requisito: si uno no se cumple, el sitio no es viable. Luz continua: Artemis III exige Sol durante toda la estadía (NASA, 2022); el límite de {battery} h es la autonomía de las baterías (supuesto del equipo: 24 h, editable). Comunicación: el {comms} % es un supuesto del equipo (80 % por defecto, editable); por debajo se asume un satélite de relevo. Pendiente: inclinación máxima de 8° y aterrizaje en menos de 10° (NASA, HLS 2024); solo se evalúa donde hay datos de terreno.",
+      "La viabilidad es la del peor requisito: si uno no se cumple, el sitio no es viable. Luz continua: Artemis III exige Sol durante toda la estadía (NASA, 2022); el límite de {battery} h es la autonomía de las baterías (supuesto del equipo: 24 h, editable). Comunicación: el {comms} % es un supuesto del equipo (80 % por defecto, editable); {commsRule}. Pendiente: inclinación máxima de 8° y aterrizaje en menos de 10° (NASA, HLS 2024); solo se evalúa donde hay datos de terreno.",
   },
   report: {
     title: "Informe de la misión planificada",
@@ -421,7 +436,7 @@ export default {
     both: "Sol y Tierra a la vez",
     sources: "Ver datos y fuentes",
     hint: {
-      viability: "Viabilidad del sitio en las fechas elegidas según requisitos de misión: luz continua (noche de hasta {battery} h) y comunicación con la Tierra (con relevo si se ve menos del {comms} % del tiempo). Manda el peor requisito.",
+      viability: "Viabilidad del sitio en las fechas elegidas según requisitos de misión: luz continua (noche de hasta {battery} h) y comunicación con la Tierra ({commsHint}). Manda el peor requisito.",
       night: "Tiempo seguido más largo sin Sol en el período: cuánto tienen que aguantar las baterías.",
       light: "Tiempo seguido más largo con Sol en el período.",
       blackout: "Tiempo seguido más largo sin la Tierra a la vista: sin enlace directo hace falta un satélite de relevo.",
@@ -635,10 +650,11 @@ export default {
       intro: "La viabilidad dice si una misión en ese sitio y en esas fechas cumpliría tres requisitos básicos, y la da el peor de ellos: si uno no se cumple, el sitio no es viable.",
       items: {
         1: "Luz continua: se mira la noche más larga del período. Cumple si no hay noche, como exige Artemis III para toda la estadía; queda al límite si las noches no pasan de la autonomía de las baterías (ahora {battery} h); y no cumple si son más largas.",
-        2: "Comunicación: se mira qué porcentaje del tiempo se ve la Tierra. Cumple desde la comunicación mínima (ahora {comms} %); por debajo queda al límite, porque se asume un satélite de relevo, como en los planes de Artemis.",
+        2: "Comunicación: se mira qué porcentaje del tiempo se ve la Tierra. Cumple desde la comunicación mínima (ahora {comms} %); {commsRule}.",
         3: "Pendiente del terreno: cumple por debajo de 8° y queda al límite por debajo de 10°, los límites del módulo de alunizaje de Artemis. Solo se evalúa en la comparación y en el informe, donde hay datos de terreno.",
         4: "La autonomía de las baterías y la comunicación mínima son supuestos del equipo (24 h y 80 % por defecto) y se pueden cambiar en «Parámetros de la misión», junto a la latitud y la longitud. Todo se recalcula con los valores nuevos: las tarjetas, la capa de viabilidad del mapa, el ranking, las fechas, la comparación y el informe. La pendiente sale de requisitos publicados por la NASA y no se cambia.",
         5: "Misiones largas: un día lunar dura unos 29,5 días terrestres, así que lejos de los polos cada noche dura unos 14,8 días (~354 h). Por eso, en misiones de más de una semana casi toda la Luna tiene noches más largas que unas baterías de 24 h y la viabilidad sale baja. La capa «Noche más larga» del mapa y «Mejores fechas» ayudan a encontrar ventanas mejores.",
+        7: "Satélite de relevo: por defecto se supone que hay uno, así que con poca Tierra a la vista la comunicación queda al límite y nunca no cumple. Si se desmarca la casilla, se usa el criterio de NASA para Artemis III (2024), que supone comunicación directa con la Tierra: por debajo del 25 % del tiempo con la Tierra visible no cumple y el sitio no es viable. En el polo sur esto deja afuera muchas zonas, porque las semanas con Sol continuo suelen ser semanas sin la Tierra a la vista.",
         6: "Ejemplo: una misión de 30 días en Apollo 11, cerca del ecuador, desde el 14/11/2026, pasa por una noche lunar entera: la noche más larga dura 14 días y 4 horas (unas 340 h). Con baterías de 24 h la luz «no cumple» y el sitio no es viable, aunque el resto esté bien: las baterías se agotarían el primer día de la noche. Si se sube la autonomía a 360 h, la máxima admitida y lo que dura una noche lunar, la misma misión queda «al límite». Esa autonomía no es realista con baterías solas; en la práctica haría falta otra fuente de energía, como un generador de radioisótopos. Por eso la autonomía es un supuesto que conviene probar con valores distintos.",
       },
     },
@@ -754,7 +770,7 @@ export default {
         2: "Las fechas se eligen en el calendario marcando el día de inicio y el día de fin, siempre en hora universal (UTC).",
         3: "«Luz acumulada» son las horas con Sol dentro del período y «Disponibilidad de comunicación» es el porcentaje del período con la Tierra a la vista.",
         4: "Las etiquetas VIABLE e INVIABLE indican si se cumple el requisito de misión: luz continua (noches de hasta {battery} h) o comunicación con la Tierra (al menos {comms} % del tiempo).",
-        7: "Los campos «Baterías (h)» y «Com. mín. (%)» cambian esos dos supuestos del equipo (24 h y 80 % por defecto). Se guardan en la dirección de la página, así que un enlace compartido da el mismo resultado.",
+        7: "Los campos «Baterías (h)» y «Com. mín. (%)» cambian esos dos supuestos del equipo (24 h y 80 % por defecto). La casilla «Satélite de relevo» decide qué pasa por debajo de la comunicación mínima. Todo se guarda en la dirección de la página, así que un enlace compartido da el mismo resultado.",
         5: "Las tarjetas «Sol» y «Tierra» resumen a qué altura promedio estuvo cada uno y qué parte del período se vio por encima del relieve.",
         6: "El botón «i» muestra de dónde sale cada dato y qué tan confiable es.",
       },
