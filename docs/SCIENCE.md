@@ -116,6 +116,18 @@ Política única (CORE-02, DEC-036), la misma en `computeScenario()`, `sampleAt(
 
 La visibilidad geométrica de la Tierra **no garantiza comunicación**. No incorpora enlace de radio, potencia, ganancia, orientación de antena, banda, ruido, propagación, ocultaciones por infraestructura ni disponibilidad de estaciones terrestres.
 
+## Forma de los recorridos en el panorama
+
+El panorama (`web/src/ui/panorama.js`) dibuja los recorridos del Sol y de la Tierra en una proyección rectangular: azimut (0°–360°) en el eje horizontal y elevación en el vertical. La vertical está exagerada unas 3,5 veces (`VERTICAL_EXAGGERATION`: 12 px/° contra 1240/360 ≈ 3,44 px/° en horizontal), y la elevación se recorta en `SKY_MAX_EL` = 31°. Por encima de ese valor el cuerpo se dibuja pegado al borde superior.
+
+Con la rotación lunar (un giro por mes sinódico, ≈ 29,5 días), cada cuerpo recorre un círculo alrededor del polo celeste lunar. Ese círculo forma con el horizonte un ángulo de **90° − |latitud|**, y de ese ángulo sale la forma que se ve:
+
+- **Cerca del ecuador:** el círculo es casi perpendicular al horizonte y pasa cerca del cenit. El Sol sube por el este (azimut ≈ 90°) y baja por el oeste (≈ 270°) con el azimut casi constante, así que se ve como líneas verticales. Por encima de los 31° la trayectoria queda recortada como una línea horizontal en el borde superior. La Tierra está casi fija en el cielo y solo se desplaza unos grados por la libración, así que también se ve casi recta o recortada.
+- **Cerca de los polos:** el círculo es casi paralelo al horizonte. El Sol recorre los 360° de azimut rasante, y su elevación oscila aproximadamente como `δ + c·cos(A − A₀)`. Ahí `c` es la colatitud del sitio (90° − |lat|), `A` es el azimut y `δ` es la declinación del Sol respecto del ecuador lunar, que varía poco porque el ecuador lunar está inclinado 1,54° respecto de la eclíptica. A 85° S la amplitud es de unos ±5°, y con la exageración vertical se ve como una onda. La Tierra, también cerca del horizonte, oscila por la libración en latitud (≈ ±6,7°) y en longitud (≈ ±7,9°).
+- **En latitudes intermedias** se ven arcos, una transición entre las dos formas.
+
+Estas formas salen de la geometría y de la proyección, no de errores en los datos. Las posiciones son las mismas que usa el resto de la página (Horizons o el modelo aproximado), y el panorama no hace cálculos propios.
+
 ## Muestreo y ventanas operativas
 
 `computeScenario()` muestrea a intervalos de 10 minutos. La cantidad de pasos de la ventana se redondea y se agregan 32 días de anticipación para buscar el próximo cambio de visibilidad mostrado en la UI.
