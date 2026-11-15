@@ -1157,3 +1157,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La única referencia fina en la banda es Chandrayaan-3; al norte de +60° no hay sitio curado para comparar.
 - **Estado:** vigente.
 
+## DEC-077 — Logo nuevo e inglés como idioma por defecto
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: usar el logo nuevo del equipo (`logo.jpeg`, guardado en la raíz) y que la página abra en inglés.
+- **Decisión:** reemplazar el logo del Figma por el nuevo en las tres páginas y en el ícono de la pestaña, y abrir en inglés salvo que el visitante ya haya elegido un idioma. Cambia DEC-014 (réplica del Figma) solo en el logo, por pedido explícito.
+- **Solución aplicada:**
+  - `web/public/logo.png` (256 px) y `web/public/favicon.png` (64 px): recorte circular del original con fondo transparente (el original tiene esquinas blancas que se veían sobre el encabezado oscuro).
+  - `index.html`, `compare.html`, `informe.html`: logo de 64 × 64, favicon nuevo y `lang="en"`.
+  - `web/src/styles/main.css`: `.header-logo` cuadrado, con el mismo centro que el de 80 × 64 del Figma.
+  - `web/src/i18n/index.js`: `initialLang()` devuelve el idioma guardado o, si no hay, `"en"` (antes seguía el idioma del navegador). El botón de idioma sigue igual.
+  - `tests/data-status.test.js`: fija el español porque sus textos esperados están en español.
+- **Alternativas descartadas:** seguir el idioma del navegador: el jurado de Space Apps es internacional y un navegador en español abriría la página en español.
+- **Supuestos y límites:** quien ya eligió español (queda guardado en el navegador) la sigue viendo en español. `web/public/figma/logo.png` queda en el repositorio sin uso.
+- **Estado:** vigente.
+
