@@ -148,6 +148,7 @@ La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `
 - La noche más larga se cuenta en las muestras de 10 min del escenario; en el mapa de calor, en el paso de su cálculo (1–2 h).
 - La pendiente usa la del punto con el DEM polar o la tabla de `LDEM_128` (escala kilométrica, más suave que a 100 m). Con `LDEM_16` (escala regional) no se evalúa. Por eso solo cuenta en la comparación y en los informes; el ranking, las fechas, la página principal y el mapa de calor evalúan luz y comunicación.
 - La potencia relativa media dejó de ser criterio; sigue como métrica.
+- El mapa de calor tiene también la capa "Noche más larga" (DEC-072), con las mismas horas que usa este requisito.
 - **Consecuencia física:** en misiones de más de unos días, cualquier sitio fuera de las zonas polares más iluminadas tiene una noche de hasta 14 días y no cumple la luz continua. Con 30 días, ninguna celda del casquete polar la cumple (la noche más corta medida es de 112 h).
 
 ## Limitaciones conocidas
