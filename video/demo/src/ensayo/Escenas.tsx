@@ -224,7 +224,7 @@ export const S6Creditos = ({t}: {t: number}) => {
       <Desenfoque t={t} a={a + 0.25} style={{position: 'absolute', top: 445, fontFamily: fE.serif, fontStyle: 'italic', fontSize: 56, color: E.oro}}>Precision starts with the right location.</Desenfoque>
       <div style={{position: 'absolute', top: 560, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8}}>
         {[
-          'Team Hubble 27 — Barbato · Duarte · Facchin · Peiren · Ligüera · Santana',
+          'Team Hubble 27 — Barbato · Duarte · Facchin · Peirén · Ligüera · Santana',
           'NASA Space Apps Challenge 2026 · Salto / Paysandú, Uruguay',
           'Data: NASA/JPL Horizons · LRO LOLA · LROC (NASA SVS CGI Moon Kit)',
           'Photos: NASA (public domain) · Voice and music: AI-generated with ElevenLabs',

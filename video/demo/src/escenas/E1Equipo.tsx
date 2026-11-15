@@ -5,7 +5,7 @@ import {color, fuente} from '../marca';
 // 0:00 — Presentación: los seis apellidos aparecen cuando la voz los dice, después "Team Hubble 27".
 const APELLIDOS: [string, string][] = [
   ['Barbato', 'barbato'], ['Duarte', 'duarte'], ['Facchin', 'facchin'],
-  ['Peiren', 'peiren'], ['Ligüera', 'liguera'], ['Santana', 'santana'],
+  ['Peirén', 'peiren'], ['Ligüera', 'liguera'], ['Santana', 'santana'],
 ];
 
 export const E1Equipo = ({t}: {t: number}) => {
