@@ -1173,6 +1173,27 @@ button {
   top: 244px;
 }
 
+/* Casilla del satélite de relevo (DEC-084), a la derecha de la etiqueta de duración. */
+.params > .params-relay {
+  right: 10px;
+  top: 240px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.params-relay input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
 .params > .params-label-window {
   top: 334px;
 }
