@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
+Última actualización: 2026-11-15 (validación del ejemplo de la guía de viabilidad, rama `docs/validar-ejemplo-viabilidad`, DEC-085; antes: revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
 
 ---
 
@@ -151,7 +151,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007~~ Resuelto 2026-11-15 (rama `feat/viabilidad-requisitos`, VIAB-01 #122, DEC-071): requisitos de misión (luz continua, comunicación con relevo y pendiente donde hay datos); la viabilidad es la del peor requisito.
 
 - [x] ~~Que las 24 h de baterías y el 80 % de comunicación mínima de la viabilidad se puedan modificar, y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h. — Lucio · VIAB-02 #142~~ Resuelto 2026-11-15 (rama `feat/umbrales-variables`, DEC-083).
-- [ ] Validar el ejemplo de la guía de viabilidad (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos como alternativa a las baterías. — Teo, Facu, Lucio · DEC-083
+- [x] ~~Validar el ejemplo de la guía de viabilidad (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos como alternativa a las baterías. — Teo, Facu, Lucio · DEC-083~~ Resuelto 2026-11-15 (rama `docs/validar-ejemplo-viabilidad`, DEC-085, `docs/VALIDACION.md`): cifras y viabilidad correctas, pero las 340 h son la noche dentro de la misión (la entera dura ~356 h); se corrigió el texto en ES/EN. RTG respaldado por los ALSEP con SNAP-27.
 - [ ] Revisar la redacción de los textos nuevos de los supuestos editables (`params.battery`, `params.comms`, sus ayudas, `help.params.items.7`, `help.viability.items.4–6`, ES/EN). — Alfonso, Cata, Lucio · DEC-083
 - [ ] Hay dos decisiones numeradas DEC-082 en `docs/DECISIONES.md` (vista inicial GLOBAL y versión "Emoción" de la demo); renumerar la segunda. — Equipo · detectado en VIAB-02
 
@@ -176,7 +176,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Revisión manual en escritorio (≥ 1200 px), en ES y en EN, sobre https://selene-space-apps.vercel.app. Las pruebas, el build, el despliegue, los enlaces y las claves de idioma ya se verificaron de forma automática. — Equipo · DEPLOY-01 #14, `docs/ENTREGA.md`~~ Hecha el 2026-11-15 (rama `docs/cierre-deploy-01`). Faltó probar la impresión del informe, el panel "Datos y fuentes" y las otras capas del mapa.
 - [x] ~~Crear y subir el tag de entrega (propuesta: `entrega-2026-11-15`) sobre el commit final de `main`, y anotar el hash y la hora de envío del formulario en #14. — Equipo · DEPLOY-01 #14~~ Tag creado el 2026-11-15 sobre el merge de la rama `docs/cierre-deploy-01`, con el hash anotado en #14.
 - [ ] Anotar en #14 la hora de envío del formulario. Si entra otro PR a `main` antes de enviar, mover el tag `entrega-2026-11-15` al commit final. — Equipo · DEPLOY-01 #14
-- [ ] Revisar la demo en video (`video/demo/out/selene-demo-final.mp4`): pronunciación de los apellidos, ajustes de texto al guion y la pregunta en pantalla. — Alfonso, Cata (texto), Teo, Martín (guion), Lucio, Facu (edición) · DEC-080
+- [ ] Revisar la demo en video (`video/demo/out/selene-demo-emocion.mp4`, la que se entrega según DEC-082; antes decía `selene-demo-final.mp4`): pronunciación de los apellidos, ajustes de texto al guion y la pregunta en pantalla. — Alfonso, Cata (texto), Teo, Martín (guion), Lucio, Facu (edición) · DEC-080
 - [ ] Subir la demo a YouTube o Drive con enlace público y pegarlo en el formulario antes del 15/11 23:59. — Lucio, Facu · DEC-080
 - [ ] Confirmar si el logo (`logo.jpeg`) es dibujo de Teo o imagen generada con IA: la web lo marca "AI GENERATED IMAGE" (DEC-077) y el video no lo marca. — Teo · DEC-080
 - [x] ~~Elegir cuál de las tres versiones de la demo se entrega (`video/demo/out/`: `selene-demo-final.mp4`, `selene-demo-emocion.mp4`, `selene-demo-ensayo.mp4`) y revisar los agregados visuales de la v3 (sello "COMPLEX", textos de las tarjetas). — Equipo · DEC-081~~ Se entrega "Emoción" (`selene-demo-emocion.mp4`). Resuelto 2026-11-15 (rama `fix/demo-apellidos`, DEC-082).
