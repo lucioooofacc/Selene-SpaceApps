@@ -41,7 +41,7 @@ export default {
         light: "Start dates for this site with the same duration ({days} days), between {from} and {to} (JPL Horizons data), without overlapping periods, sorted by the mean usable solar power.",
       },
       aria: "Use the period {range}",
-      sub: "Viability {level} · {met} of {total} requirements",
+      sub: "Viability {level} · {met}/{total}",
       sunPct: "Share of the period with the Sun",
       earthPeak: "Peak Earth elevation in the period",
       noScience: "Not applicable to dates: scientific features depend on the site, not the date.",
