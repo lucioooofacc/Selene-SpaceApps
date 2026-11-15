@@ -148,6 +148,36 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** cálculo cancelable/cacheado; resolución y cobertura indicadas; sin red en bucles por celda; coherencia con escenarios puntuales.
 - **Fuera de alcance:** mapa global de precisión cartográfica no necesario para la demo.
 
+### CORE-05 — Horizonte de los puntos propios cerca de los polos
+
+- **Prioridad:** P2 · **Issue:** [#114](https://github.com/lucioooofacc/Selene-SpaceApps/issues/114).
+- **Objetivo:** que el horizonte de los puntos propios sea confiable al sur de −60° y al norte de +60°. Hallazgo de DEC-070: con el horizonte regional (DEC-068) la luz difiere hasta 39 p. p. al norte de +75° y la Tierra hasta 100 p. p. entre −75° y −60°.
+- **Rama sugerida:** `feat/horizonte-polar-puntos`.
+- **Dependencias:** CORE-04.
+- **Archivos afectados:** `lib/analysis.js`, `lib/heat-map.js` o `lib/global-dem.js`, `ui/ephemerides.js`, i18n y pruebas.
+- **Criterios de aceptación:** error medido frente al horizonte exacto del punto, por banda de latitud, dentro de una tolerancia acordada con el equipo; o, si se elige solo avisar, un rótulo que diga el error esperado.
+- **Fuera de alcance:** cambiar el horizonte de los sitios curados.
+
+### TERRAIN-05 — Artefacto cercano en el horizonte de Apollo 11
+
+- **Prioridad:** P2 · **Issue:** [#115](https://github.com/lucioooofacc/Selene-SpaceApps/issues/115).
+- **Objetivo:** quitar el error de ~0,9° que los píxeles interpolados cercanos de `LDEM_128` agregan al horizonte de Apollo 11 (DEC-070).
+- **Rama sugerida:** `fix/horizonte-pixeles-interpolados`.
+- **Dependencias:** TERRAIN-03.
+- **Archivos afectados:** `lib/horizon-lola.js`, scripts de horizontes, tablas generadas y pruebas.
+- **Criterios de aceptación:** el horizonte de Apollo 11 coincide con `LDEM_16` dentro de una tolerancia acordada; se regeneran las tablas y se documenta el cambio de resultados en todos los sitios.
+- **Fuera de alcance:** cambiar de producto LOLA.
+
+### DOC-02 — Explicar por qué Shackleton da 60 % de luz
+
+- **Prioridad:** P1 · **Issue:** [#116](https://github.com/lucioooofacc/Selene-SpaceApps/issues/116).
+- **Objetivo:** que el 60 % de luz de Shackleton R01 no se lea como un error frente al 77–88 % de la bibliografía (DEC-070): R01 es el centro de un polígono y a 480 m hay un punto con 90 %.
+- **Rama sugerida:** `docs/explicar-shackleton`.
+- **Dependencias:** ninguna.
+- **Archivos afectados:** `docs/ENTREGA.md` y, si se decide, i18n y "Datos y fuentes".
+- **Criterios de aceptación:** la explicación aparece donde la vería un jurado, en ES y EN si va en la interfaz.
+- **Fuera de alcance:** cambiar el punto R01.
+
 ### TERRAIN-04 — Terreno del informe en toda la superficie lunar
 
 - **Prioridad:** P1 · **Issue:** [#110](https://github.com/lucioooofacc/Selene-SpaceApps/issues/110).
