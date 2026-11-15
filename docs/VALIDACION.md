@@ -111,3 +111,15 @@ Pendiente de VIAB-01 (DEC-071): validar las 24 h de autonomía de baterías, el 
 
 Fuentes externas consultadas: Dwyer Cianciolo, A., "Artemis Human Landing System Update", 2024 NASA LaRC/ARC EDL Summer Seminar Series (NTRS 20240009596), diapositivas "Characteristics of the South Pole" y "Key Artemis III Landing Requirements"; anuncio de NASA de las 13 regiones candidatas (19/08/2022); cobertura de prensa del informe IG-26-004 de NASA OIG (marzo de 2026); cobertura de prensa de la batería de IM-1 (27–29/02/2024).
 
+## Ejemplo de la guía de viabilidad (15/11/2026)
+
+Pendiente de DEC-083, resuelto en DEC-085. Apollo 11, 30 días desde el 14/11/2026 00:00 UTC, con JPL Horizons y el horizonte LOLA curado:
+
+| Dato | Valor del motor | Conclusión |
+| --- | --- | --- |
+| Ocaso / amanecer siguiente | 29/11 19:16 UTC / 14/12 ~15:20 UTC | La misión termina ~15 h antes del amanecer |
+| Noche más larga dentro de la misión | 340,7 h (14 d 4 h) | Coincide con la guía |
+| Noche entera | ~356 h (14 d 20 h) | Coherente con media lunación (~354 h). El texto decía "noche lunar entera": corregido |
+| Viabilidad con 24 h / 360 h | Baja / al límite (comunicación 100 %) | Coincide con la guía |
+| Generador de radioisótopos como alternativa | ALSEP de Apollo 12–17 con RTG SNAP-27, operativo de noche (NTRS 19730041219) | Validado como afirmación general |
+

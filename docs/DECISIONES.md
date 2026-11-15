@@ -1256,7 +1256,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Interfaz: campos «Baterías (h)» y «Com. mín. (%)» en la fila de latitud y longitud (`index.html`, `ui/params.js`, `styles/main.css`). La fila pasa de 2 a 4 columnas (108/112/86/86 px) porque al pie del panel quedaban 6 px libres. Un valor vacío o inválido vuelve al vigente; uno fuera de rango se acota.
   - Estado y URL: `state.js` (`batteryHours`, `commsMinPct`), `main.js` y `ui/links.js`: los parámetros `bat` y `com` se escriben solo si no son los de por defecto y los leen la misión, la comparación y el informe. La comparación y el informe los usan, pero no tienen campos para editarlos.
   - Textos: `t()` completa `{battery}` y `{comms}` con los valores vigentes (`i18n/index.js`). Se actualizaron ES/EN: umbrales de la comparación, nota de criterios, ayuda del resumen, «Datos y fuentes», cartel del mapa, ayuda de parámetros (punto 7 nuevo) y guía de viabilidad (puntos 4, 5 y 6: misiones largas y ejemplo).
-- **Ejemplo de la guía:** medido en el navegador con JPL Horizons: Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h (~340 h). Con 24 h la luz no cumple y la viabilidad es "baja"; con 360 h queda "media". La guía aclara que 360 h no es realista con baterías solas: haría falta otra fuente, como un generador de radioisótopos (afirmación general, sin un valor de referencia).
+- **Ejemplo de la guía:** medido en el navegador con JPL Horizons: Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h (~340 h). Con 24 h la luz no cumple y la viabilidad es "baja"; con 360 h queda "media". La guía aclara que 360 h no es realista con baterías solas: haría falta otra fuente, como un generador de radioisótopos (afirmación general, sin un valor de referencia). *(Validado el 15/11/2026, ver DEC-085: las 340 h son la noche dentro de la ventana; la noche entera dura ~356 h. Se corrigió el texto.)*
 - **Validación:** `web/tests/supuestos-viabilidad.test.js` (valores por defecto, límites con valores nuevos, rangos e inválidos, versión de caché, URL y textos). 221 pruebas pasan y el build funciona. En el navegador (1992 px de diseño, escalado): la tarjeta y el resumen cambian, la capa de viabilidad del mapa se recalcula en el worker y el cartel "ninguna zona es viable" desaparece con 360 h, la comparación respeta `bat`/`com`, y las etiquetas entran en ES y EN.
 - **Supuestos y límites:**
   - Los valores son supuestos del equipo; la interfaz los marca así (explicación al pasar el mouse sobre los campos, guía y notas).
@@ -1281,3 +1281,16 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - Sin relevo, gran parte del polo sur sale no viable, porque las semanas con Sol continuo suelen ser semanas sin la Tierra a la vista (el problema que llevó al relevo en DEC-071).
 - **Alternativas descartadas:** cambiar el valor por defecto a "sin relevo" (Lucio pidió una opción); un desplegable en la fila de coordenadas (no hay lugar sin achicar las etiquetas).
 - **Estado:** vigente. Complementa DEC-071 y DEC-083.
+
+## DEC-085 — Validación del ejemplo de la guía de viabilidad
+
+- **Contexto / problema:** pendiente de DEC-083 para astronomía (Teo, Facu, Lucio): validar el ejemplo de la guía (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos.
+- **Decisión:** el resultado del ejemplo es correcto, pero el texto decía que la misión "pasa por una noche lunar entera" de 14 d 4 h. Se corrige el texto; el modelo no cambia.
+- **Solución aplicada:**
+  - Recalculado con el motor (`computeScenario`, efemérides JPL Horizons de `apollo11.json`, horizonte LOLA curado): ventana 14/11/2026 00:00 UTC – 14/12/2026 00:00 UTC; ocaso el 29/11 19:16 UTC, amanecer siguiente el 14/12 ~15:20 UTC. `longestNightH` = 340,7 h porque cuenta solo la noche **dentro** de la ventana; la noche entera dura ~356 h (14 d 20 h), coherente con el punto 5 de la guía (~354 h lejos de los polos).
+  - Viabilidad: con 24 h, luz "no cumple" y viabilidad baja; con 360 h, "al límite" (comunicación 100 %). Con la noche entera (356 h < 360 h) el resultado sería el mismo.
+  - Texto del punto 6 de `help.viability.items` (ES/EN): "casi toda una noche lunar", fechas del ocaso y del amanecer, 340 h dentro de la misión y ~356 h la noche entera; 360 h pasa a ser "algo más que una noche lunar entera".
+  - Generador de radioisótopos: la mención es correcta. Los ALSEP de Apollo 12, 14, 15, 16 y 17 funcionaron durante las noches lunares con el RTG SNAP-27 (NTRS 19730041219; Smithsonian NASM A19731201000). Se deja como afirmación general, sin valores.
+- **Alternativas descartadas:** cambiar `longestDarkHours()` para que cuente la noche hasta el próximo amanecer fuera de la ventana (las baterías solo importan durante la misión y cambiaría resultados el día de la entrega); cambiar el ejemplo a 31 días (seguiría dependiendo de la hora de inicio).
+- **Estado:** vigente.
+
