@@ -101,6 +101,11 @@
               <p class="map-status map-status-error" data-i18n="map.noWebgl"></p>
             </div>
             <p class="map-credit" id="map-credit" hidden></p>
+            <!-- Cartel cuando la capa de viabilidad sale toda baja (DEC-073) -->
+            <div class="map-banner" id="map-banner" role="status" hidden>
+              <p id="map-banner-text"></p>
+              <button type="button" class="help-button help-inline" data-help="viability" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.viability;title:help.open.viability">?</button>
+            </div>
             <div class="map-legend" id="map-legend" role="img" hidden></div>
 
             <div class="map-add">

@@ -102,6 +102,9 @@ export default {
       night: "Longest night of the period",
     },
     layerUnit: { hours: "{n} h" },
+    banner: {
+      allLow: "With a {days}-day mission no area is viable: every one has some night longer than 24 h, more than the batteries are expected to last. Try a shorter mission, the “Longest night” layer to see where nights are shorter, or “Best dates”.",
+    },
     layerLegendAria: "{name} legend: from {min} to {max}.",
     layerAlt: {
       sun: "Computed south pole map down to 80° S: percentage of the mission period with the Sun visible",
@@ -579,11 +582,138 @@ export default {
   help: {
     close: "Close help",
     open: {
+      cmpControls: "How to choose the sites and dates to compare",
+      cmpSites: "How to read each site's header",
+      cmpGlobe: "How to read the location of the sites",
+      cmpMetrics: "How to read the mission metrics",
+      cmpWindows: "How to read the light and link windows",
+      cmpHorizon: "How to read the horizon profile",
+      rwControls: "How to choose the report's site and dates",
+      rwSummary: "How to read the period summary",
+      rwTerrain: "How to read the terrain",
+      rwLight: "How to read light and communication",
+      rwDates: "How to use the best dates",
+      rwTraj: "How to read the Earth–Moon trajectory",
+      viability: "How viability is calculated",
       places: "How to read the best places and dates list",
       map: "How to use the map",
       params: "How to define the mission and read its results",
       panorama: "How to read the panorama and the timeline",
       status: "How to read the power and communication cards",
+    },
+    tourCompare: {
+      welcomeTitle: "Detailed comparison",
+      welcome: "This page puts two sites side by side with the same dates, to see which one is better and why. The tour shows you what each section says.",
+    },
+    tourReport: {
+      welcomeTitle: "Site report",
+      welcome: "This report gathers everything SELENE knows about a site on the chosen dates: viability, terrain, light and communication, best dates and how to get there from the Earth. The tour shows you what each section says.",
+    },
+    viability: {
+      title: "How viability is calculated",
+      intro: "Viability tells whether a mission at that site and on those dates would meet three basic requirements, and it is given by the worst of them: if one is not met, the site is not viable.",
+      items: {
+        1: "Continuous light: the longest night of the period is checked. It is met if there is no night, as Artemis III requires for the whole stay; it is borderline if nights do not exceed 24 h, which is roughly what a small lander's batteries are expected to last; and it is not met if they are longer.",
+        2: "Communication: the share of the time with the Earth in view is checked. It is met from 80%; below that it is borderline, because a relay satellite is assumed, as in the Artemis plans.",
+        3: "Terrain slope: it is met below 8° and borderline below 10°, the limits of the Artemis landing system. It is only evaluated in the comparison and the report, where terrain data are available.",
+        4: "The 24 h of batteries and the 80% communication are team assumptions; the other values come from requirements published by NASA.",
+        5: "In missions longer than a week almost the whole Moon has nights longer than 24 h, which is why viability is usually low. The map's “Longest night” layer and “Best dates” help to find better windows.",
+      },
+    },
+    cmpControls: {
+      title: "Sites and dates",
+      intro: "Here you choose the two sites you want to compare, A and B, and the mission period, which is the same for both.",
+      items: {
+        1: "The sites can be from the list or points chosen on the main page's map.",
+        2: "The button with two arrows swaps A and B.",
+        3: "Every change is saved in the page address, so you can share the link.",
+      },
+    },
+    cmpSites: {
+      title: "Each site's header",
+      intro: "Each card shows the site, its coordinates and its viability over the chosen period, with how many mission requirements it meets.",
+      items: {
+        1: "“Site provenance” tells which official source the coordinates come from and how reliable they are.",
+        2: "The color of the top line (gold for A and cyan for B) is the same one that identifies each site in every chart.",
+      },
+    },
+    cmpGlobe: {
+      title: "Where the sites are",
+      intro: "The 3D Moon shows where each site is and the shortest path between them over the surface.",
+      items: {
+        1: "You can rotate it by dragging or with the arrow keys, and zoom with the wheel or with + and −.",
+        2: "Next to it are the distance between the sites, their coordinates and how much light and Earth each one has over the period.",
+      },
+    },
+    cmpMetrics: {
+      title: "Mission metrics",
+      intro: "The table compares nine mission figures and marks which site has the advantage in each one; above it, a summary says which site leads in more metrics.",
+      items: {
+        1: "Illumination and communication coverage are the share of the period with the Sun or the Earth above the terrain.",
+        2: "The longest windows tell how long light or a link lasts without interruption.",
+        3: "If the difference is very small, the metric is marked as a tie.",
+      },
+    },
+    cmpWindows: {
+      title: "Light and link windows",
+      intro: "Each bar is a continuous stretch with the Sun in view (light) or with the Earth in view (link) over the period, for both sites.",
+      items: {
+        1: "The gaps between bars are nights or communication gaps.",
+        2: "Hovering over a bar shows its UTC times.",
+      },
+    },
+    cmpHorizon: {
+      title: "Horizon profile",
+      intro: "The chart shows how high the terrain is in each direction, as seen from each site.",
+      items: {
+        1: "The higher the horizon in a direction, the later the Sun or the Earth rises there.",
+        2: "Solid lines are the horizon used by the calculation; dashed lines, if shown, are the one of an edited site's original coordinates.",
+      },
+    },
+    rwControls: {
+      title: "Site and dates",
+      intro: "Here you choose the report's site and the mission period; everything else is recalculated when you change them.",
+      items: {
+        1: "The “Print / save PDF” button builds a paper version of the report.",
+      },
+    },
+    rwSummary: {
+      title: "Period summary",
+      intro: "The first card gives the site's viability on those dates, and the others give the key figures of the period.",
+      items: {
+        1: "Below it, each mission requirement appears with its result: met, borderline or not met.",
+        2: "The longest night tells how long the batteries must last, and the longest communication gap, how long the Earth is out of view.",
+      },
+    },
+    rwTerrain: {
+      title: "Terrain",
+      intro: "This section describes the ground around the site with height data from the LRO spacecraft: height, slopes and roughness.",
+      items: {
+        1: "Slope is key for landing: the Artemis lander needs less than 8 to 10°.",
+        2: "The note below says which map the data come from and at what scale, because the resolution changes across the Moon.",
+      },
+    },
+    rwLight: {
+      title: "Light and communication",
+      intro: "The bars show when the Sun and when the Earth are in view over the period, and the table summarizes the mission metrics.",
+      items: {
+        1: "Hovering over a bar shows its UTC times.",
+      },
+    },
+    rwDates: {
+      title: "Best dates",
+      intro: "These are the five most convenient start dates for this site with the same mission length, without overlapping periods.",
+      items: {
+        1: "Clicking a date recalculates the report with that period.",
+      },
+    },
+    rwTraj: {
+      title: "Earth–Moon trajectory",
+      intro: "It is an estimate of the trip from a low orbit around the Earth to lunar orbit, arriving in time for the start of the mission.",
+      items: {
+        1: "Δv is the change of speed the spacecraft must make in each maneuver; it is used to estimate propellant.",
+        2: "It is the lowest-energy transfer; crewed missions usually go faster and spend somewhat more.",
+      },
     },
     tour: {
       step: "Step {n} of {total}",
@@ -644,7 +774,7 @@ export default {
         1: "“Solar power” shows how much power the panels deliver given the Sun's elevation and how much the terrain blocks it.",
         2: "“Communication” shows how solid the direct link with the Earth is given its elevation above the horizon.",
         3: "“Right now” explains the current situation in words and how long until the next change.",
-        4: "“Period summary” gives the overall viability and the longest stretches of night, of light and without communication.",
+        4: "“Period summary” gives the viability according to the mission requirements, with how many are met, and the longest stretches of night, of light and without communication; its “?” button explains how it is calculated.",
       },
     },
   },

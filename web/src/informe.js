@@ -7,6 +7,7 @@
 import "./styles/main.css";
 import "./styles/compare.css";
 import "./styles/report.css";
+import "./styles/help.css";
 import { computeScenario, realDataVersion } from "./lib/analysis.js";
 import { dateScenarios, pickDistinct } from "./lib/dates.js";
 import { rankEntries } from "./lib/ranking.js";
@@ -19,6 +20,7 @@ import { dataStatus, onDataStatus } from "./ui/data-status.js";
 import { compareUrl, missionUrl, parseMissionQuery, parseSiteParam, siteParam } from "./ui/links.js";
 import { initReport } from "./ui/report.js";
 import { applySettings, initSettings } from "./ui/settings.js";
+import { initHelp, refreshHelp } from "./ui/help.js";
 import { renderSiteReport } from "./ui/site-report.js";
 import { runInWorker } from "./ui/compute.js";
 
@@ -149,6 +151,7 @@ function init() {
     if (extra) extra = parseSiteParam(extra.id) ?? extra;
     if (site.custom) site = extra;
     render();
+    refreshHelp();
   });
   initCalendar();
   subscribe((_, changed) => {
@@ -158,6 +161,20 @@ function init() {
   window.addEventListener("resize", fitStage);
   initSettings({ onLanguage: render });
   initReport(() => scenario);
+  // Guía de la página (DEC-073): «?» en cada sección y recorrido desde «Guía» (no se abre solo).
+  initHelp({
+    tourKey: "selene-tour-report-seen",
+    welcome: "help.tourReport",
+    topics: [
+      { id: "rwControls", target: ".rw-controls" },
+      { id: "rwSummary", target: 'section[aria-labelledby="rw-summary-title"]' },
+      { id: "viability", target: "#rw-kpis" },
+      { id: "rwTerrain", target: 'section[aria-labelledby="rw-terrain-title"]' },
+      { id: "rwLight", target: 'section[aria-labelledby="rw-light-title"]' },
+      { id: "rwDates", target: 'section[aria-labelledby="rw-dates-title"]' },
+      { id: "rwTraj", target: 'section[aria-labelledby="rw-traj-title"]' },
+    ],
+  });
 
   render();
   loadSiteEphemerides().then(render);

@@ -27,6 +27,8 @@
           <a href="./index.html" data-mission-link data-i18n="nav.mission"></a>
           <a href="./compare.html" aria-current="page" data-i18n="nav.compare"></a>
           <a href="./informe.html" data-informe-link data-i18n="nav.report"></a>
+          <!-- Recorrido guiado (UI-16, DEC-066) -->
+          <button type="button" id="tour-button" data-i18n="nav.guide"></button>
         </nav>
         <div class="header-actions">
           <button type="button" class="icon-button" id="lang-toggle" data-i18n-attr="aria-label:nav.language;title:nav.language">
@@ -49,6 +51,7 @@
 
         <!-- Selección -->
         <section class="cmp-controls" data-i18n-attr="aria-label:compare.controls">
+          <button type="button" class="help-button help-inline" data-help="cmpControls" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.cmpControls;title:help.open.cmpControls">?</button>
           <label class="cmp-field">
             <span class="params-label" data-i18n="compare.slot.a"></span>
             <span class="params-select">
@@ -86,6 +89,7 @@
         <section class="cmp-panel cmp-globe-panel" aria-labelledby="cmp-globe-title">
           <div class="cmp-panel-head">
             <h2 id="cmp-globe-title" data-i18n="compare.globe.title"></h2>
+            <button type="button" class="help-button help-inline" data-help="cmpGlobe" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.cmpGlobe;title:help.open.cmpGlobe">?</button>
           </div>
           <div class="cmp-globe-layout">
             <div class="cmp-globe" id="cmp-globe" data-mode="3d" role="img" tabindex="0">
@@ -100,6 +104,7 @@
         <section class="cmp-panel" aria-labelledby="cmp-metrics-title">
           <div class="cmp-panel-head">
             <h2 id="cmp-metrics-title" data-i18n="compare.metricsTitle"></h2>
+            <button type="button" class="help-button help-inline" data-help="cmpMetrics" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.cmpMetrics;title:help.open.cmpMetrics">?</button>
             <p class="cmp-summary" id="cmp-summary"></p>
           </div>
           <div id="cmp-metrics"></div>
@@ -108,6 +113,7 @@
         <section class="cmp-panel" aria-labelledby="cmp-windows-title">
           <div class="cmp-panel-head">
             <h2 id="cmp-windows-title" data-i18n="compare.windowsTitle"></h2>
+            <button type="button" class="help-button help-inline" data-help="cmpWindows" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.cmpWindows;title:help.open.cmpWindows">?</button>
             <p class="cmp-hint" data-i18n="compare.windowsHint"></p>
           </div>
           <div class="cmp-chart" id="cmp-windows"></div>
@@ -117,6 +123,7 @@
           <section class="cmp-panel" aria-labelledby="cmp-horizon-title">
             <div class="cmp-panel-head">
               <h2 id="cmp-horizon-title" data-i18n="compare.horizonTitle"></h2>
+            <button type="button" class="help-button help-inline" data-help="cmpHorizon" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.cmpHorizon;title:help.open.cmpHorizon">?</button>
               <p class="cmp-legend" id="cmp-horizon-legend"></p>
             </div>
             <div class="cmp-chart" id="cmp-horizon"></div>
@@ -126,6 +133,7 @@
           <section class="cmp-panel" aria-labelledby="cmp-criteria-title">
             <div class="cmp-panel-head">
               <h2 id="cmp-criteria-title" data-i18n="compare.criteriaTitle"></h2>
+            <button type="button" class="help-button help-inline" data-help="viability" aria-haspopup="dialog" aria-expanded="false" data-i18n-attr="aria-label:help.open.viability;title:help.open.viability">?</button>
             </div>
             <div id="cmp-criteria"></div>
             <p class="cmp-hint" data-i18n="compare.criteriaNote"></p>
