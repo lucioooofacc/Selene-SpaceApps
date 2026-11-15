@@ -1598,23 +1598,6 @@ button {
   font-weight: 600;
 }
 
-.pano-caption {
-  position: absolute;
-  right: 20px;
-  top: 112px;
-  max-width: 460px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: rgba(5, 8, 15, 0.55);
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 16px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #6f7885;
-}
-
 /* Escala del relieve en el panorama (UI-08) */
 .pano-zero {
   stroke: rgba(200, 210, 230, 0.18);

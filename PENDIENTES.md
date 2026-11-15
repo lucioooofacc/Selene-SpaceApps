@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (UI-17: la sección inferior pide sitio y fechas, rama `feat/seccion-sin-seleccion`).
+Última actualización: 2026-11-15 (limpieza de archivos sin uso y documentación al día, rama `chore/limpieza-y-docs`).
 
 ---
 
