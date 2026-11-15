@@ -18,7 +18,10 @@
     "data:lola:global": "node scripts/extract-lola-global.mjs",
     "data:ephemerides": "node scripts/build-ephemerides.mjs",
     "data:lola:reduced": "node scripts/build-lola-polar-reduced.mjs",
-    "data:heat-atlas": "node scripts/build-heat-atlas.mjs"
+    "data:heat-atlas": "node scripts/build-heat-atlas.mjs",
+    "data:heat-atlas:global": "node scripts/build-global-heat-atlas.mjs",
+    "data:lola:global-dem": "node scripts/build-global-dem.mjs",
+    "data:site-terrain": "node scripts/build-site-terrain.mjs"
   },
   "devDependencies": {
     "vite": "^8.3.8"

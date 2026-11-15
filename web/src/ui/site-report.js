@@ -9,8 +9,7 @@ import { STEP_MINUTES } from "../lib/analysis.js";
 import { scenarioMetrics } from "../lib/compare.js";
 import { coord, dateUTC, deg, duration, pct, rangeUTC, timeUTC } from "../lib/format.js";
 import { windowStats } from "../lib/stats.js";
-import { siteTerrain } from "../lib/site-terrain.js";
-import { polarDemResolutionM, polarDemSample } from "../lib/polar-dem.js";
+import { needsGlobalDem, terrainForSite } from "../lib/site-terrain.js";
 import { hohmannTransfer, missionTimeline, moonDistanceAt, R_EARTH, R_MOON } from "../lib/trajectory.js";
 import { getLang, t } from "../i18n/index.js";
 import { dataNote, lolaHtml, lolaTitle, provenanceHtml, qualityHtml, traitsHtml } from "./provenance.js";
@@ -85,16 +84,21 @@ function positionHtml(st) {
     <p class="cmp-hint">${t("report.runs", { night: duration(st.longestNightMin), light: duration(st.longestLightMin), blackout: duration(st.longestBlackoutMin) })}</p>`;
 }
 
-/** Terreno: LOLA reducido alrededor del sitio y horizonte del escenario. */
-function terrainHtml(site, scenario, demState) {
-  const terrain = siteTerrain(polarDemSample, site, { stepKm: (polarDemResolutionM() ?? 480) * 2 / 1000 });
+/** Terreno alrededor del sitio (la fuente la elige lib/site-terrain.js) y horizonte del escenario. */
+function terrainHtml(site, scenario, demState, globalDemState) {
+  const found = terrainForSite(site);
   const horizon = `<h3>${lolaTitle(scenario)}</h3>${lolaHtml(scenario)}`;
-  if (!terrain) {
-    const key = demState === "loading" ? "loading" : site.lat <= -75 ? "error" : "outside";
-    return `<p class="prov-none">${t(`reportWeb.terrain.${key}`)}</p>${horizon}`;
+  if (!found) {
+    const global = needsGlobalDem(site);
+    const state = global ? globalDemState : demState;
+    const key = state === "error" ? "error" : "loading";
+    return `<p class="prov-none">${t(`reportWeb.terrain.${global ? `${key}Global` : key}`)}</p>${horizon}`;
   }
+  const { terrain, source, resolutionM } = found;
   const a = terrain.area;
-  const cls = (v) => (v < 5 ? "good" : v < 10 ? "warn" : "bad");
+  // Con el DEM global las pendientes son de escala regional: no se califican con los colores de alunizaje.
+  const cls = (v) => (source === "global" ? "" : v < 5 ? "good" : v < 10 ? "warn" : "bad");
+  const res = resolutionM >= 1000 ? `${num(resolutionM / 1000, 1)} km` : `${num(resolutionM)} m`;
   return `
     <dl class="rw-terrain">
       <div><dt>${t("reportWeb.terrain.height")}</dt><dd>${num(terrain.heightKm * 1000)} m</dd></div>
@@ -103,7 +107,7 @@ function terrainHtml(site, scenario, demState) {
       <div><dt>${t("reportWeb.terrain.below", { r: a.radiusKm })}</dt><dd>&lt; 5°: ${num(a.below[5])} % · &lt; 10°: ${num(a.below[10])} % · &lt; 15°: ${num(a.below[15])} %</dd></div>
       <div><dt>${t("reportWeb.terrain.roughness")}</dt><dd>${num(a.roughnessM)} m · ${t("reportWeb.terrain.relief")} ${num(a.reliefM)} m</dd></div>
     </dl>
-    <p class="cmp-hint">${t("reportWeb.terrain.note", { res: polarDemResolutionM(), low: num(a.lowConfidencePct) })}</p>
+    <p class="cmp-hint">${t(`reportWeb.terrain.note.${source}`, { res, low: num(a.lowConfidencePct) })}</p>
     ${horizon}`;
 }
 
@@ -173,9 +177,9 @@ function datesHtml(result, windowDays, startMs) {
 
 /**
  * Dibuja todo el informe web.
- * @param {{site, scenario, dates, demState}} ctx
+ * @param {{site, scenario, dates, demState, globalDemState}} ctx
  */
-export function renderSiteReport({ site, scenario, dates, demState }) {
+export function renderSiteReport({ site, scenario, dates, demState, globalDemState }) {
   const st = windowStats(scenario, STEP_MINUTES);
   $("rw-title").textContent = t("reportWeb.title", { name: site.name });
   $("rw-period").textContent = `${coord(site.lat, "lat")} · ${coord(site.lon, "lon")} · ${t("compare.period", {
@@ -185,7 +189,7 @@ export function renderSiteReport({ site, scenario, dates, demState }) {
   })}`;
   $("rw-note").textContent = dataNote(scenario);
   $("rw-kpis").innerHTML = kpisHtml(scenario, st);
-  $("rw-terrain").innerHTML = terrainHtml(site, scenario, demState);
+  $("rw-terrain").innerHTML = terrainHtml(site, scenario, demState, globalDemState);
   $("rw-windows").innerHTML = windowsSvg(scenario);
   $("rw-metrics").innerHTML = metricsHtml(scenario);
   $("rw-position").innerHTML = positionHtml(st);
