@@ -1,0 +1,397 @@
+[
+ {
+  "texto": "We",
+  "desde": 0.22,
+  "hasta": 0.3
+ },
+ {
+  "texto": "are",
+  "desde": 0.34,
+  "hasta": 0.44
+ },
+ {
+  "texto": "Barbato,",
+  "desde": 0.62,
+  "hasta": 1.1
+ },
+ {
+  "texto": "Duarte,",
+  "desde": 1.44,
+  "hasta": 1.84
+ },
+ {
+  "texto": "Facchin,",
+  "desde": 2.16,
+  "hasta": 2.6
+ },
+ {
+  "texto": "Peiren,",
+  "desde": 2.94,
+  "hasta": 3.34
+ },
+ {
+  "texto": "Ligüera",
+  "desde": 3.6,
+  "hasta": 4.019
+ },
+ {
+  "texto": "and",
+  "desde": 4.16,
+  "hasta": 4.2
+ },
+ {
+  "texto": "Santana.",
+  "desde": 4.28,
+  "hasta": 4.76
+ },
+ {
+  "texto": "team",
+  "desde": 4.98,
+  "hasta": 5.16
+ },
+ {
+  "texto": "Hubble",
+  "desde": 5.24,
+  "hasta": 5.42
+ },
+ {
+  "texto": "27.",
+  "desde": 5.62,
+  "hasta": 6.08
+ },
+ {
+  "texto": "We",
+  "desde": 6.34,
+  "hasta": 6.42
+ },
+ {
+  "texto": "chose",
+  "desde": 6.46,
+  "hasta": 6.66
+ },
+ {
+  "texto": "Challenge",
+  "desde": 6.74,
+  "hasta": 7.04
+ },
+ {
+  "texto": "Four",
+  "desde": 7.2,
+  "hasta": 7.42
+ },
+ {
+  "texto": "for",
+  "desde": 7.54,
+  "hasta": 7.6
+ },
+ {
+  "texto": "its",
+  "desde": 7.64,
+  "hasta": 7.76
+ },
+ {
+  "texto": "complexity",
+  "desde": 7.78,
+  "hasta": 8.38
+ },
+ {
+  "texto": "and",
+  "desde": 8.5,
+  "hasta": 8.6
+ },
+ {
+  "texto": "potential",
+  "desde": 8.68,
+  "hasta": 9.04
+ },
+ {
+  "texto": "for",
+  "desde": 9.12,
+  "hasta": 9.2
+ },
+ {
+  "texto": "innovation.",
+  "desde": 9.24,
+  "hasta": 9.76
+ },
+ {
+  "texto": "Our",
+  "desde": 10,
+  "hasta": 10.1
+ },
+ {
+  "texto": "project:",
+  "desde": 10.12,
+  "hasta": 10.52
+ },
+ {
+  "texto": "SELENE.",
+  "desde": 10.96,
+  "hasta": 11.34
+ },
+ {
+  "texto": "Precision",
+  "desde": 11.66,
+  "hasta": 12.08
+ },
+ {
+  "texto": "starts",
+  "desde": 12.26,
+  "hasta": 12.54
+ },
+ {
+  "texto": "with",
+  "desde": 12.58,
+  "hasta": 12.68
+ },
+ {
+  "texto": "the",
+  "desde": 12.72,
+  "hasta": 12.78
+ },
+ {
+  "texto": "right",
+  "desde": 12.84,
+  "hasta": 13
+ },
+ {
+  "texto": "location.",
+  "desde": 13.04,
+  "hasta": 13.52
+ },
+ {
+  "texto": "Our",
+  "desde": 13.72,
+  "hasta": 13.82
+ },
+ {
+  "texto": "website",
+  "desde": 13.86,
+  "hasta": 14.2
+ },
+ {
+  "texto": "evaluates",
+  "desde": 14.26,
+  "hasta": 14.74
+ },
+ {
+  "texto": "sunlight",
+  "desde": 14.82,
+  "hasta": 15.2
+ },
+ {
+  "texto": "and",
+  "desde": 15.24,
+  "hasta": 15.34
+ },
+ {
+  "texto": "communication",
+  "desde": 15.4,
+  "hasta": 15.96
+ },
+ {
+  "texto": "with",
+  "desde": 16,
+  "hasta": 16.14
+ },
+ {
+  "texto": "Earth",
+  "desde": 16.2,
+  "hasta": 16.48
+ },
+ {
+  "texto": "to",
+  "desde": 16.52,
+  "hasta": 16.6
+ },
+ {
+  "texto": "find",
+  "desde": 16.64,
+  "hasta": 16.76
+ },
+ {
+  "texto": "the",
+  "desde": 16.8,
+  "hasta": 16.94
+ },
+ {
+  "texto": "best",
+  "desde": 16.98,
+  "hasta": 17.22
+ },
+ {
+  "texto": "lunar",
+  "desde": 17.3,
+  "hasta": 17.48
+ },
+ {
+  "texto": "landing",
+  "desde": 17.54,
+  "hasta": 17.8
+ },
+ {
+  "texto": "sites,",
+  "desde": 17.9,
+  "hasta": 18.16
+ },
+ {
+  "texto": "comparing",
+  "desde": 18.34,
+  "hasta": 18.7
+ },
+ {
+  "texto": "them",
+  "desde": 18.74,
+  "hasta": 18.84
+ },
+ {
+  "texto": "with",
+  "desde": 18.88,
+  "hasta": 19
+ },
+ {
+  "texto": "NASA",
+  "desde": 19.04,
+  "hasta": 19.3
+ },
+ {
+  "texto": "data",
+  "desde": 19.38,
+  "hasta": 19.6
+ },
+ {
+  "texto": "like",
+  "desde": 19.68,
+  "hasta": 19.84
+ },
+ {
+  "texto": "JPL",
+  "desde": 19.9,
+  "hasta": 20.26
+ },
+ {
+  "texto": "Horizons",
+  "desde": 20.3,
+  "hasta": 20.82
+ },
+ {
+  "texto": "and",
+  "desde": 20.9,
+  "hasta": 20.98
+ },
+ {
+  "texto": "LOLA.",
+  "desde": 21.06,
+  "hasta": 21.36
+ },
+ {
+  "texto": "Comparing",
+  "desde": 21.7,
+  "hasta": 22.04
+ },
+ {
+  "texto": "sites",
+  "desde": 22.12,
+  "hasta": 22.38
+ },
+ {
+  "texto": "quickly",
+  "desde": 22.46,
+  "hasta": 22.8
+ },
+ {
+  "texto": "shortens",
+  "desde": 22.86,
+  "hasta": 23.2
+ },
+ {
+  "texto": "mission",
+  "desde": 23.24,
+  "hasta": 23.46
+ },
+ {
+  "texto": "planning,",
+  "desde": 23.54,
+  "hasta": 23.84
+ },
+ {
+  "texto": "helping",
+  "desde": 24.08,
+  "hasta": 24.28
+ },
+ {
+  "texto": "us",
+  "desde": 24.32,
+  "hasta": 24.42
+ },
+ {
+  "texto": "find",
+  "desde": 24.46,
+  "hasta": 24.62
+ },
+ {
+  "texto": "new",
+  "desde": 24.68,
+  "hasta": 24.84
+ },
+ {
+  "texto": "answers",
+  "desde": 24.92,
+  "hasta": 25.2
+ },
+ {
+  "texto": "to",
+  "desde": 25.24,
+  "hasta": 25.3
+ },
+ {
+  "texto": "the",
+  "desde": 25.34,
+  "hasta": 25.4
+ },
+ {
+  "texto": "unknown,",
+  "desde": 25.44,
+  "hasta": 25.86
+ },
+ {
+  "texto": "and",
+  "desde": 26.1,
+  "hasta": 26.26
+ },
+ {
+  "texto": "making",
+  "desde": 26.32,
+  "hasta": 26.56
+ },
+ {
+  "texto": "life",
+  "desde": 26.6,
+  "hasta": 26.8
+ },
+ {
+  "texto": "easier",
+  "desde": 26.86,
+  "hasta": 27.14
+ },
+ {
+  "texto": "for",
+  "desde": 27.22,
+  "hasta": 27.32
+ },
+ {
+  "texto": "all",
+  "desde": 27.36,
+  "hasta": 27.46
+ },
+ {
+  "texto": "of",
+  "desde": 27.5,
+  "hasta": 27.58
+ },
+ {
+  "texto": "us.",
+  "desde": 27.62,
+  "hasta": 27.78
+ }
+]
