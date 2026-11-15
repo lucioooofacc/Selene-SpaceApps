@@ -997,3 +997,31 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** rotular los resultados como ejemplo (seguiría mostrando un horizonte que no es de ninguna misión); arrancar con un sitio curado elegido (decide por el usuario).
 - **Estado:** vigente.
 
+## DEC-067 — Terreno del informe en toda la superficie lunar (TERRAIN-04)
+
+> Va después de DEC-069 porque se integró más tarde: su tabla dependía de una descarga de ~4 GiB.
+
+- **Contexto / problema:** la sección "Terreno" del informe (DEC-059) usa el DEM polar reducido, que llega hasta −75°. Fuera de ahí decía "Sin datos de relieve LOLA para este sitio", incluso para tres sitios de la lista (Chandrayaan-3, Chang'e 4 y Apollo 11).
+- **Decisión** (Lucio, 15/11/2026, entre tres alcances): terreno fino precalculado para los sitios curados y DEM global de baja resolución, a demanda, para los puntos propios. Se descartó usar una sola fuente gruesa para todo y dejar a los puntos propios sin datos.
+- **Solución aplicada:**
+  - **Sitios curados fuera del DEM polar:** `web/scripts/build-site-terrain.mjs` calcula `siteTerrain()` sobre las ventanas de `LDEM_128` + `LDEC_128` (237 m/píxel; `extract-lola-global.mjs` verifica tamaño y MD5 de las imágenes completas) y escribe `web/src/data/terrain/site-terrain.js`. Usa el mismo paso (0,96 km) y radio (3 km) que el cálculo polar, para que las cifras de todos los sitios de la lista sean comparables.
+  - **Puntos propios:** `web/scripts/build-global-dem.mjs` empaqueta `LDEM_16` + `LDEC_16` en `web/public/data/terrain/lola-global-16ppd.{bin,json}` (33,6 MiB): las alturas sin modificar y un bit por píxel que marca los interpolados (1,1 % del total). `web/src/lib/global-dem.js` lo decodifica y lo muestrea. La página lo baja solo al abrir el informe de un punto que lo necesita.
+  - **Elección de la fuente** (`web/src/lib/site-terrain.js`, `terrainForSite()`): DEM polar reducido, después la tabla precalculada (solo si el sitio conserva sus coordenadas) y por último el DEM global. Con el global el paso es de 3,8 km y el radio de 12 km (`GLOBAL_TERRAIN_PARAMS`), la misma proporción que en el polo.
+  - **Interfaz** (`web/src/ui/site-report.js`, `informe.js`, `ephemerides.js`, `data-status.js`): la nota dice la fuente y la escala de cada caso (`reportWeb.terrain.note.polar | fine | global`). Con el DEM global las pendientes no llevan los colores de aptitud para alunizar, porque son de escala regional. Se quita el aviso `reportWeb.terrain.outside`.
+- **Resultados de la tabla** (`LDEM_128`, radio de 3 km):
+
+  | Sitio | Altura | Pendiente en el punto | Pendiente media / máxima | Rugosidad / desnivel | Puntos con píxeles interpolados |
+  | --- | --- | --- | --- | --- | --- |
+  | Chandrayaan-3 | 530 m | 0,39° | 0,69° / 1,79° | 11,5 m / 44,6 m | 31 % |
+  | Chang'e 4 | −5930 m | 0,11° | 0,30° / 0,91° | 5,6 m / 28,7 m | 82,8 % |
+  | Apollo 11 | −1935 m | 0,85° | 0,85° / 1,32° | 22 m / 77,3 m | 75,9 % |
+
+- **Validación** (`tests/global-dem.test.js`, `tests/validacion/terreno-global.test.js`): las alturas de la tabla coinciden a menos de 1 m con las del horizonte de DEC-061 (mismo producto y mismo punto). Las del DEM global difieren hasta 13 m de esas (la prueba tolera 30 m, criterio del equipo). Los MD5 de `LDEM_128` y `LDEC_128` de esta descarga son los del manifiesto.
+- **Supuestos y límites:**
+  - Con `LDEM_16` las pendientes son de tramos de unos 4 km: dan contexto, pero no sirven para evaluar una zona de alunizaje. La interfaz lo dice.
+  - Cerca del ecuador la mayoría de los píxeles de `LDEM_128` son interpolados por el equipo LOLA (ver la tabla). Se informa el porcentaje; no se descartan.
+  - Un sitio curado con coordenadas editadas pasa a tratarse como punto propio (DEM global).
+  - El DEM global agrega 33,6 MiB al repositorio y a la descarga de ese informe (queda anotado en `PENDIENTES.md`).
+- **Alternativas descartadas:** pedir a PDS solo las filas necesarias por rangos HTTP (no permite verificar el MD5 del archivo completo, criterio de DEC-061); una versión del DEM a 8 píxeles/grado (8 MiB, pero con pendientes de tramos de ~8 km); calcular el terreno de los puntos propios con el atlas de horizontes (no guarda alturas vecinas).
+- **Estado:** vigente. Pendiente de validar por astronomía.
+

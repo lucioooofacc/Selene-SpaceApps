@@ -148,6 +148,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** cálculo cancelable/cacheado; resolución y cobertura indicadas; sin red en bucles por celda; coherencia con escenarios puntuales.
 - **Fuera de alcance:** mapa global de precisión cartográfica no necesario para la demo.
 
+### TERRAIN-04 — Terreno del informe en toda la superficie lunar
+
+- **Prioridad:** P1 · **Issue:** [#110](https://github.com/lucioooofacc/Selene-SpaceApps/issues/110).
+- **Objetivo:** que la sección "Terreno" del informe (altura, pendientes, rugosidad) funcione fuera del polo sur. Decisión de Lucio (15/11/2026): tabla precalculada con `LDEM_128` para los sitios curados y DEM global `LDEM_16` a demanda para los puntos propios, marcado como escala regional.
+- **Rama sugerida:** `feat/terreno-global`.
+- **Dependencias:** TERRAIN-03, MAP-02.
+- **Archivos afectados:** `lib/global-dem.js`, `lib/site-terrain.js`, scripts de datos, `data/terrain/site-terrain.js`, `public/data/terrain/`, `ui/site-report.js`, `ui/ephemerides.js`, `informe.js`, i18n y pruebas.
+- **Criterios de aceptación:** ningún sitio queda con "sin datos de relieve" salvo error de carga; la nota dice la fuente y la escala de cada caso; datos reproducibles con MD5 de origen; pruebas y build en verde.
+- **Fuera de alcance:** pendientes de escala de alunizaje para puntos propios fuera del polo.
+
 ### CORE-04 — Horizonte LOLA regional para puntos propios
 
 - **Prioridad:** P1 · **Issue:** [#104](https://github.com/lucioooofacc/Selene-SpaceApps/issues/104).

@@ -25,7 +25,7 @@ Leyenda: ✅ terminado · 🔄 en curso · ⏳ pendiente · ⛔ bloqueado · ➖
 | 4 | Visualizaciones con los datos reales | ✅ | Lucio (con Facundo) |
 | 5 | Entrega final | ⏳ | Equipo |
 
-**Hoy (15/11/2026) estamos en la etapa 5:** todo lo planificado está integrado y publicado. El 15/11 se sumaron el mapa de calor en toda la Luna (MAP-02, DEC-065), la ayuda por tarjeta y el recorrido guiado (UI-16, DEC-066), el horizonte LOLA regional para los puntos propios (CORE-04, DEC-068) y la sección inferior que pide sitio y fechas (UI-17, DEC-069), además de DATA-03 e I18N-01. Está en curso el terreno del informe en toda la Luna (TERRAIN-04). Quedan las revisiones de astronomía y de redacción anotadas en `PENDIENTES.md` y la entrega (DEPLOY-01, #14).
+**Hoy (15/11/2026) estamos en la etapa 5:** todo lo planificado está integrado y publicado. El 15/11 se sumaron el mapa de calor en toda la Luna (MAP-02, DEC-065), la ayuda por tarjeta y el recorrido guiado (UI-16, DEC-066), el horizonte LOLA regional para los puntos propios (CORE-04, DEC-068) y la sección inferior que pide sitio y fechas (UI-17, DEC-069), además de DATA-03 e I18N-01. También el terreno del informe en toda la Luna (TERRAIN-04, DEC-067). Quedan las revisiones de astronomía y de redacción anotadas en `PENDIENTES.md` y la entrega (DEPLOY-01, #14).
 
 ---
 
@@ -105,9 +105,11 @@ Lo que hay que confirmar o decidir. El detalle está en `PENDIENTES.md`, en "Dat
 | UI-16 (#102): ayuda por tarjeta, recorrido guiado y listas sin selección | ✅ (PR #103) | DEC-066 |
 | CORE-04 (#104): horizonte LOLA regional en puntos propios | ✅ (PR #105) | El sintético queda solo como respaldo (DEC-068) |
 | UI-17 (#106): la sección inferior pide sitio y fechas | ✅ (PR #107) | DEC-069 |
+| TERRAIN-04 (#110): terreno del informe en toda la Luna | 🔎 en revisión | Tabla de `LDEM_128` para los sitios curados y DEM global `LDEM_16` a demanda para los puntos propios (DEC-067) |
 | UI-16 (#102): ayuda por tarjeta, recorrido guiado y listas sin selección | ✅ (PR #103) | DEC-066 |
 | CORE-04 (#104): horizonte LOLA regional en puntos propios | ✅ (PR #105) | El sintético queda solo como respaldo (DEC-068) |
 | UI-17 (#106): la sección inferior pide sitio y fechas | ✅ (PR #107) | DEC-069 |
+| TERRAIN-04 (#110): terreno del informe en toda la Luna | 🔎 en revisión | Tabla de `LDEM_128` para los sitios curados y DEM global `LDEM_16` a demanda para los puntos propios (DEC-067) |
 | Textos que contradecían los datos reales | ✅ (PR #70) | — |
 | PERF-01 (#18): worker y caché persistente | ✅ (PR #79, DEC-047) | — |
 | I18N-01 (#17): revisión de traducciones ES/EN | ✅ (PR #99) | Claves equivalentes y terminología unificada (DEC-064) |

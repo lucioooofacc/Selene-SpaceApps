@@ -50,6 +50,9 @@ flowchart LR
 | `src/ui/help.js` | Ayuda por tarjeta (botones «?») y recorrido guiado (UI-16, DEC-066). Solo muestra textos de `help.*`; no calcula. |
 | `src/lib/heat-map.js` | Mapa de calor real (DEC-038): atlas de horizontes por celda, direcciones del Sol y la Tierra por instante y política única de visibilidad. Lo usan `computePolarHeatmap()` (casquete hasta −80°) y `computeGlobalHeatmap()` (toda la Luna, grilla de 2°, MAP-02, DEC-065). Puro. |
 | `scripts/build-heat-atlas.mjs` | Genera `public/data/terrain/heat-atlas-96.{bin,json}` desde los rasters LOLA verificados (~6,5 min). |
+| `src/lib/global-dem.js` | DEM LOLA global `LDEM_16` para el terreno de puntos fuera del polo sur (TERRAIN-04, DEC-067): decodifica, registra y muestrea. Puro. |
+| `scripts/build-global-dem.mjs` | Empaqueta `LDEM_16` + `LDEC_16` en `public/data/terrain/lola-global-16ppd.{bin,json}` (DEC-067). |
+| `scripts/build-site-terrain.mjs` | Genera `src/data/terrain/site-terrain.js`: terreno de los sitios curados fuera del DEM polar, desde las ventanas de `LDEM_128` (DEC-067). |
 | `scripts/build-global-heat-atlas.mjs` | Genera `public/data/terrain/heat-atlas-global-2deg.{bin,json}` desde `LDEM_16` + `LDEC_16` verificados (~1 min, DEC-065). |
 | `src/data/terrain/lola-ldem-16.js` | Manifiesto de `LDEM_16`/`LDEC_16` (URL, bytes, MD5, grilla) para el atlas global (DEC-065). |
 | `src/lib/polar-dem.js` | DEM LOLA polar reducido (480 m hasta −80°, 960 m hasta −75°) para el horizonte de puntos propios: decodificación, registro con `polarDemVersion()` y `polarHorizonFor(site)` con caché (DEC-034). Puro. |

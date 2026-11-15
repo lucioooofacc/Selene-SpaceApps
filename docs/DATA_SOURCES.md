@@ -85,6 +85,7 @@ Las fuentes de esta tabla todavía no están integradas en el motor científico,
 - **Producto:** mismo data set y DOI. DEM `LDEM_16` (etiqueta V3.1) y conteos `LDEC_16` (etiqueta V3.0). Bytes y MD5 (calculados por el equipo el 15/11/2026; PDS no los publica) en `web/src/data/terrain/lola-ldem-16.js`.
 - **Formato:** cilíndrica simple, 16 píxeles/grado (~1,895 km/píxel en el ecuador), 2880 × 5760, int16 little-endian; altura = DN × 0,5 m sobre la esfera de 1737,4 km. Cobertura global.
 - **Pipeline:** las dos imágenes (~32 MiB cada una) se bajan a `web/data/raw/ldem16/` (no versionado) → `web/scripts/build-global-heat-atlas.mjs` → `web/public/data/terrain/heat-atlas-global-2deg.{bin,json}` (2,3 MiB, versionado).
+- **Otros usos:** las mismas imágenes se empaquetan con `web/scripts/build-global-dem.mjs` en `web/public/data/terrain/lola-global-16ppd.{bin,json}` (33,6 MiB, alturas sin modificar más un bit de "interpolado" por píxel) para el terreno del informe en puntos propios fuera del polo (TERRAIN-04, DEC-067). La página lo baja solo cuando hace falta.
 - **Limitaciones:** no resuelve relieve menor a ~2 km; el atlas tiene celdas de 2°.
 - **Atribución/licencia:** la misma cita del data set que `LDEM_128`.
 
