@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (I18N-01: revisión de traducciones ES/EN, rama `i18n/revision-cientifica`).
+Última actualización: 2026-11-15 (DATA-03 sin relieve sintético en los sitios e I18N-01 revisión de traducciones ES/EN).
 
 ---
 
@@ -125,7 +125,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Horizonte LOLA real para Chang'e 4 y Apollo 11 (hoy sintético: quedan fuera de `LDEM_60S_240M`). Detectado en la auditoría de datos del 14/11/2026. — Sin asignar · TERRAIN-03 #71, DEC-005~~ Resuelto 2026-11-14 (rama `feat/horizonte-lola-global`, TERRAIN-03 #71, DEC-061): horizonte desde `LDEM_128` V3.0 con el algoritmo de DEC-030 y efemérides con la altura LOLA medida.
 - [ ] Validar los horizontes LOLA de Chang'e 4 y Apollo 11 (DEC-061) y el posible artefacto de borde de banda de `LDEM_128` en −45° (Chang'e 4 está a ~14 km; no se ve escalón en la ventana). — Teo, Facu, Lucio · DEC-061
 - [x] ~~En Windows con `core.autocrlf=true`, los fixtures `web/tests/fixtures/horizons/*.raw.json` se convierten a CRLF y fallan 2 pruebas de hash de `horizons-fixture.test.js` (en la CI pasan). Propuesta: `.gitattributes` con `*.json -text` o al menos `web/tests/fixtures/** -text`. — Desarrollo web · detectado 2026-11-14~~ Resuelto 2026-11-14 (rama `fix/limpieza-post-terrain03`, DEC-062): `.gitattributes` con `web/tests/fixtures/horizons/*.json -text`.
-- [ ] Quitar `relief` y `elevationKm` de los sitios curados cuando TERRAIN-03 esté integrada. — Sin asignar · DATA-03 #72, DEC-005 · Desbloqueada: TERRAIN-03 integrada el 2026-11-14 (PR #96).
+- [x] ~~Quitar `relief` y `elevationKm` de los sitios curados cuando TERRAIN-03 esté integrada. — Sin asignar · DATA-03 #72, DEC-005 · Desbloqueada: TERRAIN-03 integrada el 2026-11-14 (PR #96).~~ Resuelto 2026-11-15 (rama `data/quitar-relieve-sintetico`, DATA-03 #72, DEC-063): los 7 sitios usan LOLA; los resultados no cambian.
 - [x] ~~SCIENCE-02: refinar los instantes de amaneceres, ocasos y salidas y puestas de la Tierra (antes redondeados al paso de 10 min). — #19~~ Resuelto 2026-11-14 (rama `feat/refinar-ventanas`, DEC-048).
 - [ ] Comparar el horizonte LOLA con horizontes publicados (p. ej. Mazarico et al. 2011) si se consiguen valores de referencia. — Teo, Facu, Lucio · DEC-030, TEST-01
 - [x] ~~Horizonte LOLA para sitios personalizados (clic en el mapa): requiere el raster o recortes en tiempo de ejecución. — Desarrollo web · DEC-030, PERF-01/CORE-01~~ Sol y Tierra trasladados y horizonte LOLA reducido al sur de −75°. Resuelto 2026-11-14 (PR #60, #59, DEC-034).

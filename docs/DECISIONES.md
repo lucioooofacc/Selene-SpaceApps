@@ -55,7 +55,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Contexto / problema:** sin atmósfera, el horizonte lo define el relieve. Con un horizonte plano, Shackleton daba 0 % de luz, cuando en la realidad es de los puntos más iluminados.
 - **Decisión:** horizonte sintético por sitio (suma de ondas según el azimut), con un "relieve" característico y la depresión geométrica por altura: `acos(R / (R + h))`.
 - **Solución aplicada:** `web/src/lib/terrain.js`. Las formas del horizonte dependen suavemente de la posición, para que el mapa de calor sea continuo. Con los parámetros actuales, el promedio anual de Shackleton queda en ~90 % de luz, coherente con la literatura.
-- **Estado:** vigente para v1. **Reemplazo previsto:** horizonte calculado con mapas de elevación LOLA. **Reemplazada parcialmente por DEC-032** (14/11/2026): los sitios curados al sur de −60° usan el horizonte LOLA; el sintético sigue para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor.
+- **Estado:** vigente para v1. **Reemplazo previsto:** horizonte calculado con mapas de elevación LOLA. **Reemplazada parcialmente por DEC-032** (14/11/2026): los sitios curados al sur de −60° usan el horizonte LOLA; el sintético sigue para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. **Para los sitios curados, reemplazada por DEC-061 y DEC-063** (15/11/2026): los 7 usan LOLA y ya no tienen `relief` ni `elevationKm`; el sintético queda solo como respaldo de puntos sin horizonte LOLA, con `estimateRelief()`.
 
 ## DEC-006 — Sitios curados
 
@@ -884,6 +884,20 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Decisión:** marcar esos archivos como no texto para Git (`-text`): se guardan y se extraen byte a byte, sin convertir los fines de línea.
 - **Solución aplicada:** `.gitattributes` (nuevo, en la raíz) con `web/tests/fixtures/horizons/*.json -text`. Los archivos del repositorio no cambian (ya estaban con LF); solo se vuelven a extraer en la copia local.
 - **Alternativas descartadas:** normalizar los fines de línea en la prueba antes de calcular el hash (dejaría de verificar el crudo exacto de la API); `*.json -text` para todo el repo (más amplio de lo necesario).
+- **Estado:** vigente.
+
+## DEC-063 — Sin parámetros sintéticos de relieve en los sitios curados (DATA-03)
+
+- **Contexto / problema:** `relief` y `elevationKm` de `web/src/data/sites.js` solo daban forma al horizonte sintético (DEC-005) y no son medidas. Desde TERRAIN-03 (DEC-061) los 7 sitios curados tienen horizonte LOLA precalculado, que `scenarioHorizon()` prefiere siempre que el sitio conserve sus coordenadas; con coordenadas editadas, `main.js` y `ui/places.js` ya no pasaban esos campos. Es decir, no tenían efecto y podían confundirse con datos reales.
+- **Decisión:** quitarlos del catálogo y del código que los copiaba. El horizonte sintético sigue como respaldo para puntos propios sin LOLA (fuera de alcance quitarlo).
+- **Solución aplicada:**
+  - `web/src/data/sites.js`: sin `relief` ni `elevationKm` en ningún sitio; comentario actualizado.
+  - `web/src/main.js` (`ensureScenario`) y `web/src/ui/places.js` (`currentSiteFor`): el sitio del escenario es solo `{id, lat, lon}`.
+  - `web/src/lib/terrain.js`: `createHorizon()` toma el relieve siempre de `estimateRelief()` y ya no aplica `horizonDip()`. `horizonDip()` se conserva como utilidad geométrica (la usan las pruebas del horizonte LOLA) y sigue en el contrato de `docs/ARCHITECTURE.md`.
+  - `web/src/lib/horizons.js`: se mantiene el rechazo de `elevationKm` como altura del observador (defensa contra el mismo error); solo cambia el comentario.
+  - Pruebas: `terrain`, `analysis` y `compare` usan sitios de prueba sin esos campos; `validacion/horizons-fixture.test.js` comprueba que el catálogo no trae `elevationKm`.
+- **Verificación:** con el cambio, `scenarioHorizon()` devuelve `source = "lola"` en los 7 sitios curados con sus coordenadas (comprobado con un script local), así que los resultados de los sitios curados no cambian. Para puntos propios tampoco cambian: nunca tuvieron `relief` ni `elevationKm`.
+- **Alternativas descartadas:** dejar los campos "por las dudas" (datos inventados en el catálogo sin uso); borrar `horizonDip()` (la usan pruebas del horizonte LOLA y es parte del contrato documentado); eliminar el horizonte sintético (sigue siendo el respaldo, fuera de alcance de DATA-03).
 - **Estado:** vigente.
 
 ## DEC-064 — Revisión de traducciones ES/EN (I18N-01)

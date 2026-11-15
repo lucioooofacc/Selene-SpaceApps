@@ -43,7 +43,7 @@ flowchart LR
 | `scripts/fetch-horizons.mjs` | Script Node, fuera del bundle: consulta la API, guarda crudo + SHA-256 + serie normalizada en una caché con manifiesto. |
 | `src/lib/coordinates.js` | Referencia común de los sitios (`SITE_REFERENCE`), normalización de longitud a `[-180°, 180°)`, validación de latitud y resolución nominal de las cifras. |
 | `src/lib/terrain-data.js` | Proyección estereográfica polar del producto LOLA `LDEM_60S_240M`, cobertura, interpretación de conteos `LDEC` y lectura de recortes. Sin DOM ni red; todavía no lo consume `analysis.js` (DEC-025). |
-| `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); `relief` y `elevationKm` son sintéticos. |
+| `src/data/sites.js` | Catálogo de sitios curados en MOON_ME/DE421 con tipo de punto, procedencia, confianza y precisión (DEC-019); sin parámetros sintéticos de relieve (DEC-063). |
 | `src/lib/ephemeris.js` | Series de JPL Horizons para el cálculo (DEC-033): decodifica `public/data/ephemerides/*.json`, interpola (`positionsAt`), registro en memoria con `ephemerisVersion()` y `ephemerisFor(site)`. Puro, sin red. |
 | `scripts/build-ephemerides.mjs` | Arma `public/data/ephemerides/<id>.json` desde la caché validada de `fetch-horizons.mjs` (7 sitios, nov 2026 – dic 2027, paso 1 h). |
 | `src/ui/ephemerides.js` | Baja en segundo plano las series de los sitios curados y las registra; `main.js`, `ui/places.js` y `compare.js` recalculan al llegar. |

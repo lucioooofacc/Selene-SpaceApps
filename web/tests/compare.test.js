@@ -5,8 +5,8 @@ import { computeScenario } from "../src/lib/analysis.js";
 import { compareScenarios, longestWindowMinutes, scenarioMetrics } from "../src/lib/compare.js";
 
 const startMs = Date.UTC(2026, 10, 14, 0);
-const shackleton = { id: "a", lat: -89.9, lon: 0, relief: 0.7, elevationKm: 1 };
-const cabeus = { id: "b", lat: -85.33, lon: -41.8, relief: 5 };
+const shackleton = { id: "a", lat: -89.9, lon: 0 };
+const cabeus = { id: "b", lat: -85.33, lon: -41.8 };
 
 test("longestWindowMinutes devuelve 0 sin ventanas y la más larga si hay", () => {
   assert.equal(longestWindowMinutes([]), 0);

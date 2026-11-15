@@ -65,7 +65,7 @@ La sección Diseño de `PENDIENTES.md` quedó cerrada (sin puntos abiertos).
 | CORE-03 (#59): datos reales para puntos del mapa | ✅ (PR #60) | Sol y Tierra de Horizons trasladados a cualquier punto; horizonte LOLA reducido (480/960 m) al sur de −75°, marcado aproximado (DEC-034) |
 | DATA-02 (#61): Shackleton R04 → R01 | ✅ (PR #62) | R04 era el centro de un polígono en la pared del cráter; R01 Connecting Ridge (DEC-035) |
 | TERRAIN-03 (#71): horizonte LOLA real para Chang'e 4 y Apollo 11 | ✅ (PR #96) | Desde `LDEM_128` V3.0 con el algoritmo de DEC-030; efemérides con la altura LOLA medida (DEC-061) |
-| DATA-03 (#72): quitar `relief`/`elevationKm` de los sitios curados | ⏳ | Desbloqueada por TERRAIN-03; P2, opcional antes de la entrega |
+| DATA-03 (#72): quitar `relief`/`elevationKm` de los sitios curados | 🔎 en revisión | Campos quitados; los 7 sitios usan LOLA y los resultados no cambian (DEC-063) |
 
 **Qué cambió con los datos reales** (media anual, Sol y Tierra de Horizons + horizonte LOLA):
 

@@ -11,7 +11,7 @@ import { loadedData, persist, persisted, runInWorker } from "./compute.js";
 import { rankEntries } from "../lib/ranking.js";
 import { traitsFor } from "../data/site-traits.js";
 import { getLang, t } from "../i18n/index.js";
-import { allSites, chooseSite, getSite, getState, setState } from "../state.js";
+import { allSites, chooseSite, getState, setState } from "../state.js";
 import { dateScenarios, pickDistinct } from "../lib/dates.js";
 import { dateUTC } from "../lib/format.js";
 import { DAY_MS } from "../lib/astro.js";
@@ -61,15 +61,9 @@ let datesResult = undefined; // undefined: sin calcular; null: sin serie de Hori
 let datesPending = "";
 const DATE_CATEGORIES = ["overall", "communication", "light"];
 
-/** Sitio vigente como lo arma main.js (con su relieve si las coordenadas no cambiaron). */
+/** Sitio vigente como lo arma main.js. */
 function currentSiteFor(state) {
-  const saved = getSite(state.siteId);
-  const site = { id: state.siteId, lat: state.lat, lon: state.lon };
-  if (saved && saved.lat === state.lat && saved.lon === state.lon) {
-    site.relief = saved.relief;
-    site.elevationKm = saved.elevationKm;
-  }
-  return site;
+  return { id: state.siteId, lat: state.lat, lon: state.lon };
 }
 
 /** Categoría efectiva en modo fechas: "Ciencia" no aplica (depende del sitio, no de la fecha). */

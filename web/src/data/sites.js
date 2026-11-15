@@ -24,8 +24,9 @@
  *   cantidad de decimales: la resolución de la cifra se obtiene aparte con
  *   `quantizationMeters()`.
  *
- * `relief` y `elevationKm` siguen siendo parámetros del horizonte SINTÉTICO
- * (DEC-005, lib/terrain.js); no son medidas de LOLA.
+ * Los sitios no traen parámetros de relieve: su horizonte es el LOLA
+ * precalculado (DEC-032, DEC-061). `relief` y `elevationKm`, que solo daban
+ * forma al horizonte sintético (DEC-005), se quitaron en DATA-03 (DEC-063).
  */
 import { assertLatitude, normalizeLongitude } from "../lib/coordinates.js";
 
@@ -74,8 +75,6 @@ export const SITES = [
     // −171.87), cuyo centro de polígono cae en la pared interior del cráter.
     lat: -89.4632,
     lon: -137.49,
-    relief: 0.7,
-    elevationKm: 1,
     agency: "NASA · Artemis",
     point: { name: "Connecting Ridge R01", type: "study-point" },
     provenance: {
@@ -98,8 +97,6 @@ export const SITES = [
     name: "Malapert",
     lat: -85.9948,
     lon: -0.23578,
-    relief: 1.2,
-    elevationKm: 0.6,
     agency: "NASA · Artemis",
     point: { name: "Malapert Massif R23", type: "study-point" },
     provenance: {
@@ -122,7 +119,6 @@ export const SITES = [
     name: "Cabeus",
     lat: -84.6796,
     lon: -48.7093,
-    relief: 5,
     agency: "NASA · LCROSS",
     point: { name: "LCROSS Centaur impact site", type: "impact" },
     provenance: {
@@ -149,7 +145,6 @@ export const SITES = [
     name: "IM-1 Odysseus",
     lat: -80.1277,
     lon: 1.4357,
-    relief: 0.7,
     agency: "Intuitive Machines · CLPS",
     point: { name: "IM-1 Odysseus lander", type: "lander" },
     provenance: {
@@ -173,7 +168,6 @@ export const SITES = [
     name: "Chandrayaan-3",
     lat: -69.3735,
     lon: 32.3199,
-    relief: 1.2,
     agency: "ISRO · India",
     point: { name: "Chandrayaan-3 Vikram lander", type: "lander" },
     provenance: {
@@ -197,7 +191,6 @@ export const SITES = [
     name: "Chang'e 4",
     lat: -45.4561,
     lon: 177.5885,
-    relief: 1,
     agency: "CNSA · China",
     point: { name: "Chang'e 4 lander", type: "lander" },
     provenance: {
@@ -221,7 +214,6 @@ export const SITES = [
     name: "Apollo 11",
     lat: 0.67416,
     lon: 23.47314,
-    relief: 0.5,
     agency: "NASA · Apollo",
     point: { name: "Apollo 11 Lunar Module", type: "lander" },
     provenance: {

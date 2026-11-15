@@ -43,25 +43,28 @@ export function estimateRelief(lat, lon) {
   return 0.6 + polar * 1.5 + n * (1.5 + polar * 4.5);
 }
 
-/**
- * Crea una función horizon(azimut) → elevación del horizonte en grados.
- * @param {{lat:number, lon:number, relief?:number, elevationKm?:number}} site
- */
 const MOON_RADIUS_KM = 1737.4;
 
 /**
  * Depresión del horizonte (grados) por estar elevado sobre el terreno vecino.
  * Un punto alto, como el borde de Shackleton, "ve" por debajo de 0° y por eso
  * recibe luz casi todo el tiempo aunque el Sol esté apenas sobre el horizonte.
+ * Desde DEC-063 `createHorizon()` no la aplica (ningún sitio trae altura
+ * sintética); queda como utilidad geométrica para las pruebas del horizonte LOLA.
  */
 export function horizonDip(elevationKm = 0) {
   if (elevationKm <= 0) return 0;
   return (Math.acos(MOON_RADIUS_KM / (MOON_RADIUS_KM + elevationKm)) * 180) / Math.PI;
 }
 
+/**
+ * Crea una función horizon(azimut) → elevación del horizonte en grados.
+ * Respaldo para puntos sin horizonte LOLA (DEC-005): el relieve sale siempre
+ * de `estimateRelief()`; los sitios no aportan parámetros propios (DEC-063).
+ * @param {{lat:number, lon:number}} site
+ */
 export function createHorizon(site, { precompute = true } = {}) {
-  const relief = site.relief ?? estimateRelief(site.lat, site.lon);
-  const dip = horizonDip(site.elevationKm);
+  const relief = estimateRelief(site.lat, site.lon);
   // Posición en un plano centrado en el polo: puntos vecinos reciben formas de
   // horizonte parecidas, así el mapa de calor queda continuo y no "ruidoso".
   const r = (90 + site.lat) * 0.8;
@@ -80,7 +83,7 @@ export function createHorizon(site, { precompute = true } = {}) {
     let s = 0;
     for (const w of waves) s += w.amp * Math.sin(w.k * rad + w.phase);
     const normalized = 0.5 + 0.5 * (s / ampTotal); // 0..1
-    return Math.max(0, relief * normalized * 1.6 - 0.2) - dip;
+    return Math.max(0, relief * normalized * 1.6 - 0.2);
   };
 
   // Para el mapa de calor (miles de puntos, pocas consultas) no conviene la tabla.
