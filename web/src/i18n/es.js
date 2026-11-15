@@ -551,6 +551,11 @@ export default {
     frame: "Marco",
     frameDeclared: "declarado por la fuente",
     frameInferred: "inferido, no declarado",
+    note: "Nota",
+    siteNote: {
+      shackleton:
+        "La luz de este punto (~60 % en un año) es menor que el 77–88 % que la bibliografía da para la mejor zona de esta cresta (Gläser et al., 2017). No es un error: R01 es el centro de un polígono de la tabla de NASA, no el punto más iluminado. A 480 m al norte, el mismo modelo da 89,9 %.",
+    },
     sources: "Fuentes oficiales",
     tag: { real: "Real", approx: "Aproximado", synthetic: "Sintético", none: "Sin fuente", loading: "Cargando" },
     row: {

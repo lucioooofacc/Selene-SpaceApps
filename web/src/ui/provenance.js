@@ -56,6 +56,9 @@ export function provenanceHtml(site) {
     return `<p class="prov-none">${qualityTag("none")} ${t("quality.noProvenance")}</p>`;
   }
   const { point, provenance, confidence, precision } = site;
+  // Nota del sitio (DOC-02): solo con las coordenadas originales, porque habla de ese punto.
+  const original = findSite(site.id);
+  const note = provenance.noteKey && original && original.lat === site.lat && original.lon === site.lon ? t(provenance.noteKey) : null;
   const accuracy = precision?.accuracyM != null ? t("quality.accuracyM", { m: precision.accuracyM }) : t("quality.accuracyUnknown");
   return `
     <dl class="prov">
@@ -64,6 +67,7 @@ export function provenanceHtml(site) {
       <dt>${t("quality.accuracy")}</dt><dd>${accuracy}</dd>
       <dt>${t("quality.frame")}</dt><dd>MOON_ME / DE421 · ${t(provenance.sourceFrameVerified ? "quality.frameDeclared" : "quality.frameInferred")}</dd>
       <dt>${t("quality.sources")}</dt><dd>${links(provenance.urls) || "—"}</dd>
+      ${note ? `<dt>${t("quality.note")}</dt><dd>${note}</dd>` : ""}
     </dl>`;
 }
 

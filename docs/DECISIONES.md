@@ -1105,3 +1105,16 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** el cartel solo aparece si todas las celdas son "baja". Con una sola celda "al límite" no se muestra.
 - **Estado:** vigente.
 
+## DEC-074 — Explicación de la luz de Shackleton R01 (DOC-02)
+
+- **Contexto / problema:** la app da ~60 % de luz anual en Shackleton R01 y la bibliografía habla de 77–88 % en esa cresta (Gläser et al., 2017). La revisión de DEC-070 mostró que no es un error: R01 es el centro de un polígono del Lunar Surface Data Book y a 480 m al norte el modelo da 89,9 %. Un jurado podría leerlo como un error.
+- **Decisión (Lucio, 15/11/2026):** explicarlo en la entrega y en la interfaz. No se cambia el punto R01.
+- **Solución aplicada:**
+  - `web/src/data/sites.js`: la procedencia de Shackleton lleva `noteKey`.
+  - `web/src/ui/provenance.js`: `provenanceHtml()` agrega una fila "Nota" si el sitio tiene `noteKey` y conserva sus coordenadas originales. Se ve en "Datos y fuentes", en la comparación, en el informe web y en el impreso.
+  - `web/src/i18n/es.js` y `en.js`: `quality.note` y `quality.siteNote.shackleton`.
+  - `docs/ENTREGA.md`: párrafo en inglés para la descripción del formulario.
+- **Alternativas descartadas:** mover el sitio al punto de 89,9 %: no es un punto de la tabla de NASA y DOC-02 lo deja fuera de alcance.
+- **Supuestos y límites:** los números (59,7 % en R01, 89,9 % a 480 m) son los de la revisión de DEC-070 para un año. La cita de Gläser et al. se tomó de resúmenes (ver `docs/VALIDACION.md`).
+- **Estado:** vigente.
+

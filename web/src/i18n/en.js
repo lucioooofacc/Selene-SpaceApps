@@ -550,6 +550,11 @@ export default {
     frame: "Frame",
     frameDeclared: "declared by the source",
     frameInferred: "inferred, not declared",
+    note: "Note",
+    siteNote: {
+      shackleton:
+        "This point gets less light (~60 % over a year) than the 77–88 % the literature gives for the best area of this ridge (Gläser et al., 2017). It is not an error: R01 is the center of a polygon in NASA's table, not the most illuminated spot. 480 m to the north, the same model gives 89.9 %.",
+    },
     sources: "Official sources",
     tag: { real: "Real", approx: "Approximate", synthetic: "Synthetic", none: "No source", loading: "Loading" },
     row: {

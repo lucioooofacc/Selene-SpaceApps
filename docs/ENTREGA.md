@@ -25,6 +25,10 @@ Borrador para cerrar la entrega del **domingo 15/11/2026 antes de las 23:59** ([
 
 **Other resources**: three.js (3D rendering), Vite (build). No proprietary data.
 
+**Note on Shackleton (DOC-02)** — para pegar en la descripción del proyecto si el formulario lo permite:
+
+> The app reports ~60 % yearly illumination at Shackleton R01, below the 77–88 % that the literature gives for the best area of this ridge (Gläser et al., 2017). This is not a calculation error: R01 is the center of a polygon in NASA's Lunar Surface Data Book table, not the most illuminated spot. 480 m to the north, the same model gives 89.9 %. The app explains this in the site's provenance.
+
 ## Pendientes del equipo antes de enviar
 
 - [ ] Revisión en escritorio y en los dos idiomas (ver tabla).
