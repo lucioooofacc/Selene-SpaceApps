@@ -79,7 +79,7 @@ con `δ = d / R`, `r = R + h(d)` y `r₀ = R + h₀ + 2 m` (observador a 2 m sob
 - Para los sitios curados al sur de −60°, a 240 m (`scenarioHorizon`, DEC-032).
 - Para puntos propios al sur de −75°, calculado en el navegador sobre un DEM reducido (480 m hasta −80°, 960 m hasta −75°), cada 1° y paso de 240 m (DEC-034). Error medio medido frente al de 240 m: 0,02–0,77°; se muestra como aproximado.
 - Para Chang'e 4 y Apollo 11, fuera de la cobertura polar, con el mismo algoritmo sobre una ventana del DEM global `LDEM_128` (cilíndrica simple, 128 píxeles/grado ≈ 237 m; `createCylindricalWindowSampler`, DEC-061). Control cruzado en Chandrayaan-3, cubierto por los dos productos: mismo suelo y diferencia RMS de 0,069° en los azimuts no truncados.
-- Los puntos propios fuera de −75° usan el horizonte LOLA regional, interpolado del atlas global de 2° (DEC-068): relieve medido de la zona, no del punto. El sintético queda como respaldo mientras cargan los datos y en el mapa de calor aproximado.
+- Los puntos propios fuera de −75° usan el horizonte LOLA regional, interpolado del atlas global de 2° (DEC-068): relieve medido de la zona, no del punto. Entre −75° y −60° y al norte de +60°, donde el regional no es confiable (DEC-070), usan el horizonte del punto calculado sobre `LDEM_16` (~1,9 km/píxel) en cuanto se baja ese DEM (DEC-076). El sintético queda como respaldo mientras cargan los datos y en el mapa de calor aproximado.
 
 ### Puntos propios: Sol y Tierra trasladados (DEC-034)
 
@@ -155,7 +155,7 @@ La viabilidad se evalúa con requisitos de misión (DEC-071, `REQUIREMENTS` en `
 
 - Dentro del 01/11/2026 – 01/01/2028 se usan efemérides de Horizons: las propias de cada sitio curado (DEC-033) y, para los puntos propios y el mapa de calor, las de un sitio curado trasladadas al punto (DEC-034, DEC-038). Fuera de ese rango se usa el modelo periódico aproximado, rotulado como tal. Los radios angulares salen de Horizons en cada instante (DEC-036).
 - Altura del observador en las series Horizons: suelo LOLA + 2 m en los 7 sitios curados (DEC-033; Chang'e 4 y Apollo 11 desde `LDEM_128`, DEC-061).
-- Horizonte: LOLA de 240 m en los 7 sitios curados (DEC-030, DEC-061), LOLA reducido en los puntos propios al sur de −75° (DEC-034) y LOLA regional del atlas de 2° en el resto (DEC-068). El sintético (DEC-005) queda como respaldo mientras cargan los datos o si fallan.
+- Horizonte: LOLA de 240 m en los 7 sitios curados (DEC-030, DEC-061), LOLA reducido en los puntos propios al sur de −75° (DEC-034), LOLA del punto sobre `LDEM_16` entre −75° y −60° y al norte de +60° (DEC-076) y LOLA regional del atlas de 2° en el resto (DEC-068). El sintético (DEC-005) queda como respaldo mientras cargan los datos o si fallan.
 - Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. Los sitios ya no tienen parámetros sintéticos de relieve (DEC-063).
 - Marco lunar del modelo astronómico y datum aún no formalizados.
 - Resolución temporal fija de 10 minutos; los cruces de Sol y Tierra se refinan entre muestras (SCIENCE-02, DEC-048).

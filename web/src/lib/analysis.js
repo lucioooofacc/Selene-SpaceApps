@@ -13,6 +13,7 @@ import { createHorizon } from "./terrain.js";
 import { createLolaHorizon } from "./horizon-lola.js";
 import { derivedEphemerisFor, ephemerisFor, ephemerisVersion, positionsAt } from "./ephemeris.js";
 import { POLAR_DEM_COVERAGE_LATITUDE, polarDemVersion, polarHorizonFor } from "./polar-dem.js";
+import { globalDemVersion, globalHorizonFor, inPointHorizonBand } from "./global-dem.js";
 import { computeRealGlobalHeatStats, computeRealHeatStats, heatAtlasVersion, regionalHorizonFor } from "./heat-map.js";
 
 export const STEP_MINUTES = 10;
@@ -204,13 +205,26 @@ function longestDarkHours(vis, n, stepMinutes) {
  * 2. LOLA reducido (480/960 m) calculado al momento para puntos al sur de −75°,
  *    si el DEM polar reducido ya está cargado (CORE-03, DEC-034;
  *    `meta.reduced = true`).
- * 3. LOLA regional interpolado del atlas global (celdas de 2°, LDEM_16), si
+ * 3. LOLA del punto sobre el DEM global LDEM_16 para puntos con |lat| ≥ 60°,
+ *    si el DEM global ya está cargado (CORE-05, DEC-076; `meta.global = true`).
+ *    Ahí el regional no es confiable (DEC-070).
+ * 4. LOLA regional interpolado del atlas global (celdas de 2°, LDEM_16), si
  *    el atlas ya está cargado (DEC-068; `meta.regional = true`).
- * 4. El sintético de `terrain.js` (DEC-005), sin `source`: solo mientras
+ * 5. El sintético de `terrain.js` (DEC-005), sin `source`: solo mientras
  *    cargan los datos anteriores o si fallan.
  */
 export function scenarioHorizon(site) {
-  return curatedLolaHorizon(site) ?? polarHorizonFor(site) ?? regionalHorizonFor(site) ?? createHorizon(site);
+  return curatedLolaHorizon(site) ?? polarHorizonFor(site) ?? globalHorizonFor(site) ?? regionalHorizonFor(site) ?? createHorizon(site);
+}
+
+/**
+ * ¿Este sitio usaría el horizonte del punto sobre LDEM_16 si el DEM global
+ * estuviera cargado? (CORE-05, DEC-076): puntos sin horizonte curado con
+ * |lat| ≥ 60° y fuera de la cobertura del DEM polar reducido. Sirve para que
+ * la interfaz baje el DEM global (~35 MiB) solo cuando hace falta.
+ */
+export function needsGlobalDemHorizon(site) {
+  return inPointHorizonBand(site?.lat) && site.lat > POLAR_DEM_COVERAGE_LATITUDE && !curatedLolaHorizon(site);
 }
 
 /**
@@ -238,11 +252,11 @@ export function needsPolarDem(site) {
 }
 
 /**
- * Versión de los datos reales cargados (efemérides y DEM polar). Cambia cuando
+ * Versión de los datos reales cargados (efemérides, DEM polar, atlas y DEM global). Cambia cuando
  * llega algo nuevo: los cachés de escenarios la incluyen en su clave.
  */
 export function realDataVersion() {
-  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}`;
+  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}.${globalDemVersion()}`;
 }
 
 /**
