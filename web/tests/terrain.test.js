@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import { createHorizon, estimateRelief, horizonDip } from "../src/lib/terrain.js";
 
-const site = { lat: -89.9, lon: 0, relief: 0.7, elevationKm: 1 };
+const site = { lat: -89.9, lon: 0 };
 
 test("el horizonte sintético es determinista", () => {
   const a = createHorizon(site);

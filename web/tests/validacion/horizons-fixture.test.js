@@ -60,7 +60,7 @@ for (const entry of manifest.entries) {
     assert.equal(fixture.request.site.lon, site.lon);
     assert.equal(fixture.request.site.altitudeKm, 0);
     assert.equal(fixture.request.site.altitudeBasis, ALTITUDE_BASIS.assumedZero);
-    assert.notEqual(fixture.request.site.altitudeKm, site.elevationKm, "no usa elevationKm sintético");
+    assert.ok(!("elevationKm" in site), "el catálogo no trae elevationKm sintético (DEC-063)");
     assert.ok(fixture.assumptions.some((a) => a.includes("SUPUESTO")));
   });
 

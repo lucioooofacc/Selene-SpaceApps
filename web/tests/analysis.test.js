@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { DAY_MS } from "../src/lib/astro.js";
 import { STEP_MINUTES, computePolarHeatmap, computeScenario, sampleAt } from "../src/lib/analysis.js";
 
-const site = { id: "test", lat: -89.9, lon: 0, relief: 0.7, elevationKm: 1 };
+const site = { id: "test", lat: -89.9, lon: 0 };
 const startMs = Date.UTC(2026, 10, 14, 12);
 
 function assertOrderedWindows(windows, start, end) {

@@ -13,7 +13,8 @@
  * - Los valores fuera de rango o mal formados son errores (`HorizonsError`),
  *   no se recortan.
  * - La altura del observador es obligatoria y declara su base: no se acepta
- *   `elevationKm` (parámetro sintético del horizonte, DEC-005) como altura.
+ *   `elevationKm` (ex parámetro sintético del horizonte, DEC-005; quitado de
+ *   los sitios en DEC-063) como altura.
  *
  * Todavía no lo consume `analysis.js` ni la UI: eso pertenece a CORE-01.
  */

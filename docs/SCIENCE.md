@@ -56,9 +56,9 @@ Estas expresiones generan movimiento coherente para la interfaz, pero no son efe
 
 ## Horizonte sintético y curvatura
 
-`terrain.js` no consulta un DEM. Construye un perfil determinista sumando seis ondas con fases y amplitudes derivadas de ruido suave dependiente de latitud y longitud. Los sitios curados pueden aportar `relief`; los sitios personalizados usan `estimateRelief()`.
+`terrain.js` no consulta un DEM. Construye un perfil determinista sumando seis ondas con fases y amplitudes derivadas de ruido suave dependiente de latitud y longitud. El relieve característico sale siempre de `estimateRelief()`: desde DEC-063 los sitios curados no traen `relief` (usan el horizonte LOLA, DEC-061) y el sintético es solo el respaldo de puntos sin LOLA.
 
-La altura local opcional de un sitio reduce el horizonte mediante:
+`horizonDip()` calcula la depresión geométrica de un observador elevado; desde DEC-063 `createHorizon()` ya no la aplica, y queda como utilidad para las pruebas del horizonte LOLA:
 
 `dip = acos(R / (R + h))`
 
@@ -152,7 +152,7 @@ Un total `>= 5` es alto, `>= 3` medio y el resto bajo. Son umbrales explicativos
 - Dentro del 01/11/2026 – 01/01/2028 y para los sitios curados se usan efemérides de Horizons (DEC-033); fuera de ese rango, en sitios propios y en el mapa de calor, el modelo periódico aproximado. Los radios angulares siguen constantes.
 - Altura del observador en las series Horizons: suelo LOLA + 2 m en los 7 sitios curados (DEC-033; Chang'e 4 y Apollo 11 desde `LDEM_128`, DEC-061).
 - Horizonte sintético calibrado conceptualmente, no topografía medida. El pipeline de elevación LOLA existe (DEC-025) pero el horizonte todavía no lo usa.
-- Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. `relief` y `elevationKm` siguen siendo sintéticos.
+- Coordenadas de sitios con fuente oficial (DEC-019); marco inferido o no declarado en 4 sitios y exactitud no declarada en 4. Los sitios ya no tienen parámetros sintéticos de relieve (DEC-063).
 - Marco lunar del modelo astronómico y datum aún no formalizados.
 - Resolución temporal fija de 10 minutos y cruces sin refinamiento.
 - Ausencia de incertidumbre, metadatos de calidad y cobertura.
