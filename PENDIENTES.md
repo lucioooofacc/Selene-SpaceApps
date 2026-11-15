@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (supuestos de efemérides traducidos, rama `i18n/supuestos-efemerides`).
+Última actualización: 2026-11-15 (supuestos de efemérides traducidos, numeración de decisiones y textos de ayuda revisados).
 
 ---
 
@@ -145,13 +145,13 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 
 - [x] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
 - [x] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
-- [ ] Revisar la redacción de los textos de ayuda y del recorrido (`help.*`, ES/EN). — Alfonso, Cata, Lucio · UI-16 #102, DEC-066
-- [ ] Espacio antes de `%`: en ES (norma RAE) va con espacio, pero conviven `{pct}%` y `{pct} %` en los dos idiomas y también en cifras armadas en `web/src/ui/` (`places.js`, `status.js`, `compare.js`, `provenance.js`). En inglés lo usual es sin espacio. Unificar por idioma requiere mover el formato a `i18n` (p. ej. una clave `units.percent`). — Lucio, Cata · DEC-064
+- [x] ~~Revisar la redacción de los textos de ayuda y del recorrido (`help.*`, ES/EN). — Alfonso, Cata, Lucio · UI-16 #102, DEC-066~~ Resuelto 2026-11-15: revisados por Lucio.
+- [x] ~~Espacio antes de `%`: en ES (norma RAE) va con espacio, pero conviven `{pct}%` y `{pct} %` en los dos idiomas y también en cifras armadas en `web/src/ui/` (`places.js`, `status.js`, `compare.js`, `provenance.js`). En inglés lo usual es sin espacio. Unificar por idioma requiere mover el formato a `i18n` (p. ej. una clave `units.percent`). — Lucio, Cata · DEC-064~~ Resuelto 2026-11-15 (rama `i18n/porcentajes`): `pct()` de `lib/format.js` usa la clave `units.percent` ("{n} %" en ES, "{n}%" en EN) y el formato numérico del idioma; los porcentajes armados en `web/src/ui/` y los textos de i18n siguen esa regla.
 
 ## Repositorio y entrega
 
 - [x] ~~Revisar y mergear el PR #1 (web v1) y el PR #2 (réplica del Figma) en `Selene-SpaceApps`.~~ Resuelto 2026-11-14: los dos se mergearon, pero el #2 entró en `feat/web-v1` después de que el #1 ya estaba en `main`. Se integra con la rama `chore/integrar-web-v1`.
-- [ ] Revisar la renumeración de decisiones (las de la réplica del Figma pasaron de DEC-011…015 a DEC-014…018) y la fusión de reglas en `AGENTS.md` (regla 5 + regla 10). — Equipo, rama `chore/integrar-web-v1`
+- [x] ~~Revisar la renumeración de decisiones (las de la réplica del Figma pasaron de DEC-011…015 a DEC-014…018) y la fusión de reglas en `AGENTS.md` (regla 5 + regla 10). — Equipo, rama `chore/integrar-web-v1`~~ Revisado 2026-11-15 (rama `docs/numeracion-decisiones`): 71 decisiones (DEC-000 a DEC-070) sin huecos ni duplicadas, en orden (se movió DEC-067 a su lugar) y todas las citas `DEC-xxx` del repositorio existen. La renumeración está explicada al comienzo de `DECISIONES.md`; las reglas 5 y 10 de `AGENTS.md` son coherentes.
 - [x] ~~Revisar el resto de `docs/ARCHITECTURE.md`, `docs/TASKS.md` y `web/src/ui/AGENTS.md` contra la interfaz del Figma. En la integración solo se actualizaron la tabla de módulos y el diagrama. — Desarrollo web~~ Resuelto 2026-11-14 (rama `docs/sincronizar-despliegue`, #44).
 - [x] ~~Archivar o borrar el repo anterior `Hubble27-SpaceApps` (todavía tiene el historial con co-autores y los PR viejos).~~ Resuelto 2026-11-14: repo borrado por Lucio. `CLAUDE.md` se mantiene.
 - [x] ~~Migrar el proyecto a `Selene-SpaceApps` sin co-autores en el historial.~~ Resuelto 2026-11-14 (DEC-018).

@@ -3,7 +3,7 @@
  * "Resumen del período" (DEC-045) de la sección "Comportamiento de los
  * cuerpos celestes".
  */
-import { deg, duration } from "../lib/format.js";
+import { deg, duration, pct } from "../lib/format.js";
 import { STEP_MINUTES } from "../lib/analysis.js";
 import { windowStats } from "../lib/stats.js";
 import { t } from "../i18n/index.js";
@@ -135,7 +135,7 @@ export function renderPeriodSummary(scenario) {
       ${stat("night", duration(st.longestNightMin))}
       ${stat("light", duration(st.longestLightMin))}
       ${stat("blackout", duration(st.longestBlackoutMin))}
-      ${stat("both", `${Math.round(st.bothFraction * 100)} %`)}
+      ${stat("both", pct(st.bothFraction * 100))}
     </dl>
     <button type="button" class="period-sources" data-open-quality>${t("periodCard.sources")}</button>`;
 }

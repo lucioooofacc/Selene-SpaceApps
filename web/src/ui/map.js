@@ -15,6 +15,7 @@
  * Clic en el mapa = elegir coordenadas ("Punto observado").
  * Botón "+" = agregar el punto observado como sitio.
  */
+import { pct } from "../lib/format.js";
 import { t } from "../i18n/index.js";
 import { CUSTOM_ID, allSites, chooseCoordinates, chooseSite, getState, setState } from "../state.js";
 import { polarImage } from "./polar2d.js";
@@ -243,7 +244,7 @@ function ensureMoon3d() {
 /** Leyenda de una capa calculada: % del tiempo (0–100) o puntos de viabilidad (0–6). */
 function renderCalcLegend(layer) {
   const legend = $("map-legend");
-  const [min, max] = layer === "viability" ? [t("map.layerUnit.points", { n: 0 }), t("map.layerUnit.points", { n: 6 })] : ["0 %", "100 %"];
+  const [min, max] = layer === "viability" ? [t("map.layerUnit.points", { n: 0 }), t("map.layerUnit.points", { n: 6 })] : [pct(0), pct(100)];
   legend.innerHTML = `
     <span class="map-legend-title">${t(`map.layerLegend.${layer}`)}</span>
     <span class="map-legend-bar" style="background:${paletteGradient(palette())}"></span>
