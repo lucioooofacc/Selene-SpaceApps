@@ -1224,3 +1224,11 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** las fotos son de images.nasa.gov (dominio público; créditos en `video/demo/public/ensayo/fotos/creditos.json` y en los créditos del video). Las voces se verificaron transcribiéndolas con ElevenLabs (sin palabras de más ni indicaciones leídas), no de oído. El "COMPLEX" del sello y los textos de las tarjetas son agregados visuales; los datos de las tarjetas salen de la web. Pendiente de validar por redacción, guion y edición.
 - **Estado:** pendiente de validar.
 
+
+## DEC-082 — La página abre en la pestaña GLOBAL del mapa
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: al entrar a la página, la vista del mapa por defecto era MAPA DE CALOR (como en el Figma, DEC-014 y DEC-040) y preferían que fuera GLOBAL.
+- **Decisión:** la vista inicial del mapa pasa a ser GLOBAL. Las otras pestañas no cambian.
+- **Solución aplicada:** `web/src/state.js`: `mapView` arranca en `"global"`. Un enlace con capa calculada (`?layer=…`, DEC-057) sigue abriendo en MAPA DE CALOR con esa capa (`web/src/main.js`, `stateFromUrl()`).
+- **Alternativas descartadas:** guardar la última pestaña en la configuración (`localStorage`): no se pidió y cambiaría la vista inicial de forma distinta para cada persona.
+- **Estado:** vigente. Se aparta del Figma (DEC-014) en la pestaña inicial, por pedido del equipo.

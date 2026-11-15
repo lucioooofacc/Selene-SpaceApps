@@ -22,7 +22,7 @@ const state = {
   timeMs: DEFAULT_START + 15.5 * HOUR, // T+15:30, como en el Figma
   playing: false,
   speed: 1, // horas simuladas por segundo real
-  mapView: "heat", // "global" | "heat" | "polar"
+  mapView: "global", // "global" | "heat" | "polar"; abre en GLOBAL (DEC-082)
   placesCategory: "overall", // ranking de "Mejores lugares": overall | science | communication | light (UI-13)
   placesMode: "sites", // panel de ranking: "sites" (mejores lugares) | "dates" (mejores fechas, DEC-046)
   mapMode: "3d", // GLOBAL y POLO SUR: "3d" (modelo) | "2d" (imagen NASA), DEC-021
