@@ -367,7 +367,7 @@ export default {
       slope: "{deg}° (escala kilométrica)",
     },
     criteriaNote:
-      "La viabilidad es la del peor requisito: si uno no se cumple, el sitio no es viable. Luz continua: Artemis III exige Sol durante toda la estadía (NASA, 2022); el límite de {battery} h es la autonomía de las baterías (supuesto del equipo: 24 h, editable). Comunicación: el {comms} % es un supuesto del equipo (80 % por defecto, editable); por debajo se asume un satélite de relevo. Pendiente: inclinación máxima de 8° y aterrizaje en menos de 10° (NASA, HLS 2024); solo se evalúa donde hay datos de terreno.",
+      "La viabilidad es la del peor requisito: si uno no se cumple, el sitio no es viable. Luz continua: Artemis III exige Sol durante toda la estadía (NASA, 2022); el límite de {battery} h es la autonomía de las baterías (supuesto del equipo: 24 h, editable). Comunicación: el {comms} % es un supuesto del equipo (80 % por defecto, editable); por debajo se asume un satélite de relevo. Pendiente: inclinación máxima de 8° (Inspector General de la NASA, 2026) y aterrizaje en menos de 10° en 100 m (NASA, HLS 2024); solo se evalúa donde hay datos de terreno.",
   },
   report: {
     title: "Informe de la misión planificada",
