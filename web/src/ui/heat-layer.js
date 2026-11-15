@@ -9,7 +9,7 @@
  * resolución real (~6 km por celda) se indica en el crédito. El cálculo corre en un worker
  * cuando se puede (PERF-01, DEC-047).
  */
-import { computeGlobalHeatmap, computePolarHeatmap, realDataVersion } from "../lib/analysis.js";
+import { computeGlobalHeatmap, computePolarHeatmap, limitsVersion, realDataVersion } from "../lib/analysis.js";
 import { lut } from "./elevation.js";
 import { loadedData, persist, persisted, runInWorker } from "./compute.js";
 
@@ -27,8 +27,8 @@ const keyFor = (layer, startMs, windowDays, palette) => `${layer}|${startMs}|${w
 /** Clave persistente: solo tiene sentido con todos los datos reales del mapa cargados. */
 const persistKey = (layer, startMs, windowDays, palette) => {
   const data = loadedData();
-  // heat4: suavizada (DEC-051), con el resto de la Luna (MAP-02, DEC-065) y viabilidad por requisitos (DEC-071).
-  return data.ephemerides && data.heatAtlas && data.globalHeatAtlas ? `heat4|${layer}|${startMs}|${windowDays}|${palette}` : null;
+  // heat4: suavizada (DEC-051), con el resto de la Luna (MAP-02, DEC-065) y viabilidad por requisitos (DEC-071) con sus supuestos (DEC-083).
+  return data.ephemerides && data.heatAtlas && data.globalHeatAtlas ? `heat4|${layer}|${startMs}|${windowDays}|${palette}|${limitsVersion()}` : null;
 };
 
 function remember(key, result) {

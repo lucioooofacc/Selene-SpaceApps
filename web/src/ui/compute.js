@@ -11,6 +11,7 @@
  *   de cuota o almacenamiento bloqueado.
  */
 import { dataStatus } from "./data-status.js";
+import { missionLimits } from "../lib/analysis.js";
 
 let worker = null;
 let broken = false;
@@ -66,7 +67,7 @@ export function runInWorker(type, args) {
   const id = ++seq;
   return new Promise((resolve, reject) => {
     pending.set(id, { resolve, reject });
-    w.postMessage({ id, type, args, need: loadedData(), base: new URL(import.meta.env.BASE_URL, location.href).href });
+    w.postMessage({ id, type, args, limits: missionLimits(), need: loadedData(), base: new URL(import.meta.env.BASE_URL, location.href).href });
   });
 }
 
