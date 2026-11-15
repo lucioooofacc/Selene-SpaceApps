@@ -150,6 +150,27 @@ function observerText(observer) {
   return t("quality.eph.altitudeAssumed");
 }
 
+/**
+ * Supuestos de las efemérides, traducidos. Los archivos de efemérides guardan
+ * `meta.assumptions` en español como registro de cómo se generaron; acá cada
+ * uno se reconoce por su comienzo y se muestra con su texto de i18n (el de
+ * marco ya incluye lo que midió DEC-070). Uno desconocido se muestra tal cual.
+ */
+const ASSUMPTION_KEYS = [
+  ["Sitio en MOON_ME", "frame"],
+  ["Elevación respecto del plano tangente", "topography"],
+  ["Instantes:", "time"],
+];
+
+function assumptionsHtml(meta) {
+  const items = (meta.assumptions ?? []).map((text) => {
+    const key = ASSUMPTION_KEYS.find(([start]) => text.startsWith(start))?.[1];
+    return key ? t(`quality.eph.assumption.${key}`) : text;
+  });
+  if (meta.derivedFrom) items.push(t("quality.eph.assumption.derived"));
+  return items.length ? `<dt>${t("quality.eph.assumptions")}</dt><dd><ul class="prov-list">${items.map((x) => `<li>${x}</li>`).join("")}</ul></dd>` : "";
+}
+
 /** Bloque "Efemérides del Sol y la Tierra" (UI-01, DEC-039). */
 export function ephemerisHtml(scenario) {
   const state = ephemerisState(scenario);
@@ -170,6 +191,7 @@ export function ephemerisHtml(scenario) {
       <dt>${t("quality.eph.window")}</dt><dd>${pct(windowFraction * 100)}${lookaheadComplete ? "" : ` · ${t("quality.eph.lookahead")}`}</dd>
       <dt>${t("quality.eph.retrieved")}</dt><dd>${Number.isFinite(retrieved) ? dateUTC(retrieved) : "—"}</dd>
       <dt>${t("quality.eph.observer")}</dt><dd>${observerText(meta.observer)}</dd>
+      ${assumptionsHtml(meta)}
     </dl>`;
 }
 

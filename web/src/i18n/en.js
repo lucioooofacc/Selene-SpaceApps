@@ -508,6 +508,13 @@ export default {
       observer: "Observer height",
       altitudeMeasured: "{m} m above the reference sphere (LOLA ground + 2 m)",
       altitudeAssumed: "0 m assumed (no measured height for the site)",
+      assumptions: "Assumptions",
+      assumption: {
+        frame: "The site coordinates are in the DE421 Mean Earth frame and are passed unchanged to Horizons (DE441); the difference between the two does not change the results at the app's scale.",
+        topography: "Horizons gives the elevation of the Sun and the Earth above the mathematical horizon; the terrain is applied separately, with the LOLA horizon.",
+        time: "Horizons times (UTC) are converted to computer time without leap seconds.",
+        derived: "Positions are shifted from the nearest listed site: the Sun is seen in the same direction across the whole Moon and the Earth is corrected for parallax with a fixed distance of 384,400 km.",
+      },
     },
     provenance: "Site provenance",
     dataTitle: "Data quality",
