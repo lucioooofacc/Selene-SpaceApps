@@ -8,7 +8,7 @@
  */
 import { setDataStatus } from "./data-status.js";
 import { loadEphemerides } from "../lib/ephemeris.js";
-import { needsPolarDem, needsRegionalAtlas } from "../lib/analysis.js";
+import { needsGlobalDemHorizon, needsPolarDem, needsRegionalAtlas } from "../lib/analysis.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
 import { decodeGlobalDem, registerGlobalDem } from "../lib/global-dem.js";
 import { needsGlobalDem } from "../lib/site-terrain.js";
@@ -56,12 +56,15 @@ async function fetchPolarLevel(name) {
  * Baja los datos de relieve que necesiten los sitios para su horizonte (una
  * sola vez por página) y llama a `onLoaded` al registrar cada uno: el atlas
  * global para cualquier punto sin horizonte curado (DEC-068) y el DEM polar
- * reducido (~4,4 MB comprimido) para los que están al sur de −75°. Si fallan,
- * esos puntos siguen con el horizonte sintético.
+ * reducido (~4,4 MB comprimido) para los que están al sur de −75°. Para los
+ * puntos con |lat| ≥ 60° fuera del DEM polar, también el DEM global LDEM_16
+ * (~35 MiB, CORE-05, DEC-076). Si fallan, esos puntos siguen con el
+ * horizonte regional o el sintético.
  */
 export function ensurePolarTerrain(sites, onLoaded) {
   // Puntos sin horizonte curado: atlas global de horizontes LOLA (DEC-068), ~2,3 MiB, una vez.
   if (sites.some(needsRegionalAtlas)) ensureGlobalHeatAtlas(onLoaded);
+  if (sites.some(needsGlobalDemHorizon)) loadGlobalDem(onLoaded);
   if (polarLoading || !sites.some(needsPolarDem)) return;
   loadPolarTerrain(onLoaded);
 }
@@ -87,6 +90,8 @@ export function loadPolarTerrain(onLoaded) {
 }
 
 let globalDemLoading = null;
+let globalDemDone = false;
+const globalDemWaiters = new Set();
 
 /**
  * Si el terreno del sitio lo necesita (fuera del polo sur y sin tabla
@@ -94,7 +99,16 @@ let globalDemLoading = null;
  * DEC-067; ~35 MiB, una sola vez por página) y llama a `onLoaded`.
  */
 export function ensureGlobalDem(site, onLoaded) {
-  if (globalDemLoading || !needsGlobalDem(site)) return;
+  if (needsGlobalDem(site)) loadGlobalDem(onLoaded);
+}
+
+/**
+ * Baja el DEM global una sola vez por página. Quien llegue mientras carga
+ * también recibe el aviso (una vez); después de cargar, nadie.
+ */
+function loadGlobalDem(onLoaded) {
+  if (onLoaded && !globalDemDone) globalDemWaiters.add(onLoaded);
+  if (globalDemLoading) return;
   setDataStatus("globalDem", { state: "loading" });
   const base = `${import.meta.env.BASE_URL}data/terrain/lola-global-16ppd`;
   globalDemLoading = Promise.all([fetch(`${base}.json`), fetch(`${base}.bin`)])
@@ -104,12 +118,16 @@ export function ensureGlobalDem(site, onLoaded) {
     })
     .then(
       () => {
+        globalDemDone = true;
         setDataStatus("globalDem", { state: "ready" });
-        onLoaded?.();
+        for (const fn of globalDemWaiters) fn();
+        globalDemWaiters.clear();
       },
       (error) => {
+        globalDemDone = true;
+        globalDemWaiters.clear();
         setDataStatus("globalDem", { state: "error", error: error.message });
-        console.warn(`DEM LOLA global no disponible (informe sin terreno fuera del polo): ${error.message}`);
+        console.warn(`DEM LOLA global no disponible (sin terreno fuera del polo y horizonte regional cerca de los polos): ${error.message}`);
       },
     );
 }

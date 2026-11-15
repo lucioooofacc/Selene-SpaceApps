@@ -55,6 +55,7 @@ export function loadedData() {
     heatAtlas: st.heatAtlas.state === "ready",
     globalHeatAtlas: st.globalHeatAtlas.state === "ready",
     polarDem: st.polarDem.state === "ready",
+    globalDem: st.globalDem.state === "ready",
   };
 }
 

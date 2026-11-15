@@ -112,7 +112,7 @@ export function lolaHtml(scenario) {
       <dt>${t("quality.lola.range")}</dt><dd>${deg(summary.minDeg)} / ${deg(summary.meanDeg)} / ${deg(summary.maxDeg)}</dd>
       <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction * 100, 1)}</dd>
       <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction * 100, 1)}</dd>
-      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a>${horizon.meta.reduced ? ` · ${t("quality.lola.reduced", { res: horizon.meta.resolutionsM.join("/") })}` : ""}${horizon.meta.regional ? ` · ${t("quality.lola.regional", { deg: horizon.meta.cellDeg })}` : ""}</dd>
+      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a>${horizon.meta.reduced ? ` · ${t("quality.lola.reduced", { res: horizon.meta.resolutionsM.join("/") })}` : ""}${horizon.meta.regional ? ` · ${t("quality.lola.regional", { deg: horizon.meta.cellDeg })}` : ""}${horizon.meta.global ? ` · ${t("quality.lola.global", { res: horizon.meta.resolutionKm.toFixed(1) })}` : ""}</dd>
     </dl>`;
 }
 
@@ -211,7 +211,7 @@ export function dataNote(scenario) {
   const pct = Math.round(100 * (scenario?.ephemeris?.windowFraction ?? 0));
   const lola = lolaForScenario(scenario);
   const meta = lola.horizon?.meta;
-  const horizonKey = lola.mode === "active" ? (meta?.regional ? "regional" : meta?.reduced ? "reduced" : "lola") : "synthetic";
+  const horizonKey = lola.mode === "active" ? (meta?.regional ? "regional" : meta?.reduced ? "reduced" : meta?.global ? "global" : "lola") : "synthetic";
   return t("dataNote.text", {
     eph: t(`dataNote.eph.${ephKey}`, { pct }),
     horizon: t(`dataNote.horizon.${horizonKey}`),
@@ -247,6 +247,8 @@ export function qualityRows(site, scenario) {
       ? { key: "horizon", hint: "horizonRegional", kind: "approx", ref: "DEC-068" }
       : lola.mode === "active" && lola.horizon.meta?.reduced
       ? { key: "horizon", hint: "horizonReduced", kind: "approx", ref: "DEC-034" }
+      : lola.mode === "active" && lola.horizon.meta?.global
+      ? { key: "horizon", hint: "horizonGlobal", kind: "approx", ref: "DEC-076" }
       : lola.mode === "active"
       ? { key: "horizon", hint: "horizonActive", kind: "real", ref: "DEC-030" }
       : lola.mode === "preview"
