@@ -1,0 +1,38 @@
+{
+  "schema": "selene-lola-global/v1",
+  "file": "lola-global-16ppd.bin",
+  "sha256": "9c76dca19b525d08d248aeda6b494aca4c9e488dca101b7a08f086ecf2cc0353",
+  "bytes": 35251200,
+  "grid": {
+    "lines": 2880,
+    "samples": 5760,
+    "pixelsPerDegree": 16,
+    "order": "row-major; line 0 arriba (norte), sample 0 en longitud 0° E; pixel registered",
+    "lineProjectionOffset": 1439.5,
+    "sampleProjectionOffset": 2879.5,
+    "centerLatitude": 0,
+    "centerLongitude": 180,
+    "mapScaleKm": 1.895
+  },
+  "scalingFactor": 0.5,
+  "referenceRadiusKm": 1737.4,
+  "interpolatedPct": 1.1,
+  "encoding": {
+    "height": "int16 LE, DN sin modificar de LDEM_16 (metros = DN × scalingFactor), fila por fila",
+    "mask": "1 bit por píxel después de las alturas, LSB primero: 1 = count 0 en LDEC_16 (interpolado)"
+  },
+  "source": {
+    "dataSetId": "LRO-L-LOLA-4-GDR-V1.0",
+    "doi": "10.17189/1520642",
+    "dem": {
+      "productId": "LDEM_16",
+      "productVersion": "V3.1",
+      "md5": "87d937cf968462a61043e1e5b3166d65"
+    },
+    "counts": {
+      "productId": "LDEC_16",
+      "productVersion": "V3.0",
+      "md5": "5d9572b75662d1242aa91f5f6ac917b6"
+    }
+  }
+}
