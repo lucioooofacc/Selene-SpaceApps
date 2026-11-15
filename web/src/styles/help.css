@@ -298,7 +298,10 @@
   position: relative;
 }
 
+/* En la barra de selección va en la esquina, fuera del grid: en línea ocupaba
+   la primera celda y corría los campos de sitio y fecha. */
 .cmp-controls > .help-button {
+  position: absolute;
   right: 12px;
   top: 10px;
 }

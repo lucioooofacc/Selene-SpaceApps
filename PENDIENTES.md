@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (guía en comparar e informe, explicación de la viabilidad y cartel del mapa, rama `feat/guia-comparar-informe`).
+Última actualización: 2026-11-15 (selectores de sitio y fecha en comparar e informe, rama `fix/controles-ayuda`).
 
 ---
 
@@ -79,6 +79,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~Calendario desplegable adaptado a la paleta de la web, con la misma estructura. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
 - [x] ~~Luna animada de fondo y tarjetas semitransparentes. — Lucio~~ Resuelto 2026-11-15 (rama `design/calendario-luna-fondo`, DEC-060).
 - [x] ~~En comparar e informe el calendario quedaba debajo de las tarjetas. — Lucio~~ Resuelto 2026-11-15 (rama `fix/calendario-encima`, DEC-060): los controles van en una capa por encima.
+- [x] ~~En comparar e informe se rompieron los selectores de sitio y fecha de arriba (el «?» de la guía ocupaba la primera celda de la grilla y corría los campos). — Lucio~~ Resuelto 2026-11-15 (rama `fix/controles-ayuda`, DEC-073): el «?» va en la esquina, fuera de la grilla.
 
 ## Datos y astronomía (Teo, Facu, Lucio)
 
