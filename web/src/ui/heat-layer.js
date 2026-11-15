@@ -14,7 +14,7 @@ import { lut } from "./elevation.js";
 import { loadedData, persist, persisted, runInWorker } from "./compute.js";
 
 /** Capas del selector. "elevation" es el mapa LOLA de siempre (DEC-026). */
-export const HEAT_LAYERS = Object.freeze(["elevation", "sun", "earth", "both", "viability"]);
+export const HEAT_LAYERS = Object.freeze(["elevation", "sun", "earth", "both", "viability", "night"]);
 
 /** Borde del mapa calculado (latitud mínima de la grilla del motor). */
 export const HEAT_MIN_LAT = -80;

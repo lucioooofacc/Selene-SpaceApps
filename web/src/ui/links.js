@@ -75,7 +75,7 @@ export function parseCompareQuery(search, defaults) {
 }
 
 /** Capas calculadas que viajan en la URL (la elevación es la de siempre y no se escribe). */
-const URL_LAYERS = ["sun", "earth", "both", "viability"];
+const URL_LAYERS = ["sun", "earth", "both", "viability", "night"];
 
 /** Selección de la misión → query string ("?site=…&start=…&days=…&layer=…"). */
 export function missionQuery({ site, startMs, windowDays, dateChosen, heatLayer }) {

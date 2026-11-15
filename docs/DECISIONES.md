@@ -1073,3 +1073,16 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** mantener la suma de puntos (un sitio podía salir viable sin cumplir un requisito); dejar la comunicación estricta (casi todo "no viable"); volver a los umbrales viejos.
 - **Estado:** vigente. Reemplaza a DEC-007.
 
+## DEC-072 — Capa "Noche más larga" en el mapa de calor
+
+- **Contexto / problema:** con los requisitos de DEC-071, la capa de viabilidad sale casi toda "baja" en misiones de más de una semana. En 7 días, desde el 01/12/2026, el 71 % de la Luna y el 78 % del casquete sur dan "baja"; en 30 días, el 100 %. Es correcto: casi toda la Luna tiene noches de más de 24 h. Pero así el mapa no ayuda a elegir (reporte de Lucio, 15/11/2026).
+- **Decisión** (Lucio, entre tres opciones): mantener la capa de viabilidad y sumar una capa "Noche más larga" con un degradado en horas. Se descartaron dejarlo como estaba con una aclaración y cambiar el requisito de luz.
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: modo `"night"` en `HEAT_MODES`. Usa la misma noche más larga por celda que la viabilidad, con valores `1 − noche / tope`: más claro es mejor, como en las otras capas. El tope es la duración del período, hasta 360 h (una noche lunar). También devuelve `nightH` y `capH`.
+  - Interfaz: botón "Noche más larga" en el selector (`index.html`), capa en `ui/heat-layer.js` y en la URL (`ui/links.js`), y leyenda de "0 h" (arriba) a la duración del período (`ui/map.js`).
+  - Textos ES/EN: `map.layer.night`, `map.layerLegend.night`, `map.layerAlt.night` y `map.layerUnit.hours`. También se actualizó la ayuda del mapa.
+  - El selector de capas pasa de 100 a 124 px, para que "Noche más larga" entre en un renglón sin tapar la leyenda.
+- **Validación:** `tests/heat-map.test.js` comprueba que la capa usa las mismas horas que la viabilidad y la fórmula de los valores. En el navegador, con 30 días de diciembre, la zona polar de noches cortas se distingue de las noches de ~354 h de latitudes bajas.
+- **Supuestos y límites:** el paso del mapa es de 1–2 h, más grueso que los 10 min del escenario.
+- **Estado:** vigente.
+

@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (viabilidad por requisitos de misión, rama `feat/viabilidad-requisitos`).
+Última actualización: 2026-11-15 (capa "Noche más larga" y tarjetas de fechas, ramas `feat/capa-noche-mas-larga` y `fix/tarjetas-fechas`).
 
 ---
 

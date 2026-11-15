@@ -109,7 +109,7 @@ test("fuera del rango de Horizons: vuelve al aproximado", () => {
 
 test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los requisitos de los sitios", async () => {
   const { HEAT_MODES, viabilityFrom } = await import("../src/lib/analysis.js");
-  assert.deepEqual(HEAT_MODES, ["sun", "earth", "both", "viability"]);
+  assert.deepEqual(HEAT_MODES, ["sun", "earth", "both", "viability", "night"]);
   assert.throws(() => computePolarHeatmap({ startMs: Date.UTC(2026, 11, 1), windowDays: 2, mode: "otro", size: 8, minLat: -80 }), RangeError);
   for (const real of [false, true]) {
     clearEphemerides();
@@ -140,5 +140,20 @@ test("modos nuevos: 'both' acota a luz y Tierra; 'viability' usa los requisitos 
       assert.equal(via.levels[c], expected);
       assert.equal(via.values[c], { low: 0, mid: 0.5, high: 1 }[expected]);
     }
+  }
+});
+
+test("capa 'night': horas de la noche más larga y valores 1 − noche / tope (DEC-072)", () => {
+  loadAll();
+  registerHeatAtlas(flatAtlas(8, -80, 0.3));
+  const o = { startMs: Date.UTC(2026, 11, 1), windowDays: 5, size: 8, minLat: -80 };
+  const night = computePolarHeatmap({ ...o, mode: "night" });
+  const via = computePolarHeatmap({ ...o, mode: "viability" });
+  assert.equal(night.capH, 120);
+  for (let c = 0; c < 64; c++) {
+    if (night.values[c] < 0) continue;
+    // Mismas horas que usa la viabilidad para el requisito de luz continua.
+    assert.equal(night.nightH[c], via.components.night[c]);
+    assert.ok(Math.abs(night.values[c] - (1 - Math.min(night.nightH[c], 120) / 120)) < 1e-6);
   }
 });
