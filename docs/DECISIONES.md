@@ -1196,3 +1196,31 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** solo en la página principal; la Luna de la comparación ya encuadra los dos sitios (DEC-054). En las pestañas del polo y del mapa de calor también gira hasta el sitio, dejando el polo descentrado hasta que se cambie de pestaña.
 - **Estado:** vigente.
 
+
+## DEC-080 — Demo en video: motion graphic con voz generada por IA
+
+- **Contexto / problema:** la entrega exige una demo (video de hasta 30 s o hasta 7 diapositivas, en inglés o con subtítulos en inglés). Los integrantes son menores y no pueden aparecer ni hablar en el video.
+- **Decisión:** video motion graphic de ≤ 30 s, 1920×1080, con voz en off en inglés generada con ElevenLabs, subtítulos en inglés siempre visibles y capturas reales de la web. Sigue el guion de `video/script.md` (estructura de la guía de Space Apps: equipo → desafío → nombre y lema → idea y datos de la NASA → futuro).
+- **Solución aplicada:**
+  - `video/demo/` (Remotion 4, fuera de `web/`): una línea de tiempo en segundos de la voz; las escenas y los efectos se enganchan a palabras de la alineación forzada de ElevenLabs (`src/voz-tiempos.json`).
+  - Voz: `eleven_v4`, voz "Liam". Los apellidos se dicen en español (pedido de Lucio, 15/11/2026): se genera una toma aparte con la misma voz y `language_code: "es"` ("Barbato, Duarte, Fachín, Péiren, Ligüera y Santana": Fa-CHÍN y PÉI-ren confirmados por Lucio) y se empalma entre "We are" y "team Hubble 27" de la toma en inglés. Los subtítulos muestran la grafía real y "and". Los silencios entre frases se acortan con ffmpeg y se acelera 4 % sin cambiar el tono para entrar en 30 s. Música (ElevenLabs Music) y efectos (ElevenLabs Sound Effects) generados con scripts.
+  - Capturas de la web en inglés con `scripts/capturas.mjs` (Shackleton, 14–27/11/2026; comparación Shackleton vs. Malapert). La Luna girando usa la textura LROC del CGI Moon Kit (NASA SVS) que ya usa la web.
+  - En pantalla: "AI-GENERATED VOICE · ELEVENLABS".
+- **Ajustes al guion (para entrar en 30 s):** "to optimize lunar landing operations and compares these potential sites with data such as JPL Horizons, LOLA from NASA" → "to find the best lunar landing sites, comparing them with NASA data like JPL Horizons and LOLA"; el cierre pasa a "Comparing sites quickly shortens mission planning, helping us find new answers to the unknown, and making life easier for all of us". La pregunta en pantalla se escribe "What can SELENE do for people, the world, and beyond?". Pendiente de validar por redacción y guion (Alfonso, Cata, Teo, Martín).
+- **Alternativas descartadas:** diapositivas (menos impacto visual); grabar pantalla con voz propia (no pueden aparecer ni hablar); voz en español con subtítulos (el guion ya estaba en inglés y evita depender de los subtítulos).
+- **Supuestos y límites:** la Luna girando es ilustrativa (textura desplazada en un círculo, no una proyección exacta). El empalme de los apellidos se verificó por volumen, no de oído: conviene escucharlo. Con los apellidos en español el video dura 29,7 s.
+- **Estado:** pendiente de validar.
+
+## DEC-081 — Dos versiones más de la demo: "Emoción" y "Ensayo"
+
+- **Contexto / problema:** pedido de Lucio del 15/11/2026: además de la v1 (DEC-080), una versión con más emoción y otra con el estilo del video-ensayo hecho para Inglés ("One minute for change"), para elegir cuál se entrega.
+- **Decisión:** dos composiciones nuevas en `video/demo/`, con el mismo texto que la v1 (mismos datos y mismo orden del guion) y distinta interpretación y lenguaje visual. Las dos en 1920×1080 (la del ensayo original era vertical; se pasa a horizontal porque se sube a YouTube para Space Apps).
+- **Solución aplicada:**
+  - `scripts/voz.mjs` y `scripts/musica.mjs` aceptan la versión (`v1`, `emocion`, `ensayo`); la configuración de cada voz está en `scripts/texto-voz.mjs`. `src/anim.ts` crea una línea de tiempo por voz (`crearLinea`) y las escenas compartidas la leen por contexto (`src/linea.tsx`); la v1 no cambia.
+  - **Emoción** (`DemoEmocion`, `src/emocion/`): voz Liam más actuada, música orquestal épica con crescendo hacia la revelación, amanecer sobre el horizonte lunar, franjas de cine que se abren con "SELENE", destello y chispas, luces cálidas, web con leve inclinación 3D y salida de la Tierra (foto Apollo 17, NASA) en el cierre.
+  - **Ensayo** (`DemoEnsayo`, `src/ensayo/`): subtítulos serif de hasta 3 palabras con itálica dorada en palabras clave; una foto de archivo de la NASA en blanco y negro por apellido; placa roja "Team Hubble 27"; placa de papel con sello "COMPLEX" y resaltador; foto de Orion junto a la Luna (Artemis I) que recupera el color con "SELENE"; buscador que se tipea; muro curvo con capturas reales y tarjetas con datos reales de la web (Shackleton, 14–27/11/2026: 336 h de luz acumulada, Tierra a la vista 73 %); JPL Horizons y LOLA con resaltador; ráfaga de fotos a color y créditos.
+  - Voz siempre ~18 dB por encima de la música, que sube en las pausas (preferencia de Lucio del video de Inglés).
+- **Alternativas descartadas:** voces de narrador George, Brian y Matilda para el ensayo: hablan más lento y no entraban en 30 s sin acelerarlas demasiado; se usó Liam con un tono más reflexivo. Formato vertical para el ensayo: Space Apps se ve en horizontal.
+- **Supuestos y límites:** las fotos son de images.nasa.gov (dominio público; créditos en `video/demo/public/ensayo/fotos/creditos.json` y en los créditos del video). Las voces se verificaron transcribiéndolas con ElevenLabs (sin palabras de más ni indicaciones leídas), no de oído. El "COMPLEX" del sello y los textos de las tarjetas son agregados visuales; los datos de las tarjetas salen de la web. Pendiente de validar por redacción, guion y edición.
+- **Estado:** pendiente de validar.
+
