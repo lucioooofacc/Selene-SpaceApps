@@ -508,6 +508,13 @@ export default {
       observer: "Altura del observador",
       altitudeMeasured: "{m} m sobre la esfera de referencia (suelo LOLA + 2 m)",
       altitudeAssumed: "0 m supuesto (no hay altura medida del sitio)",
+      assumptions: "Supuestos",
+      assumption: {
+        frame: "Las coordenadas del sitio están en el marco Mean Earth de DE421 y se pasan sin transformar al de Horizons (DE441); la diferencia entre los dos no cambia los resultados a la escala de la app.",
+        topography: "Horizons da la altura del Sol y de la Tierra sobre el horizonte matemático; el relieve se aplica aparte, con el horizonte LOLA.",
+        time: "Los instantes de Horizons (UTC) se pasan a la hora de la computadora sin segundos intercalares.",
+        derived: "Las posiciones se trasladan desde el sitio de la lista más cercano: el Sol se ve en la misma dirección en toda la Luna y la Tierra se corrige por paralaje con una distancia fija de 384 400 km.",
+      },
     },
     provenance: "Procedencia del sitio",
     dataTitle: "Calidad de los datos",

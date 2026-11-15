@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (arrastre sobre marcadores, rama `fix/arrastre-sobre-marcadores`).
+Última actualización: 2026-11-15 (supuestos de efemérides traducidos, rama `i18n/supuestos-efemerides`).
 
 ---
 
@@ -86,7 +86,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~CORE-01 parte B: efemérides JPL Horizons en `analysis.js` (series nov 2026 – dic 2027, paso 1 h, interpoladas; fuera del rango, modelo aproximado marcado). — Facundo · #11, DEC-024, DEC-032~~ Resuelto 2026-11-14 (rama `feat/efemerides-horizons-calculo`, DEC-033).
 - [x] ~~UI-01: mostrar `scenario.ephemeris` (Horizons / aproximado / mixto, procedencia y cobertura) y el estado de carga de las efemérides. — Lucio · #13, DEC-033~~ Resuelto 2026-11-14 (rama `feat/calidad-datos-efemerides`, DEC-039): bloque "Efemérides del Sol y la Tierra" en "Datos y fuentes" y estados de carga/error/faltante de las efemérides y del DEM LOLA reducido.
 - [x] ~~Revisar los textos nuevos de `quality.eph.*` y `quality.lola.dem.*` (ES/EN) en la revisión de traducciones. — Lucio, Cata · I18N-01 #17, DEC-039~~ Resuelto 2026-11-15 (rama `i18n/revision-cientifica`, DEC-064): "transferred" pasa a "shifted"; el resto es equivalente.
-- [ ] Los metadatos de efemérides (`meta.assumptions`) solo existen en español y no se muestran en la interfaz; decidir si se traducen. — Facundo, Lucio · DEC-039
+- [x] ~~Los metadatos de efemérides (`meta.assumptions`) solo existen en español y no se muestran en la interfaz; decidir si se traducen. — Facundo, Lucio · DEC-039~~ Resuelto 2026-11-15 (rama `i18n/supuestos-efemerides`): se muestran traducidos en "Datos y fuentes" (`quality.eph.assumption.*`), con el de marco actualizado según DEC-070 y uno más para las efemérides trasladadas. Los archivos de efemérides conservan el texto original en español como registro.
 - [x] ~~Validar los rasgos de interés científico de `web/src/data/site-traits.js` (y sumar rasgos de IM-1 si corresponde). — Teo, Facu, Lucio · DEC-029~~ Resuelto 2026-11-15 (rama `docs/validacion-astronomia`, DEC-070, `docs/VALIDACION.md`): cada rasgo coincide con su cita; de las regiones de Artemis III de 2024 solo Malapert Massif está en la lista, y es el único sitio marcado. IM-1 queda sin rasgos.
 - [x] ~~Verificar las coordenadas de los 7 sitios con LROC Quickmap o Moon Trek. — DEC-006~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DATA-01 #9): valores e identidades confirmados por Facu y normalizados a MOON_ME/DE421 (DEC-019). La procedencia sigue abierta en los puntos de abajo.
 - [x] ~~Agregar URLs oficiales verificadas por sitio en `provenance.urls` de `web/src/data/sites.js` (hoy vacías: no hubo acceso web para verificarlas). — Teo, Facu, Lucio · DEC-019~~ Resuelto 2026-11-14 (rama `data/validar-sitios`, DEC-019): URLs de NSSDCA, Lunar Surface Data Book, LCROSS (NTRS), PGDA, CNSA y USGS cargadas en `SOURCE_URLS`.
