@@ -63,10 +63,26 @@ button {
 .header-logo {
   position: absolute;
   left: 64px; /* logo cuadrado (DEC-077): mismo centro que el de 80 × 64 del Figma */
-  top: 12px;
+  top: 6px;
   width: 64px;
   height: 64px;
   object-fit: contain;
+}
+
+/* Aclaración del logo generado con IA (DEC-078): chica pero a la vista, debajo del logo. */
+.header-logo-note {
+  position: absolute;
+  left: 0;
+  top: 74px;
+  width: 192px; /* centrado bajo el logo (centro en 96 px) */
+  margin: 0;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted-2);
 }
 
 .header-brand {
@@ -901,9 +917,11 @@ button {
 .map-legend {
   position: absolute;
   left: 36px;
-  top: 340px; /* debajo del selector de capa (MAP-01) */
+  /* Debajo del selector de capa (MAP-01): los botones terminan en 304 px y el título
+     (top −40 px) quedaba pegado a "Noche más larga". Mismo borde inferior (640 px). */
+  top: 376px;
   width: 72px;
-  height: 300px;
+  height: 264px;
 }
 
 .map-legend[hidden] {
@@ -913,7 +931,7 @@ button {
 .map-legend-title {
   position: absolute;
   left: 0;
-  top: -40px;
+  bottom: calc(100% + 8px); /* crece hacia arriba: con 1, 2 o 3 renglones no pisa la barra */
   width: 88px;
   color: var(--muted-2);
   font-size: 12px;
