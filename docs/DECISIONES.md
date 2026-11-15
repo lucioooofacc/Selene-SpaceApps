@@ -1171,3 +1171,17 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** quien ya eligió español (queda guardado en el navegador) la sigue viendo en español. `web/public/figma/logo.png` queda en el repositorio sin uso.
 - **Estado:** vigente.
 
+## DEC-078 — Aviso de logo con IA, cartel de hora en las ventanas y leyenda del mapa
+
+- **Contexto / problema:** pedidos de Lucio del 15/11/2026:
+  - Aclarar que el logo (DEC-077) es una imagen generada con IA, chico pero a la vista.
+  - En los gráficos de ventanas de comparar e informe, mostrar un cartel propio con la hora donde está el mouse (antes solo había el `<title>` nativo de cada barra).
+  - El título de la leyenda del mapa de calor quedaba pegado a "Noche más larga".
+- **Decisión y solución aplicada:**
+  - Logo: rótulo `app.aiLogo` ("AI GENERATED IMAGE" / "IMAGEN GENERADA CON IA") debajo del logo en las tres páginas (`.header-logo-note`, 11 px, color atenuado, en un renglón). El logo sube 6 px para dejarle lugar.
+  - Cartel de hora: `web/src/ui/chart-hover.js` (`attachTimeHover`). Una línea punteada sigue al cursor y un cartel muestra la fecha y hora UTC de ese punto y, sobre un carril, si hay luz o enlace en ese instante (`chartTip.*`, ES/EN). `windowsChart()` (`ui/compare.js`) y `windowsSvg()` (`ui/site-report.js`) devuelven el SVG y su geometría. Se quitan los `<title>` de las barras para que no aparezcan dos carteles. La posición se calcula en fracciones del gráfico, así que funciona con el `zoom` del stage. No calcula nada astronómico: usa las ventanas que ya calculó `lib/`.
+  - Leyenda del mapa: `.map-legend` baja de 340 a 376 px (mismo borde inferior) y el título se ancla por abajo, así crece hacia arriba con 1 a 3 renglones sin pisar la barra ni los botones de capa (que terminan en 304 px).
+- **Alternativas descartadas:** dejar el `<title>` nativo: tarda en aparecer, no sigue al cursor y solo da el inicio y fin de cada barra.
+- **Supuestos y límites:** el cartel es solo con mouse; el gráfico mantiene su descripción accesible (`aria-label`). La hora es la del punto del eje bajo el cursor, con la resolución del ancho del gráfico (en 30 días, unos 25 min por píxel).
+- **Estado:** vigente.
+
