@@ -22,7 +22,7 @@ const reset = () => setMissionLimits(DEFAULT_LIMITS);
 
 test("por defecto: 24 h de baterías y 80 % de comunicación (DEC-071)", () => {
   reset();
-  assert.deepEqual(missionLimits(), { batteryHours: 24, commsMinPct: 80 });
+  assert.deepEqual(missionLimits(), { batteryHours: 24, commsMinPct: 80, relay: true });
   assert.equal(limitsAreDefault(), true);
   assert.equal(currentRequirements(), REQUIREMENTS);
 });
@@ -62,7 +62,7 @@ test("la versión de caché cambia con los supuestos (los cachés se recalculan)
   const v = realDataVersion();
   setMissionLimits({ batteryHours: 48 });
   assert.notEqual(realDataVersion(), v);
-  assert.equal(limitsVersion(), "b48c80");
+  assert.equal(limitsVersion(), "b48c80r1");
   reset();
   assert.equal(realDataVersion(), v);
 });
@@ -73,7 +73,7 @@ test("URL: solo se escriben si no son los de por defecto y se leen validados", (
   assert.ok(!missionQuery({ site, startMs: 0, windowDays: 2, dateChosen: false }).includes("bat="));
   setMissionLimits({ batteryHours: 360, commsMinPct: 50 });
   const q = missionQuery({ site, startMs: Date.UTC(2026, 10, 14), windowDays: 30, dateChosen: true });
-  assert.deepEqual(parseLimitsQuery(q), { batteryHours: 360, commsMinPct: 50 });
+  assert.deepEqual(parseLimitsQuery(q), { batteryHours: 360, commsMinPct: 50, relay: true });
   assert.equal(parseMissionQuery(q).windowDays, 30, "no altera el resto de la selección");
   reset();
   assert.deepEqual(parseLimitsQuery("?bat=abc&com=500"), { commsMinPct: 100 });
@@ -86,4 +86,36 @@ test("los textos muestran los supuestos vigentes", () => {
   assert.match(t("compare.thresholdText.communication"), /60/);
   reset();
   assert.match(t("compare.thresholdText.light"), /24 h/);
+});
+
+test("sin satélite de relevo: menos del 25 % no cumple, como el criterio de NASA (DEC-084)", () => {
+  reset();
+  assert.equal(requirementLevel("communication", 0), "mid", "con relevo nunca no cumple");
+  setMissionLimits({ relay: false });
+  assert.equal(limitsAreDefault(), false);
+  assert.equal(requirementLevel("communication", 24.9), "low");
+  assert.equal(requirementLevel("communication", 25), "mid");
+  assert.equal(requirementLevel("communication", 80), "high");
+  assert.equal(viabilityFrom({ light: 0, communication: 10 }).overall, "low");
+  // Con una comunicación mínima menor que 25 %, el 25 % sigue mandando para "no cumple".
+  setMissionLimits({ commsMinPct: 20 });
+  assert.equal(requirementLevel("communication", 22), "low");
+  assert.equal(requirementLevel("communication", 30), "high");
+  assert.match(limitsVersion(), /r0$/);
+  reset();
+  assert.equal(currentRequirements(), REQUIREMENTS);
+});
+
+test("relevo en la URL y en los textos", () => {
+  reset();
+  assert.equal(cleanLimit("relay", "0"), false);
+  assert.equal(cleanLimit("relay", "1"), true);
+  assert.equal(cleanLimit("relay", "x"), null);
+  setMissionLimits({ relay: false });
+  const q = missionQuery({ site: { id: "shackleton", lat: -89.45, lon: 129.78 }, startMs: 0, windowDays: 2, dateChosen: false });
+  assert.deepEqual(parseLimitsQuery(q), { batteryHours: 24, commsMinPct: 80, relay: false });
+  assert.match(t("compare.thresholdText.communication"), /25/);
+  reset();
+  assert.match(t("compare.thresholdText.communication"), /80/);
+  assert.deepEqual(parseLimitsQuery("?relay=quizas"), {});
 });
