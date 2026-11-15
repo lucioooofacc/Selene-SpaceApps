@@ -165,7 +165,7 @@ function horizonChart(scA, scB) {
 }
 
 function criteriaTable(scA, scB, names) {
-  const fmt = { illumination: (v) => `${v} %`, power: (v) => v.toFixed(2), communication: (v) => `${v} %` };
+  const fmt = { illumination: (v) => pct(v), power: (v) => v.toFixed(2), communication: (v) => pct(v) };
   const rows = Object.keys(THRESHOLDS)
     .map((key) => {
       const th = THRESHOLDS[key];

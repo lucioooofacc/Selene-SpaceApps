@@ -104,7 +104,7 @@ function terrainHtml(site, scenario, demState, globalDemState) {
       <div><dt>${t("reportWeb.terrain.height")}</dt><dd>${num(terrain.heightKm * 1000)} m</dd></div>
       <div><dt>${t("reportWeb.terrain.slope")}</dt><dd>${terrain.slopeDeg === null ? "—" : `<span class="status-tag ${cls(terrain.slopeDeg)}">${num(terrain.slopeDeg, 1)}°</span>`}</dd></div>
       <div><dt>${t("reportWeb.terrain.meanSlope", { r: a.radiusKm })}</dt><dd>${num(a.meanSlope, 1)}° · ${t("reportWeb.terrain.max")} ${num(a.maxSlope, 1)}°</dd></div>
-      <div><dt>${t("reportWeb.terrain.below", { r: a.radiusKm })}</dt><dd>&lt; 5°: ${num(a.below[5])} % · &lt; 10°: ${num(a.below[10])} % · &lt; 15°: ${num(a.below[15])} %</dd></div>
+      <div><dt>${t("reportWeb.terrain.below", { r: a.radiusKm })}</dt><dd>&lt; 5°: ${pct(a.below[5])} · &lt; 10°: ${pct(a.below[10])} · &lt; 15°: ${pct(a.below[15])}</dd></div>
       <div><dt>${t("reportWeb.terrain.roughness")}</dt><dd>${num(a.roughnessM)} m · ${t("reportWeb.terrain.relief")} ${num(a.reliefM)} m</dd></div>
     </dl>
     <p class="cmp-hint">${t(`reportWeb.terrain.note.${source}`, { res, low: num(a.lowConfidencePct) })}</p>

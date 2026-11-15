@@ -101,14 +101,13 @@ export function lolaHtml(scenario) {
   }
   const { observer, summary, product } = horizon.meta;
   const deg = (v) => `${v.toFixed(1)}°`;
-  const pct = (v) => `${(v * 100).toFixed(1)} %`;
   return `
     <dl class="prov">
       <dt>${t("quality.lola.status")}</dt><dd>${t(mode === "active" ? "quality.lola.active" : "quality.lola.preview")}</dd>
       <dt>${t(horizon.meta.regional ? "quality.lola.groundRegional" : "quality.lola.ground")}</dt><dd>${Math.round(observer.groundHeightM)} m</dd>
       <dt>${t("quality.lola.range")}</dt><dd>${deg(summary.minDeg)} / ${deg(summary.meanDeg)} / ${deg(summary.maxDeg)}</dd>
-      <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction)}</dd>
-      <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction)}</dd>
+      <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction * 100, 1)}</dd>
+      <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction * 100, 1)}</dd>
       <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a>${horizon.meta.reduced ? ` · ${t("quality.lola.reduced", { res: horizon.meta.resolutionsM.join("/") })}` : ""}${horizon.meta.regional ? ` · ${t("quality.lola.regional", { deg: horizon.meta.cellDeg })}` : ""}</dd>
     </dl>`;
 }

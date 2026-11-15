@@ -26,6 +26,7 @@ export default {
     E: "E",
     W: "O",
     decimal: ",",
+    percent: "{n} %",
   },
   places: {
     title: "Mejores lugares para alunizar",
@@ -132,7 +133,7 @@ export default {
     light: "Luz acumulada",
     sun: "Sol",
     comm: "Disponibilidad de comunicación",
-    coverage: "{pct}% de cobertura",
+    coverage: "{pct} % de cobertura",
     earth: "Tierra",
     viable: "VIABLE",
     visible: "VISIBLE",

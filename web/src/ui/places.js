@@ -13,7 +13,7 @@ import { traitsFor } from "../data/site-traits.js";
 import { getLang, t } from "../i18n/index.js";
 import { allSites, chooseSite, getState, setState } from "../state.js";
 import { dateScenarios, pickDistinct } from "../lib/dates.js";
-import { dateUTC } from "../lib/format.js";
+import { dateUTC, pct } from "../lib/format.js";
 import { DAY_MS } from "../lib/astro.js";
 
 const $ = (id) => document.getElementById(id);
@@ -161,9 +161,9 @@ function renderDates(state) {
         <p class="place-verdict place-verdict-${v.overall}">${t("places.dates.sub", { level: t(`compare.level.${v.overall}`), points: v.points, max: v.maxPoints })}</p>
         <div class="place-stats">
           <span class="icon-box" title="${t("places.comm")}">${icon("antenna")}</span>
-          <span class="value">${Math.round(s.communication)}%</span>
+          <span class="value">${pct(s.communication)}</span>
           <span class="icon-box" title="${t("places.dates.sunPct")}">${icon("sun")}</span>
-          <span class="value">${Math.round(s.illumination)}%</span>
+          <span class="value">${pct(s.illumination)}</span>
           <span class="icon-box" title="${t("places.dates.earthPeak")}">${icon("earth")}</span>
           <span class="value">${elev(s.peakEarth)}</span>
           <span class="icon-box" title="${t("places.light")}">${icon("bulb")}</span>
@@ -270,7 +270,7 @@ export function renderPlaces(state) {
         <p class="place-sub" title="${subtitle(site, state.placesCategory)}">${subtitle(site, state.placesCategory)}</p>
         <div class="place-stats">
           <span class="icon-box" title="${t("places.comm")}">${icon("antenna")}</span>
-          <span class="value">${Math.round(s.communication)}%</span>
+          <span class="value">${pct(s.communication)}</span>
           <span class="icon-box" title="${t("places.sun")}">${icon("sun")}</span>
           <span class="value">${elev(now.sun.elevation)}</span>
           <span class="icon-box" title="${t("places.earth")}">${icon("earth")}</span>
