@@ -206,11 +206,18 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
   }
 
   const canvas = renderer.domElement;
-  canvas.addEventListener("pointerdown", (event) => {
-    drag = { x: event.clientX, y: event.clientY, moved: 0 };
-    canvas.setPointerCapture(event.pointerId);
+  // El arrastre puede empezar en el canvas o en un marcador (elementos HTML encima del
+  // canvas): en los dos casos gira la Luna. Sobre un marcador no se captura el puntero,
+  // para que un clic corto siga eligiendo el sitio; si hubo arrastre, ese clic se anula.
+  let suppressClick = false;
+  container.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || container.dataset.mode === "2d") return;
+    const onPin = Boolean(event.target.closest?.(".pin"));
+    if (event.target !== canvas && !onPin) return;
+    drag = { x: event.clientX, y: event.clientY, moved: 0, onPin };
+    if (!onPin) canvas.setPointerCapture(event.pointerId);
   });
-  canvas.addEventListener("pointermove", (event) => {
+  window.addEventListener("pointermove", (event) => {
     if (!drag) return;
     const box = canvas.getBoundingClientRect();
     const dx = event.clientX - drag.x;
@@ -222,14 +229,31 @@ export async function createMoon3D(container, { onPick, onMove, onReady }) {
     const k = (180 / box.width) * (view.dist / 4.3);
     rotate(-dx * k, dy * k);
   });
-  canvas.addEventListener("pointerup", (event) => {
-    const wasClick = drag && drag.moved < 5;
+  window.addEventListener("pointerup", (event) => {
+    if (!drag) return;
+    const wasClick = drag.moved < 5;
+    const { onPin } = drag;
     drag = null;
+    if (onPin) {
+      suppressClick = !wasClick;
+      return;
+    }
     if (!wasClick) return;
     const p = pick(event.clientX, event.clientY);
     if (p) onPick(p.lat, p.lon);
   });
-  canvas.addEventListener("pointercancel", () => (drag = null));
+  window.addEventListener("pointercancel", () => (drag = null));
+  // Tras arrastrar desde un marcador, el clic que dispara el navegador no debe elegir el sitio.
+  container.addEventListener(
+    "click",
+    (event) => {
+      if (!suppressClick) return;
+      suppressClick = false;
+      event.stopPropagation();
+      event.preventDefault();
+    },
+    true,
+  );
   // La rueda se escucha en el contenedor y no solo en el canvas: los marcadores de los
   // sitios son elementos HTML encima del canvas y, con el cursor sobre uno, la rueda
   // desplazaba la página en lugar de acercar. En 2D (data-mode) la página se desplaza normal.

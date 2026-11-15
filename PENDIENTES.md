@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (Issues #114, #115 y #116 para los hallazgos de DEC-070, rama `docs/issues-hallazgos-astronomia`).
+Última actualización: 2026-11-15 (arrastre sobre marcadores, rama `fix/arrastre-sobre-marcadores`).
 
 ---
 
@@ -138,7 +138,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Horizonte regional de los puntos propios cerca de los polos: frente al horizonte exacto del punto, la luz difiere hasta 39 p. p. al norte de +75° y la Tierra hasta 100 p. p. entre −75° y −60° (puntos cerca del limbo). Opciones: calcular el horizonte del punto con `LDEM_16` cuando |lat| > 60° (requiere bajar el DEM global, 33,6 MiB) o avisarlo con más fuerza en la interfaz. — Teo, Facu, Lucio · CORE-05 #114, DEC-068, DEC-070
 - [ ] Horizonte de Apollo 11: los píxeles interpolados de `LDEM_128` a menos de 0,5 km lo elevan ~0,9° (~0,5 p. p. de luz por año). Opciones: ignorar los primeros cientos de metros del rayo cuando los píxeles son interpolados, o tomar la altura del observador de un entorno. Cambiar el algoritmo afecta a todos los sitios. — Teo, Facu, Lucio · TERRAIN-05 #115, DEC-061, DEC-070
 - [ ] La iluminación de Shackleton cambia mucho en pocos cientos de metros (R01: 60 %; a 480 m al norte: 90 %, como en la bibliografía). Decidir si se aclara en la interfaz o en el texto de la entrega, para que el 60 % no se lea como un error. — Teo, Facu, Lucio · DOC-02 #116, DEC-035, DEC-070
-- [ ] Arrastrar para girar la Luna 3D no funciona si el arrastre empieza encima de un marcador. — Desarrollo web · PR #112
+- [x] ~~Arrastrar para girar la Luna 3D no funciona si el arrastre empieza encima de un marcador. — Desarrollo web · PR #112~~ Resuelto 2026-11-15 (rama `fix/arrastre-sobre-marcadores`): el arrastre también gira la Luna cuando empieza sobre un marcador, y un clic corto sigue eligiendo el sitio.
 - [ ] Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007
 
 ## Textos y traducción
