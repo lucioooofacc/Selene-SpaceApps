@@ -410,10 +410,15 @@ export default {
       below: "Low-slope area (within {r} km)",
       roughness: "Roughness (height deviation)",
       relief: "relief",
-      note: "Computed with the polar LOLA DEM at {res} m/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low} % of the points use low-confidence LOLA cells. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
+      note: {
+        polar: "Computed with the polar LOLA DEM at {res}/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low} % of the points use low-confidence LOLA cells. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
+        fine: "Computed with the global LOLA DEM LDEM_128 at {res}/pixel: kilometer-scale slopes (relief smaller than ~1 km is smoothed). {low} % of the points use pixels interpolated by the LOLA team. Green < 5°, gold 5–10°, red ≥ 10°: indicative reference set by the team.",
+        global: "Computed with the global LOLA DEM LDEM_16 at {res}/pixel: these are regional-scale slopes (spans of about 4 km) that give context but cannot be used to assess a landing zone, because smaller relief is not resolved. {low} % of the points use pixels interpolated by the LOLA team.",
+      },
       loading: "Loading the LOLA terrain of the area…",
       error: "The LOLA terrain of the area could not be loaded.",
-      outside: "No LOLA terrain data for this site: the integrated DEM covers the south pole down to 75° S.",
+      loadingGlobal: "Loading the global LOLA terrain (about 35 MB, first time only)…",
+      errorGlobal: "The global LOLA terrain could not be loaded, so this report has no terrain data.",
     },
     traj: {
       title: "Earth–Moon trajectory (estimate)",

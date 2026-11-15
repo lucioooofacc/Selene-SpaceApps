@@ -1,8 +1,10 @@
 /**
- * Terreno alrededor de un sitio para el informe (DEC-059), con el DEM LOLA
- * polar reducido registrado (480 m hasta −80°, 960 m hasta −75°, DEC-034).
- * Módulo puro: recibe una función de muestreo `sample(lat, lon)` →
- * `{heightKm, lowConfidence} | null`.
+ * Terreno alrededor de un sitio para el informe (DEC-059). `siteTerrain()`
+ * recibe una función de muestreo `sample(lat, lon)` →
+ * `{heightKm, lowConfidence} | null`; `terrainForSite()` elige la fuente:
+ * DEM polar reducido (480 m hasta −80°, 960 m hasta −75°, DEC-034), tabla
+ * precalculada de LDEM_128 o DEM global LDEM_16 (TERRAIN-04, DEC-067).
+ * Módulo puro.
  *
  * - Pendiente: diferencias centradas a ±`stepKm` en norte–sur y este–oeste.
  * - Alrededores: grilla de puntos cada `stepKm` dentro de `radiusKm`;
@@ -12,6 +14,9 @@
  * valores son de escala kilométrica, no de la zona exacta de contacto.
  */
 import { destination } from "./horizon-lola.js";
+import { POLAR_DEM_COVERAGE_LATITUDE, polarDemResolutionM, polarDemSample } from "./polar-dem.js";
+import { globalDemResolutionKm, globalDemSample } from "./global-dem.js";
+import { SITE_TERRAIN } from "../data/terrain/site-terrain.js";
 
 const RADIUS_KM = 1737.4;
 
@@ -74,4 +79,44 @@ export function siteTerrain(sample, site, { stepKm = 0.96, radiusKm = 3, thresho
       lowConfidencePct: (100 * low) / slopes.length,
     },
   };
+}
+
+/**
+ * Parámetros del terreno con el DEM global de baja resolución (TERRAIN-04,
+ * DEC-067): diferencias a ±2 píxeles de LDEM_16 y un radio de ~3 pasos, la
+ * misma proporción que el cálculo polar. Son pendientes de escala regional.
+ */
+export const GLOBAL_TERRAIN_PARAMS = Object.freeze({ stepKm: 3.8, radiusKm: 12 });
+
+/** Entrada precalculada (LDEM_128) de un sitio curado que conserva sus coordenadas, o null. */
+function precomputed(site) {
+  const entry = site?.id ? SITE_TERRAIN.sites[site.id] : null;
+  return entry && entry.lat === site.lat && entry.lon === site.lon ? entry : null;
+}
+
+/**
+ * ¿Hace falta bajar el DEM global para el terreno de este sitio? Sí cuando
+ * queda fuera del DEM polar reducido y no tiene terreno precalculado.
+ */
+export function needsGlobalDem(site) {
+  return Number.isFinite(site?.lat) && site.lat > POLAR_DEM_COVERAGE_LATITUDE && !precomputed(site);
+}
+
+/**
+ * Terreno de un sitio con la mejor fuente disponible, en este orden:
+ * 1. `"polar"`: DEM polar reducido registrado (480/960 m, al sur de −75°).
+ * 2. `"fine"`: tabla precalculada desde LDEM_128 (237 m) para los sitios
+ *    curados fuera del polo, si conservan sus coordenadas.
+ * 3. `"global"`: DEM global LDEM_16 registrado (~1,9 km), escala regional.
+ * @returns {null | {source: "polar"|"fine"|"global", resolutionM: number, terrain: object}}
+ */
+export function terrainForSite(site) {
+  const polarRes = polarDemResolutionM();
+  const polar = polarRes ? siteTerrain(polarDemSample, site, { stepKm: (polarRes * 2) / 1000 }) : null;
+  if (polar) return { source: "polar", resolutionM: polarRes, terrain: polar };
+  const entry = precomputed(site);
+  if (entry) return { source: "fine", resolutionM: SITE_TERRAIN.resolutionM, terrain: entry.terrain };
+  const globalRes = globalDemResolutionKm();
+  const global = globalRes ? siteTerrain(globalDemSample, site, GLOBAL_TERRAIN_PARAMS) : null;
+  return global ? { source: "global", resolutionM: globalRes * 1000, terrain: global } : null;
 }

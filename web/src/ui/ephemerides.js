@@ -10,6 +10,8 @@ import { setDataStatus } from "./data-status.js";
 import { loadEphemerides } from "../lib/ephemeris.js";
 import { needsPolarDem, needsRegionalAtlas } from "../lib/analysis.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
+import { decodeGlobalDem, registerGlobalDem } from "../lib/global-dem.js";
+import { needsGlobalDem } from "../lib/site-terrain.js";
 import { decodeGlobalHeatAtlas, decodeHeatAtlas, registerGlobalHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
 import { SITES } from "../data/sites.js";
 
@@ -82,6 +84,34 @@ export function loadPolarTerrain(onLoaded) {
       console.warn(`DEM LOLA reducido no disponible (horizonte sintético en puntos propios): ${error.message}`);
     },
   );
+}
+
+let globalDemLoading = null;
+
+/**
+ * Si el terreno del sitio lo necesita (fuera del polo sur y sin tabla
+ * precalculada), baja el DEM LOLA global de baja resolución (TERRAIN-04,
+ * DEC-067; ~35 MiB, una sola vez por página) y llama a `onLoaded`.
+ */
+export function ensureGlobalDem(site, onLoaded) {
+  if (globalDemLoading || !needsGlobalDem(site)) return;
+  setDataStatus("globalDem", { state: "loading" });
+  const base = `${import.meta.env.BASE_URL}data/terrain/lola-global-16ppd`;
+  globalDemLoading = Promise.all([fetch(`${base}.json`), fetch(`${base}.bin`)])
+    .then(async ([metaRes, binRes]) => {
+      if (!metaRes.ok || !binRes.ok) throw new Error(`HTTP ${metaRes.status}/${binRes.status}`);
+      registerGlobalDem(decodeGlobalDem(await binRes.arrayBuffer(), await metaRes.json()));
+    })
+    .then(
+      () => {
+        setDataStatus("globalDem", { state: "ready" });
+        onLoaded?.();
+      },
+      (error) => {
+        setDataStatus("globalDem", { state: "error", error: error.message });
+        console.warn(`DEM LOLA global no disponible (informe sin terreno fuera del polo): ${error.message}`);
+      },
+    );
 }
 
 // ---------------------------------------------------------------------------

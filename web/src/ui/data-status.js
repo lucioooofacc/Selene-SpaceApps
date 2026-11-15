@@ -16,6 +16,7 @@ const status = {
   polarDem: { state: "idle", error: null },
   heatAtlas: { state: "idle", error: null },
   globalHeatAtlas: { state: "idle", error: null }, // MAP-02, DEC-065
+  globalDem: { state: "idle", error: null }, // TERRAIN-04, DEC-067
 };
 const listeners = new Set();
 
@@ -26,6 +27,7 @@ export function dataStatus() {
     polarDem: { ...status.polarDem },
     heatAtlas: { ...status.heatAtlas },
     globalHeatAtlas: { ...status.globalHeatAtlas },
+    globalDem: { ...status.globalDem },
   };
 }
 

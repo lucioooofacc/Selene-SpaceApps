@@ -411,10 +411,15 @@ export default {
       below: "Área con pendiente baja ({r} km a la redonda)",
       roughness: "Rugosidad (desvío de la altura)",
       relief: "desnivel",
-      note: "Calculado con el DEM LOLA polar a {res} m/píxel: pendientes de escala kilométrica (el relieve más chico que ~1 km se suaviza). {low} % de los puntos usa celdas LOLA de baja confianza. Verde < 5°, dorado 5–10°, rojo ≥ 10°: referencia orientativa definida por el equipo.",
+      note: {
+        polar: "Calculado con el DEM LOLA polar a {res}/píxel: pendientes de escala kilométrica (el relieve más chico que ~1 km se suaviza). {low} % de los puntos usa celdas LOLA de baja confianza. Verde < 5°, dorado 5–10°, rojo ≥ 10°: referencia orientativa definida por el equipo.",
+        fine: "Calculado con el DEM LOLA global LDEM_128 a {res}/píxel: pendientes de escala kilométrica (el relieve más chico que ~1 km se suaviza). {low} % de los puntos usa píxeles interpolados por el equipo LOLA. Verde < 5°, dorado 5–10°, rojo ≥ 10°: referencia orientativa definida por el equipo.",
+        global: "Calculado con el DEM LOLA global LDEM_16 a {res}/píxel: son pendientes de escala regional (tramos de unos 4 km) que sirven de contexto, pero no para evaluar una zona de alunizaje, porque el relieve más chico no se ve. {low} % de los puntos usa píxeles interpolados por el equipo LOLA.",
+      },
       loading: "Cargando el relieve LOLA de la zona…",
       error: "No se pudo cargar el relieve LOLA de la zona.",
-      outside: "Sin datos de relieve LOLA para este sitio: el DEM integrado cubre el polo sur hasta 75° S.",
+      loadingGlobal: "Cargando el relieve LOLA global (unos 35 MB, solo la primera vez)…",
+      errorGlobal: "No se pudo cargar el relieve LOLA global, así que este informe no tiene datos de terreno.",
     },
     traj: {
       title: "Trayectoria Tierra–Luna (estimación)",

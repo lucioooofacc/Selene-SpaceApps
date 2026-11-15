@@ -14,7 +14,7 @@ import { SITES } from "./data/sites.js";
 import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
 import { DEFAULT_START, getState, setState, subscribe } from "./state.js";
 import { dateButtonLabel, initCalendar, refreshCalendar } from "./ui/calendar.js";
-import { ensurePolarTerrain, loadPolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
+import { ensureGlobalDem, ensurePolarTerrain, loadPolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { dataStatus, onDataStatus } from "./ui/data-status.js";
 import { compareUrl, missionUrl, parseMissionQuery, parseSiteParam, siteParam } from "./ui/links.js";
 import { initReport } from "./ui/report.js";
@@ -45,6 +45,8 @@ function ensureScenario() {
     scenarioKey = key;
   }
   ensurePolarTerrain([site], render);
+  // Terreno fuera del polo sur sin tabla precalculada: DEM global a demanda (DEC-067).
+  ensureGlobalDem(site, render);
 }
 
 /** Mejores fechas del sitio (en el worker si se puede, DEC-047). */
@@ -108,7 +110,7 @@ function render() {
   refreshCalendar();
   ensureScenario();
   ensureDates();
-  renderSiteReport({ site, scenario, dates, demState: dataStatus().polarDem.state });
+  renderSiteReport({ site, scenario, dates, demState: dataStatus().polarDem.state, globalDemState: dataStatus().globalDem.state });
   renderGlobe();
   const selection = { site, startMs: state.startMs, windowDays: state.windowDays, dateChosen: true };
   history.replaceState(null, "", `./informe.html${missionUrl(selection).replace("./index.html", "")}`);
