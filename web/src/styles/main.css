@@ -1136,12 +1136,18 @@ button {
   top: 324px;
 }
 
+/* Latitud, longitud y los dos supuestos de viabilidad (DEC-083) en una fila de 404 px. */
 .params-coords {
   left: 8px;
   top: 172px;
   display: grid;
-  grid-template-columns: 188px 198px;
-  column-gap: 16px;
+  grid-template-columns: 108px 112px 86px 86px;
+  column-gap: 4px;
+}
+
+.params-limit .params-label {
+  white-space: nowrap;
+  cursor: help;
 }
 
 .params-coords input {

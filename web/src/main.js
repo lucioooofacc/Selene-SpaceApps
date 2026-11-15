@@ -9,13 +9,13 @@
 import "./styles/main.css";
 import "./styles/report.css";
 import "./styles/help.css";
-import { computeScenario, realDataVersion, sampleAt } from "./lib/analysis.js";
+import { computeScenario, realDataVersion, sampleAt, setMissionLimits } from "./lib/analysis.js";
 import { ensurePolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
 import { applyStaticTranslations, getLang, initialLang, setLang, t } from "./i18n/index.js";
 import { CUSTOM_ID, allSites, getSite, getState, setState, subscribe } from "./state.js";
 import { initMap, placeAccent, renderMap } from "./ui/map.js";
 import { initPlaces, rankedSites, renderPlaces } from "./ui/places.js";
-import { currentSite, missionQuery, parseMissionQuery, updateCompareLinks } from "./ui/links.js";
+import { currentSite, missionQuery, parseLimitsQuery, parseMissionQuery, updateCompareLinks } from "./ui/links.js";
 import { initReport } from "./ui/report.js";
 import { applySettings, getSettings, initSettings } from "./ui/settings.js";
 import { initQualityDialog } from "./ui/provenance.js";
@@ -94,6 +94,15 @@ const SCENARIO_KEYS = ["siteId", "lat", "lon", "startMs", "windowDays", "customS
 
 subscribe((state, changed) => {
   const has = (...keys) => keys.some((k) => changed.has(k));
+  // Supuestos de viabilidad (DEC-083): cambian la viabilidad en todo (tarjetas, mapa, ranking,
+  // fechas y enlaces). realDataVersion() los incluye, así que los cachés se recalculan solos.
+  if (has("batteryHours", "commsMinPct")) {
+    setMissionLimits({ batteryHours: state.batteryHours, commsMinPct: state.commsMinPct });
+    syncUrl(state);
+    renderAll();
+    refreshHelp();
+    return;
+  }
   if (has(...SCENARIO_KEYS, "dateChosen", "siteChosen")) {
     syncUrl(state);
     ensureScenario(state);
@@ -132,6 +141,10 @@ function stateFromUrl() {
   if (startMs != null) Object.assign(patch, { startMs, windowDays, timeMs: startMs, dateChosen: true });
   // Capa calculada del mapa (DEC-057): se abre en la pestaña ELEVACIÓN con esa capa.
   if (layer) Object.assign(patch, { heatLayer: layer, mapView: "heat" });
+  // Supuestos de viabilidad (DEC-083): se aplican antes del primer cálculo.
+  const limits = parseLimitsQuery(location.search);
+  setMissionLimits(limits);
+  Object.assign(patch, limits);
   return patch;
 }
 

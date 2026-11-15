@@ -12,7 +12,7 @@ import { loadEphemerides } from "../lib/ephemeris.js";
 import { decodeGlobalHeatAtlas, decodeHeatAtlas, registerGlobalHeatAtlas, registerHeatAtlas } from "../lib/heat-map.js";
 import { decodePolarDem, registerPolarDem } from "../lib/polar-dem.js";
 import { decodeGlobalDem, registerGlobalDem } from "../lib/global-dem.js";
-import { computeGlobalHeatmap, computePolarHeatmap } from "../lib/analysis.js";
+import { computeGlobalHeatmap, computePolarHeatmap, setMissionLimits } from "../lib/analysis.js";
 import { dateScenarios } from "../lib/dates.js";
 import { SITES } from "../data/sites.js";
 
@@ -101,9 +101,10 @@ const TASKS = {
 };
 
 self.onmessage = async ({ data }) => {
-  const { id, type, base, need, args } = data;
+  const { id, type, base, need, args, limits } = data;
   try {
     await ensure(base, need);
+    setMissionLimits(limits); // supuestos de viabilidad de la página (DEC-083)
     const { result, transfer } = TASKS[type](args);
     self.postMessage({ id, result }, transfer);
   } catch (error) {

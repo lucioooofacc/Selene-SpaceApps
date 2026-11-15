@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (revisión de los supuestos de viabilidad contra NASA, rama `docs/validar-supuestos-viabilidad`).
+Última actualización: 2026-11-15 (supuestos de viabilidad editables, rama `feat/umbrales-variables`; antes, revisión de los supuestos contra NASA, rama `docs/validar-supuestos-viabilidad`).
 
 ---
 
@@ -149,6 +149,11 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [x] ~~La iluminación de Shackleton cambia mucho en pocos cientos de metros (R01: 60 %; a 480 m al norte: 90 %, como en la bibliografía). Decidir si se aclara en la interfaz o en el texto de la entrega, para que el 60 % no se lea como un error. — Teo, Facu, Lucio · DOC-02 #116, DEC-035, DEC-070~~ Resuelto 2026-11-15 (rama `docs/explicar-shackleton`, DEC-074): nota en la procedencia del sitio (ES/EN) y en `docs/ENTREGA.md`.
 - [x] ~~Arrastrar para girar la Luna 3D no funciona si el arrastre empieza encima de un marcador. — Desarrollo web · PR #112~~ Resuelto 2026-11-15 (rama `fix/arrastre-sobre-marcadores`): el arrastre también gira la Luna cuando empieza sobre un marcador, y un clic corto sigue eligiendo el sitio.
 - [x] ~~Revisar los umbrales de viabilidad (luz, potencia, comunicación). — DEC-007~~ Resuelto 2026-11-15 (rama `feat/viabilidad-requisitos`, VIAB-01 #122, DEC-071): requisitos de misión (luz continua, comunicación con relevo y pendiente donde hay datos); la viabilidad es la del peor requisito.
+
+- [x] ~~Que las 24 h de baterías y el 80 % de comunicación mínima de la viabilidad se puedan modificar, y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h. — Lucio · VIAB-02 #142~~ Resuelto 2026-11-15 (rama `feat/umbrales-variables`, DEC-083).
+- [ ] Validar el ejemplo de la guía de viabilidad (Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h ≈ 340 h) y la mención a un generador de radioisótopos como alternativa a las baterías. — Teo, Facu, Lucio · DEC-083
+- [ ] Revisar la redacción de los textos nuevos de los supuestos editables (`params.battery`, `params.comms`, sus ayudas, `help.params.items.7`, `help.viability.items.4–6`, ES/EN). — Alfonso, Cata, Lucio · DEC-083
+- [ ] Hay dos decisiones numeradas DEC-082 en `docs/DECISIONES.md` (vista inicial GLOBAL y versión "Emoción" de la demo); renumerar la segunda. — Equipo · detectado en VIAB-02
 
 ## Textos y traducción
 

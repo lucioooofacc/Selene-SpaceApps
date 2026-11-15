@@ -159,6 +159,15 @@
                 <span class="params-label" data-i18n="params.lon"></span>
                 <input id="lon-input" type="number" min="-180" max="180" step="0.01" />
               </label>
+              <!-- Supuestos de viabilidad editables (DEC-083) -->
+              <label class="params-limit" data-i18n-attr="title:params.batteryHint">
+                <span class="params-label" data-i18n="params.battery"></span>
+                <input id="battery-input" type="number" min="0" max="360" step="1" inputmode="numeric" />
+              </label>
+              <label class="params-limit" data-i18n-attr="title:params.commsHint">
+                <span class="params-label" data-i18n="params.comms"></span>
+                <input id="comms-input" type="number" min="0" max="100" step="1" inputmode="numeric" />
+              </label>
             </div>
             <span class="params-label params-label-duration" data-i18n="params.duration"></span>
             <div class="params-date">

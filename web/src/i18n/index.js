@@ -5,9 +5,12 @@
  * Uso:
  *  - En HTML: <span data-i18n="clave"></span>, o data-i18n-attr="aria-label:clave;title:otra".
  *  - En JS: t("clave", { variable: valor }) → reemplaza {variable}.
+ *  - {battery} y {comms} se completan siempre con los supuestos de viabilidad
+ *    vigentes (horas de baterías y % mínimo de comunicación, DEC-083).
  */
 import es from "./es.js";
 import en from "./en.js";
+import { missionLimits } from "../lib/analysis.js";
 
 const dictionaries = { es, en };
 const STORAGE_KEY = "selene.lang";
@@ -20,7 +23,8 @@ function read(dict, key) {
 export function t(key, vars = {}) {
   let value = read(dictionaries[current], key) ?? read(dictionaries.es, key);
   if (typeof value !== "string") return key;
-  for (const [name, replacement] of Object.entries(vars)) {
+  const { batteryHours, commsMinPct } = missionLimits();
+  for (const [name, replacement] of Object.entries({ battery: batteryHours, comms: commsMinPct, ...vars })) {
     value = value.replaceAll(`{${name}}`, String(replacement));
   }
   return value;

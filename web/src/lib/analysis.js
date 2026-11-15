@@ -21,7 +21,6 @@ const STEP_MS = STEP_MINUTES * 60_000;
 /** Días extra calculados después de la ventana para encontrar el próximo amanecer/ocaso. */
 const LOOKAHEAD_DAYS = 32;
 
-/** Umbrales de viabilidad. Documentados en DEC-007; ajustables por el equipo. */
 /**
  * Requisitos de misión para la viabilidad (VIAB-01, DEC-071; reemplaza los
  * umbrales de DEC-007). Cada uno tiene tres niveles: "high" = cumple,
@@ -43,6 +42,72 @@ export const REQUIREMENTS = Object.freeze({
   communication: Object.freeze({ unit: "%", meets: 80, limit: 0, better: "higher", source: "assumed-relay" }),
   slope: Object.freeze({ unit: "°", meets: 8, limit: 10, better: "lower", strict: true, source: "nasa-hls-2024" }),
 });
+
+/**
+ * Supuestos del equipo que se pueden cambiar desde "Parámetros de la misión"
+ * (DEC-083): la autonomía de las baterías (límite de `light`, en horas) y la
+ * comunicación mínima (`meets` de `communication`, en %). Los valores por
+ * defecto son los de DEC-071. La pendiente sale de la NASA y no se cambia.
+ */
+export const DEFAULT_LIMITS = Object.freeze({
+  batteryHours: REQUIREMENTS.light.limit,
+  commsMinPct: REQUIREMENTS.communication.meets,
+});
+
+/** Rango admitido de cada supuesto: 0 a 360 h (una noche lunar) y 0 a 100 %, en enteros. */
+export const LIMIT_RANGES = Object.freeze({
+  batteryHours: Object.freeze({ min: 0, max: 360 }),
+  commsMinPct: Object.freeze({ min: 0, max: 100 }),
+});
+
+let limits = { ...DEFAULT_LIMITS };
+let effective = REQUIREMENTS;
+
+/** Entero dentro del rango del supuesto, o null si no es un número. */
+export function cleanLimit(key, value) {
+  const n = typeof value === "string" && value.trim() === "" ? NaN : Number(value);
+  if (!Number.isFinite(n)) return null;
+  const { min, max } = LIMIT_RANGES[key];
+  return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+/** Supuestos vigentes: { batteryHours, commsMinPct }. */
+export function missionLimits() {
+  return { ...limits };
+}
+
+/**
+ * Cambia los supuestos vigentes (lo inválido o ausente queda como estaba).
+ * Devuelve true si cambió algo. Los cachés de escenarios lo notan porque
+ * `realDataVersion()` incluye `limitsVersion()`.
+ */
+export function setMissionLimits(patch = {}) {
+  const next = { ...limits };
+  for (const key of Object.keys(DEFAULT_LIMITS)) {
+    const v = cleanLimit(key, patch[key]);
+    if (v != null) next[key] = v;
+  }
+  if (next.batteryHours === limits.batteryHours && next.commsMinPct === limits.commsMinPct) return false;
+  limits = next;
+  effective = Object.freeze({
+    ...REQUIREMENTS,
+    light: Object.freeze({ ...REQUIREMENTS.light, limit: limits.batteryHours }),
+    communication: Object.freeze({ ...REQUIREMENTS.communication, meets: limits.commsMinPct }),
+  });
+  return true;
+}
+
+/** Requisitos con los supuestos vigentes (mismas claves que REQUIREMENTS). */
+export function currentRequirements() {
+  return effective;
+}
+
+/** true si los supuestos son los de DEC-071. */
+export const limitsAreDefault = () =>
+  limits.batteryHours === DEFAULT_LIMITS.batteryHours && limits.commsMinPct === DEFAULT_LIMITS.commsMinPct;
+
+/** Identificador de los supuestos vigentes, para las claves de caché. */
+export const limitsVersion = () => `b${limits.batteryHours}c${limits.commsMinPct}`;
 
 const clamp01 = (x) => Math.max(0, Math.min(1, x));
 
@@ -149,7 +214,7 @@ function refineAll(flags, times, visibleAt) {
  * luz (0 h de noche cumple) y estricto para la pendiente (< 8° cumple).
  */
 export function requirementLevel(key, value) {
-  const r = REQUIREMENTS[key];
+  const r = effective[key];
   if (r.better === "higher") return value >= r.meets ? "high" : value >= r.limit ? "mid" : "low";
   const within = (x, bound) => (r.strict ? x < bound : x <= bound);
   return within(value, r.meets) ? "high" : within(value, r.limit) ? "mid" : "low";
@@ -252,11 +317,12 @@ export function needsPolarDem(site) {
 }
 
 /**
- * Versión de los datos reales cargados (efemérides, DEM polar, atlas y DEM global). Cambia cuando
- * llega algo nuevo: los cachés de escenarios la incluyen en su clave.
+ * Versión de los datos reales cargados (efemérides, DEM polar, atlas y DEM global) y de los
+ * supuestos de viabilidad (DEC-083). Cambia cuando llega algo nuevo o cambian las baterías o la
+ * comunicación mínima: los cachés de escenarios la incluyen en su clave.
  */
 export function realDataVersion() {
-  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}.${globalDemVersion()}`;
+  return `${ephemerisVersion()}.${polarDemVersion()}.${heatAtlasVersion()}.${globalDemVersion()}.${limitsVersion()}`;
 }
 
 /**

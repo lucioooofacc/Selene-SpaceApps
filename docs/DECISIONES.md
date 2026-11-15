@@ -1071,7 +1071,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
   - La página principal, el ranking, las fechas y el mapa de calor no evalúan la pendiente, así que un sitio puede mostrar 1 de 2 requisitos ahí y 2 de 3 en la comparación.
   - Las misiones de más de unos días fuera de las zonas polares más iluminadas salen "baja" por la noche lunar, y es correcto con estos supuestos.
 - **Alternativas descartadas:** mantener la suma de puntos (un sitio podía salir viable sin cumplir un requisito); dejar la comunicación estricta (casi todo "no viable"); volver a los umbrales viejos.
-- **Estado:** vigente. Reemplaza a DEC-007. Supuestos revisados el 15/11/2026 contra NASA (`docs/VALIDACION.md`, "Revisión de los supuestos de viabilidad"): quedan decisiones abiertas del equipo en `PENDIENTES.md`.
+- **Estado:** vigente. Reemplaza a DEC-007. Supuestos revisados el 15/11/2026 contra NASA (`docs/VALIDACION.md`, "Revisión de los supuestos de viabilidad"): quedan decisiones abiertas del equipo en `PENDIENTES.md`. Las 24 h y el 80 % pasan a ser valores por defecto editables (DEC-083).
 
 ## DEC-072 — Capa "Noche más larga" en el mapa de calor
 
@@ -1246,3 +1246,21 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** las voces de v1 y del ensayo no se regeneraron (siguen diciendo PÉI-ren e "y"); si se vuelven a usar, correr `node --env-file=<.env> scripts/voz.mjs <versión> --solo-nombres`.
 - **Estado:** vigente.
 
+## DEC-083 — Supuestos de viabilidad editables: baterías y comunicación mínima (VIAB-02)
+
+- **Contexto / problema:** propuesta de Lucio del 15/11/2026: la viabilidad (DEC-071) depende de dos supuestos del equipo, las 24 h de autonomía de las baterías y el 80 % de comunicación mínima, y estaban fijos en el código. Pidió que se puedan modificar y que la guía explique con un ejemplo qué pasa en misiones largas con baterías de 24 h.
+- **Decisión** (Lucio): dos campos en «Parámetros de la misión» que se aplican en todas las páginas. Los valores por defecto siguen siendo 24 h y 80 %. La pendiente (NASA, HLS) no se puede editar.
+- **Solución aplicada:**
+  - `web/src/lib/analysis.js`: `DEFAULT_LIMITS`, `LIMIT_RANGES` (0–360 h, el largo de una noche lunar; 0–100 %), `cleanLimit()`, `setMissionLimits()`, `missionLimits()`, `currentRequirements()`, `limitsAreDefault()` y `limitsVersion()`. `requirementLevel()` usa los requisitos vigentes. `REQUIREMENTS` queda como referencia con los valores de DEC-071. `realDataVersion()` suma `limitsVersion()`, así que todos los cachés de escenarios, ranking, fechas y mapa se recalculan al cambiar un valor.
+  - Worker (`ui/compute.js`, `workers/compute.worker.js`): cada pedido lleva los supuestos y el worker los aplica antes de calcular. Las claves persistentes `heat4` y `dates2` incluyen `limitsVersion()`.
+  - Interfaz: campos «Baterías (h)» y «Com. mín. (%)» en la fila de latitud y longitud (`index.html`, `ui/params.js`, `styles/main.css`). La fila pasa de 2 a 4 columnas (108/112/86/86 px) porque al pie del panel quedaban 6 px libres. Un valor vacío o inválido vuelve al vigente; uno fuera de rango se acota.
+  - Estado y URL: `state.js` (`batteryHours`, `commsMinPct`), `main.js` y `ui/links.js`: los parámetros `bat` y `com` se escriben solo si no son los de por defecto y los leen la misión, la comparación y el informe. La comparación y el informe los usan, pero no tienen campos para editarlos.
+  - Textos: `t()` completa `{battery}` y `{comms}` con los valores vigentes (`i18n/index.js`). Se actualizaron ES/EN: umbrales de la comparación, nota de criterios, ayuda del resumen, «Datos y fuentes», cartel del mapa, ayuda de parámetros (punto 7 nuevo) y guía de viabilidad (puntos 4, 5 y 6: misiones largas y ejemplo).
+- **Ejemplo de la guía:** medido en el navegador con JPL Horizons: Apollo 11, 30 días desde el 14/11/2026, noche más larga de 14 d 4 h (~340 h). Con 24 h la luz no cumple y la viabilidad es "baja"; con 360 h queda "media". La guía aclara que 360 h no es realista con baterías solas: haría falta otra fuente, como un generador de radioisótopos (afirmación general, sin un valor de referencia).
+- **Validación:** `web/tests/supuestos-viabilidad.test.js` (valores por defecto, límites con valores nuevos, rangos e inválidos, versión de caché, URL y textos). 221 pruebas pasan y el build funciona. En el navegador (1992 px de diseño, escalado): la tarjeta y el resumen cambian, la capa de viabilidad del mapa se recalcula en el worker y el cartel "ninguna zona es viable" desaparece con 360 h, la comparación respeta `bat`/`com`, y las etiquetas entran en ES y EN.
+- **Supuestos y límites:**
+  - Los valores son supuestos del equipo; la interfaz los marca así (explicación al pasar el mouse sobre los campos, guía y notas).
+  - Se guardan solo en la URL, no en `localStorage`: así un enlace compartido da el mismo resultado. Al abrir la página sin parámetros vuelven 24 h y 80 %.
+  - Se aparta del Figma (DEC-014) en la fila de coordenadas, por pedido del equipo.
+- **Alternativas descartadas:** pasar los supuestos como argumento a cada función del motor (cambia muchos contratos el día de la entrega); campos en el modal de configuración o en la guía (Lucio eligió el panel de parámetros); agregar una fila nueva al panel (no hay lugar sin achicar las tarjetas).
+- **Estado:** vigente. Complementa DEC-071 (sus valores pasan a ser los de por defecto).
