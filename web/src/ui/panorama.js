@@ -459,11 +459,11 @@ export function renderPanorama(scenario, sample, { full = false } = {}) {
     const marks = lola.horizon ? qualityMarks(lola.horizon) : "";
     $("pano-quality").innerHTML = marks;
     const source = scenario.horizon.source === "lola" ? "sim.horizonLola" : "sim.horizonSynthetic";
+    // Renglón "Relieve" de la leyenda: fuente y escala, más los avisos del horizonte LOLA si aplican.
     const notes = [
-      t("sim.relief", { source: t(source), exag: VERTICAL_EXAGGERATION.toFixed(1).replace(".", t("units.decimal")) }),
+      t("sim.legend.reliefValue", { source: t(source), exag: VERTICAL_EXAGGERATION.toFixed(1).replace(".", t("units.decimal")) }),
       lola.mode === "preview" ? t("sim.lolaPreview") : "",
       marks ? t("sim.lolaMarks") : "",
-      t("sim.orbits"),
     ];
     reliefNotes = notes.filter(Boolean);
   }
@@ -480,8 +480,14 @@ export function renderPanorama(scenario, sample, { full = false } = {}) {
   const bodies = eph?.source === "horizons" ? (eph.derived ? "derived" : "real") : eph?.source === "mixed" ? "mixed" : "approx";
   const notesKey = `${bodies}|${reliefNotes.join("|")}`;
   if (full || notesKey !== lastNotesKey) {
-    const [first = "", ...rest] = reliefNotes;
-    $("pano-relief").innerHTML = [`${t(`sim.bodies.${bodies}`)} · ${first}`, ...rest].join("<br />");
+    // Leyenda (UI-16, DEC-066): un renglón por dato, cada uno con su etiqueta.
+    const row = (label, value) => `<div><dt>${t(`sim.legend.${label}`)}</dt><dd>${value}</dd></div>`;
+    const swatch = (body) => `<span class="pano-swatch pano-swatch-${body}" aria-hidden="true"></span>${t(`sim.${body}Body`)}`;
+    $("pano-legend").innerHTML =
+      row("view", t("sim.legend.viewValue")) +
+      row("bodies", t(`sim.legend.bodiesValue.${bodies}`)) +
+      row("relief", reliefNotes.join("<br />")) +
+      row("paths", `${swatch("sun")} ${swatch("earth")}<br />${t("sim.legend.pathsValue")}`);
     lastNotesKey = notesKey;
   }
 

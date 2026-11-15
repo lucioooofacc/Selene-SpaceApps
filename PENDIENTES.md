@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (MAP-02: mapa de calor en toda la Luna, rama `feat/mapa-calor-global`).
+Última actualización: 2026-11-15 (UI-16: ayuda por tarjeta, recorrido guiado y listas sin selección, rama `feat/claridad-interfaz`).
 
 ---
 
@@ -138,6 +138,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 
 - [x] Revisar los textos en español de `web/src/i18n/es.js`. — Alfonso, Cata
 - [x] Revisar la traducción al inglés de `web/src/i18n/en.js`. — Lucio, Cata
+- [ ] Revisar la redacción de los textos de ayuda y del recorrido (`help.*`, ES/EN). — Alfonso, Cata, Lucio · UI-16 #102, DEC-066
 - [ ] Espacio antes de `%`: en ES (norma RAE) va con espacio, pero conviven `{pct}%` y `{pct} %` en los dos idiomas y también en cifras armadas en `web/src/ui/` (`places.js`, `status.js`, `compare.js`, `provenance.js`). En inglés lo usual es sin espacio. Unificar por idioma requiere mover el formato a `i18n` (p. ej. una clave `units.percent`). — Lucio, Cata · DEC-064
 
 ## Repositorio y entrega
