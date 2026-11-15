@@ -334,6 +334,16 @@ Tareas definidas por el equipo el 14/11/2026 a partir de `PENDIENTES.md`. No dep
 - **Criterios de aceptación:** ayuda y recorrido operables con teclado y en ES/EN; textos en oraciones naturales; nada de datos por defecto presentados como elección del usuario; pruebas y build en verde.
 - **Fuera de alcance:** rediseñar la distribución del Figma.
 
+### UI-17 — La sección inferior pide sitio y fechas
+
+- **Prioridad:** P1 · **Issue:** [#106](https://github.com/lucioooofacc/Selene-SpaceApps/issues/106).
+- **Objetivo:** que el panorama y las tarjetas de estado no muestren resultados de un punto y un período de muestra antes de que alguien elija. Decisión de Lucio (15/11/2026).
+- **Rama sugerida:** `feat/seccion-sin-seleccion`.
+- **Dependencias:** UI-16.
+- **Archivos afectados:** `index.html`, `main.js`, `ui/help.js`, `styles/help.css`, i18n.
+- **Criterios de aceptación:** sin sitio o sin fechas, la sección dice qué falta elegir; con los dos, se ve como antes; el recorrido guiado sigue funcionando; pruebas y build en verde.
+- **Fuera de alcance:** el punto de muestra del mapa y de los campos de latitud y longitud.
+
 ### PERF-01 — Worker y caché persistente
 
 - **Prioridad:** P2 · **Issue:** [#18](https://github.com/lucioooofacc/Selene-SpaceApps/issues/18).
