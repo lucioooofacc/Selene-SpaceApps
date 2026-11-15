@@ -27,15 +27,20 @@ const LOOKAHEAD_DAYS = 32;
  * "mid" = al límite, "low" = no cumple.
  * - light: noche más larga del período, en horas. Cumple sin noche, como
  *   exige Artemis III (Sol continuo toda la estadía, NASA 2022); al límite
- *   hasta 24 h (SUPUESTO del equipo: autonomía de baterías de un módulo chico;
- *   Odysseus tenía 10–20 h); no cumple con noches más largas.
+ *   hasta 24 h (SUPUESTO del equipo sobre la autonomía de baterías de un
+ *   módulo chico; la NASA no publica un valor, y las "10–20 h" de IM-1
+ *   Odysseus fueron su batería restante tras volcar, no una autonomía de
+ *   diseño); no cumple con noches más largas.
  * - communication: % del período con la Tierra visible. Cumple desde 80 %
  *   (enlace directo casi permanente; SUPUESTO del equipo, no hay un umbral
  *   publicado). Por debajo queda al límite y nunca "no cumple": se asume un
  *   satélite de relevo, como en los planes de Artemis (decisión de Lucio).
+ *   Sin relevo (opción de DEC-084), menos del 25 % no cumple.
  * - slope: pendiente del terreno en grados, solo donde hay datos. Cumple
- *   por debajo de 8° (tolerancia de inclinación del HLS), al límite por
- *   debajo de 10° (pendiente de aterrizaje del HLS en 100 m, NASA 2024).
+ *   por debajo de 8° (tolerancia de inclinación del HLS, informe IG-26-004
+ *   de la Oficina del Inspector General de la NASA, 2026), al límite por
+ *   debajo de 10° (pendiente de aterrizaje en 100 m, actualización del HLS,
+ *   NASA 2024).
  */
 export const REQUIREMENTS = Object.freeze({
   light: Object.freeze({ unit: "h", meets: 0, limit: 24, better: "lower", source: "assumed-partial" }),
