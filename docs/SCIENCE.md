@@ -79,7 +79,7 @@ con `δ = d / R`, `r = R + h(d)` y `r₀ = R + h₀ + 2 m` (observador a 2 m sob
 - Para los sitios curados al sur de −60°, a 240 m (`scenarioHorizon`, DEC-032).
 - Para puntos propios al sur de −75°, calculado en el navegador sobre un DEM reducido (480 m hasta −80°, 960 m hasta −75°), cada 1° y paso de 240 m (DEC-034). Error medio medido frente al de 240 m: 0,02–0,77°; se muestra como aproximado.
 - Para Chang'e 4 y Apollo 11, fuera de la cobertura polar, con el mismo algoritmo sobre una ventana del DEM global `LDEM_128` (cilíndrica simple, 128 píxeles/grado ≈ 237 m; `createCylindricalWindowSampler`, DEC-061). Control cruzado en Chandrayaan-3, cubierto por los dos productos: mismo suelo y diferencia RMS de 0,069° en los azimuts no truncados.
-- El sintético queda para puntos propios fuera de −75° y el mapa de calor.
+- Los puntos propios fuera de −75° usan el horizonte LOLA regional, interpolado del atlas global de 2° (DEC-068): relieve medido de la zona, no del punto. El sintético queda como respaldo mientras cargan los datos y en el mapa de calor aproximado.
 
 ### Puntos propios: Sol y Tierra trasladados (DEC-034)
 

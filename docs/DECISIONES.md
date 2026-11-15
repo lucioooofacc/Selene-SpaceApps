@@ -55,7 +55,7 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Contexto / problema:** sin atmósfera, el horizonte lo define el relieve. Con un horizonte plano, Shackleton daba 0 % de luz, cuando en la realidad es de los puntos más iluminados.
 - **Decisión:** horizonte sintético por sitio (suma de ondas según el azimut), con un "relieve" característico y la depresión geométrica por altura: `acos(R / (R + h))`.
 - **Solución aplicada:** `web/src/lib/terrain.js`. Las formas del horizonte dependen suavemente de la posición, para que el mapa de calor sea continuo. Con los parámetros actuales, el promedio anual de Shackleton queda en ~90 % de luz, coherente con la literatura.
-- **Estado:** vigente para v1. **Reemplazo previsto:** horizonte calculado con mapas de elevación LOLA. **Reemplazada parcialmente por DEC-032** (14/11/2026): los sitios curados al sur de −60° usan el horizonte LOLA; el sintético sigue para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. **Para los sitios curados, reemplazada por DEC-061 y DEC-063** (15/11/2026): los 7 usan LOLA y ya no tienen `relief` ni `elevationKm`; el sintético queda solo como respaldo de puntos sin horizonte LOLA, con `estimateRelief()`.
+- **Estado:** vigente para v1. **Reemplazo previsto:** horizonte calculado con mapas de elevación LOLA. **Reemplazada parcialmente por DEC-032** (14/11/2026): los sitios curados al sur de −60° usan el horizonte LOLA; el sintético sigue para sitios propios, Chang'e 4, Apollo 11 y el mapa de calor. **Para los sitios curados, reemplazada por DEC-061 y DEC-063** (15/11/2026): los 7 usan LOLA y ya no tienen `relief` ni `elevationKm`; el sintético queda solo como respaldo de puntos sin horizonte LOLA, con `estimateRelief()`. **Desde DEC-068** (15/11/2026) los puntos propios fuera del polo usan el horizonte LOLA regional del atlas global, y el sintético solo se usa mientras cargan los datos o si fallan.
 
 ## DEC-006 — Sitios curados
 
@@ -961,4 +961,30 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Supuestos y límites:** estos elementos no están en el Figma (excepción a DEC-014 decidida por Lucio). "Mejores fechas" sigue usando la duración por defecto si no hay fechas elegidas, y lo dice en su texto.
 - **Alternativas descartadas:** solo `title` en los títulos (no se ve en pantallas táctiles ni con teclado); un video o una página aparte (saca al usuario de la herramienta).
 - **Estado:** vigente.
+
+## DEC-068 — Horizonte LOLA regional para puntos propios fuera del polo sur (CORE-04)
+
+- **Contexto / problema:** auditoría del 15/11/2026 sobre datos no reales a la vista. Los puntos propios al norte de −75° (cualquier clic fuera del polo sur) seguían usando el horizonte sintético de DEC-005, que es un relieve inventado. Desde MAP-02 (DEC-065) existe un atlas global de horizontes LOLA.
+- **Decisión** (Lucio, 15/11/2026): usar ese atlas para esos puntos, rotulado como aproximado. Se descartaron el horizonte plano y dejar el sintético.
+- **Solución aplicada:**
+  - `web/src/lib/heat-map.js`: `regionalHorizonFor(site)` interpola en forma bilineal, azimut por azimut, los horizontes de los cuatro centros de celda vecinos (longitud circular; hacia los polos se repite la última fila). Devuelve la misma interfaz que un horizonte LOLA, con `meta.regional = true`.
+  - `web/src/lib/analysis.js`: `scenarioHorizon()` prefiere, en orden, el LOLA curado, el polar reducido, el regional y el sintético. `needsRegionalAtlas(site)` indica si conviene bajar el atlas.
+  - `web/src/ui/ephemerides.js`: `ensurePolarTerrain()` también baja el atlas global (2,3 MiB) si algún sitio no tiene horizonte curado, y avisa a todas las pantallas que lo esperan. El worker lo usa para "Mejores fechas".
+  - Interfaz: el panorama, la nota de datos, "Datos y fuentes" y el informe dicen "LOLA de la zona (celdas de 2°, aproximado)" (`sim.horizonRegional`, `dataNote.horizon.regional`, `quality.rowHint.horizonRegional`, `quality.lola.regional`). El estado de carga y de error ya no habla solo del DEM reducido.
+- **Validación** (`tests/horizonte-regional.test.js`): en 30 días desde el 01/12/2026, con las coordenadas de los sitios de control tratadas como punto propio:
+
+  | Sitio | Luz: alta resolución / regional / sintético | Tierra |
+  | --- | --- | --- |
+  | Chandrayaan-3 | 49,1 % / 48,2 % / 47,6 % | 100 % en los tres |
+  | Chang'e 4 | 49,4 % / 48,8 % / 49,6 % | 0 % en los tres |
+  | Apollo 11 | 49,1 % / 49,3 % / 49,2 % | 100 % en los tres |
+
+  La prueba exige menos de 2 p. p. de diferencia con el de alta resolución (criterio del equipo).
+- **Supuestos y límites:**
+  - Es el relieve medido de la zona, no el del punto: las celdas miden ~60 km y LDEM_16 no resuelve relieve menor a ~2 km. A latitudes medias el horizonte pesa poco, así que el resultado numérico no mejora respecto del sintético; lo que cambia es que deja de ser inventado.
+  - Cerca de los polos una celda de 2° no representa a un punto (en Shackleton da 29 % de luz contra 100 % del horizonte real). Por eso al sur de −75° manda el DEM polar reducido y el regional se usa solo mientras ese DEM carga o si falla. Al norte de +75° no hay DEM fino: el regional es lo único disponible y vale la misma advertencia.
+  - El atlas no guarda la distancia ni la confianza por azimut: se informa el % medio de baja confianza de las celdas.
+  - El horizonte sintético sigue existiendo como respaldo mientras cargan los datos o si fallan, y en el mapa de calor aproximado.
+- **Alternativas descartadas:** calcular el horizonte exacto del punto con LDEM_16 en la página principal (35 MiB de descarga); tomar la celda más cercana sin interpolar (saltos al mover el punto).
+- **Estado:** vigente. DEC-005 queda como respaldo. Pendiente de validar por astronomía.
 

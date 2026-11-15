@@ -148,6 +148,16 @@ Cada tarea tiene una línea **Issue** con el número de su Issue (por ejemplo `#
 - **Criterios de aceptación:** cálculo cancelable/cacheado; resolución y cobertura indicadas; sin red en bucles por celda; coherencia con escenarios puntuales.
 - **Fuera de alcance:** mapa global de precisión cartográfica no necesario para la demo.
 
+### CORE-04 — Horizonte LOLA regional para puntos propios
+
+- **Prioridad:** P1 · **Issue:** [#104](https://github.com/lucioooofacc/Selene-SpaceApps/issues/104).
+- **Objetivo:** que los puntos propios al norte de −75° dejen de usar el horizonte sintético. Decisión de Lucio (15/11/2026): horizonte interpolado del atlas global LOLA (MAP-02), rotulado como aproximado.
+- **Rama sugerida:** `feat/horizonte-atlas-global`.
+- **Dependencias:** MAP-02.
+- **Archivos afectados:** `lib/heat-map.js`, `lib/analysis.js`, `ui/ephemerides.js`, `ui/provenance.js`, `ui/panorama.js`, `ui/places.js`, i18n y pruebas.
+- **Criterios de aceptación:** el sintético queda solo como respaldo mientras cargan los datos o si fallan; la interfaz dice que el horizonte es de la zona y no del punto; coherencia medida con los horizontes de alta resolución; pruebas y build en verde.
+- **Fuera de alcance:** horizonte exacto del punto fuera del polo (necesitaría un DEM global en la página principal).
+
 ### MAP-02 — Mapa de calor en toda la superficie lunar
 
 - **Prioridad:** P1 · **Issue:** [#100](https://github.com/lucioooofacc/Selene-SpaceApps/issues/100).
