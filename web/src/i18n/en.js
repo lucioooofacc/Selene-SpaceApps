@@ -187,6 +187,7 @@ export default {
     },
     horizonSynthetic: "Synthetic horizon (not real topography)",
     horizonLola: "Real horizon measured by LOLA",
+    horizonRegional: "LOLA horizon of the area (2° cells, approximate)",
     lolaPreview: "Dashed gold line: LOLA relief of the site at its original coordinates (reference; with edited coordinates the calculation uses another horizon)",
     lolaMarks: "Marked stretches: low LOLA confidence (red) or out of coverage (gray)",
     missionTime: "Mission time",
@@ -314,7 +315,7 @@ export default {
     horizonTitle: "Horizon profile",
     lolaPreview: "Real LOLA (reference)",
     horizonNote:
-      "Terrain elevation by azimuth. Solid lines are the horizon used by the calculation: real LOLA at the listed sites and synthetic at custom points without coverage. Dashed lines, if shown, are the LOLA horizon of an edited site's original coordinates.",
+      "Terrain elevation by azimuth. Solid lines are the horizon used by the calculation: real LOLA at the listed sites and at custom points near the south pole, and LOLA of the area (2° cells) at other custom points. Dashed lines, if shown, are the LOLA horizon of an edited site's original coordinates.",
     horizonAria: "Horizon profile of both sites: terrain elevation by azimuth.",
     az: { 0: "N", 90: "E", 180: "S", 270: "W" },
     criteriaTitle: "Viability criteria",
@@ -348,7 +349,7 @@ export default {
     runs: "Longest night: {night}. Longest continuous light: {light}. Longest communication gap: {blackout}.",
     more: "… and {n} more windows.",
     sources:
-      "SELENE · NASA Space Apps Challenge 2026 · Team Hubble27. Sun and Earth: NASA/JPL Horizons ephemerides, Nov 2026 – Dec 2027 (outside that range, approximate model). Horizon: LOLA terrain at the listed sites and at custom points south of −75°; a synthetic profile elsewhere. Site coordinates from official sources. Viability thresholds set by the team.",
+      "SELENE · NASA Space Apps Challenge 2026 · Team Hubble27. Sun and Earth: NASA/JPL Horizons ephemerides, Nov 2026 – Dec 2027 (outside that range, approximate model). Horizon: LOLA terrain at the listed sites and at custom points south of −75°; LOLA terrain of the area (2° cells) elsewhere. Site coordinates from official sources. Viability thresholds set by the team.",
   },
   settings: {
     title: "Settings",
@@ -443,6 +444,7 @@ export default {
     horizon: {
       lola: "horizon: real LOLA terrain",
       reduced: "horizon: LOLA terrain at lower resolution (approximate)",
+      regional: "horizon: LOLA terrain of the area, in 2° cells (approximate)",
       synthetic: "horizon: synthetic profile (not real topography)",
     },
   },
@@ -454,7 +456,7 @@ export default {
     traitsTitle: "Scientific interest (from the cited literature)",
     lola: {
       title: "Real LOLA horizon",
-      none: "No LOLA horizon: the site is outside polar coverage (map points have it south of −75°).",
+      none: "No LOLA horizon for this point: the synthetic profile is used.",
       status: "Status",
       preview: "Reference: it belongs to the site's original coordinates; with edited coordinates the calculation uses another horizon",
       active: "Used in the calculation",
@@ -464,9 +466,10 @@ export default {
       truncated: "Out-of-coverage azimuths",
       product: "Product",
       reduced: "reduced to {res} m/pixel",
+      regional: "interpolated from the global atlas in {deg}° cells",
       dem: {
-        loading: "Loading the reduced LOLA terrain for this point… synthetic horizon in the meantime.",
-        error: "The reduced LOLA terrain could not be loaded: this point uses the synthetic horizon.",
+        loading: "Loading the LOLA terrain for this point… synthetic horizon in the meantime.",
+        error: "The LOLA terrain could not be loaded: this point uses the synthetic horizon.",
       },
     },
     eph: {
@@ -525,10 +528,11 @@ export default {
       ephemerisError: "The JPL Horizons ephemerides could not be loaded; using the approximate model",
       horizon: "Synthetic profile; no LOLA horizon for this site",
       horizonPreview: "Edited coordinates: the calculation uses another horizon; the LOLA horizon of the original coordinates is shown as a reference",
+      horizonRegional: "LOLA horizon of the area, interpolated from the global atlas (2° cells, LDEM_16 at ~1.9 km/pixel): it is measured relief, but not that of the exact point",
       horizonReduced: "Real LOLA horizon computed at lower resolution (480 m to −80°, 960 m to −75°); measured mean error 0.02–0.8°",
       horizonActive: "Real topographic horizon from LOLA (≈ 240 m/pixel)",
-      horizonLoading: "Loading the reduced LOLA terrain; synthetic profile in the meantime",
-      horizonError: "The reduced LOLA terrain could not be loaded; using the synthetic profile",
+      horizonLoading: "Loading the LOLA terrain; synthetic profile in the meantime",
+      horizonError: "The LOLA terrain could not be loaded; using the synthetic profile",
       imagery: "LROC mosaic and LOLA elevation from NASA SVS",
       thresholds: "Team criterion, adjustable",
     },

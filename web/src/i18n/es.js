@@ -188,6 +188,7 @@ export default {
     },
     horizonSynthetic: "Horizonte sintético (no es topografía real)",
     horizonLola: "Horizonte real medido por LOLA",
+    horizonRegional: "Horizonte LOLA de la zona (celdas de 2°, aproximado)",
     lolaPreview: "Línea punteada dorada: relieve LOLA del sitio con sus coordenadas originales (referencia; con las coordenadas editadas el cálculo usa otro horizonte)",
     lolaMarks: "Tramos marcados: baja confianza LOLA (rojo) o fuera de cobertura (gris)",
     missionTime: "Tiempo de misión",
@@ -315,7 +316,7 @@ export default {
     horizonTitle: "Perfil del horizonte",
     lolaPreview: "LOLA real (referencia)",
     horizonNote:
-      "Elevación del relieve según el azimut. Las líneas llenas son el horizonte que usa el cálculo: LOLA real en los sitios de la lista y sintético en los puntos propios sin cobertura. Las punteadas, si aparecen, son el LOLA de las coordenadas originales de un sitio editado.",
+      "Elevación del relieve según el azimut. Las líneas llenas son el horizonte que usa el cálculo: LOLA real en los sitios de la lista y en los puntos propios del polo sur, y LOLA de la zona (celdas de 2°) en los demás puntos propios. Las punteadas, si aparecen, son el LOLA de las coordenadas originales de un sitio editado.",
     horizonAria: "Perfil del horizonte de los dos sitios: elevación del relieve según el azimut.",
     az: { 0: "N", 90: "E", 180: "S", 270: "O" },
     criteriaTitle: "Criterios de viabilidad",
@@ -349,7 +350,7 @@ export default {
     runs: "Noche más larga: {night}. Luz continua más larga: {light}. Corte de comunicación más largo: {blackout}.",
     more: "… y {n} ventanas más.",
     sources:
-      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (fuera de ese rango, modelo aproximado). Horizonte: relieve LOLA en los sitios de la lista y en los puntos propios al sur de −75°; perfil sintético en el resto. Coordenadas de los sitios con fuente oficial. Umbrales de viabilidad definidos por el equipo.",
+      "SELENE · NASA Space Apps Challenge 2026 · Equipo Hubble27. Sol y Tierra: efemérides de NASA/JPL Horizons, nov 2026 – dic 2027 (fuera de ese rango, modelo aproximado). Horizonte: relieve LOLA en los sitios de la lista y en los puntos propios al sur de −75°; relieve LOLA de la zona (celdas de 2°) en el resto. Coordenadas de los sitios con fuente oficial. Umbrales de viabilidad definidos por el equipo.",
   },
   settings: {
     title: "Configuración",
@@ -444,6 +445,7 @@ export default {
     horizon: {
       lola: "horizonte: relieve LOLA real",
       reduced: "horizonte: relieve LOLA a menor resolución (aproximado)",
+      regional: "horizonte: relieve LOLA de la zona, en celdas de 2° (aproximado)",
       synthetic: "horizonte: perfil sintético (no es topografía real)",
     },
   },
@@ -455,7 +457,7 @@ export default {
     traitsTitle: "Interés científico (según la bibliografía citada)",
     lola: {
       title: "Horizonte LOLA real",
-      none: "Sin horizonte LOLA: el sitio está fuera de la cobertura polar (los puntos elegidos en el mapa la tienen al sur de −75°).",
+      none: "Sin horizonte LOLA para este punto: se usa el perfil sintético.",
       status: "Estado",
       preview: "Referencia: corresponde a las coordenadas originales del sitio; con las coordenadas editadas el cálculo usa otro horizonte",
       active: "En uso en el cálculo",
@@ -465,9 +467,10 @@ export default {
       truncated: "Azimuts fuera de cobertura",
       product: "Producto",
       reduced: "reducido a {res} m/píxel",
+      regional: "interpolado del atlas global en celdas de {deg}°",
       dem: {
-        loading: "Cargando el relieve LOLA reducido para este punto… mientras tanto, el horizonte es sintético.",
-        error: "No se pudo cargar el relieve LOLA reducido: este punto usa el horizonte sintético.",
+        loading: "Cargando el relieve LOLA para este punto… mientras tanto, el horizonte es sintético.",
+        error: "No se pudo cargar el relieve LOLA: este punto usa el horizonte sintético.",
       },
     },
     eph: {
@@ -526,10 +529,11 @@ export default {
       ephemerisError: "No se pudieron cargar las efemérides de JPL Horizons; se usa el modelo aproximado",
       horizon: "Perfil sintético; no hay horizonte LOLA para este sitio",
       horizonPreview: "Coordenadas editadas: el cálculo usa otro horizonte; el LOLA de las coordenadas originales se muestra como referencia",
+      horizonRegional: "Horizonte LOLA de la zona, interpolado del atlas global (celdas de 2°, LDEM_16 a ~1,9 km/píxel): es relieve medido, pero no el del punto exacto",
       horizonReduced: "Horizonte LOLA real calculado a menor resolución (480 m hasta −80°, 960 m hasta −75°); error medio medido 0,02–0,8°",
       horizonActive: "Horizonte topográfico real desde LOLA (≈ 240 m/píxel)",
-      horizonLoading: "Cargando el relieve LOLA reducido; mientras tanto, perfil sintético",
-      horizonError: "No se pudo cargar el relieve LOLA reducido; se usa el perfil sintético",
+      horizonLoading: "Cargando el relieve LOLA; mientras tanto, perfil sintético",
+      horizonError: "No se pudo cargar el relieve LOLA; se usa el perfil sintético",
       imagery: "Mosaico LROC y elevación LOLA de NASA SVS",
       thresholds: "Criterio del equipo, ajustable",
     },

@@ -13,6 +13,7 @@
  * en ventanas largas: ≤ 360 instantes) con el cuerpo visible. Es el valor del CENTRO de la celda, no un promedio del área.
  */
 import { bodyVectorsAt, localFrame } from "./ephemeris.js";
+import { createProfileHorizon } from "./horizon-lola.js";
 
 export const HEAT_ATLAS_SCHEMA = "selene-heat-atlas/v1";
 /** Atlas de toda la Luna en grilla equirectangular (MAP-02, DEC-065). */
@@ -111,6 +112,67 @@ export function heatAtlasVersion() {
 /** Atlas registrado para esa grilla, o null. */
 export function heatAtlasFor(size, minLat) {
   return atlas && atlas.size === size && atlas.minLat === minLat ? atlas : null;
+}
+
+const regionalCache = new Map(); // "lat,lon|versión" → horizonte
+const REGIONAL_CACHE_LIMIT = 64;
+
+/**
+ * Horizonte LOLA REGIONAL de cualquier punto (DEC-068): interpola en forma
+ * bilineal, azimut por azimut, los horizontes de los cuatro centros de celda
+ * vecinos del atlas global (celdas de 2°, LDEM_16; MAP-02, DEC-065). La
+ * longitud es circular y, pasado el último centro hacia un polo, se usa esa
+ * fila. Es el relieve medido de la zona, no el del punto exacto: las celdas
+ * miden ~60 km y LDEM_16 no resuelve relieve menor a ~2 km.
+ *
+ * Devuelve una función con la misma interfaz que `createLolaHorizon`
+ * (`source = "lola"`, `meta`, `detail`) y `meta.regional = true`, o `null`
+ * si el atlas global no está registrado. El atlas no guarda la distancia ni
+ * la confianza por azimut: `detail().distanceKm` es `null` y la baja confianza
+ * se informa como el % medio de las celdas (`meta.lowConfidencePct`).
+ */
+export function regionalHorizonFor(site) {
+  const a = globalAtlas;
+  if (!a || !Number.isFinite(site?.lat) || !Number.isFinite(site?.lon)) return null;
+  const key = `${site.lat},${site.lon}|${version}`;
+  if (regionalCache.has(key)) return regionalCache.get(key);
+  const { cols, rows, azimuths } = a;
+  const gx = ((site.lon + 180) / 360) * cols - 0.5;
+  const gy = ((90 - site.lat) / 180) * rows - 0.5;
+  const x0 = Math.floor(gx);
+  const y0 = Math.floor(gy);
+  const fx = gx - x0;
+  const fy = gy - y0;
+  const cell = (x, y) => Math.min(rows - 1, Math.max(0, y)) * cols + (((x % cols) + cols) % cols);
+  const parts = [
+    [cell(x0, y0), (1 - fx) * (1 - fy)],
+    [cell(x0 + 1, y0), fx * (1 - fy)],
+    [cell(x0, y0 + 1), (1 - fx) * fy],
+    [cell(x0 + 1, y0 + 1), fx * fy],
+  ];
+  const mix = (pick) => parts.reduce((sum, [c, w]) => sum + pick(c) * w, 0);
+  const elevationDeg = Array.from({ length: azimuths }, (_, k) => mix((c) => a.horizon[c * azimuths + k]));
+  const params = { ...a.meta.params, azimuthStepDeg: 360 / azimuths };
+  const lowConfidencePct = mix((c) => a.lowPct[c]);
+  const horizon = createProfileHorizon(
+    {
+      algorithm: a.meta.params?.algorithm,
+      params,
+      observer: { lat: site.lat, lon: site.lon, groundHeightKm: mix((c) => a.groundM[c]) / 1000, lowConfidence: false },
+      elevationDeg,
+      distanceKm: new Array(azimuths).fill(null),
+      lowConfidence: new Array(azimuths).fill(false),
+      coverageKm: new Array(azimuths).fill(params.maxDistanceKm),
+    },
+    {
+      siteId: site.id ?? null,
+      product: { doi: a.meta.source.doi, productVersion: a.meta.source.dem.productVersion, dem: a.meta.source.dem },
+      extra: { regional: true, cellDeg: a.meta.grid.cellDeg, lowConfidencePct },
+    },
+  );
+  if (regionalCache.size >= REGIONAL_CACHE_LIMIT) regionalCache.delete(regionalCache.keys().next().value);
+  regionalCache.set(key, horizon);
+  return horizon;
 }
 
 /** Máximo de instantes por mapa: fija el paso (múltiplo de 1 h) para que el cálculo siga siendo rápido. */

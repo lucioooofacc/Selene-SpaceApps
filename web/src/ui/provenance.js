@@ -23,7 +23,7 @@ import { lolaForScenario } from "./lola.js";
 import { dataStatus, onDataStatus } from "./data-status.js";
 import { dateUTC, pct } from "../lib/format.js";
 import { findSite } from "../data/sites.js";
-import { needsPolarDem } from "../lib/analysis.js";
+import { needsPolarDem, needsRegionalAtlas } from "../lib/analysis.js";
 
 const HORIZONS_DOCS = "https://ssd.jpl.nasa.gov/horizons/";
 
@@ -101,7 +101,7 @@ export function lolaHtml(scenario) {
       <dt>${t("quality.lola.range")}</dt><dd>${deg(summary.minDeg)} / ${deg(summary.meanDeg)} / ${deg(summary.maxDeg)}</dd>
       <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction)}</dd>
       <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction)}</dd>
-      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a>${horizon.meta.reduced ? ` · ${t("quality.lola.reduced", { res: horizon.meta.resolutionsM.join("/") })}` : ""}</dd>
+      <dt>${t("quality.lola.product")}</dt><dd><a href="https://doi.org/${product.doi}" target="_blank" rel="noopener noreferrer">LOLA ${product.dem.productId} ${product.productVersion}</a>${horizon.meta.reduced ? ` · ${t("quality.lola.reduced", { res: horizon.meta.resolutionsM.join("/") })}` : ""}${horizon.meta.regional ? ` · ${t("quality.lola.regional", { deg: horizon.meta.cellDeg })}` : ""}</dd>
     </dl>`;
 }
 
@@ -110,9 +110,11 @@ export function lolaHtml(scenario) {
  * necesita y todavía no tiene horizonte LOLA: "loading" | "error" | null.
  */
 function polarDemState(scenario) {
-  if (scenario?.horizon?.source === "lola" || !scenario?.site?.custom || !needsPolarDem(scenario.site)) return null;
-  const { state } = dataStatus().polarDem;
-  return state === "loading" ? "loading" : state === "error" ? "error" : null;
+  if (scenario?.horizon?.source === "lola" || !scenario?.site?.custom) return null;
+  // Al sur de −75° manda el DEM polar reducido; en el resto, el atlas global (DEC-068).
+  const status = dataStatus();
+  const part = needsPolarDem(scenario.site) ? status.polarDem : needsRegionalAtlas(scenario.site) ? status.globalHeatAtlas : null;
+  return part?.state === "loading" ? "loading" : part?.state === "error" ? "error" : null;
 }
 
 /**
@@ -175,7 +177,8 @@ export function dataNote(scenario) {
   const ephKey = { real: "real", derived: "derived", mixed: "mixed", loading: "loading", error: "error", siteFailed: "error", outside: "approx" }[state];
   const pct = Math.round(100 * (scenario?.ephemeris?.windowFraction ?? 0));
   const lola = lolaForScenario(scenario);
-  const horizonKey = lola.mode === "active" ? (lola.horizon.meta?.reduced ? "reduced" : "lola") : "synthetic";
+  const meta = lola.horizon?.meta;
+  const horizonKey = lola.mode === "active" ? (meta?.regional ? "regional" : meta?.reduced ? "reduced" : "lola") : "synthetic";
   return t("dataNote.text", {
     eph: t(`dataNote.eph.${ephKey}`, { pct }),
     horizon: t(`dataNote.horizon.${horizonKey}`),
@@ -207,7 +210,9 @@ export function approxSegments(scenario) {
 export function qualityRows(site, scenario) {
   const lola = lolaForScenario(scenario);
   const horizonRow =
-    lola.mode === "active" && lola.horizon.meta?.reduced
+    lola.mode === "active" && lola.horizon.meta?.regional
+      ? { key: "horizon", hint: "horizonRegional", kind: "approx", ref: "DEC-068" }
+      : lola.mode === "active" && lola.horizon.meta?.reduced
       ? { key: "horizon", hint: "horizonReduced", kind: "approx", ref: "DEC-034" }
       : lola.mode === "active"
       ? { key: "horizon", hint: "horizonActive", kind: "real", ref: "DEC-030" }
