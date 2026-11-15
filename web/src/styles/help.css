@@ -258,3 +258,22 @@
     display: none;
   }
 }
+
+/* ---------- Sección inferior sin sitio ni fechas (UI-17, DEC-069) ---------- */
+.behavior-empty {
+  margin: 38px auto 0;
+  max-width: 900px;
+  padding: 72px 40px;
+  border: 1px dashed var(--border-field);
+  border-radius: 16px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--muted-2);
+}
+
+.behavior-empty[hidden],
+.behavior[data-empty] .behavior-grid,
+.behavior[data-empty] > .help-button {
+  display: none;
+}

@@ -151,7 +151,9 @@ function showStep(step) {
     card.style.left = `${(stageWidth - width) / 2}px`;
     card.style.top = "220px";
   } else {
-    const r = rectIn(document.querySelector(topic.target));
+    // Si la zona está oculta (sección inferior sin sitio ni fechas), se resalta la sección que la contiene.
+    const target = document.querySelector(topic.target);
+    const r = rectIn(target.offsetWidth ? target : target.closest("section") ?? target);
     ring.hidden = false;
     Object.assign(ring.style, { left: `${r.left - 8}px`, top: `${r.top - 8}px`, width: `${r.width + 16}px`, height: `${r.height + 16}px` });
     // A la derecha de la zona si entra; si no, a la izquierda; si tampoco, encima de su borde derecho.

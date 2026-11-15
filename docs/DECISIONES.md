@@ -988,3 +988,12 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** calcular el horizonte exacto del punto con LDEM_16 en la página principal (35 MiB de descarga); tomar la celda más cercana sin interpolar (saltos al mover el punto).
 - **Estado:** vigente. DEC-005 queda como respaldo. Pendiente de validar por astronomía.
 
+## DEC-069 — La sección inferior pide sitio y fechas en lugar de mostrar un ejemplo (UI-17)
+
+- **Contexto / problema:** auditoría del 15/11/2026. Al abrir la página, el panorama, la línea de tiempo y las tarjetas de energía, comunicación y resumen mostraban resultados del punto de muestra del Figma (−66,52°, −110,98°) y del 14/11/2026. Nadie había elegido ese sitio ni esas fechas. DEC-049 ya ocultaba la "Ventana de análisis" en ese caso y DEC-066 hizo lo mismo con las listas.
+- **Decisión** (Lucio, 15/11/2026): mostrar un mensaje que pide lo que falta, igual que en esos dos lugares. Se descartó dejar el ejemplo rotulado.
+- **Solución aplicada:** `web/src/main.js` (`renderBehaviorEmpty()`) marca la sección con `data-empty` y escribe el mensaje (`behavior.empty.both | site | date`, ES/EN); `web/src/styles/help.css` oculta la grilla en ese estado. El escenario se sigue calculando por dentro, pero no se muestra. Además, el punto de muestra ya no dispara la descarga de datos de relieve hasta que se elige un sitio. En el recorrido guiado, los pasos de esa sección resaltan la sección entera si la grilla está oculta (`web/src/ui/help.js`).
+- **Supuestos y límites:** la página arranca más vacía que el Figma (excepción a DEC-014 decidida por Lucio). El punto de muestra sigue marcado en el mapa y en los campos de latitud y longitud como "Punto observado", que es el punto de partida para elegir en el mapa.
+- **Alternativas descartadas:** rotular los resultados como ejemplo (seguiría mostrando un horizonte que no es de ninguna misión); arrancar con un sitio curado elegido (decide por el usuario).
+- **Estado:** vigente.
+

@@ -164,6 +164,11 @@ export default {
   },
   behavior: {
     title: "Comportamiento de los cuerpos celestes durante el plazo de la misión",
+    empty: {
+      both: "Elegí un sitio y las fechas de la misión en «Parámetros de la misión» para ver acá cómo se mueven el Sol y la Tierra sobre el horizonte y cuánta energía y comunicación tendría el módulo.",
+      site: "Elegí un sitio en el mapa, en la lista o en «Parámetros de la misión» para ver acá cómo se mueven el Sol y la Tierra sobre su horizonte.",
+      date: "Elegí las fechas de la misión en «Duración de misión» para ver acá cómo se mueven el Sol y la Tierra sobre el horizonte del sitio en ese período.",
+    },
   },
   sim: {
     legend: {

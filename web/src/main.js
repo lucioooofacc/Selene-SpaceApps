@@ -11,7 +11,7 @@ import "./styles/report.css";
 import "./styles/help.css";
 import { computeScenario, realDataVersion, sampleAt } from "./lib/analysis.js";
 import { ensurePolarTerrain, loadSiteEphemerides } from "./ui/ephemerides.js";
-import { applyStaticTranslations, getLang, initialLang, setLang } from "./i18n/index.js";
+import { applyStaticTranslations, getLang, initialLang, setLang, t } from "./i18n/index.js";
 import { CUSTOM_ID, allSites, getSite, getState, setState, subscribe } from "./state.js";
 import { initMap, placeAccent, renderMap } from "./ui/map.js";
 import { initPlaces, rankedSites, renderPlaces } from "./ui/places.js";
@@ -39,12 +39,29 @@ function ensureScenario(state) {
   const site = { id: state.siteId, lat: state.lat, lon: state.lon };
   scenario = computeScenario(site, state.startMs, state.windowDays);
   scenarioKey = key;
-  // Puntos propios al sur de −75°: horizonte LOLA reducido al llegar el DEM (DEC-034).
-  ensurePolarTerrain([site, ...allSites()], renderAll);
+  // Relieve LOLA de los puntos propios al llegar los datos (DEC-034, DEC-068). El punto de
+  // muestra con el que arranca la página no cuenta hasta que alguien elija un sitio (DEC-069).
+  ensurePolarTerrain([...(state.siteChosen ? [site] : []), ...allSites()], renderAll);
+}
+
+/**
+ * Sin sitio o sin fechas elegidos, la sección inferior no muestra resultados
+ * (serían los de un punto y un período de muestra): pide lo que falta
+ * (UI-17, DEC-069). Devuelve true si la sección queda vacía.
+ */
+function renderBehaviorEmpty(state) {
+  const missing = !state.siteChosen && !state.dateChosen ? "both" : !state.siteChosen ? "site" : !state.dateChosen ? "date" : null;
+  const section = document.querySelector(".behavior");
+  const note = document.getElementById("behavior-empty");
+  section.toggleAttribute("data-empty", Boolean(missing));
+  note.hidden = !missing;
+  note.textContent = missing ? t(`behavior.empty.${missing}`) : "";
+  return Boolean(missing);
 }
 
 function renderInstant(state, { force = false } = {}) {
   const sample = sampleAt(scenario, state.timeMs);
+  if (force) renderBehaviorEmpty(state);
   renderPanorama(scenario, sample, { full: force });
   renderTime(scenario, sample);
   // Durante la reproducción, los paneles de texto se refrescan ~8 veces por segundo.

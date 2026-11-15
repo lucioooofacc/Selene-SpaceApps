@@ -163,6 +163,11 @@ export default {
   },
   behavior: {
     title: "Behavior of celestial bodies during the mission",
+    empty: {
+      both: "Choose a site and the mission dates under “Mission parameters” to see here how the Sun and the Earth move over the horizon and how much power and communication the lander would have.",
+      site: "Choose a site on the map, in the list or under “Mission parameters” to see here how the Sun and the Earth move over its horizon.",
+      date: "Choose the mission dates under “Mission duration” to see here how the Sun and the Earth move over the site's horizon during that period.",
+    },
   },
   sim: {
     legend: {
