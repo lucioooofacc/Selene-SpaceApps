@@ -461,11 +461,13 @@ export default {
     traitsTitle: "Scientific interest (from the cited literature)",
     lola: {
       title: "Real LOLA horizon",
+      titleRegional: "LOLA horizon of the area (approximate)",
       none: "No LOLA horizon for this point: the synthetic profile is used.",
       status: "Status",
       preview: "Reference: it belongs to the site's original coordinates; with edited coordinates the calculation uses another horizon",
       active: "Used in the calculation",
       ground: "Ground height",
+      groundRegional: "Mean ground height of the area",
       range: "Horizon min / mean / max",
       low: "Low-confidence azimuths",
       truncated: "Out-of-coverage azimuths",

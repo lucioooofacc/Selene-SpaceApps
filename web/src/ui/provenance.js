@@ -83,6 +83,14 @@ export function traitsHtml(site) {
     <p class="settings-hint">${t("places.scienceNote")}</p>`;
 }
 
+/**
+ * Título del bloque del horizonte: "real" si es el del punto y "de la zona"
+ * si es el regional interpolado del atlas global (DEC-068).
+ */
+export function lolaTitle(scenario) {
+  return t(lolaForScenario(scenario).horizon?.meta?.regional ? "quality.lola.titleRegional" : "quality.lola.title");
+}
+
 /** Resumen del horizonte LOLA del sitio (TERRAIN-02, DEC-030), o por qué no hay. */
 export function lolaHtml(scenario) {
   const { horizon, mode } = lolaForScenario(scenario);
@@ -97,7 +105,7 @@ export function lolaHtml(scenario) {
   return `
     <dl class="prov">
       <dt>${t("quality.lola.status")}</dt><dd>${t(mode === "active" ? "quality.lola.active" : "quality.lola.preview")}</dd>
-      <dt>${t("quality.lola.ground")}</dt><dd>${Math.round(observer.groundHeightM)} m</dd>
+      <dt>${t(horizon.meta.regional ? "quality.lola.groundRegional" : "quality.lola.ground")}</dt><dd>${Math.round(observer.groundHeightM)} m</dd>
       <dt>${t("quality.lola.range")}</dt><dd>${deg(summary.minDeg)} / ${deg(summary.meanDeg)} / ${deg(summary.maxDeg)}</dd>
       <dt>${t("quality.lola.low")}</dt><dd>${pct(summary.lowConfidenceFraction)}</dd>
       <dt>${t("quality.lola.truncated")}</dt><dd>${pct(summary.truncatedFraction)}</dd>
@@ -302,7 +310,7 @@ export function initQualityDialog(getContext) {
               ${ephemerisHtml(scenario)}
             </fieldset>
             <fieldset>
-              <legend>${t("quality.lola.title")}</legend>
+              <legend>${lolaTitle(scenario)}</legend>
               ${lolaHtml(scenario)}
             </fieldset>
           </div>

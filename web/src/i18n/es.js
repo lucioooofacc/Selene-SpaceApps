@@ -462,11 +462,13 @@ export default {
     traitsTitle: "Interés científico (según la bibliografía citada)",
     lola: {
       title: "Horizonte LOLA real",
+      titleRegional: "Horizonte LOLA de la zona (aproximado)",
       none: "Sin horizonte LOLA para este punto: se usa el perfil sintético.",
       status: "Estado",
       preview: "Referencia: corresponde a las coordenadas originales del sitio; con las coordenadas editadas el cálculo usa otro horizonte",
       active: "En uso en el cálculo",
       ground: "Altura del suelo",
+      groundRegional: "Altura media del suelo en la zona",
       range: "Horizonte mín. / medio / máx.",
       low: "Azimuts de baja confianza",
       truncated: "Azimuts fuera de cobertura",
