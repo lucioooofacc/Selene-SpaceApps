@@ -17,12 +17,13 @@
  */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 import { LOLA_HORIZONS } from "../../src/data/terrain/lola-horizons.js";
 import { SITES } from "../../src/data/sites.js";
-import { HORIZON_PARAMS } from "../../src/lib/horizon-lola.js";
+import { HORIZON_PARAMS, computeHorizonProfile } from "../../src/lib/horizon-lola.js";
+import { decodeGlobalDem } from "../../src/lib/global-dem.js";
 
 const T = LOLA_HORIZONS;
 const GLOBAL_IDS = ["change4", "apollo11"];
@@ -66,4 +67,24 @@ test("ventanas reales: en Chandrayaan-3, LDEM_128 y LDEM_60S_240M dan el mismo h
   assert.ok(Math.abs(mean) < 0.1, `media ${mean}`);
   assert.ok(rms < 0.15, `RMS ${rms}`);
   assert.ok(max < 0.5, `máximo ${max}`);
+});
+
+test("Apollo 11: el horizonte de LDEM_128 coincide con el de LDEM_16 (TERRAIN-05, DEC-075)", () => {
+  // Antes de DEC-075 el píxel interpolado del punto dejaba el suelo 13 m bajo y el
+  // horizonte ~0,8° alto. Con la mediana de los píxeles medidos a 1 km, medido el
+  // 2026-11-15: media +0,28°, máximo 0,74°. LDEM_16 (1,9 km) no resuelve el relieve
+  // cercano, así que no se espera cero. Tolerancias del equipo: media < 0,4°, máximo < 1°.
+  const dir = resolve(import.meta.dirname, "../../public/data/terrain");
+  const bin = readFileSync(join(dir, "lola-global-16ppd.bin"));
+  const meta = JSON.parse(readFileSync(join(dir, "lola-global-16ppd.json"), "utf8"));
+  const dem = decodeGlobalDem(bin.buffer.slice(bin.byteOffset, bin.byteOffset + bin.byteLength), meta);
+  const e = T.sites.apollo11;
+  const step = 360 / e.elevationDeg.length;
+  const ref = computeHorizonProfile(dem.sample, e, { maxDistanceKm: 300, stepKm: 0.95, azimuthStepDeg: step, observerHeightM: 2, radiusKm: 1737.4 });
+  const diffs = e.elevationDeg.map((v, k) => v - ref.elevationDeg[k]);
+  const mean = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+  const max = Math.max(...diffs.map(Math.abs));
+  assert.ok(Math.abs(mean) < 0.4, `media ${mean}`);
+  assert.ok(max < 1, `máximo ${max}`);
+  assert.equal(e.observer.ground?.method, "median-measured");
 });
