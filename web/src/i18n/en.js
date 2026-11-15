@@ -5,6 +5,13 @@
 export default {
   app: {
     documentTitle: "SELENE",
+    aiLogo: "AI GENERATED IMAGE",
+  },
+  chartTip: {
+    lightOn: "in sunlight",
+    lightOff: "no sunlight",
+    linkOn: "Earth in view",
+    linkOff: "Earth not in view",
   },
   nav: {
     label: "Main navigation",

@@ -6,6 +6,13 @@
 export default {
   app: {
     documentTitle: "SELENE",
+    aiLogo: "IMAGEN GENERADA CON IA",
+  },
+  chartTip: {
+    lightOn: "con luz del Sol",
+    lightOff: "sin luz del Sol",
+    linkOn: "con la Tierra a la vista",
+    linkOff: "sin la Tierra a la vista",
   },
   nav: {
     label: "Navegación principal",
