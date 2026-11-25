@@ -117,6 +117,8 @@ La versión que se entregó a Space Apps el 15/11/2026 está marcada con el tag 
 | Guion del video | Teo y Martín |
 | Edición del video | Lucio y Facu |
 
+Perfiles en GitHub: [Facundo Duarte](https://github.com/facuduarte-dev).
+
 ## Cómo trabajamos
 
 Cada tarea se hizo en su propia rama, con commits que explican qué cambió y por qué, y cada decisión quedó registrada en [`docs/DECISIONES.md`](docs/DECISIONES.md) junto a su solución y las alternativas descartadas. Las reglas completas están en [`AGENTS.md`](AGENTS.md); `web/src/lib/AGENTS.md` y `web/src/ui/AGENTS.md` agregan reglas específicas para el motor científico y la interfaz.

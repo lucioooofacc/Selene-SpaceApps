@@ -84,6 +84,8 @@ The version submitted to Space Apps on 2026-11-15 is marked with the tag [`entre
 | Video script | Teo and Martín |
 | Video editing | Lucio and Facu |
 
+GitHub profiles: [Facundo Duarte](https://github.com/facuduarte-dev).
+
 ---
 
 SELENE is an independent project built for the NASA Space Apps Challenge. It is not an official NASA product and is not endorsed by NASA.
