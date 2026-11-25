@@ -6,7 +6,7 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - **Tachar:** cuando se resuelve, se marca `- [x]`, se tacha el texto con `~~ ~~` y se agrega la fecha y el commit o PR. No se borra.
 - **Descartar:** si se decide no hacerlo, se tacha y se agrega "descartado: motivo".
 
-Última actualización: 2026-11-15 (redacción de los textos de viabilidad, rama `i18n/redaccion-viabilidad`, DEC-086; antes: validación del ejemplo de la guía de viabilidad, rama `docs/validar-ejemplo-viabilidad`, DEC-085; antes: revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
+Última actualización: 2026-11-25 (portada del repositorio: README en ES y EN, rama `docs/readme-portada`, DEC-087; antes: redacción de los textos de viabilidad, rama `i18n/redaccion-viabilidad`, DEC-086; antes: validación del ejemplo de la guía de viabilidad, rama `docs/validar-ejemplo-viabilidad`, DEC-085; antes: revisión en escritorio y tag de entrega, DEPLOY-01 #14, rama `docs/cierre-deploy-01`; antes: validación automática de la entrega, rama `chore/despliegue-final`).
 
 ---
 
@@ -180,3 +180,6 @@ Lista viva de lo que falta aplicar. El plan por etapas (qué se hizo, qué se es
 - [ ] Subir la demo a YouTube o Drive con enlace público y pegarlo en el formulario antes del 15/11 23:59. — Lucio, Facu · DEC-080
 - [ ] Confirmar si el logo (`logo.jpeg`) es dibujo de Teo o imagen generada con IA: la web lo marca "AI GENERATED IMAGE" (DEC-077) y el video no lo marca. — Teo · DEC-080
 - [x] ~~Elegir cuál de las tres versiones de la demo se entrega (`video/demo/out/`: `selene-demo-final.mp4`, `selene-demo-emocion.mp4`, `selene-demo-ensayo.mp4`) y revisar los agregados visuales de la v3 (sello "COMPLEX", textos de las tarjetas). — Equipo · DEC-081~~ Se entrega "Emoción" (`selene-demo-emocion.mp4`). Resuelto 2026-11-15 (rama `fix/demo-apellidos`, DEC-082).
+- [ ] Elegir una licencia para el repositorio (hoy no tiene, así que nadie puede reutilizar el código legalmente). Ojo: las imágenes de NASA SVS y los datos de la NASA tienen sus propias condiciones. — Equipo · DEC-087
+- [ ] Agregar al `README.md` y al `README.en.md` el enlace público al video y a la página del proyecto en Space Apps, cuando existan. — Lucio, Facu · DEC-087
+- [ ] Subir una imagen de vista previa para redes (*Settings → Social preview* en GitHub; se puede usar `docs/img/readme-mision-en.webp` pasada a PNG de 1280×640). — Lucio · DEC-087
