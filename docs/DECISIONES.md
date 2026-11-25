@@ -1302,3 +1302,15 @@ Formato y reglas en `AGENTS.md` (sección 3). Las decisiones no se borran: si ca
 - **Alternativas descartadas:** reescribir la guía entera (riesgo el día de la entrega).
 - **Estado:** vigente. Revisión hecha a pedido de Lucio; Alfonso y Cata pueden ajustarla.
 
+
+## DEC-087 — Portada del repositorio para quien llega desde GitHub
+
+- **Contexto / problema:** el `README.md` estaba escrito para el equipo (estructura, comandos, despliegue) y no explicaba qué es SELENE, qué problema resuelve ni qué datos usa. El repositorio no tenía descripción ni temas en GitHub. Lucio pidió (25/11/2026) dejarlo presentable para cualquier persona interesada.
+- **Decisión:** reescribir el `README.md` como portada en español y agregar `README.en.md` en inglés, con capturas reales de la app. Completar la descripción y los temas del repositorio en GitHub. No se cambia nada de `web/`.
+- **Solución aplicada:**
+  - `README.md` y `README.en.md`: qué es, el problema del desafío, funciones, tabla de datos de la NASA (resumen de `docs/ENTREGA.md` y `docs/DATA_SOURCES.md`), límites conocidos, cómo está hecha y cómo correrla, versión entregada (tag `entrega-2026-11-15`), equipo con los roles de `AGENTS.md` y aviso de que no es un producto oficial de la NASA. Se conservan las secciones anteriores (estructura, despliegue, cómo trabajar) en el README en español.
+  - `docs/img/readme-mision-{es,en}.webp` y `docs/img/readme-comparacion-{es,en}.webp`: capturas de la versión de `main` (`e15295d`, igual al tag de entrega) a 1440 px, Firefox sin interfaz, con Shackleton del 17 al 28/11/2026 y la comparación Shackleton–Malapert. Se usó la vista 2D porque Firefox sin interfaz no dibuja WebGL. Se recortaron y se pasaron a WebP (75–105 kB cada una).
+  - GitHub: descripción y temas (`gh repo edit`).
+- **Alternativas descartadas:** un solo README bilingüe (largo y difícil de leer); README solo en inglés (la documentación y el equipo trabajan en español); capturas en 3D (la captura automática sale sin la Luna).
+- **Supuestos y límites:** el equipo figura por nombre de pila, como en `AGENTS.md`. No se agregó licencia ni enlace al video porque no están decididos (ver `PENDIENTES.md`). Las cifras de las capturas son las que muestra la app para esas fechas; si el motor cambia, hay que regenerarlas.
+- **Estado:** vigente.
